@@ -1,21 +1,19 @@
-import { FetchError } from '@medusajs/js-sdk';
-import { HttpTypes } from '@medusajs/types';
+import { FetchError } from "@medusajs/js-sdk";
+import { HttpTypes } from "@medusajs/types";
 import {
   QueryKey,
   UseMutationOptions,
   UseQueryOptions,
   useMutation,
   useQuery,
-} from '@tanstack/react-query';
-import { fetchQuery, sdk } from '../../lib/client';
-import { queryClient } from '../../lib/query-client';
-import { queryKeysFactory } from '../../lib/query-key-factory';
-import { productsQueryKeys } from './products';
+} from "@tanstack/react-query";
+import { fetchQuery, sdk } from "../../lib/client";
+import { queryClient } from "../../lib/query-client";
+import { queryKeysFactory } from "../../lib/query-key-factory";
+import { productsQueryKeys } from "./products";
 
-const CATEGORIES_QUERY_KEY = 'categories' as const;
-export const categoriesQueryKeys = queryKeysFactory(
-  CATEGORIES_QUERY_KEY
-);
+const CATEGORIES_QUERY_KEY = "categories" as const;
+export const categoriesQueryKeys = queryKeysFactory(CATEGORIES_QUERY_KEY);
 
 export const useProductCategory = (
   id: string,
@@ -27,14 +25,14 @@ export const useProductCategory = (
       HttpTypes.AdminProductCategoryResponse,
       QueryKey
     >,
-    'queryFn' | 'queryKey'
+    "queryFn" | "queryKey"
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryKey: categoriesQueryKeys.detail(id, query),
     queryFn: () =>
       fetchQuery(`/vendor/product-categories/${id}`, {
-        method: 'GET',
+        method: "GET",
       }),
     ...options,
   });
@@ -51,14 +49,20 @@ export const useProductCategories = (
       HttpTypes.AdminProductCategoryListResponse,
       QueryKey
     >,
-    'queryFn' | 'queryKey'
+    "queryFn" | "queryKey"
   >
 ) => {
+  //Remove undefined params
+  const filteredQuery = Object.fromEntries(
+    Object.entries(query || {}).filter(([_, value]) => value !== undefined)
+  );
+  const params = new URLSearchParams(filteredQuery as Record<string, string>);
+
   const { data, ...rest } = useQuery({
     queryKey: categoriesQueryKeys.list(query),
     queryFn: () =>
-      fetchQuery('/vendor/product-categories', {
-        method: 'GET',
+      fetchQuery(`/vendor/product-categories?${params.toString()}`, {
+        method: "GET",
       }),
     ...options,
   });
@@ -74,8 +78,7 @@ export const useCreateProductCategory = (
   >
 ) => {
   return useMutation({
-    mutationFn: (payload) =>
-      sdk.admin.productCategory.create(payload),
+    mutationFn: (payload) => sdk.admin.productCategory.create(payload),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
         queryKey: categoriesQueryKeys.lists(),
@@ -96,8 +99,7 @@ export const useUpdateProductCategory = (
   >
 ) => {
   return useMutation({
-    mutationFn: (payload) =>
-      sdk.admin.productCategory.update(id, payload),
+    mutationFn: (payload) => sdk.admin.productCategory.update(id, payload),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
         queryKey: categoriesQueryKeys.lists(),

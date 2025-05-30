@@ -106,11 +106,15 @@ export function CreateShippingOptionsForm({
         prices: currencyPrices,
         data: fulfillmentOptionData as unknown as Record<string, unknown>,
         rules: [
-          {
-            value: isReturn ? "true" : "false",
-            attribute: "is_return",
-            operator: "eq",
-          },
+          ...(isReturn
+            ? [
+              {
+                value: "true",
+                attribute: "is_return",
+                operator: "eq" as const,
+              },
+            ]
+            : []),
           {
             value: "true",
             attribute: "enabled_in_store",
@@ -128,8 +132,7 @@ export function CreateShippingOptionsForm({
         onSuccess: ({ shipping_option }) => {
           toast.success(
             t(
-              `stockLocations.shippingOptions.create.${
-                isReturn ? "returns" : "shipping"
+              `stockLocations.shippingOptions.create.${isReturn ? "returns" : "shipping"
               }.successToast`,
               { name: shipping_option?.name }
             )
@@ -187,8 +190,8 @@ export function CreateShippingOptionsForm({
 
   const pricesStatus: ProgressStatus =
     form.getFieldState("currency_prices")?.isDirty ||
-    form.getFieldState("region_prices")?.isDirty ||
-    activeTab === Tab.PRICING
+      form.getFieldState("region_prices")?.isDirty ||
+      activeTab === Tab.PRICING
       ? "in-progress"
       : "not-started"
 

@@ -41,15 +41,16 @@ export const CategoryProductSection = ({
   })
   const { products, count, isLoading, isError, error } = useProducts(
     {
-      ...searchParams,
+      // ...searchParams,
       fields: "*categories.id",
-      limit: 9999,
+      // limit: 9999,
+      limit: searchParams.limit,
+      offset: searchParams.offset,
     },
     {
       placeholderData: keepPreviousData,
     },
     {
-      ...searchParams,
       categoryId: category.id,
     }
   )
@@ -118,7 +119,7 @@ export const CategoryProductSection = ({
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
         <Heading level="h2">{t("products.domain")}</Heading>
-        <ActionMenu
+        {/* <ActionMenu
           groups={[
             {
               actions: [
@@ -130,11 +131,11 @@ export const CategoryProductSection = ({
               ],
             },
           ]}
-        />
+        /> */}
       </div>
       <_DataTable
         table={table}
-        filters={filters}
+        // filters={filters}
         columns={columns}
         orderBy={[
           { key: "title", label: t("fields.title") },
@@ -156,7 +157,7 @@ export const CategoryProductSection = ({
           message: t("categories.products.list.noRecordsMessage"),
         }}
       />
-      <CommandBar open={!!Object.keys(selection).length}>
+      {/* <CommandBar open={!!Object.keys(selection).length}>
         <CommandBar.Bar>
           <CommandBar.Value>
             {t("general.countSelected", {
@@ -170,7 +171,7 @@ export const CategoryProductSection = ({
             shortcut="r"
           />
         </CommandBar.Bar>
-      </CommandBar>
+      </CommandBar> */}
     </Container>
   )
 }
@@ -182,34 +183,34 @@ const useColumns = () => {
 
   return useMemo(
     () => [
-      columnHelper.display({
-        id: "select",
-        header: ({ table }) => {
-          return (
-            <Checkbox
-              checked={
-                table.getIsSomePageRowsSelected()
-                  ? "indeterminate"
-                  : table.getIsAllPageRowsSelected()
-              }
-              onCheckedChange={(value) =>
-                table.toggleAllPageRowsSelected(!!value)
-              }
-            />
-          )
-        },
-        cell: ({ row }) => {
-          return (
-            <Checkbox
-              checked={row.getIsSelected()}
-              onCheckedChange={(value) => row.toggleSelected(!!value)}
-              onClick={(e) => {
-                e.stopPropagation()
-              }}
-            />
-          )
-        },
-      }),
+      // columnHelper.display({
+      //   id: "select",
+      //   header: ({ table }) => {
+      //     return (
+      //       <Checkbox
+      //         checked={
+      //           table.getIsSomePageRowsSelected()
+      //             ? "indeterminate"
+      //             : table.getIsAllPageRowsSelected()
+      //         }
+      //         onCheckedChange={(value) =>
+      //           table.toggleAllPageRowsSelected(!!value)
+      //         }
+      //       />
+      //     )
+      //   },
+      //   cell: ({ row }) => {
+      //     return (
+      //       <Checkbox
+      //         checked={row.getIsSelected()}
+      //         onCheckedChange={(value) => row.toggleSelected(!!value)}
+      //         onClick={(e) => {
+      //           e.stopPropagation()
+      //         }}
+      //       />
+      //     )
+      //   },
+      // }),
       ...base,
     ],
     [base]

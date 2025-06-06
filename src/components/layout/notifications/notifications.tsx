@@ -133,6 +133,10 @@ const NOTIFICATION_TEMPLATES = {
     "Your product type request has been accepted",
   seller_product_type_request_rejected_notification:
     "Your product type request has been rejected",
+  seller_product_request_accepted_notification:
+    "Your product request has been accepted",
+  seller_product_request_rejected_notification:
+    "Your product request has been rejected",
 }
 
 const Notification = ({
@@ -145,7 +149,7 @@ const Notification = ({
   const data = notification.data as unknown as NotificationData | undefined
 
   // We need at least the title to render a notification in the feed
-  if (!data?.title) {
+  if (!notification.template) {
     return null
   }
 
@@ -159,7 +163,11 @@ const Notification = ({
           <div className="flex flex-col">
             <div className="flex items-center justify-between">
               <Text size="small" leading="compact" weight="plus">
-                {data.title}
+                {data?.title
+                  ? data.title
+                  : NOTIFICATION_TEMPLATES[
+                      notification.template as keyof typeof NOTIFICATION_TEMPLATES
+                    ]}
               </Text>
               <div className="align-center flex items-center justify-center gap-2">
                 <Text
@@ -183,20 +191,21 @@ const Notification = ({
                 )}
               </div>
             </div>
-            {!!NOTIFICATION_TEMPLATES[
-              notification.template as keyof typeof NOTIFICATION_TEMPLATES
-            ] && (
-              <Text
-                className="text-ui-fg-subtle whitespace-pre-line"
-                size="small"
-              >
-                {
-                  NOTIFICATION_TEMPLATES[
-                    notification.template as keyof typeof NOTIFICATION_TEMPLATES
-                  ]
-                }
-              </Text>
-            )}
+            {data?.title &&
+              !!NOTIFICATION_TEMPLATES[
+                notification.template as keyof typeof NOTIFICATION_TEMPLATES
+              ] && (
+                <Text
+                  className="text-ui-fg-subtle whitespace-pre-line"
+                  size="small"
+                >
+                  {
+                    NOTIFICATION_TEMPLATES[
+                      notification.template as keyof typeof NOTIFICATION_TEMPLATES
+                    ]
+                  }
+                </Text>
+              )}
           </div>
           {!!data?.file?.url && (
             <FilePreview

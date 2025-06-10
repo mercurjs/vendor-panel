@@ -408,7 +408,7 @@ const PrimaryButton = ({
         size="small"
         isLoading={isLoading}
       >
-        Request Product
+        Create Product
       </Button>
     )
   }

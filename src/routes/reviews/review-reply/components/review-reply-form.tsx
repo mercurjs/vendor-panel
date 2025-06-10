@@ -25,21 +25,39 @@ export const ReviewReplyForm = () => {
   })
 
   const { mutateAsync, isPending } = useUpdateReview(id!)
-  const handleSubmit = form.handleSubmit(async (data) => {
-    await mutateAsync(
-      {
-        seller_note: data.seller_note,
-      },
-      {
-        onSuccess: () => {
-          toast.success("Reply has been sent")
-          handleSuccess(`/reviews/${id}`)
+  //@ts-ignore
+  const handleSubmit = form.handleSubmit(async (data, { deleting }) => {
+    if (deleting) {
+      await mutateAsync(
+        {
+          seller_note: "",
         },
-        onError: (error) => {
-          toast.error(error.message)
+        {
+          onSuccess: () => {
+            toast.success("Reply has been deleted")
+            handleSuccess(`/reviews/${id}`)
+          },
+          onError: (error) => {
+            toast.error(error.message)
+          },
+        }
+      )
+    } else {
+      await mutateAsync(
+        {
+          seller_note: data.seller_note,
         },
-      }
-    )
+        {
+          onSuccess: () => {
+            toast.success("Reply has been sent")
+            handleSuccess(`/reviews/${id}`)
+          },
+          onError: (error) => {
+            toast.error(error.message)
+          },
+        }
+      )
+    }
   })
 
   return (
@@ -75,11 +93,21 @@ export const ReviewReplyForm = () => {
       </RouteDrawer.Form>
       <RouteDrawer.Footer>
         {review.seller_note && (
-          <Button className="px-6" variant="secondary">
+          <Button
+            className="px-6"
+            variant="secondary"
+            //@ts-ignore
+            onClick={() => handleSubmit({ deleting: true })}
+          >
             Delete reply
           </Button>
         )}
-        <Button onClick={handleSubmit} className="px-6" isLoading={isPending}>
+        <Button
+          //@ts-ignore
+          onClick={() => handleSubmit({ deleting: false })}
+          className="px-6"
+          isLoading={isPending}
+        >
           {review.seller_note ? "Save" : "Reply"}
         </Button>
       </RouteDrawer.Footer>

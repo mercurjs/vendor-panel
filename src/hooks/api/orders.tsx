@@ -343,6 +343,38 @@ export const useCancelOrder = (
         queryKey: ordersQueryKeys.preview(orderId),
       })
 
+      queryClient.invalidateQueries({
+        queryKey: ordersQueryKeys.list(),
+      })
+
+      options?.onSuccess?.(data, variables, context)
+    },
+    ...options,
+  })
+}
+
+export const useCompleteOrder = (
+  orderId: string,
+  options?: UseMutationOptions<HttpTypes.AdminOrderResponse, FetchError, void>
+) => {
+  return useMutation({
+    mutationFn: () =>
+      fetchQuery(`/vendor/orders/${orderId}/complete`, {
+        method: "POST",
+      }),
+    onSuccess: (data: any, variables: any, context: any) => {
+      queryClient.invalidateQueries({
+        queryKey: ordersQueryKeys.detail(orderId),
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ordersQueryKeys.list(),
+      })
+
       options?.onSuccess?.(data, variables, context)
     },
     ...options,

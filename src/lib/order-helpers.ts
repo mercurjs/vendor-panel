@@ -3,9 +3,12 @@ import { TFunction } from "i18next"
 export const getCanceledOrderStatus = (
   t: TFunction<"translation">,
   status: string
-): { label: string; color: "red" } | null => {
+): { label: string; color: "red" | "green" } | null => {
   if (status === "canceled") {
     return { label: t("orders.status.canceled"), color: "red" }
+  }
+  if (status === "completed") {
+    return { label: t("orders.status.completed"), color: "green" }
   }
 
   return null

@@ -66,8 +66,6 @@ export const AddCampaignPromotionsForm = ({
     fields: "+status",
   })
 
-  console.log({ promotionsRaw })
-
   const promotions = promotionsRaw?.filter((item) => item !== null)
   const count = promotions?.length ?? 0
 

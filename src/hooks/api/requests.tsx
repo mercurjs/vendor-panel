@@ -109,6 +109,10 @@ export const useUpdateRequest = (
         queryKey: [REQUESTS_QUERY_KEY, "list"],
       })
 
+      queryClient.invalidateQueries({
+        queryKey: requestsQueryKeys.detail(id),
+      })
+
       options?.onSuccess?.(data, variables, context)
     },
     ...options,

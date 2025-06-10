@@ -9,6 +9,8 @@ const getRequestType = (type: string) => {
       return "categories"
     case "product_collection":
       return "collections"
+    case "review_remove":
+      return "reviews"
     default:
       return ""
   }

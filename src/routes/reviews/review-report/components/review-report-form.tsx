@@ -5,7 +5,7 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button, Heading, Select, Textarea, toast } from "@medusajs/ui"
 import { useParams } from "react-router-dom"
-import { useCreateVendorRequest } from "../../../../hooks/api"
+import { useCreateVendorRequest, useUpdateRequest } from "../../../../hooks/api"
 
 const reasonList = [
   "The review comment is not true",
@@ -19,54 +19,93 @@ const ReviewReplySchema = z.object({
   comment: z.string().optional(),
 })
 
-export const ReviewReportForm = () => {
+export const ReviewReportForm = ({ request }: { request?: any }) => {
   const { handleSuccess } = useRouteModal()
   const { id } = useParams()
 
+  const isEditing = !!request
+
+  const reviewReason = request?.data?.reason.split(" comment: ")[0] || ""
+  const reviewComment = request?.data?.reason.split(" comment: ")[1] || ""
+
+  const defaultValues = isEditing
+    ? {
+        reason: reviewReason,
+        comment: reviewComment,
+      }
+    : {
+        reason: "",
+        comment: "",
+      }
+
   const form = useForm<z.infer<typeof ReviewReplySchema>>({
-    defaultValues: {
-      reason: "",
-      comment: "",
-    },
+    defaultValues,
     resolver: zodResolver(ReviewReplySchema),
   })
 
-  const { mutateAsync, isPending } = useCreateVendorRequest()
+  const { mutateAsync: createRequest, isPending } = useCreateVendorRequest()
+  const { mutateAsync: updateRequest, isPending: isUpdating } =
+    useUpdateRequest(id!)
 
   const handleSubmit = form.handleSubmit(async (data) => {
-    await mutateAsync(
-      {
-        request: {
-          type: "review_remove",
-          data: {
-            review_id: id,
-            reason: data.reason,
-            comment: data.comment,
+    const reason = `${data.reason}${data.comment ? ` comment: ${data.comment}` : ""}`
+
+    if (isEditing) {
+      await updateRequest(
+        {
+          request: {
+            type: "review_remove",
+            data: {
+              review_id: request.data.review_id,
+              reason,
+            },
           },
         },
-      },
-      {
-        onSuccess: () => {
-          toast.success("Review is reported", {
-            description: "Please wait for a response from the moderator.",
-          })
-          handleSuccess(`/reviews/${id}`)
+        {
+          onSuccess: () => {
+            toast.success("Request is updated", {
+              description: "Please wait for a response from the moderator.",
+            })
+            handleSuccess(`/requests/reviews`)
+          },
+        }
+      )
+    } else {
+      await createRequest(
+        {
+          request: {
+            type: "review_remove",
+            data: {
+              review_id: id,
+              reason,
+            },
+          },
         },
-        onError: (error) => {
-          toast.error(error.message)
-        },
-      }
-    )
+        {
+          onSuccess: () => {
+            toast.success("Review is reported", {
+              description: "Please wait for a response from the moderator.",
+            })
+            handleSuccess(`/reviews/${id}`)
+          },
+          onError: (error) => {
+            toast.error(error.message)
+          },
+        }
+      )
+    }
   })
 
   return (
     <RouteDrawer>
       <RouteDrawer.Header>
         <RouteDrawer.Title asChild>
-          <Heading>Report Review</Heading>
+          <Heading>{isEditing ? "Edit Request" : "Report Review"}</Heading>
         </RouteDrawer.Title>
         <RouteDrawer.Description>
-          Report review from customer.
+          {isEditing
+            ? "Edit the request to report the review from customer."
+            : "Report review from customer."}
         </RouteDrawer.Description>
       </RouteDrawer.Header>
       <RouteDrawer.Form form={form}>
@@ -118,8 +157,12 @@ export const ReviewReportForm = () => {
         </RouteDrawer.Body>
       </RouteDrawer.Form>
       <RouteDrawer.Footer>
-        <Button onClick={handleSubmit} className="px-6" isLoading={isPending}>
-          Report review
+        <Button
+          onClick={handleSubmit}
+          className="px-6"
+          isLoading={isPending || isUpdating}
+        >
+          {isEditing ? "Update Request" : "Report review"}
         </Button>
       </RouteDrawer.Footer>
     </RouteDrawer>

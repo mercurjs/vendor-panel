@@ -124,6 +124,12 @@ export const RouteMap: RouteObject[] = [
                     Component: RequestReviewsList,
                   }
                 },
+                children: [
+                  {
+                    path: ":id/edit",
+                    lazy: () => import("../../routes/reviews/review-report"),
+                  },
+                ],
               },
               {
                 path: "orders",

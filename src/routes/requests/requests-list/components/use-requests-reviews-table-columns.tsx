@@ -18,7 +18,13 @@ export const useRequestsReviewsTableColumns = () => {
       }),
       columnHelper.accessor("data.reason", {
         header: "Reason",
-        cell: ({ getValue }) => getValue(),
+        cell: ({ row }) => {
+          const reason =
+            row.original?.data.reason?.split("comment: ")[0] ||
+            row.original.data.reason
+
+          return <p className="truncate max-w-[360px]">{reason}</p>
+        },
       }),
       columnHelper.accessor("created_at", {
         header: "Date",

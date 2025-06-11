@@ -37,12 +37,15 @@ export const ReviewListTable = () => {
 
   const count = filteredReviews.length
 
-  const averageRating = Math.round(
-    filteredReviews.reduce(
-      (sum: number, { rating }: { rating: number }) => sum + rating,
-      0
-    ) / count
-  )
+  const averageRating =
+    count > 0
+      ? Math.floor(
+          filteredReviews.reduce(
+            (sum: number, { rating }: { rating: number }) => sum + rating,
+            0
+          ) / count
+        )
+      : 0
 
   const columns = useColumns()
 

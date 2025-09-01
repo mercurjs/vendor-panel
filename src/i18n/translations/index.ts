@@ -19,8 +19,12 @@ import zhCN from "./zhCN.json"
 import fa from "./fa.json"
 import cs from "./cs.json"
 import ru from "./ru.json"
+import vi from "./vi.json"
 
 export default {
+  vi: {
+    translation: vi
+  },
   bg: {
     translation: bg,
   },
@@ -83,5 +87,5 @@ export default {
   },
   ru: {
     translation: ru,
-  },
+  }
 }

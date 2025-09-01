@@ -150,4 +150,11 @@ export const languages: Language[] = [
     ltr: true,
     date_locale: ru,
   },
+  {
+    code: "vi",
+    display_name: "Tiếng Việt",
+    ltr: true,
+    date_locale: enUS,
+  }
+
 ]

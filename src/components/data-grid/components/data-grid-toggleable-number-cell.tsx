@@ -79,7 +79,7 @@ const OuterComponent = ({
       newValue.quantity = ""
     }
 
-    if (update && newValue.quantity === "") {
+    if (update) {
       newValue.quantity = 0
     }
 
@@ -101,7 +101,7 @@ const OuterComponent = ({
 
   return (
     <ConditionalTooltip
-      showTooltip={localValue.disabledToggle && tooltip}
+      showTooltip={localValue.disabledToggle && !!tooltip}
       content={tooltip}
     >
       <div className="absolute inset-y-0 left-4 z-[3] flex w-fit items-center justify-center">
@@ -155,12 +155,6 @@ const Inner = ({
     const ensuredValue = updatedValue !== undefined ? updatedValue : ""
     const newValue = { ...localValue, quantity: ensuredValue }
 
-    /**
-     * If the value is not empty, then the location should be enabled.
-     *
-     * Else, if the value is empty and the location is enabled, then the
-     * location should be disabled, unless toggling the location is disabled.
-     */
     if (ensuredValue !== "") {
       newValue.checked = true
     } else if (newValue.checked && newValue.disabledToggle === false) {
@@ -186,7 +180,7 @@ const Inner = ({
         {...props}
         ref={combinedRefs}
         className="txt-compact-small w-full flex-1 cursor-default appearance-none bg-transparent pl-8 text-right outline-none"
-        value={localValue?.quantity}
+        value={localValue?.quantity ?? undefined}
         onValueChange={handleInputChange}
         formatValueOnBlur
         onBlur={() => {
@@ -195,7 +189,6 @@ const Inner = ({
           handleOnChange()
         }}
         onFocus={onFocus}
-        decimalsLimit={0}
         autoComplete="off"
         tabIndex={-1}
         placeholder={!localValue.checked ? placeholder : undefined}

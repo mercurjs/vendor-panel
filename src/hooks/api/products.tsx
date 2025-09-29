@@ -7,6 +7,7 @@ import {
   useQuery,
   UseQueryOptions,
 } from "@tanstack/react-query"
+import { ProductAttributesResponse } from "../../types/products"
 import { fetchQuery, importProductsQuery, sdk } from "../../lib/client"
 import { queryClient } from "../../lib/query-client"
 import { queryKeysFactory } from "../../lib/query-key-factory"
@@ -28,6 +29,12 @@ export const variantsQueryKeys = queryKeysFactory(VARIANTS_QUERY_KEY)
 
 const OPTIONS_QUERY_KEY = "product_options" as const
 export const optionsQueryKeys = queryKeysFactory(OPTIONS_QUERY_KEY)
+
+const productAttributesQueryKey = (productId: string) => [
+  "product",
+  productId,
+  "product-attributes",
+]
 
 export const useCreateProductOption = (
   productId: string,
@@ -220,28 +227,24 @@ export const useUpdateProductVariant = (
   })
 }
 
+// TODO: Change this to use endpoint that updates multiple variants at once
 export const useUpdateProductVariantsBatch = (
   productId: string,
   options?: UseMutationOptions<any, FetchError, any>
 ) => {
   return useMutation({
-    mutationFn: (
-      payload: HttpTypes.AdminBatchProductVariantRequest["update"]
-    ) =>
-      sdk.admin.product.batchVariants(productId, {
-        update: payload,
-      }),
-    onSuccess: (data: any, variables: any, context: any) => {
-      queryClient.invalidateQueries({
-        queryKey: variantsQueryKeys.lists(),
-      })
-      queryClient.invalidateQueries({
-        queryKey: variantsQueryKeys.details(),
-      })
-      queryClient.invalidateQueries({
-        queryKey: productsQueryKeys.detail(productId),
+    mutationFn: async (variants: Array<{ id: string; [key: string]: any }>) => {
+      const promises = variants.map((variant) => {
+        const { id, ...updateData } = variant
+        return fetchQuery(`/vendor/products/${productId}/variants/${id}`, {
+          method: "POST",
+          body: updateData,
+        })
       })
 
+      return Promise.all(promises)
+    },
+    onSuccess: (data: any, variables: any, context: any) => {
       options?.onSuccess?.(data, variables, context)
     },
     ...options,
@@ -334,12 +337,12 @@ export const useDeleteVariantLazy = (
 }
 
 export const useProductAttributes = (id: string) => {
-  const { data, ...rest } = useQuery({
+  const { data, ...rest } = useQuery<ProductAttributesResponse>({
     queryFn: () =>
       fetchQuery(`/vendor/products/${id}/applicable-attributes`, {
         method: "GET",
       }),
-    queryKey: ["product", id, "product-attributes"],
+    queryKey: productAttributesQueryKey(id),
   })
 
   return { ...data, ...rest }
@@ -530,6 +533,9 @@ export const useUpdateProduct = (
       })
       await queryClient.invalidateQueries({
         queryKey: productsQueryKeys.detail(id),
+      })
+      await queryClient.invalidateQueries({
+        queryKey: productAttributesQueryKey(id),
       })
 
       options?.onSuccess?.(data, variables, context)

@@ -1874,9 +1874,25 @@
               },
               "required": ["heading", "description"],
               "additionalProperties": false
+            },
+            "editStocksAndPrices": {
+              "type": "object",
+              "properties": {
+                "header": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "successToast": {
+                  "type": "string"
+                }
+              },
+              "required": ["header", "description", "successToast"],
+              "additionalProperties": false
             }
           },
-          "required": ["header", "empty", "filtered"],
+          "required": ["header", "empty", "filtered", "editStocksAndPrices"],
           "additionalProperties": false
         },
         "attributes": {
@@ -9837,18 +9853,28 @@
         "hint": {
           "type": "string"
         },
-        "notSellerYet": { "type": "string" }
+        "notSellerYet": {
+          "type": "string"
+        }
       },
-      "required": ["forgotPassword", "title", "hint"],
+      "required": ["forgotPassword", "title", "hint", "notSellerYet"],
       "additionalProperties": false
     },
     "register": {
       "type": "object",
       "properties": {
-        "title": { "type": "string" },
-        "hint": { "type": "string" },
-        "alreadySeller": { "type": "string" }
-      }
+        "title": {
+          "type": "string"
+        },
+        "hint": {
+          "type": "string"
+        },
+        "alreadySeller": {
+          "type": "string"
+        }
+      },
+      "required": ["title", "hint", "alreadySeller"],
+      "additionalProperties": false
     },
     "invite": {
       "type": "object",
@@ -10817,6 +10843,9 @@
         "priceTemplate": {
           "type": "string"
         },
+        "stockTemplate": {
+          "type": "string"
+        },
         "height": {
           "type": "string"
         },
@@ -11045,6 +11074,7 @@
         "expiryDate",
         "price",
         "priceTemplate",
+        "stockTemplate",
         "height",
         "width",
         "length",
@@ -11190,6 +11220,7 @@
     "apiKeyManagement",
     "returnReasons",
     "login",
+    "register",
     "invite",
     "resetPassword",
     "workflowExecutions",

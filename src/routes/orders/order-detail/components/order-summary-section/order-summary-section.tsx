@@ -671,13 +671,15 @@ const CostBreakdown = ({
           </div>
         )}
       </>
-      <Cost
-        label={"Commission"}
-        value={getLocaleAmount(
-          order.commission_value.amount,
-          order.commission_value.currency_code
-        )}
-      />
+      {order.commission_value && (
+        <Cost
+          label={"Commission"}
+          value={getLocaleAmount(
+            order.commission_value.amount,
+            order.commission_value.currency_code
+          )}
+        />
+      )}
     </div>
   )
 }

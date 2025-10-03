@@ -529,7 +529,7 @@ const CostBreakdown = ({
 
   const discountTotal = automaticTaxesOn
     ? order.discount_total
-    : order.discount_subtotal
+    : order.discount_subtotal || 0
 
   return (
     <div className="text-ui-fg-subtle flex flex-col gap-y-2 px-6 py-4">
@@ -671,13 +671,15 @@ const CostBreakdown = ({
           </div>
         )}
       </>
-      <Cost
-        label={"Commission"}
-        value={getLocaleAmount(
-          order.commission_value.amount,
-          order.commission_value.currency_code
-        )}
-      />
+      {order.commission_value && (
+        <Cost
+          label={"Commission"}
+          value={getLocaleAmount(
+            order.commission_value?.amount || 0,
+            order.commission_value?.currency_code || order.currency_code
+          )}
+        />
+      )}
     </div>
   )
 }

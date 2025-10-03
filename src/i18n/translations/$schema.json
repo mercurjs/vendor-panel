@@ -1515,11 +1515,14 @@
         "list": {
           "type": "object",
           "properties": {
+            "noRecordsTitle": {
+              "type": "string"
+            },
             "noRecordsMessage": {
               "type": "string"
             }
           },
-          "required": ["noRecordsMessage"],
+          "required": ["noRecordsTitle", "noRecordsMessage"],
           "additionalProperties": false
         },
         "edit": {
@@ -2664,6 +2667,25 @@
           },
           "required": ["delete"],
           "additionalProperties": false
+        },
+        "bulkDelete": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "success": {
+              "type": "string"
+            },
+            "error": {
+              "type": "string"
+            }
+          },
+          "required": ["title", "description", "success", "error"],
+          "additionalProperties": false
         }
       },
       "required": [
@@ -2692,7 +2714,8 @@
         "organization",
         "stock",
         "shippingProfile",
-        "toasts"
+        "toasts",
+        "bulkDelete"
       ],
       "additionalProperties": false
     },

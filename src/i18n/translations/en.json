@@ -396,7 +396,8 @@
   "products": {
     "domain": "Products",
     "list": {
-      "noRecordsMessage": "Create your first product to start selling."
+      "noRecordsTitle": "No products yet",
+      "noRecordsMessage": "Create products to start selling on the marketplace"
     },
     "edit": {
       "header": "Edit Product",
@@ -709,6 +710,12 @@
           "header": "Failed to delete product"
         }
       }
+    },
+    "bulkDelete": {
+      "title": "Delete Products",
+      "description": "You are about to delete {{count}} products from catalog. This action cannot be undone.",
+      "success": "Successfully deleted {{count}} product(s).",
+      "error": "Failed to delete products"
     }
   },
   "collections": {

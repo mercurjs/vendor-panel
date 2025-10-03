@@ -1515,11 +1515,14 @@
         "list": {
           "type": "object",
           "properties": {
+            "noRecordsTitle": {
+              "type": "string"
+            },
             "noRecordsMessage": {
               "type": "string"
             }
           },
-          "required": ["noRecordsMessage"],
+          "required": ["noRecordsTitle", "noRecordsMessage"],
           "additionalProperties": false
         },
         "edit": {
@@ -2648,6 +2651,25 @@
           },
           "required": ["delete"],
           "additionalProperties": false
+        },
+        "bulkDelete": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "success": {
+              "type": "string"
+            },
+            "error": {
+              "type": "string"
+            }
+          },
+          "required": ["title", "description", "success", "error"],
+          "additionalProperties": false
         }
       },
       "required": [
@@ -2676,7 +2698,8 @@
         "organization",
         "stock",
         "shippingProfile",
-        "toasts"
+        "toasts",
+        "bulkDelete"
       ],
       "additionalProperties": false
     },
@@ -9837,18 +9860,28 @@
         "hint": {
           "type": "string"
         },
-        "notSellerYet": { "type": "string" }
+        "notSellerYet": {
+          "type": "string"
+        }
       },
-      "required": ["forgotPassword", "title", "hint"],
+      "required": ["forgotPassword", "title", "hint", "notSellerYet"],
       "additionalProperties": false
     },
     "register": {
       "type": "object",
       "properties": {
-        "title": { "type": "string" },
-        "hint": { "type": "string" },
-        "alreadySeller": { "type": "string" }
-      }
+        "title": {
+          "type": "string"
+        },
+        "hint": {
+          "type": "string"
+        },
+        "alreadySeller": {
+          "type": "string"
+        }
+      },
+      "required": ["title", "hint", "alreadySeller"],
+      "additionalProperties": false
     },
     "invite": {
       "type": "object",
@@ -11190,6 +11223,7 @@
     "apiKeyManagement",
     "returnReasons",
     "login",
+    "register",
     "invite",
     "resetPassword",
     "workflowExecutions",

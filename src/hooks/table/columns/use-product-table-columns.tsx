@@ -2,6 +2,10 @@ import { createColumnHelper } from "@tanstack/react-table"
 import { useMemo } from "react"
 
 import {
+  CategoryCell,
+  CategoryHeader,
+} from "../../../components/table/table-cells/product/category-cell"
+import {
   CollectionCell,
   CollectionHeader,
 } from "../../../components/table/table-cells/product/collection-cell/collection-cell"
@@ -28,6 +32,12 @@ export const useProductTableColumns = () => {
         id: "product",
         header: () => <ProductHeader />,
         cell: ({ row }) => <ProductCell product={row.original} />,
+      }),
+      columnHelper.accessor("categories", {
+        header: () => <CategoryHeader />,
+        cell: ({ row }) => (
+          <CategoryCell categories={row.original.categories} />
+        ),
       }),
       columnHelper.accessor("collection", {
         header: () => <CollectionHeader />,

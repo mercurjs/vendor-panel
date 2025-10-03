@@ -565,6 +565,39 @@ export const useDeleteProduct = (
   })
 }
 
+export const useBulkDeleteProducts = (
+  options?: UseMutationOptions<
+    HttpTypes.AdminProductDeleteResponse[],
+    FetchError,
+    string[]
+  >
+) => {
+  return useMutation({
+    mutationFn: async (productIds: string[]) => {
+      const deletePromises = productIds.map((id) =>
+        fetchQuery(`/vendor/products/${id}`, {
+          method: "DELETE",
+        })
+      )
+      return Promise.all(deletePromises)
+    },
+    onSuccess: (data: any, variables: any, context: any) => {
+      queryClient.invalidateQueries({
+        queryKey: productsQueryKeys.lists(),
+      })
+
+      variables.forEach((id: string) => {
+        queryClient.invalidateQueries({
+          queryKey: productsQueryKeys.detail(id),
+        })
+      })
+
+      options?.onSuccess?.(data, variables, context)
+    },
+    ...options,
+  })
+}
+
 export const useExportProducts = (
   query?: HttpTypes.AdminProductListParams,
   options?: UseMutationOptions<

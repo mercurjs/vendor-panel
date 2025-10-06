@@ -1,4 +1,5 @@
 import Medusa from "@medusajs/js-sdk"
+import qs from 'qs'
 
 export const backendUrl = __BACKEND_URL__ ?? "/"
 export const publishableApiKey = __PUBLISHABLE_API_KEY__ ?? ""
@@ -65,19 +66,9 @@ export const fetchQuery = async (
   }
 ) => {
   const bearer = (await window.localStorage.getItem("medusa_auth_token")) || ""
-  const params = Object.entries(query || {}).reduce(
-    (acc, [key, value], index) => {
-      if (value && value !== undefined) {
-        const queryLength = Object.values(query || {}).filter(
-          (i) => i && i !== undefined
-        ).length
-        acc += `${key}=${value}${index + 1 <= queryLength ? "&" : ""}`
-      }
-      return acc
-    },
-    ""
-  )
-  const response = await fetch(`${backendUrl}${url}${params && `?${params}`}`, {
+  const params = query ? `?${qs.stringify(query)}` : ""
+
+  const response = await fetch(`${backendUrl}${url}${params}`, {
     method: method,
     headers: {
       authorization: `Bearer ${bearer}`,

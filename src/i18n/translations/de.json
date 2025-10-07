@@ -11,6 +11,13 @@
     "apply": "Anwenden",
     "range": "Reichweite",
     "search": "Suchen",
+    "searchOptions": "Optionen durchsuchen",
+    "noOptionsFound": "Keine Optionen gefunden.",
+    "noOptionsAvailable": "Keine Optionen verfügbar.",
+    "yes": "Ja",
+    "no": "Nein",
+    "true": "Wahr",
+    "false": "Falsch",
     "of": "von",
     "results": "Ergebnisse",
     "pages": "Seiten",
@@ -23,7 +30,10 @@
     "tip": "Tipp",
     "error": "Fehler",
     "select": "Wählen",
+    "selectValues": "Wert(e) auswählen",
     "selected": "Ausgewählt",
+    "increment": "Erhöhen",
+    "decrement": "Verringern",
     "enabled": "Aktiviert",
     "disabled": "Deaktiviert",
     "expired": "Abgelaufen",
@@ -317,8 +327,10 @@
       "andLabel": "Und"
     },
     "radio": {
-      "yes": "Ja",
-      "no": "Nein",
+    "yes": "Ja",
+    "no": "Nein",
+    "true": "Wahr",
+    "false": "Falsch",
       "true": "Wahr",
       "false": "Falsch"
     },
@@ -399,12 +411,15 @@
         "details": "Details",
         "organize": "Organisierren",
         "variants": "Varianten",
-        "inventory": "Inventar-Kits"
+        "inventory": "Inventar-Kits",
+        "attributes": "Attribute"
       },
       "errors": {
         "variants": "Bitte wählen Sie mindestens eine Variante aus.",
         "options": "Bitte erstellen Sie mindestens eine Option.",
-        "uniqueSku": "Die SKU muss eindeutig sein."
+        "uniqueSku": "Die SKU muss eindeutig sein.",
+        "titleRequired": "Bitte geben Sie einen Titel ein",
+        "primaryCategoryRequired": "Bitte wählen Sie die Hauptkategorie aus"
       },
       "inventory": {
         "heading": "Inventar-Kits",
@@ -426,7 +441,9 @@
           "label": "Produktvarianten",
           "hint": "Dieses Ranking wirkt sich auf die Reihenfolge der Varianten in Ihrem Store aus.",
           "alert": "Fügen Sie Optionen hinzu, um Varianten zu erstellen.",
-          "tip": "Varianten, die nicht aktiviert sind, werden nicht erstellt. Sie können nachträglich jederzeit Varianten erstellen und bearbeiten, diese Liste passt jedoch zu den Variationen in Ihren Produktoptionen."
+          "tip": "Varianten, die nicht aktiviert sind, werden nicht erstellt. Sie können nachträglich jederzeit Varianten erstellen und bearbeiten, diese Liste passt jedoch zu den Variationen in Ihren Produktoptionen.",
+          "media": "Medien",
+          "searchPlaceholder": "Tabelle durchsuchen"
         },
         "productOptions": {
           "label": "Produktoptionen",
@@ -502,6 +519,7 @@
       "deleteWarningWithThumbnail_other": "Sie sind dabei, {{count}} Bilder einschließlich der Miniaturansicht zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.",
       "thumbnailTooltip": "Miniaturansicht",
       "galleryLabel": "Galerie",
+      "editLabel": "Bearbeiten",
       "downloadImageLabel": "Aktuelles Bild herunterladen",
       "deleteImageLabel": "Aktuelles Bild löschen",
       "emptyState": {
@@ -551,6 +569,13 @@
       "categories": {
         "label": "Kategorien"
       },
+      "primaryCategory": {
+        "label": "Hauptkategorie",
+        "tooltip": "Die Hauptkategorie kann Attribute definieren, die für dieses Produkt gelten."
+      },
+      "secondaryCategories": {
+        "label": "Sekundäre Kategorien"
+      },
       "tags": {
         "label": "Schlagworte"
       },
@@ -563,6 +588,40 @@
       },
       "material": {
         "label": "Material"
+      },
+      "attributes": {
+        "size": {
+          "label": "Größe",
+          "tooltip": "Wählen Sie die verfügbaren Größen für dieses Produkt",
+          "placeholder": "Wert(e) auswählen"
+        },
+        "brand": {
+          "label": "Marke",
+          "tooltip": "Wählen Sie die Marke für dieses Produkt",
+          "placeholder": "Wert auswählen"
+        },
+        "articleNumber": {
+          "label": "Artikelnummer",
+          "tooltip": "Geben Sie die Artikelnummer für dieses Produkt ein",
+          "placeholder": "Wert eingeben"
+        },
+        "color": {
+          "label": "Farbe (optional)",
+          "tooltip": "Wählen Sie die verfügbaren Farben für dieses Produkt",
+          "placeholder": "Wert(e) auswählen"
+        },
+        "useForVariants": {
+          "label": "Für Varianten verwenden",
+          "description": "Wenn aktiviert, erstellen wir Varianten mit diesem Attribut"
+        },
+        "requiredTooltip": "Dieses Attribut ist vom Administrator erforderlich. Sie müssen Wert(e) dafür hinzufügen.",
+        "enterValuePlaceholder": "Wert eingeben",
+        "validation": {
+          "required": "{{name}} ist erforderlich",
+          "requiredSelect": "Dieses Attribut ist vom Administrator erforderlich. Bitte wählen Sie einen Wert aus.",
+          "requiredSelectMultiple": "Dieses Attribut ist vom Administrator erforderlich. Bitte wählen Sie Wert(e) aus.",
+          "requiredEnter": "Dieses Attribut ist vom Administrator erforderlich. Bitte geben Sie einen Wert ein."
+        }
       },
       "width": {
         "label": "Breite"

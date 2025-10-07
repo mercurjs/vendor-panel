@@ -19,6 +19,7 @@ export type DataGridColumnType =
   | "number"
   | "boolean"
   | "togglable-number"
+  | "media"
 
 export type DataGridCoordinates = {
   row: number
@@ -123,12 +124,12 @@ export type InternalColumnMeta<TData, TFieldValues extends FieldValues> = {
   name: string
   field?: FieldFunction<TData, TFieldValues>
 } & (
-  | {
+    | {
       field: FieldFunction<TData, TFieldValues>
       type: DataGridColumnType
     }
-  | { field?: null | undefined; type?: never }
-) &
+    | { field?: null | undefined; type?: never }
+  ) &
   ColumnMeta<TData, any>
 
 export type GridCell<TFieldValues extends FieldValues> = {

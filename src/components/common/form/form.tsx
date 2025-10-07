@@ -169,8 +169,8 @@ const Control = forwardRef<
 Control.displayName = "Form.Control"
 
 const Hint = forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
+  HTMLSpanElement,
+  React.HTMLAttributes<HTMLSpanElement>
 >(({ className, ...props }, ref) => {
   const { formDescriptionId } = useFormField()
 
@@ -186,8 +186,8 @@ const Hint = forwardRef<
 Hint.displayName = "Form.Hint"
 
 const ErrorMessage = forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
+  HTMLSpanElement,
+  React.HTMLAttributes<HTMLSpanElement>
 >(({ className, children, ...props }, ref) => {
   const { error, formErrorMessageId } = useFormField()
   const msg = error ? String(error?.message) : children

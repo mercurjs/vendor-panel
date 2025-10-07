@@ -11,6 +11,9 @@
     "apply": "Apply",
     "range": "Range",
     "search": "Search",
+    "searchOptions": "Search options",
+    "noOptionsFound": "No options found.",
+    "noOptionsAvailable": "No options available.",
     "of": "of",
     "results": "results",
     "pages": "pages",
@@ -23,7 +26,14 @@
     "tip": "Tip",
     "error": "Error",
     "select": "Select",
+    "yes": "Yes",
+    "no": "No",
+    "true": "True",
+    "false": "False",
+    "selectValues": "Select value(s)",
     "selected": "Selected",
+    "increment": "Increment",
+    "decrement": "Decrement",
     "enabled": "Enabled",
     "disabled": "Disabled",
     "expired": "Expired",
@@ -411,12 +421,15 @@
         "details": "Details",
         "organize": "Organize",
         "variants": "Variants",
-        "inventory": "Inventory kits"
+        "inventory": "Inventory kits",
+        "attributes": "Attributes"
       },
       "errors": {
         "variants": "Please select at least one variant.",
         "options": "Please create at least one option.",
-        "uniqueSku": "SKU must be unique."
+        "uniqueSku": "SKU must be unique.",
+        "titleRequired": "Please enter a title",
+        "primaryCategoryRequired": "Please select primary category"
       },
       "inventory": {
         "heading": "Inventory kits",
@@ -438,7 +451,9 @@
           "label": "Product variants",
           "hint": "This ranking will affect the variants' order in your storefront.",
           "alert": "Add options to create variants.",
-          "tip": "Variants left unchecked won't be created. You can always create and edit variants afterwards but this list fits the variations in your product options."
+          "tip": "Add images and SKUs to your variants. If you don't need certain variants, leave them unchecked and they won't be created.",
+          "media": "Media",
+          "searchPlaceholder": "Search table"
         },
         "productOptions": {
           "label": "Product options",
@@ -514,6 +529,7 @@
       "deleteWarningWithThumbnail_other": "You are about to delete {{count}} images including the thumbnail. This action cannot be undone.",
       "thumbnailTooltip": "Thumbnail",
       "galleryLabel": "Gallery",
+      "editLabel": "Edit",
       "downloadImageLabel": "Download current image",
       "deleteImageLabel": "Delete current image",
       "emptyState": {
@@ -567,6 +583,13 @@
       "categories": {
         "label": "Categories"
       },
+      "primaryCategory": {
+        "label": "Primary category",
+        "tooltip": "Primary category could define attributes that apply to this product."
+      },
+      "secondaryCategories": {
+        "label": "Secondary categories"
+      },
       "tags": {
         "label": "Tags"
       },
@@ -579,6 +602,41 @@
       },
       "material": {
         "label": "Material"
+      },
+      "attributes": {
+        "size": {
+          "label": "Size",
+          "tooltip": "Select the available sizes for this product",
+          "placeholder": "Select value(s)"
+        },
+        "brand": {
+          "label": "Brand",
+          "tooltip": "Select the brand for this product",
+          "placeholder": "Select value"
+        },
+        "articleNumber": {
+          "label": "Article number",
+          "tooltip": "Enter the article number for this product",
+          "placeholder": "Enter value"
+        },
+        "color": {
+          "label": "Color (Optional)",
+          "tooltip": "Select the available colors for this product",
+          "placeholder": "Select value(s)"
+        },
+        "useForVariants": {
+          "label": "Use for variants",
+          "description": "When checked, we will create variants with this attribute"
+        },
+        "selectValuePlaceholder": "Select value",
+        "enterValuePlaceholder": "Enter value",
+        "requiredTooltip": "This attribute is required by the admin. You must add value(s) for it.",
+        "validation": {
+          "required": "{{name}} is required",
+          "requiredSelect": "This attribute is required by the admin. Please select value.",
+          "requiredSelectMultiple": "This attribute is required by the admin. Please select value(s).",
+          "requiredEnter": "This attribute is required by the admin. Please enter value."
+        }
       },
       "width": {
         "label": "Width"

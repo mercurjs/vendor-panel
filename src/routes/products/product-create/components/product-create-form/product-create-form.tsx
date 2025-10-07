@@ -275,7 +275,6 @@ export const ProductCreateForm = ({
       selectedValues: Array<{ id: string; value: string }>
     }> = []
 
-    // Find attributes marked for variants
     allAttributes?.forEach((attr: any) => {
       if (attr.ui_component === 'multivalue') {
         const useForVariantsField = `${attr.handle}UseForVariants`

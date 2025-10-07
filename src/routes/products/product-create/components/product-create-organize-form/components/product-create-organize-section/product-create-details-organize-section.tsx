@@ -74,6 +74,29 @@ export const ProductCreateOrganizationSection = ({
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Form.Field
           control={form.control}
+          name="tags"
+          render={({ field }) => {
+            return (
+              <Form.Item>
+                <Form.Label optional>
+                  {t("products.fields.tags.label")}
+                </Form.Label>
+                <Form.Control>
+                  <Combobox
+                    {...field}
+                    options={tags.options}
+                    searchValue={tags.searchValue}
+                    onSearchValueChange={tags.onSearchValueChange}
+                    fetchNextPage={tags.fetchNextPage}
+                  />
+                </Form.Control>
+                <Form.ErrorMessage />
+              </Form.Item>
+            )
+          }}
+        />
+        <Form.Field
+          control={form.control}
           name="type_id"
           render={({ field }) => {
             return (
@@ -95,6 +118,44 @@ export const ProductCreateOrganizationSection = ({
             )
           }}
         />
+      </div>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <Form.Field
+          control={form.control}
+          name="categories"
+          render={({ field }) => {
+            return (
+              <Form.Item>
+                <Form.Label tooltip={t("products.fields.primaryCategory.tooltip")}>
+                  {t("products.fields.primaryCategory.label")}
+                </Form.Label>
+                <Form.Control>
+                  <CategoryCombobox {...field} />
+                </Form.Control>
+                <Form.ErrorMessage />
+              </Form.Item>
+            )
+          }}
+        />
+        <Form.Field
+          control={form.control}
+          name="secondary_categories"
+          render={({ field }) => {
+            return (
+              <Form.Item>
+                <Form.Label optional>
+                  {t("products.fields.secondaryCategories.label")}
+                </Form.Label>
+                <Form.Control>
+                  <CategoryCombobox {...field} value={field.value || []} />
+                </Form.Control>
+                <Form.ErrorMessage />
+              </Form.Item>
+            )
+          }}
+        />
+      </div>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Form.Field
           control={form.control}
           name="collection_id"
@@ -111,49 +172,6 @@ export const ProductCreateOrganizationSection = ({
                     searchValue={collections.searchValue}
                     onSearchValueChange={collections.onSearchValueChange}
                     fetchNextPage={collections.fetchNextPage}
-                  />
-                </Form.Control>
-                <Form.ErrorMessage />
-              </Form.Item>
-            )
-          }}
-        />
-      </div>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <Form.Field
-          control={form.control}
-          name="categories"
-          render={({ field }) => {
-            return (
-              <Form.Item>
-                <Form.Label optional>
-                  {t("products.fields.categories.label")}
-                </Form.Label>
-                <Form.Control>
-                  <CategoryCombobox {...field} />
-                  {/* <CategorySelect  /> */}
-                </Form.Control>
-                <Form.ErrorMessage />
-              </Form.Item>
-            )
-          }}
-        />
-        <Form.Field
-          control={form.control}
-          name="tags"
-          render={({ field }) => {
-            return (
-              <Form.Item>
-                <Form.Label optional>
-                  {t("products.fields.tags.label")}
-                </Form.Label>
-                <Form.Control>
-                  <Combobox
-                    {...field}
-                    options={tags.options}
-                    searchValue={tags.searchValue}
-                    onSearchValueChange={tags.onSearchValueChange}
-                    fetchNextPage={tags.fetchNextPage}
                   />
                 </Form.Control>
                 <Form.ErrorMessage />

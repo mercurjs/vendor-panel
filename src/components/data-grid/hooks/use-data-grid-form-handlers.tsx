@@ -216,6 +216,8 @@ export function convertArrayToPrimitive(
       return values.map(convertToBoolean)
     case "text":
       return values.map(covertToString)
+    case "media":
+      return values // Media data is already in the correct format
     default:
       throw new Error(`Unsupported target type "${type}".`)
   }

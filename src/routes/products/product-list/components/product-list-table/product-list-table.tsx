@@ -93,7 +93,7 @@ export const ProductListTable = () => {
           <Button size="small" variant="secondary" asChild>
             <Link to="import">{t("actions.import")}</Link>
           </Button>
-          <Button size="small" variant="secondary" asChild>
+          <Button size="small" variant="primary" asChild>
             <Link to="create">{t("actions.create")}</Link>
           </Button>
         </div>

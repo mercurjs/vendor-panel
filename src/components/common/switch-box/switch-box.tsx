@@ -1,5 +1,5 @@
 import { Switch } from "@medusajs/ui"
-import { ReactNode } from "react"
+import { ReactNode, forwardRef } from "react"
 import { ControllerProps, FieldPath, FieldValues } from "react-hook-form"
 
 import { Form } from "../../common/form"
@@ -7,7 +7,7 @@ import { Form } from "../../common/form"
 interface HeadlessControllerProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> extends Omit<ControllerProps<TFieldValues, TName>, "render"> {}
+> extends Omit<ControllerProps<TFieldValues, TName>, "render"> { }
 
 interface SwitchBoxProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -30,7 +30,7 @@ interface SwitchBoxProps<
  * Use this component whenever a design calls for wrapping the Switch component
  * in a container with a label and description.
  */
-export const SwitchBox = <
+export const SwitchBox = forwardRef(<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
@@ -40,7 +40,7 @@ export const SwitchBox = <
   tooltip,
   onCheckedChange,
   ...props
-}: SwitchBoxProps<TFieldValues, TName>) => {
+}: SwitchBoxProps<TFieldValues, TName>, _ref: any) => {
   return (
     <Form.Field
       {...props}
@@ -71,4 +71,6 @@ export const SwitchBox = <
       }}
     />
   )
-}
+})
+
+SwitchBox.displayName = "SwitchBox"

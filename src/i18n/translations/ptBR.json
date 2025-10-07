@@ -11,6 +11,13 @@
     "apply": "Aplicar",
     "range": "Intervalo",
     "search": "Buscar",
+    "searchOptions": "Pesquisar opções",
+    "noOptionsFound": "Nenhuma opção encontrada.",
+    "noOptionsAvailable": "Nenhuma opção disponível.",
+    "yes": "Sim",
+    "no": "Não",
+    "true": "Verdadeiro",
+    "false": "Falso",
     "of": "de",
     "results": "resultados",
     "pages": "páginas",
@@ -23,6 +30,7 @@
     "tip": "Dica",
     "error": "Erro",
     "select": "Selecionar",
+    "selectValues": "Selecionar valor(es)",
     "selected": "Selecionado",
     "enabled": "Habilitado",
     "disabled": "Desabilitado",
@@ -399,12 +407,15 @@
         "details": "Detalhes",
         "organize": "Organizar",
         "variants": "Variantes",
-        "inventory": "Kits de inventário"
+        "inventory": "Kits de inventário",
+        "attributes": "Atributos"
       },
       "errors": {
         "variants": "Por favor, selecione pelo menos uma variante.",
         "options": "Por favor, crie pelo menos uma opção.",
-        "uniqueSku": "SKU deve ser único."
+        "uniqueSku": "SKU deve ser único.",
+        "titleRequired": "Por favor, insira um título",
+        "primaryCategoryRequired": "Por favor, selecione a categoria principal"
       },
       "inventory": {
         "heading": "Kits de inventário",
@@ -551,6 +562,13 @@
       "categories": {
         "label": "Categorias"
       },
+      "primaryCategory": {
+        "label": "Categoria principal",
+        "tooltip": "A categoria principal pode definir atributos que se aplicam a este produto."
+      },
+      "secondaryCategories": {
+        "label": "Categorias secundárias"
+      },
       "tags": {
         "label": "Tags"
       },
@@ -563,6 +581,40 @@
       },
       "material": {
         "label": "Material"
+      },
+      "attributes": {
+        "size": {
+          "label": "Tamanho",
+          "tooltip": "Selecione os tamanhos disponíveis para este produto",
+          "placeholder": "Selecionar valor(es)"
+        },
+        "brand": {
+          "label": "Marca",
+          "tooltip": "Selecione a marca para este produto",
+          "placeholder": "Selecionar valor"
+        },
+        "articleNumber": {
+          "label": "Número do artigo",
+          "tooltip": "Digite o número do artigo para este produto",
+          "placeholder": "Digitar valor"
+        },
+        "color": {
+          "label": "Cor (opcional)",
+          "tooltip": "Selecione as cores disponíveis para este produto",
+          "placeholder": "Selecionar valor(es)"
+        },
+        "useForVariants": {
+          "label": "Usar para variantes",
+          "description": "Quando marcado, criaremos variantes com este atributo"
+        },
+        "requiredTooltip": "Este atributo é obrigatório pelo administrador. Você deve adicionar valor(es) para ele.",
+        "enterValuePlaceholder": "Inserir valor",
+        "validation": {
+          "required": "{{name}} é obrigatório",
+          "requiredSelect": "Este atributo é obrigatório pelo administrador. Por favor, selecione um valor.",
+          "requiredSelectMultiple": "Este atributo é obrigatório pelo administrador. Por favor, selecione valor(es).",
+          "requiredEnter": "Este atributo é obrigatório pelo administrador. Por favor, insira um valor."
+        }
       },
       "width": {
         "label": "Largura"

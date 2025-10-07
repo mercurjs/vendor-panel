@@ -11,6 +11,13 @@
     "apply": "Zastosuj",
     "range": "Zakres",
     "search": "Szukaj",
+    "searchOptions": "Szukaj w opcjach",
+    "noOptionsFound": "Nie znaleziono opcji.",
+    "noOptionsAvailable": "Brak dostępnych opcji.",
+    "yes": "Tak",
+    "no": "Nie",
+    "true": "Prawda",
+    "false": "Fałsz",
     "of": "z",
     "results": "wyników",
     "pages": "strony",
@@ -23,6 +30,7 @@
     "tip": "Wskazówka",
     "error": "Błąd",
     "select": "Wybierz",
+    "selectValues": "Wybierz wartość/wartości",
     "selected": "Wybrany",
     "enabled": "Włączony",
     "disabled": "Wyłączony",
@@ -399,12 +407,15 @@
         "details": "Szczegóły",
         "organize": "Organizacja",
         "variants": "Warianty",
-        "inventory": "Zestawy magazynowe"
+        "inventory": "Zestawy magazynowe",
+        "attributes": "Atrybuty"
       },
       "errors": {
         "variants": "Wybierz co najmniej jeden wariant.",
         "options": "Utwórz co najmniej jedną opcję.",
-        "uniqueSku": "SKU musi być unikalny."
+        "uniqueSku": "SKU musi być unikalny.",
+        "titleRequired": "Wprowadź tytuł",
+        "primaryCategoryRequired": "Wybierz główną kategorię"
       },
       "inventory": {
         "heading": "Zestawy magazynowe",
@@ -551,6 +562,13 @@
       "categories": {
         "label": "Kategorie"
       },
+      "primaryCategory": {
+        "label": "Główna kategoria",
+        "tooltip": "Główna kategoria może definiować atrybuty, które mają zastosowanie do tego produktu."
+      },
+      "secondaryCategories": {
+        "label": "Kategorie drugorzędne"
+      },
       "tags": {
         "label": "Tagi"
       },
@@ -563,6 +581,40 @@
       },
       "material": {
         "label": "Materiał"
+      },
+      "attributes": {
+        "size": {
+          "label": "Rozmiar",
+          "tooltip": "Wybierz dostępne rozmiary dla tego produktu",
+          "placeholder": "Wybierz wartość/wartości"
+        },
+        "brand": {
+          "label": "Marka",
+          "tooltip": "Wybierz markę dla tego produktu",
+          "placeholder": "Wybierz wartość"
+        },
+        "articleNumber": {
+          "label": "Numer artykułu",
+          "tooltip": "Wprowadź numer artykułu dla tego produktu",
+          "placeholder": "Wprowadź wartość"
+        },
+        "color": {
+          "label": "Kolor (opcjonalnie)",
+          "tooltip": "Wybierz dostępne kolory dla tego produktu",
+          "placeholder": "Wybierz wartość/wartości"
+        },
+        "useForVariants": {
+          "label": "Użyj dla wariantów",
+          "description": "Gdy zaznaczone, utworzymy warianty z tym atrybutem"
+        },
+        "requiredTooltip": "Ten atrybut jest wymagany przez administratora. Musisz dodać wartość/wartości dla niego.",
+        "enterValuePlaceholder": "Wprowadź wartość",
+        "validation": {
+          "required": "{{name}} jest wymagane",
+          "requiredSelect": "Ten atrybut jest wymagany przez administratora. Proszę wybrać wartość.",
+          "requiredSelectMultiple": "Ten atrybut jest wymagany przez administratora. Proszę wybrać wartość/wartości.",
+          "requiredEnter": "Ten atrybut jest wymagany przez administratora. Proszę wprowadzić wartość."
+        }
       },
       "width": {
         "label": "Szerokość"

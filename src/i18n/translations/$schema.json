@@ -172,6 +172,36 @@
         },
         "noMoreData": {
           "type": "string"
+        },
+        "searchOptions": {
+          "type": "string"
+        },
+        "noOptionsFound": {
+          "type": "string"
+        },
+        "noOptionsAvailable": {
+          "type": "string"
+        },
+        "yes": {
+          "type": "string"
+        },
+        "no": {
+          "type": "string"
+        },
+        "true": {
+          "type": "string"
+        },
+        "false": {
+          "type": "string"
+        },
+        "selectValues": {
+          "type": "string"
+        },
+        "increment": {
+          "type": "string"
+        },
+        "decrement": {
+          "type": "string"
         }
       },
       "required": [
@@ -229,7 +259,17 @@
         "unsavedChangesDescription",
         "includesTaxTooltip",
         "excludesTaxTooltip",
-        "noMoreData"
+        "noMoreData",
+        "searchOptions",
+        "noOptionsFound",
+        "noOptionsAvailable",
+        "yes",
+        "no",
+        "true",
+        "false",
+        "selectValues",
+        "increment",
+        "decrement"
       ],
       "additionalProperties": false
     },
@@ -1564,9 +1604,12 @@
                 },
                 "inventory": {
                   "type": "string"
+                },
+                "attributes": {
+                  "type": "string"
                 }
               },
-              "required": ["details", "organize", "variants", "inventory"],
+              "required": ["details", "organize", "variants", "inventory", "attributes"],
               "additionalProperties": false
             },
             "errors": {
@@ -1580,9 +1623,15 @@
                 },
                 "uniqueSku": {
                   "type": "string"
+                },
+                "titleRequired": {
+                  "type": "string"
+                },
+                "primaryCategoryRequired": {
+                  "type": "string"
                 }
               },
-              "required": ["variants", "options", "uniqueSku"],
+              "required": ["variants", "options", "uniqueSku", "titleRequired", "primaryCategoryRequired"],
               "additionalProperties": false
             },
             "inventory": {
@@ -1655,9 +1704,15 @@
                     },
                     "tip": {
                       "type": "string"
+                    },
+                    "media": {
+                      "type": "string"
+                    },
+                    "searchPlaceholder": {
+                      "type": "string"
                     }
                   },
-                  "required": ["label", "hint", "alert", "tip"],
+                  "required": ["label", "hint", "alert", "tip", "media", "searchPlaceholder"],
                   "additionalProperties": false
                 },
                 "productOptions": {
@@ -1933,6 +1988,9 @@
             "galleryLabel": {
               "type": "string"
             },
+            "editLabel": {
+              "type": "string"
+            },
             "downloadImageLabel": {
               "type": "string"
             },
@@ -1973,6 +2031,7 @@
             "deleteWarningWithThumbnail_other",
             "thumbnailTooltip",
             "galleryLabel",
+            "editLabel",
             "downloadImageLabel",
             "deleteImageLabel",
             "emptyState",
@@ -2113,6 +2172,29 @@
               "additionalProperties": false
             },
             "categories": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                }
+              },
+              "required": ["label"],
+              "additionalProperties": false
+            },
+            "primaryCategory": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "tooltip": {
+                  "type": "string"
+                }
+              },
+              "required": ["label", "tooltip"],
+              "additionalProperties": false
+            },
+            "secondaryCategories": {
               "type": "object",
               "properties": {
                 "label": {
@@ -2273,6 +2355,128 @@
               },
               "required": ["label"],
               "additionalProperties": false
+            },
+            "attributes": {
+              "type": "object",
+              "properties": {
+                "size": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "tooltip": {
+                      "type": "string"
+                    },
+                    "placeholder": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["label", "tooltip", "placeholder"],
+                  "additionalProperties": false
+                },
+                "brand": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "tooltip": {
+                      "type": "string"
+                    },
+                    "placeholder": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["label", "tooltip", "placeholder"],
+                  "additionalProperties": false
+                },
+                "articleNumber": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "tooltip": {
+                      "type": "string"
+                    },
+                    "placeholder": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["label", "tooltip", "placeholder"],
+                  "additionalProperties": false
+                },
+                "color": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "tooltip": {
+                      "type": "string"
+                    },
+                    "placeholder": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["label", "tooltip", "placeholder"],
+                  "additionalProperties": false
+                },
+                "useForVariants": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["label", "description"],
+                  "additionalProperties": false
+                },
+                "selectValuePlaceholder": {
+                  "type": "string"
+                },
+                "enterValuePlaceholder": {
+                  "type": "string"
+                },
+                "requiredTooltip": {
+                  "type": "string"
+                },
+                "validation": {
+                  "type": "object",
+                  "properties": {
+                    "required": {
+                      "type": "string"
+                    },
+                    "requiredSelect": {
+                      "type": "string"
+                    },
+                    "requiredSelectMultiple": {
+                      "type": "string"
+                    },
+                    "requiredEnter": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["required", "requiredSelect", "requiredSelectMultiple", "requiredEnter"],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "size",
+                "brand",
+                "articleNumber",
+                "color",
+                "useForVariants",
+                "selectValuePlaceholder",
+                "enterValuePlaceholder",
+                "requiredTooltip",
+                "validation"
+              ],
+              "additionalProperties": false
             }
           },
           "required": [
@@ -2296,7 +2500,8 @@
             "options",
             "variants",
             "mid_code",
-            "hs_code"
+            "hs_code",
+            "attributes"
           ],
           "additionalProperties": false
         },

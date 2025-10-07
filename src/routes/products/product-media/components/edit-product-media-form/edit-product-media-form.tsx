@@ -250,7 +250,7 @@ export const EditProductMediaForm = ({ product }: ProductMediaViewProps) => {
                         media={fields.find((m) => m.field_id === activeId)!}
                         checked={
                           !!selection[
-                            fields.find((m) => m.field_id === activeId)!.id!
+                          fields.find((m) => m.field_id === activeId)!.id!
                           ]
                         }
                       />
@@ -355,7 +355,7 @@ interface MediaGridItemProps {
   onCheckedChange: (value: boolean) => void
 }
 
-const MediaGridItem = ({
+export const MediaGridItem = ({
   media,
   checked,
   onCheckedChange,

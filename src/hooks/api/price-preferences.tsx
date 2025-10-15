@@ -74,11 +74,11 @@ export const useUpsertPricePreference = (
   >
 ) => {
   return useMutation({
-    mutationFn: (payload) => {
+    mutationFn: (payload: HttpTypes.AdminUpdatePricePreference | HttpTypes.AdminCreatePricePreference) => {
       if (id) {
-        return sdk.admin.pricePreference.update(id, payload, query)
+        return sdk.admin.pricePreference.update(id, payload as HttpTypes.AdminUpdatePricePreference, query)
       }
-      return sdk.admin.pricePreference.create(payload, query)
+      return sdk.admin.pricePreference.create(payload as HttpTypes.AdminCreatePricePreference, query)
     },
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({

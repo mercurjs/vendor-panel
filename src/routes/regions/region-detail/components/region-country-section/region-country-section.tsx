@@ -34,7 +34,7 @@ export const RegionCountrySection = ({ region }: RegionCountrySectionProps) => {
     prefix: PREFIX,
   })
   const { countries, count } = useCountries({
-    countries: region.countries || [],
+    countries: region.countries as any|| [],
     ...searchParams,
   })
 
@@ -42,7 +42,7 @@ export const RegionCountrySection = ({ region }: RegionCountrySectionProps) => {
 
   const { table } = useDataTable({
     data: countries || [],
-    columns,
+    columns: columns as any,
     count,
     enablePagination: true,
     enableRowSelection: true,
@@ -116,7 +116,7 @@ export const RegionCountrySection = ({ region }: RegionCountrySectionProps) => {
         />
       </div>
       <_DataTable
-        table={table}
+        table={table as any}
         columns={columns}
         pageSize={PAGE_SIZE}
         count={count}
@@ -173,7 +173,7 @@ const CountryActions = ({
 
     await mutateAsync(
       {
-        countries: payload,
+        countries: payload as any,
       },
       {
         onSuccess: () => {

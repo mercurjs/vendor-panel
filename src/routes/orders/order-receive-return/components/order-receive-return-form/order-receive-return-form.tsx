@@ -22,6 +22,7 @@ import {
 import { getStylizedAmount } from "../../../../../lib/money-amount-helpers"
 import { ReceiveReturnSchema } from "./constants"
 import DismissedQuantity from "./dismissed-quantity"
+import { FetchError } from "@medusajs/js-sdk"
 
 type OrderAllocateItemsFormProps = {
   order: AdminOrder
@@ -133,12 +134,10 @@ export function OrderReceiveReturnForm({
 
       toast.success(t("general.success"), {
         description: t("orders.returns.receive.toast.success"),
-        dismissLabel: t("actions.close"),
       })
     } catch (e: any) {
       toast.error(t("general.error"), {
-        description: e.message,
-        dismissLabel: t("actions.close"),
+        description: e instanceof FetchError ? e.message : "An unknown error occurred",
       })
     }
   })

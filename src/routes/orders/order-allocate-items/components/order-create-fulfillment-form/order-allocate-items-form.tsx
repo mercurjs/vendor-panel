@@ -19,6 +19,7 @@ import { useStockLocations } from "../../../../../hooks/api/stock-locations"
 import { queryClient } from "../../../../../lib/query-client"
 import { AllocateItemsSchema } from "./constants"
 import { OrderAllocateItemsItem } from "./order-allocate-items-item"
+import { FetchError } from "@medusajs/js-sdk"
 
 type OrderAllocateItemsFormProps = {
   order: AdminOrder
@@ -103,12 +104,10 @@ export function OrderAllocateItemsForm({ order }: OrderAllocateItemsFormProps) {
 
       toast.success(t("general.success"), {
         description: t("orders.allocateItems.toast.created"),
-        dismissLabel: t("actions.close"),
       })
     } catch (e) {
       toast.error(t("general.error"), {
-        description: e.message,
-        dismissLabel: t("actions.close"),
+        description: e instanceof FetchError ? e.message : "An unknown error occurred",
       })
     }
   })

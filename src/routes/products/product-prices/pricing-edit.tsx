@@ -10,7 +10,6 @@ import { RouteFocusModal, useRouteModal } from "../../../components/modals"
 import { KeyboundForm } from "../../../components/utilities/keybound-form"
 import {
   useUpdateProductVariant,
-  useUpdateProductVariantsBatch,
 } from "../../../hooks/api/products"
 import { useRegions } from "../../../hooks/api/regions"
 import { castNumber } from "../../../lib/cast-number"

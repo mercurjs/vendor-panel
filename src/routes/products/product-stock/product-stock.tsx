@@ -68,10 +68,7 @@ export const ProductStock = () => {
         </RouteFocusModal.Description>
         <Suspense fallback={<ProductStockFallback />}>
           <Await resolve={{ allVariants, locations: stock_locations }}>
-            {(data: {
-              variants: HttpTypes.AdminProductVariant[]
-              locations: HttpTypes.AdminStockLocation[]
-            }) => {
+            {() => {
               return (
                 <ProductStockForm
                   variants={allVariants || []}

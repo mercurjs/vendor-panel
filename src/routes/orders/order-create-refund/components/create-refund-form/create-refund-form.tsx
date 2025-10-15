@@ -35,7 +35,6 @@ const CreateRefundSchema = zod.object({
 
 export const CreateRefundForm = ({
   order,
-  refundReasons,
 }: CreateRefundFormProps) => {
   const { t } = useTranslation()
   const { handleSuccess } = useRouteModal()

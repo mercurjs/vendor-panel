@@ -58,7 +58,7 @@ export const OrderEditCreateForm = ({
 
   const prompt = usePrompt()
 
-  const handleSubmit = form.handleSubmit(async (data) => {
+  const handleSubmit = form.handleSubmit(async () => {
     try {
       const res = await prompt({
         title: t("general.areYouSure"),

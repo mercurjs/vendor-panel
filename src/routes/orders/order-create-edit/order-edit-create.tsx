@@ -1,5 +1,5 @@
 import { toast } from "@medusajs/ui"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 
@@ -41,7 +41,7 @@ export const OrderEditCreate = () => {
       IS_REQUEST_RUNNING = true
 
       try {
-        const { order } = await createOrderEdit({
+        await createOrderEdit({
           order_id: preview.id,
         })
       } catch (e) {

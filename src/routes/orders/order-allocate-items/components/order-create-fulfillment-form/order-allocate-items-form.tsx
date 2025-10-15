@@ -54,7 +54,6 @@ export function OrderAllocateItemsForm({ order }: OrderAllocateItemsFormProps) {
   }, [itemsToAllocate, filterTerm])
 
   // TODO - empty state UI
-  const noItemsToAllocate = !itemsToAllocate.length
 
   const form = useForm<zod.infer<typeof AllocateItemsSchema>>({
     defaultValues: {

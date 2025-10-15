@@ -93,7 +93,6 @@ const SettingsSidebar = () => {
   const { getMenu } = useDashboardExtension()
 
   const routes = useSettingRoutes()
-  const developerRoutes = useDeveloperRoutes()
   const myAccountRoutes = useMyAccountRoutes()
   const extensionRoutes = getMenu("settingsExtensions")
 

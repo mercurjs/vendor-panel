@@ -21,12 +21,11 @@ import {
   useOrderChanges,
   useOrderLineItems,
 } from "../../../../../hooks/api"
-import { useCancelClaim, useClaims } from "../../../../../hooks/api/claims"
+import { useCancelClaim } from "../../../../../hooks/api/claims"
 import {
   useCancelExchange,
-  useExchanges,
 } from "../../../../../hooks/api/exchanges"
-import { useCancelReturn, useReturns } from "../../../../../hooks/api/returns"
+import { useCancelReturn } from "../../../../../hooks/api/returns"
 import { useDate } from "../../../../../hooks/use-date"
 import { getFormattedAddress } from "../../../../../lib/addresses"
 import { getStylizedAmount } from "../../../../../lib/money-amount-helpers"
@@ -41,7 +40,8 @@ type OrderTimelineProps = {
 /**
  * Arbitrary high limit to ensure all notes are fetched
  */
-const NOTE_LIMIT = 9999
+// const NOTE_LIMIT = 9999
+
 
 /**
  * Order Changes that are not related to RMA flows

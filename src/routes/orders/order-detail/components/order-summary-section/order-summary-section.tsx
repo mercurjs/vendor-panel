@@ -4,9 +4,6 @@ import { Link } from "react-router-dom"
 
 import {
   ArrowLongRight,
-  ArrowPath,
-  ArrowUturnLeft,
-  ExclamationCircle,
   TriangleDownMini,
 } from "@medusajs/icons"
 import {
@@ -267,21 +264,20 @@ export const OrderSummarySection = ({
 }
 
 const Header = ({
-  order,
-  orderPreview,
+  // order,
+  // orderPreview,
 }: {
   order: AdminOrder
   orderPreview?: AdminOrderPreview
 }) => {
   const { t } = useTranslation()
 
-  // is ture if there is no shipped items ATM
-  const shouldDisableReturn = order.items.every(
-    (i) => !(getReturnableQuantity(i) > 0)
-  )
-
-  const isOrderEditActive = orderPreview?.order_change?.change_type === "edit"
-
+    // is ture if there is no shipped items ATM
+    // const shouldDisableReturn = order.items.every(
+    //   (i) => !(getReturnableQuantity(i) > 0)
+    // )
+  
+    // const isOrderEditActive = orderPreview?.order_change?.change_type === "edit"
   return (
     <div className="flex items-center justify-between px-6 py-4">
       <Heading level="h2">{t("fields.summary")}</Heading>

@@ -1,4 +1,3 @@
-import React from "react"
 import { z } from "zod"
 import { useFieldArray, UseFormReturn } from "react-hook-form"
 import { Button, Heading, IconButton, Input, Label } from "@medusajs/ui"

@@ -7,7 +7,9 @@ export const useOrderTableFilters = (): Filter[] => {
 
   let filters: Filter[] = []
 
-  const paymentStatusFilter: Filter = {
+  // Note: paymentStatusFilter is defined but not currently used
+  // @ts-ignore - Filter preserved for future use
+  const _paymentStatusFilter: Filter = {
     key: "payment_status",
     label: t("orders.payment.statusLabel"),
     type: "select",

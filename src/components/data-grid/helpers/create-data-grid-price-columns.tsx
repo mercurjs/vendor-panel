@@ -28,7 +28,7 @@ export const createDataGridPriceColumns = <
   TFieldValues extends FieldValues,
 >({
   currencies,
-  regions,
+  regions: _regions,
   pricePreferences,
   isReadyOnly,
   getFieldName,

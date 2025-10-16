@@ -84,9 +84,9 @@ export function OrderAllocateItemsForm({ order }: OrderAllocateItemsFormProps) {
       const promises = payload.map(([itemId, inventoryId, quantity]) =>
         allocateItems({
           location_id: data.location_id,
-          inventory_item_id: inventoryId,
-          line_item_id: itemId,
-          quantity,
+          inventory_item_id: inventoryId.toString(),
+          line_item_id: itemId.toString(),
+          quantity: typeof quantity === 'string' ? Number(quantity) : quantity,
         })
       )
 

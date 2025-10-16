@@ -49,20 +49,6 @@ const useSettingRoutes = (): INavItem[] => {
   )
 }
 
-const useDeveloperRoutes = (): INavItem[] => {
-  const { t } = useTranslation()
-
-  return useMemo(
-    () => [
-      {
-        label: t("apiKeyManagement.domain.secret"),
-        to: "/settings/secret-api-keys",
-      },
-    ],
-    [t]
-  )
-}
-
 const useMyAccountRoutes = (): INavItem[] => {
   const { t } = useTranslation()
 

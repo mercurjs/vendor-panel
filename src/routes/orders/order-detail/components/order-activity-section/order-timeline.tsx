@@ -391,8 +391,9 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
         continue
       }
 
+      const translationKey = `orders.activity.events.edit.${edit.status}` as const
       items.push({
-        title: t(`orders.activity.events.edit.${edit.status}`, {
+        title: t(translationKey as any, {
           editId: edit.id.slice(-7),
         }),
         timestamp:

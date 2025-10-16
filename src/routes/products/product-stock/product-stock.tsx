@@ -1,4 +1,3 @@
-import { HttpTypes } from "@medusajs/types"
 import { AnimatePresence } from "motion/react"
 import { Suspense, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"

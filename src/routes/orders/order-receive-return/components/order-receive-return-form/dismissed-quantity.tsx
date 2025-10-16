@@ -13,6 +13,7 @@ import {
   useRemoveDismissItem,
   useUpdateDismissItem,
 } from "../../../../../hooks/api/returns"
+import { FetchError } from "@medusajs/js-sdk"
 
 type DismissedQuantityProps = {
   returnId: string
@@ -107,7 +108,7 @@ function DismissedQuantity({
         }
       }
     } catch (e) {
-      toast.error(e.message)
+      toast.error(e instanceof FetchError ? e.message : "An error occurred")
     }
   }
 

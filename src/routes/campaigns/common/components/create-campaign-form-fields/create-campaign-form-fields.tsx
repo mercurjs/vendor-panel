@@ -19,7 +19,7 @@ import {
   getCurrencySymbol,
 } from "../../../../../lib/data/currencies"
 
-export const CreateCampaignFormFields = ({ form, fieldScope = "" }) => {
+export const CreateCampaignFormFields = ({ form, fieldScope = "" }: { form:any, fieldScope: string }) => {
   const { t } = useTranslation()
   const { store } = useStore()
 

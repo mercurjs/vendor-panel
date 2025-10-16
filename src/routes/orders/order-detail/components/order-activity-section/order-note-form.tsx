@@ -29,7 +29,7 @@ export const OrderNoteForm = ({ order }: OrderNoteFormProps) => {
     resolver: zodResolver(OrderNoteSchema),
   })
 
-  const { mutateAsync, isLoading } = {}
+  const { mutateAsync, isLoading }: { mutateAsync?: any; isLoading?: boolean } = {}
 
   const handleSubmit = form.handleSubmit(async (values) => {
     mutateAsync(

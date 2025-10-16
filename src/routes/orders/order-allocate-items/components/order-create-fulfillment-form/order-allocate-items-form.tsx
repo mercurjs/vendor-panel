@@ -49,8 +49,8 @@ export function OrderAllocateItemsForm({ order }: OrderAllocateItemsFormProps) {
   const filteredItems = useMemo(() => {
     return itemsToAllocate.filter(
       (i) =>
-        i.variant_title.toLowerCase().includes(filterTerm) ||
-        i.product_title.toLowerCase().includes(filterTerm)
+        i.variant_title?.toLowerCase().includes(filterTerm) ||
+        i.product_title?.toLowerCase().includes(filterTerm)
     )
   }, [itemsToAllocate, filterTerm])
 
@@ -149,9 +149,13 @@ export function OrderAllocateItemsForm({ order }: OrderAllocateItemsFormProps) {
 
       const item = itemsToAllocate.find((i) => i.id === lineItem.id)
 
-      item.variant?.inventory_items.forEach((ii, ind) => {
+      if (!item) return
+
+      item.variant?.inventory_items?.forEach((ii, ind) => {
         const num = value || 0
-        const inventory = item.variant?.inventory[ind]
+        const inventory = item.variant?.inventory?.[ind]
+
+        if (!inventory) return
 
         form.setValue(
           `quantity.${lineItem.id}-${inventory.id}`,

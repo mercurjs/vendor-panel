@@ -71,8 +71,8 @@ export const AddReturnItemsTable = ({
     if (q) {
       results = results.filter((i) => {
         return (
-          i.product_title.toLowerCase().includes(q.toLowerCase()) ||
-          i.variant_title.toLowerCase().includes(q.toLowerCase()) ||
+          i.product_title?.toLowerCase().includes(q.toLowerCase()) ||
+          i.variant_title?.toLowerCase().includes(q.toLowerCase()) ||
           i.variant_sku?.toLowerCase().includes(q.toLowerCase())
         )
       })

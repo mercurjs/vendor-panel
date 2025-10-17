@@ -1,6 +1,7 @@
 import { ExtendedAdminProduct } from "../../../../../types/products"
 import { Button, toast } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
+import { useEffect } from "react"
 import * as zod from "zod"
 
 import { Form } from "../../../../../components/common/form"
@@ -15,6 +16,7 @@ import {
 import { useUpdateProduct } from "../../../../../hooks/api/products"
 import { useComboboxData } from "../../../../../hooks/use-combobox-data"
 import { fetchQuery } from "../../../../../lib/client"
+import { AdminProductWithAttributes } from "../../../../../types/products"
 
 type ProductOrganizationFormProps = {
   product: ExtendedAdminProduct
@@ -23,8 +25,8 @@ type ProductOrganizationFormProps = {
 const ProductOrganizationSchema = zod.object({
   type_id: zod.string().nullable(),
   collection_id: zod.string().nullable(),
-  category_ids: zod.string().nullable(),
-  // category_ids: zod.array(zod.string()),
+  primary_category_id: zod.string().nullable(),
+  secondary_category_ids: zod.array(zod.string()),
   tag_ids: zod.array(zod.string()),
 })
 
@@ -98,7 +100,11 @@ export const ProductOrganizationForm = ({
     defaultValues: {
       type_id: product.type_id ?? "",
       collection_id: product.collection_id ?? "",
-      category_ids: product.categories?.[0]?.id || "",
+      primary_category_id: product.categories?.[0]?.id || "",
+      secondary_category_ids:
+        product.secondary_categories
+          ?.map((sc) => sc.category_id)
+          .filter((id) => id !== product.categories?.[0]?.id) || [], // Filter out primary category
       tag_ids: product.tags?.map((t) => t.id) || [],
     },
     schema: ProductOrganizationSchema,
@@ -108,14 +114,43 @@ export const ProductOrganizationForm = ({
 
   const { mutateAsync, isPending } = useUpdateProduct(product.id)
 
+  // Watch for changes in primary category and remove it from secondary categories
+  const primaryCategoryId = form.watch("primary_category_id")
+  useEffect(() => {
+    if (primaryCategoryId) {
+      const currentSecondaryIds = form.getValues("secondary_category_ids")
+      if (currentSecondaryIds?.includes(primaryCategoryId)) {
+        form.setValue(
+          "secondary_category_ids",
+          currentSecondaryIds.filter((id) => id !== primaryCategoryId)
+        )
+      }
+    }
+  }, [primaryCategoryId, form])
+
   const handleSubmit = form.handleSubmit(async (data) => {
+    // Filter out primary category from secondary categories to avoid duplicates
+    const filteredSecondaryCategories = (data.secondary_category_ids || []).filter(
+      (id) => id !== data.primary_category_id
+    )
+
     await mutateAsync(
       {
         type_id: data.type_id || null,
         collection_id: data.collection_id || null,
-        categories: [{ id: data.category_ids || "" }],
+        categories: data.primary_category_id
+          ? [{ id: data.primary_category_id }]
+          : [],
         tags: data.tag_ids?.map((t) => ({ id: t })),
-      },
+        additional_data: {
+          secondary_categories: [
+            {
+              product_id: product.id,
+              secondary_categories_ids: filteredSecondaryCategories,
+            },
+          ],
+        },
+      } as any,
       {
         onSuccess: ({ product }) => {
           toast.success(
@@ -185,19 +220,47 @@ export const ProductOrganizationForm = ({
             />
             <Form.Field
               control={form.control}
-              name="category_ids"
+              name="primary_category_id"
               render={({ field }) => {
                 return (
                   <Form.Item>
                     <Form.Label optional>
-                      {t("products.fields.categories.label")}
+                      {t("products.fields.primaryCategory.label")}
                     </Form.Label>
                     <Form.Control>
-                      {/* <CategoryCombobox {...field} /> */}
                       <Combobox
                         {...field}
                         multiple={false}
                         options={categories.options}
+                        onSearchValueChange={categories.onSearchValueChange}
+                        searchValue={categories.searchValue}
+                      />
+                    </Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                )
+              }}
+            />
+            <Form.Field
+              control={form.control}
+              name="secondary_category_ids"
+              render={({ field }) => {
+                // Filter out primary category from secondary categories options
+                const primaryCategoryId = form.watch("primary_category_id")
+                const filteredOptions = categories.options.filter(
+                  (option) => option.value !== primaryCategoryId
+                )
+
+                return (
+                  <Form.Item>
+                    <Form.Label optional>
+                      {t("products.fields.secondaryCategories.label")}
+                    </Form.Label>
+                    <Form.Control>
+                      <Combobox
+                        {...field}
+                        multiple
+                        options={filteredOptions}
                         onSearchValueChange={categories.onSearchValueChange}
                         searchValue={categories.searchValue}
                       />

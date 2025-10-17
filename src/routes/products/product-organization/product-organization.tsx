@@ -11,7 +11,7 @@ export const ProductOrganization = () => {
   const { t } = useTranslation()
 
   const { product, isLoading, isError, error } = useProduct(id!, {
-    fields: "*categories",
+    fields: "*categories,*secondary_categories",
   })
 
   if (isError) {

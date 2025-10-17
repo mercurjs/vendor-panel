@@ -6,6 +6,8 @@ import { Link } from "react-router-dom"
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { SectionRow } from "../../../../../components/common/section"
 import { useDashboardExtension } from "../../../../../extensions"
+import { AdminProductWithAttributes } from "../../../../../types/products"
+import { useProductCategories } from "../../../../../hooks/api/categories"
 
 type ProductOrganizationSectionProps = {
   product: ExtendedAdminProduct
@@ -16,6 +18,19 @@ export const ProductOrganizationSection = ({
 }: ProductOrganizationSectionProps) => {
   const { t } = useTranslation()
   const { getDisplays } = useDashboardExtension()
+
+  // Fetch ALL categories and then filter to show only secondary ones
+  const { product_categories: allCategories } = useProductCategories()
+  
+  const primaryCategoryId = product.categories?.[0]?.id
+  const secondaryCategoryIds = product.secondary_categories
+    ?.map((sc) => sc.category_id)
+    .filter((id) => id !== primaryCategoryId) || []
+  
+  // Filter fetched categories to only include those in secondaryCategoryIds
+  const secondaryCategories = allCategories?.filter((cat) =>
+    secondaryCategoryIds.includes(cat.id)
+  )
 
   return (
     <Container className="divide-y p-0">
@@ -75,14 +90,26 @@ export const ProductOrganizationSection = ({
       />
 
       <SectionRow
-        title={t("fields.categories")}
+        title={t("products.fields.primaryCategory.label")}
         value={
-          product.categories?.length
-            ? product.categories.map((pcat) => (
+          product.categories?.[0] ? (
+            <OrganizationTag
+              label={product.categories[0].name}
+              to={`/categories/${product.categories[0].id}`}
+            />
+          ) : undefined
+        }
+      />
+
+      <SectionRow
+        title={t("products.fields.secondaryCategories.label")}
+        value={
+          secondaryCategories?.length
+            ? secondaryCategories.map((category: any) => (
                 <OrganizationTag
-                  key={pcat.id}
-                  label={pcat.name}
-                  to={`/categories/${pcat.id}`}
+                  key={category.id}
+                  label={category.name}
+                  to={`/categories/${category.id}`}
                 />
               ))
             : undefined

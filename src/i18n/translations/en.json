@@ -568,6 +568,12 @@
       "categories": {
         "label": "Categories"
       },
+      "primaryCategory": {
+        "label": "Primary Category"
+      },
+      "secondaryCategories": {
+        "label": "Secondary Categories"
+      },
       "tags": {
         "label": "Tags"
       },

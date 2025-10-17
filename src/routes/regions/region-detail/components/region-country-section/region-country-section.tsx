@@ -12,9 +12,11 @@ import { ActionMenu } from "../../../../../components/common/action-menu"
 import { _DataTable } from "../../../../../components/table/data-table"
 import { useUpdateRegion } from "../../../../../hooks/api/regions"
 import { useDataTable } from "../../../../../hooks/use-data-table"
+import { StaticCountry } from "../../../../../lib/data/countries"
 import { useCountries } from "../../../common/hooks/use-countries"
 import { useCountryTableColumns } from "../../../common/hooks/use-country-table-columns"
 import { useCountryTableQuery } from "../../../common/hooks/use-country-table-query"
+import { convertToStaticCountries } from "./helpers"
 
 type RegionCountrySectionProps = {
   region: HttpTypes.AdminRegion
@@ -34,7 +36,7 @@ export const RegionCountrySection = ({ region }: RegionCountrySectionProps) => {
     prefix: PREFIX,
   })
   const { countries, count } = useCountries({
-    countries: region.countries as any|| [],
+    countries: convertToStaticCountries(region.countries),
     ...searchParams,
   })
 
@@ -42,7 +44,7 @@ export const RegionCountrySection = ({ region }: RegionCountrySectionProps) => {
 
   const { table } = useDataTable({
     data: countries || [],
-    columns: columns as any,
+    columns,
     count,
     enablePagination: true,
     enableRowSelection: true,
@@ -116,7 +118,7 @@ export const RegionCountrySection = ({ region }: RegionCountrySectionProps) => {
         />
       </div>
       <_DataTable
-        table={table as any}
+        table={table}
         columns={columns}
         pageSize={PAGE_SIZE}
         count={count}
@@ -144,16 +146,12 @@ const CountryActions = ({
   country,
   region,
 }: {
-  country: HttpTypes.AdminRegionCountry
+  country: StaticCountry
   region: HttpTypes.AdminRegion
 }) => {
   const { t } = useTranslation()
   const prompt = usePrompt()
   const { mutateAsync } = useUpdateRegion(region.id)
-
-  const payload = region.countries
-    ?.filter((c) => c.iso_2 !== country.iso_2)
-    .map((c) => c.iso_2)
 
   const handleRemove = async () => {
     const res = await prompt({
@@ -171,9 +169,14 @@ const CountryActions = ({
       return
     }
 
+    const payload = region.countries
+      ?.filter((c) => c.iso_2 !== country.iso_2)
+      .map((c) => c.iso_2)
+      .filter((iso): iso is string => iso !== undefined)
+
     await mutateAsync(
       {
-        countries: payload as any,
+        countries: payload,
       },
       {
         onSuccess: () => {
@@ -203,7 +206,7 @@ const CountryActions = ({
   )
 }
 
-const columnHelper = createColumnHelper<HttpTypes.AdminRegionCountry>()
+const columnHelper = createColumnHelper<StaticCountry>()
 
 const useColumns = () => {
   const base = useCountryTableColumns()
@@ -251,5 +254,5 @@ const useColumns = () => {
       }),
     ],
     [base]
-  ) as ColumnDef<HttpTypes.AdminRegionCountry>[]
+  ) as ColumnDef<StaticCountry>[]
 }

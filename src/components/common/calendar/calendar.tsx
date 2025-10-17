@@ -4,7 +4,7 @@ import * as React from "react"
 import { DayPicker } from "react-day-picker"
 
 import { ChevronLeft, ChevronRight } from "@medusajs/icons"
-import { clx } from "@medusajs/ui"
+import { clx, IconButton } from "@medusajs/ui"
 
 import "react-day-picker/src/style.css"
 
@@ -59,18 +59,33 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        PreviousMonthButton: ({ className, ...props }) => (
-          <ChevronLeft
-            className={clx("absolute left-2 top-5", className)}
-            {...props}
-          />
-        ),
-        NextMonthButton: ({ className, ...props }) => (
-          <ChevronRight
-            className={clx("absolute right-2 top-5", className)}
-            {...props}
-          />
-        ),
+        PreviousMonthButton: ({ className, ...props }) => {
+          const { onClick, ...rest } = props
+          return (
+            <IconButton
+              className={clx("absolute left-0 top-2.5", className)}
+              variant="transparent"
+              onClick={onClick}
+              {...rest}
+            >
+              <ChevronLeft />
+            </IconButton>
+          )
+        },
+        NextMonthButton: ({ className, ...props }) => {
+          const { onClick, ...rest } = props
+
+          return (
+            <IconButton
+              className={clx("absolute right-0 top-2.5", className)}
+              variant="transparent"
+              onClick={onClick}
+              {...rest}
+            >
+              <ChevronRight />
+            </IconButton>
+          )
+        },
       }}
       {...props}
     />

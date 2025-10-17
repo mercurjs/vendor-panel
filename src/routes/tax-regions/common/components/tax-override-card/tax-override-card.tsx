@@ -329,7 +329,7 @@ const useReferenceValues = (
         isPending: products.isPending,
         additional:
           products.products && products.count
-            ? products.count - products.products.length
+            ? products.count - (products.products?.length ?? 0)
             : 0,
         isError: products.isError,
         error: products.error,

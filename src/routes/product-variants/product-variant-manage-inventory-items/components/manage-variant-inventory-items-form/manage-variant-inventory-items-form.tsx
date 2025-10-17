@@ -105,9 +105,11 @@ export function ManageVariantInventoryItemsForm({
     const existingItems: Record<string, number> = {}
     const selectedItems: Record<string, boolean> = {}
 
-    variant.inventory_items.forEach(
-      (i) => (existingItems[i.inventory.id] = i.required_quantity)
-    )
+    variant.inventory_items.forEach((i) => {
+      if (i.inventory?.id) {
+        existingItems[i.inventory.id] = i.required_quantity
+      }
+    })
 
     values.inventory.forEach((i) => (selectedItems[i.inventory_item_id] = true))
 
@@ -136,7 +138,7 @@ export function ManageVariantInventoryItemsForm({
     })
 
     variant.inventory_items.forEach((i) => {
-      if (!(i.inventory.id in selectedItems)) {
+      if (i.inventory?.id && !(i.inventory.id in selectedItems)) {
         payload.delete = payload.delete || []
 
         payload.delete.push({

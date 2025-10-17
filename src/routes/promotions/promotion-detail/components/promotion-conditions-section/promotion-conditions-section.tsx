@@ -52,12 +52,13 @@ export const PromotionConditionsSection = ({
 }: PromotionConditionsSectionProps) => {
   const { t } = useTranslation()
 
+  const translationKey = `promotions.fields.conditions.${ruleType === "target_rules" ? "target-rules" : "buy-rules"}.title` as const
   return (
     <Container className="p-0">
       <div className="flex items-center justify-between px-6 py-4">
         <div className="flex flex-col">
           <Heading>
-            {t(`promotions.fields.conditions.${ruleType}.title`)}
+            {t(translationKey)}
           </Heading>
         </div>
 

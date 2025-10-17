@@ -29,7 +29,9 @@ export const OrderNoteForm = ({ order }: OrderNoteFormProps) => {
     resolver: zodResolver(OrderNoteSchema),
   })
 
-  const { mutateAsync, isLoading } = {}
+  // TODO: Replace with actual API hook when order notes endpoint is available
+  // Placeholder for future useCreateOrderNote hook integration
+  const { mutateAsync, isLoading }: { mutateAsync?: any; isLoading?: boolean } = {}
 
   const handleSubmit = form.handleSubmit(async (values) => {
     mutateAsync(

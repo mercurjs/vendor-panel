@@ -18,6 +18,7 @@ import {
 import { getStylizedAmount } from "../../../../../lib/money-amount-helpers"
 import { OrderEditItemsSection } from "./order-edit-items-section"
 import { CreateOrderEditSchemaType, OrderEditCreateSchema } from "./schema"
+import { FetchError } from "@medusajs/js-sdk"
 
 type ReturnCreateFormProps = {
   order: AdminOrder
@@ -58,7 +59,7 @@ export const OrderEditCreateForm = ({
 
   const prompt = usePrompt()
 
-  const handleSubmit = form.handleSubmit(async (data) => {
+  const handleSubmit = form.handleSubmit(async () => {
     try {
       const res = await prompt({
         title: t("general.areYouSure"),
@@ -78,7 +79,7 @@ export const OrderEditCreateForm = ({
       handleSuccess()
     } catch (e) {
       toast.error(t("general.error"), {
-        description: e.message,
+        description: e instanceof FetchError ? e.message : "An error occurred",
       })
     }
   })

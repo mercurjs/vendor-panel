@@ -112,7 +112,7 @@ export const useProductTableFilters = (
       label: t("fields.collection"),
       type: "select",
       multiple: true,
-      options: collections.map((c) => ({
+      options: (Array.isArray(collections) ? collections : []).map((c) => ({
         label: c.title,
         value: c.id,
       })),

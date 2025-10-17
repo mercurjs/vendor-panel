@@ -10,6 +10,7 @@ import { ReturnCreateForm } from "./components/return-create-form"
 import { useOrder, useOrderPreview } from "../../../hooks/api/orders"
 import { useInitiateReturn, useReturn } from "../../../hooks/api/returns"
 import { DEFAULT_FIELDS } from "../order-detail/constants"
+import { FetchError } from "@medusajs/js-sdk"
 
 let IS_REQUEST_RUNNING = false
 
@@ -57,7 +58,7 @@ export const ReturnCreate = () => {
         setActiveReturnId(orderReturn.id)
       } catch (e) {
         navigate(`/orders/${order.id}`, { replace: true })
-        toast.error(e.message)
+        toast.error(e instanceof FetchError ? e.message : "An error occurred")
       } finally {
         IS_REQUEST_RUNNING = false
       }

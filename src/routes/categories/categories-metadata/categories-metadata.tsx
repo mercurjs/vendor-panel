@@ -11,12 +11,8 @@ import { FetchError } from "@medusajs/js-sdk"
 export const CategoriesMetadata = () => {
   const { id } = useParams()
 
-  if (!id) {
-    throw new Error("Category ID is required")
-  }
-
-  const { product_category, isPending, isError, error } = useProductCategory(id)
-  const { mutateAsync, isPending: isMutating } = useUpdateProductCategory(id)
+  const { product_category, isPending, isError, error } = useProductCategory(id!)
+  const { mutateAsync, isPending: isMutating } = useUpdateProductCategory(id!)
 
   if (isError) {
     throw error

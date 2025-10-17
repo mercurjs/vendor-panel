@@ -8,17 +8,13 @@ import { FetchError } from "@medusajs/js-sdk"
 export const SalesChannelMetadata = () => {
   const { id } = useParams()
 
-  if (!id) {
-    throw new Error("Sales channel ID is required")
-  }
-
   const {
     sales_channel: salesChannel,
     isPending,
     isError,
     error,
   } = useSalesChannel(id!)
-  const { mutateAsync, isPending: isMutating } = useUpdateSalesChannel(id)
+  const { mutateAsync, isPending: isMutating } = useUpdateSalesChannel(id!)
 
   if (isError) {
     throw error

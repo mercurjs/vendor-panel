@@ -1,16 +1,19 @@
-import { HttpTypes } from "@medusajs/types"
-import { Outlet, RouteObject, UIMatch } from "react-router-dom"
+import type { HttpTypes } from "@medusajs/types";
 
-import { t } from "i18next"
-import { ProtectedRoute } from "../../components/authentication/protected-route"
-import { MainLayout } from "../../components/layout/main-layout"
-import { PublicLayout } from "../../components/layout/public-layout"
-import { SettingsLayout } from "../../components/layout/settings-layout"
-import { ErrorBoundary } from "../../components/utilities/error-boundary"
-import { TaxRegionDetailBreadcrumb } from "../../routes/tax-regions/tax-region-detail/breadcrumb"
-import { taxRegionLoader } from "../../routes/tax-regions/tax-region-detail/loader"
-import { RouteExtensions } from "./route-extensions"
-import { SettingsExtensions } from "./settings-extensions"
+import { t } from "i18next";
+import { Outlet, type RouteObject, type UIMatch } from "react-router-dom";
+
+import { ProtectedRoute } from "@components/authentication/protected-route";
+import { MainLayout } from "@components/layout/main-layout";
+import { PublicLayout } from "@components/layout/public-layout";
+import { SettingsLayout } from "@components/layout/settings-layout";
+import { ErrorBoundary } from "@components/utilities/error-boundary";
+
+import { TaxRegionDetailBreadcrumb } from "@routes/tax-regions/tax-region-detail/breadcrumb";
+import { taxRegionLoader } from "@routes/tax-regions/tax-region-detail/loader";
+
+import { RouteExtensions } from "@providers/router-provider/route-extensions";
+import { SettingsExtensions } from "@providers/router-provider/settings-extensions";
 
 export const RouteMap: RouteObject[] = [
   {
@@ -50,11 +53,11 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { Requests } = await import(
                     "../../routes/requests/requests-list"
-                  )
+                  );
 
                   return {
                     Component: Requests,
-                  }
+                  };
                 },
               },
               {
@@ -65,11 +68,11 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { RequestsCategoriesList } = await import(
                     "../../routes/requests/requests-list"
-                  )
+                  );
 
                   return {
                     Component: RequestsCategoriesList,
-                  }
+                  };
                 },
                 children: [
                   {
@@ -91,11 +94,11 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { RequestsCollectionsList } = await import(
                     "../../routes/requests/requests-list"
-                  )
+                  );
 
                   return {
                     Component: RequestsCollectionsList,
-                  }
+                  };
                 },
                 children: [
                   {
@@ -118,11 +121,11 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { RequestReviewsList } = await import(
                     "../../routes/requests/requests-list"
-                  )
+                  );
 
                   return {
                     Component: RequestReviewsList,
-                  }
+                  };
                 },
                 children: [
                   {
@@ -139,11 +142,11 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { RequestOrdersList } = await import(
                     "../../routes/requests/requests-list"
-                  )
+                  );
 
                   return {
                     Component: RequestOrdersList,
-                  }
+                  };
                 },
                 children: [
                   {
@@ -160,7 +163,7 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { Component, Breadcrumb, loader } = await import(
                     "../../routes/requests/request-detail"
-                  )
+                  );
 
                   return {
                     Component,
@@ -170,7 +173,7 @@ export const RouteMap: RouteObject[] = [
                         <Breadcrumb {...match} />
                       ),
                     },
-                  }
+                  };
                 },
               },
             ],
@@ -199,7 +202,7 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { Component, Breadcrumb, loader } = await import(
                     "../../routes/reviews/review-detail"
-                  )
+                  );
 
                   return {
                     Component,
@@ -209,7 +212,7 @@ export const RouteMap: RouteObject[] = [
                         <Breadcrumb {...match} />
                       ),
                     },
-                  }
+                  };
                 },
                 children: [
                   {
@@ -255,17 +258,17 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { Breadcrumb, loader } = await import(
                     "../../routes/products/product-detail"
-                  )
+                  );
 
                   return {
                     Component: Outlet,
                     loader,
                     handle: {
                       breadcrumb: (
-                        match: UIMatch<HttpTypes.AdminProductResponse>
+                        match: UIMatch<HttpTypes.AdminProductResponse>,
                       ) => <Breadcrumb {...match} />,
                     },
-                  }
+                  };
                 },
                 children: [
                   {
@@ -352,6 +355,13 @@ export const RouteMap: RouteObject[] = [
                         lazy: () =>
                           import("../../routes/products/product-metadata"),
                       },
+                      {
+                        path: "edit-stocks-and-prices",
+                        lazy: () =>
+                          import(
+                            "../../routes/products/product-edit-stocks-and-prices"
+                          ),
+                      },
                     ],
                   },
                   {
@@ -359,7 +369,7 @@ export const RouteMap: RouteObject[] = [
                     lazy: async () => {
                       const { Component, Breadcrumb, loader } = await import(
                         "../../routes/product-variants/product-variant-detail"
-                      )
+                      );
 
                       return {
                         Component,
@@ -367,10 +377,10 @@ export const RouteMap: RouteObject[] = [
                         handle: {
                           breadcrumb: (
                             // eslint-disable-next-line max-len
-                            match: UIMatch<HttpTypes.AdminProductVariantResponse>
+                            match: UIMatch<HttpTypes.AdminProductVariantResponse>,
                           ) => <Breadcrumb {...match} />,
                         },
-                      }
+                      };
                     },
                     children: [
                       {
@@ -433,17 +443,17 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { Component, Breadcrumb, loader } = await import(
                     "../../routes/categories/category-detail"
-                  )
+                  );
 
                   return {
                     Component,
                     loader,
                     handle: {
                       breadcrumb: (
-                        match: UIMatch<HttpTypes.AdminProductCategoryResponse>
+                        match: UIMatch<HttpTypes.AdminProductCategoryResponse>,
                       ) => <Breadcrumb {...match} />,
                     },
-                  }
+                  };
                 },
                 children: [
                   {
@@ -485,17 +495,17 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { Component, Breadcrumb, loader } = await import(
                     "../../routes/orders/order-detail"
-                  )
+                  );
 
                   return {
                     Component,
                     loader,
                     handle: {
                       breadcrumb: (
-                        match: UIMatch<HttpTypes.AdminOrderResponse>
+                        match: UIMatch<HttpTypes.AdminOrderResponse>,
                       ) => <Breadcrumb {...match} />,
                     },
-                  }
+                  };
                 },
                 children: [
                   {
@@ -589,17 +599,17 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { Component, Breadcrumb, loader } = await import(
                     "../../routes/promotions/promotion-detail"
-                  )
+                  );
 
                   return {
                     Component,
                     loader,
                     handle: {
                       breadcrumb: (
-                        match: UIMatch<HttpTypes.AdminPromotionResponse>
+                        match: UIMatch<HttpTypes.AdminPromotionResponse>,
                       ) => <Breadcrumb {...match} />,
                     },
-                  }
+                  };
                 },
                 children: [
                   {
@@ -642,17 +652,17 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { Component, Breadcrumb, loader } = await import(
                     "../../routes/campaigns/campaign-detail"
-                  )
+                  );
 
                   return {
                     Component,
                     loader,
                     handle: {
                       breadcrumb: (
-                        match: UIMatch<HttpTypes.AdminCampaignResponse>
+                        match: UIMatch<HttpTypes.AdminCampaignResponse>,
                       ) => <Breadcrumb {...match} />,
                     },
-                  }
+                  };
                 },
                 children: [
                   {
@@ -701,17 +711,17 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { Component, Breadcrumb, loader } = await import(
                     "../../routes/collections/collection-detail"
-                  )
+                  );
 
                   return {
                     Component,
                     loader,
                     handle: {
                       breadcrumb: (
-                        match: UIMatch<HttpTypes.AdminCollectionResponse>
+                        match: UIMatch<HttpTypes.AdminCollectionResponse>,
                       ) => <Breadcrumb {...match} />,
                     },
-                  }
+                  };
                 },
                 children: [
                   {
@@ -758,17 +768,17 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { Component, Breadcrumb, loader } = await import(
                     "../../routes/price-lists/price-list-detail"
-                  )
+                  );
 
                   return {
                     Component,
                     loader,
                     handle: {
                       breadcrumb: (
-                        match: UIMatch<HttpTypes.AdminPriceListResponse>
+                        match: UIMatch<HttpTypes.AdminPriceListResponse>,
                       ) => <Breadcrumb {...match} />,
                     },
-                  }
+                  };
                 },
                 children: [
                   {
@@ -820,17 +830,17 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { Component, Breadcrumb, loader } = await import(
                     "../../routes/customers/customer-detail"
-                  )
+                  );
 
                   return {
                     Component,
                     loader,
                     handle: {
                       breadcrumb: (
-                        match: UIMatch<HttpTypes.AdminCustomerResponse>
+                        match: UIMatch<HttpTypes.AdminCustomerResponse>,
                       ) => <Breadcrumb {...match} />,
                     },
-                  }
+                  };
                 },
                 children: [
                   {
@@ -884,17 +894,17 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { Component, Breadcrumb, loader } = await import(
                     "../../routes/customer-groups/customer-group-detail"
-                  )
+                  );
 
                   return {
                     Component,
                     loader,
                     handle: {
                       breadcrumb: (
-                        match: UIMatch<HttpTypes.AdminCustomerGroupResponse>
+                        match: UIMatch<HttpTypes.AdminCustomerGroupResponse>,
                       ) => <Breadcrumb {...match} />,
                     },
-                  }
+                  };
                 },
                 children: [
                   {
@@ -946,17 +956,17 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { Component, Breadcrumb, loader } = await import(
                     "../../routes/reservations/reservation-detail"
-                  )
+                  );
 
                   return {
                     Component,
                     loader,
                     handle: {
                       breadcrumb: (
-                        match: UIMatch<HttpTypes.AdminReservationResponse>
+                        match: UIMatch<HttpTypes.AdminReservationResponse>,
                       ) => <Breadcrumb {...match} />,
                     },
-                  }
+                  };
                 },
                 children: [
                   {
@@ -1003,17 +1013,17 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { Component, Breadcrumb, loader } = await import(
                     "../../routes/inventory/inventory-detail"
-                  )
+                  );
 
                   return {
                     Component,
                     loader,
                     handle: {
                       breadcrumb: (
-                        match: UIMatch<HttpTypes.AdminInventoryItemResponse>
+                        match: UIMatch<HttpTypes.AdminInventoryItemResponse>,
                       ) => <Breadcrumb {...match} />,
                     },
-                  }
+                  };
                 },
                 children: [
                   {
@@ -1111,17 +1121,17 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { Component, Breadcrumb, loader } = await import(
                     "../../routes/regions/region-detail"
-                  )
+                  );
 
                   return {
                     Component,
                     loader,
                     handle: {
                       breadcrumb: (
-                        match: UIMatch<HttpTypes.AdminRegionResponse>
+                        match: UIMatch<HttpTypes.AdminRegionResponse>,
                       ) => <Breadcrumb {...match} />,
                     },
-                  }
+                  };
                 },
                 children: [
                   {
@@ -1190,17 +1200,17 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { Component, Breadcrumb, loader } = await import(
                     "../../routes/users/user-detail"
-                  )
+                  );
 
                   return {
                     Component,
                     loader,
                     handle: {
                       breadcrumb: (
-                        match: UIMatch<HttpTypes.AdminUserResponse>
+                        match: UIMatch<HttpTypes.AdminUserResponse>,
                       ) => <Breadcrumb {...match} />,
                     },
-                  }
+                  };
                 },
                 children: [
                   {
@@ -1242,17 +1252,17 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { Component, Breadcrumb, loader } = await import(
                     "../../routes/sales-channels/sales-channel-detail"
-                  )
+                  );
 
                   return {
                     Component,
                     loader,
                     handle: {
                       breadcrumb: (
-                        match: UIMatch<HttpTypes.AdminSalesChannelResponse>
+                        match: UIMatch<HttpTypes.AdminSalesChannelResponse>,
                       ) => <Breadcrumb {...match} />,
                     },
-                  }
+                  };
                 },
                 children: [
                   {
@@ -1322,7 +1332,7 @@ export const RouteMap: RouteObject[] = [
                     lazy: async () => {
                       const { Component, Breadcrumb, loader } = await import(
                         "../../routes/shipping-profiles/shipping-profile-detail"
-                      )
+                      );
 
                       return {
                         Component,
@@ -1330,10 +1340,10 @@ export const RouteMap: RouteObject[] = [
                         handle: {
                           breadcrumb: (
                             // eslint-disable-next-line max-len
-                            match: UIMatch<HttpTypes.AdminShippingProfileResponse>
+                            match: UIMatch<HttpTypes.AdminShippingProfileResponse>,
                           ) => <Breadcrumb {...match} />,
                         },
-                      }
+                      };
                     },
                     children: [
                       {
@@ -1352,17 +1362,17 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { Component, Breadcrumb, loader } = await import(
                     "../../routes/locations/location-detail"
-                  )
+                  );
 
                   return {
                     Component,
                     loader,
                     handle: {
                       breadcrumb: (
-                        match: UIMatch<HttpTypes.AdminStockLocationResponse>
+                        match: UIMatch<HttpTypes.AdminStockLocationResponse>,
                       ) => <Breadcrumb {...match} />,
                     },
-                  }
+                  };
                 },
                 children: [
                   {
@@ -1472,17 +1482,17 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { Component, Breadcrumb, loader } = await import(
                     "../../routes/product-tags/product-tag-detail"
-                  )
+                  );
 
                   return {
                     Component,
                     loader,
                     handle: {
                       breadcrumb: (
-                        match: UIMatch<HttpTypes.AdminProductTagResponse>
+                        match: UIMatch<HttpTypes.AdminProductTagResponse>,
                       ) => <Breadcrumb {...match} />,
                     },
-                  }
+                  };
                 },
                 children: [
                   {
@@ -1514,17 +1524,17 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { Component, Breadcrumb, loader } = await import(
                     "../../routes/workflow-executions/workflow-execution-detail"
-                  )
+                  );
 
                   return {
                     Component,
                     loader,
                     handle: {
                       breadcrumb: (
-                        match: UIMatch<HttpTypes.AdminWorkflowExecutionResponse>
+                        match: UIMatch<HttpTypes.AdminWorkflowExecutionResponse>,
                       ) => <Breadcrumb {...match} />,
                     },
-                  }
+                  };
                 },
               },
             ],
@@ -1554,17 +1564,17 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { Component, Breadcrumb, loader } = await import(
                     "../../routes/product-types/product-type-detail"
-                  )
+                  );
 
                   return {
                     Component,
                     loader,
                     handle: {
                       breadcrumb: (
-                        match: UIMatch<HttpTypes.AdminProductTypeResponse>
+                        match: UIMatch<HttpTypes.AdminProductTypeResponse>,
                       ) => <Breadcrumb {...match} />,
                     },
-                  }
+                  };
                 },
                 children: [
                   {
@@ -1610,17 +1620,17 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { Component, Breadcrumb, loader } = await import(
                     "../../routes/api-key-management/api-key-management-detail"
-                  )
+                  );
 
                   return {
                     Component,
                     loader,
                     handle: {
                       breadcrumb: (
-                        match: UIMatch<HttpTypes.AdminApiKeyResponse>
+                        match: UIMatch<HttpTypes.AdminApiKeyResponse>,
                       ) => <Breadcrumb {...match} />,
                     },
-                  }
+                  };
                 },
                 children: [
                   {
@@ -1675,17 +1685,17 @@ export const RouteMap: RouteObject[] = [
                 lazy: async () => {
                   const { Component, Breadcrumb, loader } = await import(
                     "../../routes/api-key-management/api-key-management-detail"
-                  )
+                  );
 
                   return {
                     Component,
                     loader,
                     handle: {
                       breadcrumb: (
-                        match: UIMatch<HttpTypes.AdminApiKeyResponse>
+                        match: UIMatch<HttpTypes.AdminApiKeyResponse>,
                       ) => <Breadcrumb {...match} />,
                     },
-                  }
+                  };
                 },
                 children: [
                   {
@@ -1723,7 +1733,7 @@ export const RouteMap: RouteObject[] = [
                 loader: taxRegionLoader,
                 handle: {
                   breadcrumb: (
-                    match: UIMatch<HttpTypes.AdminTaxRegionResponse>
+                    match: UIMatch<HttpTypes.AdminTaxRegionResponse>,
                   ) => <TaxRegionDetailBreadcrumb {...match} />,
                 },
                 children: [
@@ -1732,11 +1742,11 @@ export const RouteMap: RouteObject[] = [
                     lazy: async () => {
                       const { Component } = await import(
                         "../../routes/tax-regions/tax-region-detail"
-                      )
+                      );
 
                       return {
                         Component,
-                      }
+                      };
                     },
                     children: [
                       {
@@ -1781,17 +1791,17 @@ export const RouteMap: RouteObject[] = [
                     lazy: async () => {
                       const { Component, Breadcrumb, loader } = await import(
                         "../../routes/tax-regions/tax-region-province-detail"
-                      )
+                      );
 
                       return {
                         Component,
                         loader,
                         handle: {
                           breadcrumb: (
-                            match: UIMatch<HttpTypes.AdminTaxRegionResponse>
+                            match: UIMatch<HttpTypes.AdminTaxRegionResponse>,
                           ) => <Breadcrumb {...match} />,
                         },
-                      }
+                      };
                     },
                     children: [
                       {
@@ -1902,4 +1912,4 @@ export const RouteMap: RouteObject[] = [
       },
     ],
   },
-]
+];

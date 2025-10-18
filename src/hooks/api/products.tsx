@@ -1,37 +1,48 @@
-import { FetchError } from "@medusajs/js-sdk"
-import { HttpTypes } from "@medusajs/types"
+import type { FetchError } from "@medusajs/js-sdk";
+import type { HttpTypes } from "@medusajs/types";
+
 import {
-  QueryKey,
+  type QueryKey,
+  type UseMutationOptions,
+  type UseQueryOptions,
   useMutation,
-  UseMutationOptions,
   useQuery,
-  UseQueryOptions,
-} from "@tanstack/react-query"
-import { fetchQuery, importProductsQuery, sdk } from "../../lib/client"
-import { queryClient } from "../../lib/query-client"
-import { queryKeysFactory } from "../../lib/query-key-factory"
-import { inventoryItemsQueryKeys } from "./inventory.tsx"
+} from "@tanstack/react-query";
+
+import { ProductAttributesResponse } from "@custom-types/products";
+
+import { fetchQuery, importProductsQuery, sdk } from "@/lib/client";
+import { queryClient } from "@/lib/query-client";
+import { queryKeysFactory } from "@/lib/query-key-factory";
+import productsImagesFormatter from "@/utils/products-images-formatter";
+
 import {
   checkCategoryMatch,
   checkCollectionMatch,
+  checkStatusMatch,
   checkTagMatch,
   checkTypeMatch,
-  checkStatusMatch,
-} from "./helpers/productFilters"
-import productsImagesFormatter from "../../utils/products-images-formatter"
+} from "./helpers/productFilters";
+import { inventoryItemsQueryKeys } from "./inventory.tsx";
 
-const PRODUCTS_QUERY_KEY = "products" as const
-export const productsQueryKeys = queryKeysFactory(PRODUCTS_QUERY_KEY)
+const PRODUCTS_QUERY_KEY = "products" as const;
+export const productsQueryKeys = queryKeysFactory(PRODUCTS_QUERY_KEY);
 
-const VARIANTS_QUERY_KEY = "product_variants" as const
-export const variantsQueryKeys = queryKeysFactory(VARIANTS_QUERY_KEY)
+const VARIANTS_QUERY_KEY = "product_variants" as const;
+export const variantsQueryKeys = queryKeysFactory(VARIANTS_QUERY_KEY);
 
-const OPTIONS_QUERY_KEY = "product_options" as const
-export const optionsQueryKeys = queryKeysFactory(OPTIONS_QUERY_KEY)
+const OPTIONS_QUERY_KEY = "product_options" as const;
+export const optionsQueryKeys = queryKeysFactory(OPTIONS_QUERY_KEY);
+
+const productAttributesQueryKey = (productId: string) => [
+  "product",
+  productId,
+  "product-attributes",
+];
 
 export const useCreateProductOption = (
   productId: string,
-  options?: UseMutationOptions<any, FetchError, any>
+  options?: UseMutationOptions<any, FetchError, any>,
 ) => {
   return useMutation({
     mutationFn: (payload: HttpTypes.AdminCreateProductOption) =>
@@ -42,20 +53,20 @@ export const useCreateProductOption = (
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
         queryKey: optionsQueryKeys.lists(),
-      })
+      });
       queryClient.invalidateQueries({
         queryKey: productsQueryKeys.detail(productId),
-      })
-      options?.onSuccess?.(data, variables, context)
+      });
+      options?.onSuccess?.(data, variables, context);
     },
     ...options,
-  })
-}
+  });
+};
 
 export const useUpdateProductOption = (
   productId: string,
   optionId: string,
-  options?: UseMutationOptions<any, FetchError, any>
+  options?: UseMutationOptions<any, FetchError, any>,
 ) => {
   return useMutation({
     mutationFn: (payload: HttpTypes.AdminUpdateProductOption) =>
@@ -66,24 +77,24 @@ export const useUpdateProductOption = (
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
         queryKey: optionsQueryKeys.lists(),
-      })
+      });
       queryClient.invalidateQueries({
         queryKey: optionsQueryKeys.detail(optionId),
-      })
+      });
       queryClient.invalidateQueries({
         queryKey: productsQueryKeys.detail(productId),
-      })
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
     ...options,
-  })
-}
+  });
+};
 
 export const useDeleteProductOption = (
   productId: string,
   optionId: string,
-  options?: UseMutationOptions<any, FetchError, void>
+  options?: UseMutationOptions<any, FetchError, void>,
 ) => {
   return useMutation({
     mutationFn: () =>
@@ -93,19 +104,19 @@ export const useDeleteProductOption = (
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
         queryKey: optionsQueryKeys.lists(),
-      })
+      });
       queryClient.invalidateQueries({
         queryKey: optionsQueryKeys.detail(optionId),
-      })
+      });
       queryClient.invalidateQueries({
         queryKey: productsQueryKeys.detail(productId),
-      })
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
     ...options,
-  })
-}
+  });
+};
 
 export const useProductVariant = (
   productId: string,
@@ -119,7 +130,7 @@ export const useProductVariant = (
       QueryKey
     >,
     "queryFn" | "queryKey"
-  >
+  >,
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: async () => {
@@ -129,20 +140,20 @@ export const useProductVariant = (
           fields:
             "*variants,*variants.inventory,*variants.inventory.location_levels",
         },
-      })
+      });
 
       const variant = product.variants.find(
-        ({ id }: { id: string }) => id === variantId
-      )
+        ({ id }: { id: string }) => id === variantId,
+      );
 
-      return { variant }
+      return { variant };
     },
     queryKey: variantsQueryKeys.detail(variantId, query),
     ...options,
-  })
+  });
 
-  return { ...data, ...rest }
-}
+  return { ...data, ...rest };
+};
 
 export const useProductVariants = (
   productId: string,
@@ -155,7 +166,7 @@ export const useProductVariants = (
       QueryKey
     >,
     "queryFn" | "queryKey"
-  >
+  >,
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: () => sdk.admin.product.listVariants(productId, query),
@@ -164,14 +175,14 @@ export const useProductVariants = (
       ...query,
     }),
     ...options,
-  })
+  });
 
-  return { ...data, ...rest }
-}
+  return { ...data, ...rest };
+};
 
 export const useCreateProductVariant = (
   productId: string,
-  options?: UseMutationOptions<any, FetchError, any>
+  options?: UseMutationOptions<any, FetchError, any>,
 ) => {
   return useMutation({
     mutationFn: (payload: HttpTypes.AdminCreateProductVariant) =>
@@ -182,20 +193,20 @@ export const useCreateProductVariant = (
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
         queryKey: variantsQueryKeys.lists(),
-      })
+      });
       queryClient.invalidateQueries({
         queryKey: productsQueryKeys.detail(productId),
-      })
-      options?.onSuccess?.(data, variables, context)
+      });
+      options?.onSuccess?.(data, variables, context);
     },
     ...options,
-  })
-}
+  });
+};
 
 export const useUpdateProductVariant = (
   productId: string,
   variantId: string,
-  options?: UseMutationOptions<any, FetchError, any>
+  options?: UseMutationOptions<any, FetchError, any>,
 ) => {
   return useMutation({
     mutationFn: (body: HttpTypes.AdminUpdateProductVariant) =>
@@ -206,47 +217,56 @@ export const useUpdateProductVariant = (
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
         queryKey: variantsQueryKeys.lists(),
-      })
+      });
       queryClient.invalidateQueries({
         queryKey: variantsQueryKeys.detail(variantId),
-      })
+      });
       queryClient.invalidateQueries({
         queryKey: productsQueryKeys.detail(productId),
-      })
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
     ...options,
-  })
-}
+  });
+};
 
+// TODO: Change this to use endpoint that updates multiple variants at once
 export const useUpdateProductVariantsBatch = (
   productId: string,
-  options?: UseMutationOptions<any, FetchError, any>
+  options?: UseMutationOptions<
+    HttpTypes.AdminProductVariant[],
+    FetchError,
+    HttpTypes.AdminProductVariant[]
+  >,
 ) => {
-  return useMutation({
-    mutationFn: (
-      payload: HttpTypes.AdminBatchProductVariantRequest["update"]
-    ) =>
-      sdk.admin.product.batchVariants(productId, {
-        update: payload,
-      }),
-    onSuccess: (data: any, variables: any, context: any) => {
-      queryClient.invalidateQueries({
-        queryKey: variantsQueryKeys.lists(),
-      })
-      queryClient.invalidateQueries({
-        queryKey: variantsQueryKeys.details(),
-      })
-      queryClient.invalidateQueries({
-        queryKey: productsQueryKeys.detail(productId),
-      })
+  return useMutation<
+    HttpTypes.AdminProductVariant[],
+    FetchError,
+    HttpTypes.AdminProductVariant[]
+  >({
+    mutationFn: async (variants: HttpTypes.AdminProductVariant[]) => {
+      const promises = variants.map((variant) => {
+        const { id, ...updateData } = variant;
 
-      options?.onSuccess?.(data, variables, context)
+        return fetchQuery(`/vendor/products/${productId}/variants/${id}`, {
+          method: "POST",
+          body: updateData,
+        });
+      });
+
+      return Promise.all(promises);
+    },
+    onSuccess: (
+      data: HttpTypes.AdminProductVariant[],
+      variables: HttpTypes.AdminProductVariant[],
+      context: unknown,
+    ) => {
+      options?.onSuccess?.(data, variables, context);
     },
     ...options,
-  })
-}
+  });
+};
 
 export const useProductVariantsInventoryItemsBatch = (
   productId: string,
@@ -254,7 +274,7 @@ export const useProductVariantsInventoryItemsBatch = (
     HttpTypes.AdminBatchProductVariantInventoryItemResponse,
     FetchError,
     HttpTypes.AdminBatchProductVariantInventoryItemRequest
-  >
+  >,
 ) => {
   return useMutation({
     mutationFn: (payload) =>
@@ -262,24 +282,24 @@ export const useProductVariantsInventoryItemsBatch = (
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
         queryKey: variantsQueryKeys.lists(),
-      })
+      });
       queryClient.invalidateQueries({
         queryKey: variantsQueryKeys.details(),
-      })
+      });
       queryClient.invalidateQueries({
         queryKey: productsQueryKeys.detail(productId),
-      })
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
     ...options,
-  })
-}
+  });
+};
 
 export const useDeleteVariant = (
   productId: string,
   variantId: string,
-  options?: UseMutationOptions<any, FetchError, void>
+  options?: UseMutationOptions<any, FetchError, void>,
 ) => {
   return useMutation({
     mutationFn: () =>
@@ -289,19 +309,19 @@ export const useDeleteVariant = (
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
         queryKey: variantsQueryKeys.lists(),
-      })
+      });
       queryClient.invalidateQueries({
         queryKey: variantsQueryKeys.detail(variantId),
-      })
+      });
       queryClient.invalidateQueries({
         queryKey: productsQueryKeys.detail(productId),
-      })
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
     ...options,
-  })
-}
+  });
+};
 
 export const useDeleteVariantLazy = (
   productId: string,
@@ -309,7 +329,7 @@ export const useDeleteVariantLazy = (
     HttpTypes.AdminProductVariantDeleteResponse,
     FetchError,
     { variantId: string }
-  >
+  >,
 ) => {
   return useMutation({
     mutationFn: ({ variantId }) =>
@@ -319,31 +339,31 @@ export const useDeleteVariantLazy = (
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
         queryKey: variantsQueryKeys.lists(),
-      })
+      });
       queryClient.invalidateQueries({
         queryKey: variantsQueryKeys.detail(variables.variantId),
-      })
+      });
       queryClient.invalidateQueries({
         queryKey: productsQueryKeys.detail(productId),
-      })
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
     ...options,
-  })
-}
+  });
+};
 
 export const useProductAttributes = (id: string) => {
-  const { data, ...rest } = useQuery({
+  const { data, ...rest } = useQuery<ProductAttributesResponse>({
     queryFn: () =>
       fetchQuery(`/vendor/products/${id}/applicable-attributes`, {
         method: "GET",
       }),
-    queryKey: ["product", id, "product-attributes"],
-  })
+    queryKey: productAttributesQueryKey(id),
+  });
 
-  return { ...data, ...rest }
-}
+  return { ...data, ...rest };
+};
 
 export const useProduct = (
   id: string,
@@ -356,7 +376,7 @@ export const useProduct = (
       QueryKey
     >,
     "queryFn" | "queryKey"
-  >
+  >,
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: () =>
@@ -366,14 +386,14 @@ export const useProduct = (
       }),
     queryKey: productsQueryKeys.detail(id),
     ...options,
-  })
+  });
 
   return {
     ...data,
     product: productsImagesFormatter(data?.product),
     ...rest,
-  }
-}
+  };
+};
 
 export const useProducts = (
   query?: HttpTypes.AdminProductListParams,
@@ -387,14 +407,14 @@ export const useProducts = (
     "queryFn" | "queryKey"
   >,
   filter?: HttpTypes.AdminProductListParams & {
-    tagId?: string | string[]
-    categoryId?: string | string[]
-    collectionId?: string | string[]
-    typeId?: string | string[]
-    status?: string | string[]
-    q?: string
-    sort?: string
-  }
+    tagId?: string | string[];
+    categoryId?: string | string[];
+    collectionId?: string | string[];
+    typeId?: string | string[];
+    status?: string | string[];
+    q?: string;
+    sort?: string;
+  },
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: () =>
@@ -404,9 +424,9 @@ export const useProducts = (
       }),
     queryKey: productsQueryKeys.list(query),
     ...options,
-  })
+  });
 
-  let products = data?.products || []
+  let products = data?.products || [];
 
   // Apply filters if any exist
   if (
@@ -419,7 +439,7 @@ export const useProducts = (
   ) {
     products = products.filter((item) => {
       if (filter.q) {
-        return item.title.toLowerCase().includes(filter.q.toLowerCase())
+        return item.title.toLowerCase().includes(filter.q.toLowerCase());
       }
 
       return (
@@ -430,33 +450,33 @@ export const useProducts = (
           checkCollectionMatch(item?.collection, filter.collectionId)) ||
         (filter.typeId && checkTypeMatch(item?.type_id, filter.typeId)) ||
         (filter.status && checkStatusMatch(item?.status, filter.status))
-      )
-    })
+      );
+    });
   }
 
   // Apply sorting if specified
   if (filter?.sort) {
-    const isDescending = filter.sort.startsWith("-")
-    const field = isDescending ? filter.sort.slice(1) : filter.sort
+    const isDescending = filter.sort.startsWith("-");
+    const field = isDescending ? filter.sort.slice(1) : filter.sort;
 
     if (["title", "created_at", "updated_at"].includes(field)) {
       products = [...products].sort((a, b) => {
-        const aValue = a[field as keyof HttpTypes.AdminProduct]
-        const bValue = b[field as keyof HttpTypes.AdminProduct]
+        const aValue = a[field as keyof HttpTypes.AdminProduct];
+        const bValue = b[field as keyof HttpTypes.AdminProduct];
 
         if (field === "title") {
-          const titleA = String(aValue || "")
-          const titleB = String(bValue || "")
+          const titleA = String(aValue || "");
+          const titleB = String(bValue || "");
           return isDescending
             ? titleB.localeCompare(titleA)
-            : titleA.localeCompare(titleB)
+            : titleA.localeCompare(titleB);
         }
 
         // For dates
-        const dateA = new Date((aValue as string) || new Date()).getTime()
-        const dateB = new Date((bValue as string) || new Date()).getTime()
-        return isDescending ? dateB - dateA : dateA - dateB
-      })
+        const dateA = new Date((aValue as string) || new Date()).getTime();
+        const dateB = new Date((bValue as string) || new Date()).getTime();
+        return isDescending ? dateB - dateA : dateA - dateB;
+      });
     }
   }
 
@@ -465,11 +485,11 @@ export const useProducts = (
     products: productsImagesFormatter(products?.slice(0, filter?.limit)) || [],
     count: products?.length || 0,
     ...rest,
-  }
-}
+  };
+};
 
 export const useCreateProduct = (
-  options?: UseMutationOptions<HttpTypes.AdminProductResponse, FetchError, any>
+  options?: UseMutationOptions<HttpTypes.AdminProductResponse, FetchError, any>,
 ) => {
   return useMutation({
     mutationFn: async (payload) =>
@@ -480,15 +500,15 @@ export const useCreateProduct = (
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
         queryKey: productsQueryKeys.lists(),
-      })
+      });
       queryClient.invalidateQueries({
         queryKey: inventoryItemsQueryKeys.lists(),
-      })
-      options?.onSuccess?.(data, variables, context)
+      });
+      options?.onSuccess?.(data, variables, context);
     },
     ...options,
-  })
-}
+  });
+};
 
 export const useUpdateProduct = (
   id: string,
@@ -496,7 +516,7 @@ export const useUpdateProduct = (
     HttpTypes.AdminProductResponse,
     FetchError,
     HttpTypes.AdminUpdateProduct
-  >
+  >,
 ) => {
   return useMutation({
     mutationFn: async (payload) => {
@@ -506,11 +526,11 @@ export const useUpdateProduct = (
           fields:
             "-status,-options,-variants,-type,-collection,-attribute_values",
         },
-      })
+      });
 
-      await delete product.id
-      await delete product.rating
-      await delete payload.status
+      await delete product.id;
+      await delete product.rating;
+      await delete payload.status;
 
       return fetchQuery(`/vendor/products/${id}`, {
         method: "POST",
@@ -522,21 +542,21 @@ export const useUpdateProduct = (
           length: parseInt(product.length),
           ...payload,
         },
-      })
+      });
     },
     onSuccess: async (data, variables, context) => {
       await queryClient.invalidateQueries({
         queryKey: productsQueryKeys.lists(),
-      })
+      });
       await queryClient.invalidateQueries({
         queryKey: productsQueryKeys.detail(id),
-      })
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
     ...options,
-  })
-}
+  });
+};
 
 export const useDeleteProduct = (
   id: string,
@@ -544,7 +564,7 @@ export const useDeleteProduct = (
     HttpTypes.AdminProductDeleteResponse,
     FetchError,
     void
-  >
+  >,
 ) => {
   return useMutation({
     mutationFn: () =>
@@ -554,49 +574,49 @@ export const useDeleteProduct = (
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
         queryKey: productsQueryKeys.lists(),
-      })
+      });
       queryClient.invalidateQueries({
         queryKey: productsQueryKeys.detail(id),
-      })
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
     ...options,
-  })
-}
+  });
+};
 
 export const useBulkDeleteProducts = (
   options?: UseMutationOptions<
     HttpTypes.AdminProductDeleteResponse[],
     FetchError,
     string[]
-  >
+  >,
 ) => {
   return useMutation({
     mutationFn: async (productIds: string[]) => {
       const deletePromises = productIds.map((id) =>
         fetchQuery(`/vendor/products/${id}`, {
           method: "DELETE",
-        })
-      )
-      return Promise.all(deletePromises)
+        }),
+      );
+      return Promise.all(deletePromises);
     },
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
         queryKey: productsQueryKeys.lists(),
-      })
+      });
 
       variables.forEach((id: string) => {
         queryClient.invalidateQueries({
           queryKey: productsQueryKeys.detail(id),
-        })
-      })
+        });
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
     ...options,
-  })
-}
+  });
+};
 
 export const useExportProducts = (
   query?: HttpTypes.AdminProductListParams,
@@ -604,7 +624,7 @@ export const useExportProducts = (
     HttpTypes.AdminExportProductResponse & { url: string },
     FetchError,
     HttpTypes.AdminExportProductRequest
-  >
+  >,
 ) => {
   return useMutation({
     mutationFn: (payload) =>
@@ -614,36 +634,36 @@ export const useExportProducts = (
         query: query as { [key: string]: string },
       }),
     onSuccess: (data, variables, context) => {
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
     ...options,
-  })
-}
+  });
+};
 
 export const useImportProducts = (
   options?: UseMutationOptions<
     HttpTypes.AdminImportProductResponse,
     FetchError,
     HttpTypes.AdminImportProductRequest
-  >
+  >,
 ) => {
   return useMutation({
     mutationFn: (payload) => importProductsQuery(payload.file),
     onSuccess: (data, variables, context) => {
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
     ...options,
-  })
-}
+  });
+};
 
 export const useConfirmImportProducts = (
-  options?: UseMutationOptions<{}, FetchError, string>
+  options?: UseMutationOptions<{}, FetchError, string>,
 ) => {
   return useMutation({
     mutationFn: (payload) => sdk.admin.product.confirmImport(payload),
     onSuccess: (data, variables, context) => {
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
     ...options,
-  })
-}
+  });
+};

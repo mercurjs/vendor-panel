@@ -1,29 +1,45 @@
-import { Switch } from "@medusajs/ui"
-import { useEffect, useRef, useState } from "react"
-import CurrencyInput, { CurrencyInputProps } from "react-currency-input-field"
-import { Controller, ControllerRenderProps } from "react-hook-form"
-import { useCombinedRefs } from "../../../hooks/use-combined-refs"
-import { ConditionalTooltip } from "../../common/conditional-tooltip"
-import { useDataGridCell, useDataGridCellError } from "../hooks"
-import { DataGridCellProps, InputProps } from "../types"
-import { DataGridCellContainer } from "./data-grid-cell-container"
+import { useEffect, useRef, useState } from "react";
 
-export const DataGridTogglableNumberCell = <TData, TValue = any>({
+import { Switch } from "@medusajs/ui";
+
+import CurrencyInput, {
+  type CurrencyInputProps,
+} from "react-currency-input-field";
+import {
+  Controller,
+  type ControllerRenderProps,
+  type FieldValues,
+  type Path,
+} from "react-hook-form";
+
+import { ConditionalTooltip } from "@/components/common/conditional-tooltip";
+import { DataGridCellContainer } from "@/components/data-grid/components/data-grid-cell-container";
+import {
+  useDataGridCell,
+  useDataGridCellError,
+} from "@/components/data-grid/hooks";
+import type {
+  DataGridCellProps,
+  InputProps,
+} from "@/components/data-grid/types";
+import { useCombinedRefs } from "@/hooks/use-combined-refs";
+
+export const DataGridTogglableNumberCell = <TData, TValue>({
   context,
   disabledToggleTooltip,
   ...rest
 }: DataGridCellProps<TData, TValue> & {
-  min?: number
-  max?: number
-  placeholder?: string
-  disabledToggleTooltip?: string
+  min?: number;
+  max?: number;
+  placeholder?: string;
+  disabledToggleTooltip?: string;
 }) => {
   const { field, control, renderProps } = useDataGridCell({
     context,
-  })
-  const errorProps = useDataGridCellError({ context })
+  });
+  const errorProps = useDataGridCellError({ context });
 
-  const { container, input } = renderProps
+  const { container, input } = renderProps;
 
   return (
     <Controller
@@ -45,63 +61,64 @@ export const DataGridTogglableNumberCell = <TData, TValue = any>({
           >
             <Inner field={field} inputProps={input} {...rest} />
           </DataGridCellContainer>
-        )
+        );
       }}
     />
-  )
-}
+  );
+};
 
-const OuterComponent = ({
+const OuterComponent = <TData extends FieldValues>({
   field,
   inputProps,
   isAnchor,
   tooltip,
 }: {
-  field: ControllerRenderProps<any, string>
-  inputProps: InputProps
-  isAnchor: boolean
-  tooltip?: string
+  field: ControllerRenderProps<TData, Path<TData>>;
+  inputProps: InputProps;
+  isAnchor: boolean;
+  tooltip?: string;
 }) => {
-  const buttonRef = useRef<HTMLButtonElement>(null)
-  const { value } = field
-  const { onChange } = inputProps
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const { value } = field;
+  const { onChange } = inputProps;
 
-  const [localValue, setLocalValue] = useState(value)
+  const [localValue, setLocalValue] = useState(value);
 
   useEffect(() => {
-    setLocalValue(value)
-  }, [value])
+    setLocalValue(value);
+  }, [value]);
 
   const handleCheckedChange = (update: boolean) => {
-    const newValue = { ...localValue, checked: update }
+    const newValue = { ...localValue, checked: update };
 
     if (!update && !newValue.disabledToggle) {
-      newValue.quantity = ""
+      newValue.quantity = "";
     }
 
-    if (update && newValue.quantity === "") {
-      newValue.quantity = 0
+    if (update) {
+      newValue.quantity = 0;
     }
 
-    setLocalValue(newValue)
-    onChange(newValue, value)
-  }
+    setLocalValue(newValue);
+    onChange(newValue, value);
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (isAnchor && e.key.toLowerCase() === "x") {
-        e.preventDefault()
-        buttonRef.current?.click()
+        e.preventDefault();
+        buttonRef.current?.click();
       }
-    }
+    };
 
-    document.addEventListener("keydown", handleKeyDown)
-    return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [isAnchor])
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isAnchor]);
 
   return (
     <ConditionalTooltip
-      showTooltip={localValue.disabledToggle && tooltip}
+      showTooltip={localValue.disabledToggle && !!tooltip}
       content={tooltip}
     >
       <div className="absolute inset-y-0 left-4 z-[3] flex w-fit items-center justify-center">
@@ -115,68 +132,60 @@ const OuterComponent = ({
         />
       </div>
     </ConditionalTooltip>
-  )
-}
+  );
+};
 
-const Inner = ({
+const Inner = <TData extends FieldValues>({
   field,
   inputProps,
   placeholder,
   ...props
 }: {
-  field: ControllerRenderProps<any, string>
-  inputProps: InputProps
-  min?: number
-  max?: number
-  placeholder?: string
+  field: ControllerRenderProps<TData, Path<TData>>;
+  inputProps: InputProps;
+  min?: number;
+  max?: number;
+  placeholder?: string;
 }) => {
-  const { ref, value, onChange: _, onBlur, ...fieldProps } = field
+  const { ref, value, onChange: _, onBlur, ...fieldProps } = field;
   const {
     ref: inputRef,
     onChange,
     onBlur: onInputBlur,
     onFocus,
     ...attributes
-  } = inputProps
+  } = inputProps;
 
-  const [localValue, setLocalValue] = useState(value)
+  const [localValue, setLocalValue] = useState(value);
 
   useEffect(() => {
-    setLocalValue(value)
-  }, [value])
+    setLocalValue(value);
+  }, [value]);
 
-  const combinedRefs = useCombinedRefs(inputRef, ref)
+  const combinedRefs = useCombinedRefs(inputRef, ref);
 
   const handleInputChange: CurrencyInputProps["onValueChange"] = (
     updatedValue,
-    _name,
-    _values
   ) => {
-    const ensuredValue = updatedValue !== undefined ? updatedValue : ""
-    const newValue = { ...localValue, quantity: ensuredValue }
+    const ensuredValue = updatedValue !== undefined ? updatedValue : "";
+    const newValue = { ...localValue, quantity: ensuredValue };
 
-    /**
-     * If the value is not empty, then the location should be enabled.
-     *
-     * Else, if the value is empty and the location is enabled, then the
-     * location should be disabled, unless toggling the location is disabled.
-     */
     if (ensuredValue !== "") {
-      newValue.checked = true
+      newValue.checked = true;
     } else if (newValue.checked && newValue.disabledToggle === false) {
-      newValue.checked = false
+      newValue.checked = false;
     }
 
-    setLocalValue(newValue)
-  }
+    setLocalValue(newValue);
+  };
 
   const handleOnChange = () => {
     if (localValue.disabledToggle && localValue.quantity === "") {
-      localValue.quantity = 0
+      localValue.quantity = 0;
     }
 
-    onChange(localValue, value)
-  }
+    onChange(localValue, value);
+  };
 
   return (
     <div className="flex size-full items-center gap-x-2">
@@ -186,20 +195,19 @@ const Inner = ({
         {...props}
         ref={combinedRefs}
         className="txt-compact-small w-full flex-1 cursor-default appearance-none bg-transparent pl-8 text-right outline-none"
-        value={localValue?.quantity}
+        value={localValue?.quantity ?? undefined}
         onValueChange={handleInputChange}
         formatValueOnBlur
         onBlur={() => {
-          onBlur()
-          onInputBlur()
-          handleOnChange()
+          onBlur();
+          onInputBlur();
+          handleOnChange();
         }}
         onFocus={onFocus}
-        decimalsLimit={0}
         autoComplete="off"
         tabIndex={-1}
         placeholder={!localValue.checked ? placeholder : undefined}
       />
     </div>
-  )
-}
+  );
+};

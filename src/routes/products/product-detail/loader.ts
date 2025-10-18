@@ -1,9 +1,11 @@
-import { LoaderFunctionArgs } from "react-router-dom"
+import type { LoaderFunctionArgs } from "react-router-dom";
 
-import { productsQueryKeys } from "../../../hooks/api/products"
-import { fetchQuery } from "../../../lib/client"
-import { queryClient } from "../../../lib/query-client"
-import { PRODUCT_DETAIL_FIELDS } from "./constants"
+import { productsQueryKeys } from "@hooks/api/products";
+
+import { fetchQuery } from "@lib/client";
+import { queryClient } from "@lib/query-client";
+
+import { PRODUCT_DETAIL_FIELDS } from "@routes/products/product-detail/constants";
 
 const productDetailQuery = (id: string) => ({
   queryKey: productsQueryKeys.detail(id, {
@@ -13,19 +15,20 @@ const productDetailQuery = (id: string) => ({
     fetchQuery(`/vendor/products/${id}`, {
       method: "GET",
       query: {
-        fields: "*variants.inventory_items,*categories",
+        fields:
+          "*variants.inventory_items,*categories,attribute_values.*,attribute_values.attribute.*",
       },
     }),
-})
+});
 
 export const productLoader = async ({ params }: LoaderFunctionArgs) => {
-  const id = params.id
-  const query = productDetailQuery(id!)
+  const id = params.id;
+  const query = productDetailQuery(id!);
 
   const response = await queryClient.ensureQueryData({
     ...query,
     staleTime: 90000,
-  })
+  });
 
-  return response
-}
+  return response;
+};

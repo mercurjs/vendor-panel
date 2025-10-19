@@ -11,8 +11,9 @@ import { RouteDrawer } from "../../../components/modals"
 export const TaxRegionMetadata = () => {
   const { id } = useParams()
 
-  const { tax_region, isPending, isError, error } = useTaxRegion(id)
-  const { mutateAsync, isPending: isMutating } = {} // useUpdateTaxRegion(id)
+  const { tax_region, isPending, isError, error } = useTaxRegion(id!)
+  // Leaving this way, update endpoint not implemented
+  const { mutateAsync, isPending: isMutating }: any = {}
 
   if (isError) {
     throw error

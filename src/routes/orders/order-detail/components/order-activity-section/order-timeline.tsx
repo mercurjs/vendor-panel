@@ -10,6 +10,7 @@ import {
   AdminOrder,
   AdminOrderChange,
   AdminReturn,
+  HttpTypes,
 } from "@medusajs/types"
 import { useTranslation } from "react-i18next"
 
@@ -452,10 +453,10 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
             <ChangeDetailsTooltip
               title={t(`orders.activity.events.update_order.shipping_address`)}
               previous={getFormattedAddress({
-                address: update.actions[0].details.old,
+                address: update?.actions[0]?.details?.old,
               }).join(", ")}
               next={getFormattedAddress({
-                address: update.actions[0].details.new,
+                address: update?.actions[0]?.details?.new,
               }).join(", ")}
             />
           ),
@@ -474,10 +475,10 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
             <ChangeDetailsTooltip
               title={t(`orders.activity.events.update_order.billing_address`)}
               previous={getFormattedAddress({
-                address: update.actions[0].details.old,
+                address: update?.actions[0]?.details?.old,
               }).join(", ")}
               next={getFormattedAddress({
-                address: update.actions[0].details.new,
+                address: update?.actions[0]?.details?.new,
               }).join(", ")}
             />
           ),

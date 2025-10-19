@@ -2,7 +2,7 @@ import { Heading, Input, RadioGroup, Text } from "@medusajs/ui"
 import { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
-import { HttpTypes } from "@medusajs/types"
+import { VendorExtendedAdminServiceZone } from "../../../../../types/stock-location"
 
 import { Form } from "../../../../../components/common/form"
 import { Combobox } from "../../../../../components/inputs/combobox"
@@ -17,7 +17,7 @@ import { CreateShippingOptionSchema } from "./schema"
 type CreateShippingOptionDetailsFormProps = {
   form: UseFormReturn<CreateShippingOptionSchema>
   isReturn?: boolean
-  zone: HttpTypes.AdminServiceZone
+  zone: VendorExtendedAdminServiceZone
   type: FulfillmentSetType
 }
 
@@ -25,7 +25,7 @@ export const CreateShippingOptionDetailsForm = ({
   form,
   isReturn = false,
   zone,
-  type,
+  type
 }: CreateShippingOptionDetailsFormProps) => {
   const { t } = useTranslation()
 

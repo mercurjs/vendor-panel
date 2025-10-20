@@ -78,10 +78,11 @@ export const useCustomerGroups = (
   const count = customer_groups?.length || 0
 
   return {
-    ...data,
+    ...rest,
     count,
     customer_groups,
-    ...rest,
+    offset: data?.offset,
+    limit: data?.limit,
   }
 }
 

@@ -2978,7 +2978,8 @@
     "startDate": "Start date",
     "endDate": "End date",
     "draft": "Draft",
-    "values": "Values"
+    "values": "Values",
+    "offer": "Offer"
   },
   "dateTime": {
     "years_one": "Year",
@@ -2995,5 +2996,8 @@
     "minutes_other": "Minutes",
     "seconds_one": "Second",
     "seconds_other": "Seconds"
+  },
+  "offers": {
+    "domain": "Offers"
   }
 }

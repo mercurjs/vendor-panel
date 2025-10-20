@@ -1,49 +1,50 @@
 import {
   Buildings,
+  ChatBubbleLeftRight,
   ChevronDownMini,
   CogSixTooth,
+  Component,
   CurrencyDollar,
+  ListCheckbox,
   MagnifyingGlass,
   MinusMini,
   ReceiptPercent,
   ShoppingCart,
+  Star,
   Tag,
   Users,
-  Component,
-  Star,
-  ListCheckbox,
-  ChatBubbleLeftRight,
-} from "@medusajs/icons"
-import { Avatar, Divider, Text, clx } from "@medusajs/ui"
-import { Collapsible as RadixCollapsible } from "radix-ui"
-import { useTranslation } from "react-i18next"
+} from "@medusajs/icons";
+import { Avatar, Divider, Text, clx } from "@medusajs/ui";
 
-import { Skeleton } from "../../common/skeleton"
-import { INavItem, NavItem } from "../../layout/nav-item"
-import { Shell } from "../../layout/shell"
+import { useUnreads } from "@talkjs/react";
+import { Collapsible as RadixCollapsible } from "radix-ui";
+import { useTranslation } from "react-i18next";
+import { useLocation } from "react-router-dom";
 
-import { useLocation } from "react-router-dom"
-import { useMe } from "../../../hooks/api"
+import isB2B from "@lib/is-b2b";
 
-import { useSearch } from "../../../providers/search-provider"
-import { UserMenu } from "../user-menu"
-import { StripeIcon } from "../../../assets/icons/Stripe"
-import { ImageAvatar } from "../../common/image-avatar"
-import { useUnreads } from "@talkjs/react"
+import { StripeIcon } from "../../../assets/icons/Stripe";
+import { useMe } from "../../../hooks/api";
+import { useSearch } from "../../../providers/search-provider";
+import { ImageAvatar } from "../../common/image-avatar";
+import { Skeleton } from "../../common/skeleton";
+import { INavItem, NavItem } from "../../layout/nav-item";
+import { Shell } from "../../layout/shell";
+import { UserMenu } from "../user-menu";
 
 export const MainLayout = () => {
   return (
     <Shell>
       <MainSidebar />
     </Shell>
-  )
-}
+  );
+};
 
 const MainSidebar = () => {
   return (
     <aside className="flex flex-1 flex-col justify-between overflow-y-auto">
       <div className="flex flex-1 flex-col">
-        <div className="bg-ui-bg-subtle sticky top-0">
+        <div className="sticky top-0 bg-ui-bg-subtle">
           <Header />
           <div className="px-3">
             <Divider variant="dashed" />
@@ -56,24 +57,24 @@ const MainSidebar = () => {
           </div>
           <UtilitySection />
         </div>
-        <div className="bg-ui-bg-subtle sticky bottom-0">
+        <div className="sticky bottom-0 bg-ui-bg-subtle">
           <UserSection />
         </div>
       </div>
     </aside>
-  )
-}
+  );
+};
 
 const Header = () => {
-  const { seller } = useMe()
+  const { seller } = useMe();
 
-  const name = seller?.name || ""
-  const fallback = seller?.photo || "M"
+  const name = seller?.name || "";
+  const fallback = seller?.photo || "M";
 
   return (
-    <div className="w-full p-3 p-0.5 pr-2 bg-ui-bg-subtle grid w-full grid-cols-[24px_1fr_15px] items-center gap-x-3">
+    <div className="grid w-full grid-cols-[24px_1fr_15px] items-center gap-x-3 bg-ui-bg-subtle p-0.5 p-3 pr-2">
       {fallback ? (
-        <div className="w-7 h-7">
+        <div className="h-7 w-7">
           <ImageAvatar src={seller?.photo || "/logo.svg"} size={7} rounded />
         </div>
       ) : (
@@ -94,13 +95,15 @@ const Header = () => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
 const useCoreRoutes = (): Omit<INavItem, "pathname">[] => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const unreadMessages = useUnreads()
+  const unreadMessages = useUnreads();
+
+  const isB2BPanel = isB2B();
 
   return [
     {
@@ -122,8 +125,8 @@ const useCoreRoutes = (): Omit<INavItem, "pathname">[] => {
     },
     {
       icon: <Tag />,
-      label: t("products.domain"),
-      to: "/products",
+      label: isB2BPanel ? t("offers.domain") : t("products.domain"),
+      to: isB2BPanel ? "/offers" : "/products",
       items: [
         {
           label: t("collections.domain"),
@@ -211,8 +214,8 @@ const useCoreRoutes = (): Omit<INavItem, "pathname">[] => {
         },
       ],
     },
-  ]
-}
+  ];
+};
 
 const useExtensionRoutes = (): Omit<INavItem, "pathname">[] => {
   return [
@@ -221,21 +224,21 @@ const useExtensionRoutes = (): Omit<INavItem, "pathname">[] => {
       label: "Stripe Connect",
       to: "/stripe-connect",
     },
-  ]
-}
+  ];
+};
 
 const Searchbar = () => {
-  const { t } = useTranslation()
-  const { toggleSearch } = useSearch()
+  const { t } = useTranslation();
+  const { toggleSearch } = useSearch();
 
   return (
     <div className="px-3">
       <button
         onClick={toggleSearch}
         className={clx(
-          "bg-ui-bg-subtle text-ui-fg-subtle flex w-full items-center gap-x-2.5 rounded-md px-2 py-1 outline-none",
+          "flex w-full items-center gap-x-2.5 rounded-md bg-ui-bg-subtle px-2 py-1 text-ui-fg-subtle outline-none",
           "hover:bg-ui-bg-subtle-hover",
-          "focus-visible:shadow-borders-focus"
+          "focus-visible:shadow-borders-focus",
         )}
       >
         <MagnifyingGlass />
@@ -249,27 +252,27 @@ const Searchbar = () => {
         </Text>
       </button>
     </div>
-  )
-}
+  );
+};
 
 const CoreRouteSection = () => {
-  const coreRoutes = useCoreRoutes()
+  const coreRoutes = useCoreRoutes();
 
   return (
     <nav className="flex flex-col gap-y-1 py-3">
       <Searchbar />
       {coreRoutes.map((route) => {
-        return <NavItem key={route.to} {...route} />
+        return <NavItem key={route.to} {...route} />;
       })}
     </nav>
-  )
-}
+  );
+};
 
 const ExtensionRouteSection = () => {
-  const extensionRoutes = useExtensionRoutes()
-  const { t } = useTranslation()
+  const extensionRoutes = useExtensionRoutes();
+  const { t } = useTranslation();
 
-  if (!extensionRoutes.length) return null
+  if (!extensionRoutes.length) return null;
 
   return (
     <div>
@@ -280,7 +283,7 @@ const ExtensionRouteSection = () => {
         <RadixCollapsible.Root defaultOpen>
           <div className="px-4">
             <RadixCollapsible.Trigger asChild className="group/trigger">
-              <button className="text-ui-fg-subtle flex w-full items-center justify-between px-2">
+              <button className="flex w-full items-center justify-between px-2 text-ui-fg-subtle">
                 <Text size="xsmall" weight="plus" leading="compact">
                   {t("app.nav.common.extensions")}
                 </Text>
@@ -294,19 +297,19 @@ const ExtensionRouteSection = () => {
           <RadixCollapsible.Content>
             <nav className="flex flex-col gap-y-0.5 py-1 pb-4">
               {extensionRoutes.map((route) => {
-                return <NavItem key={route.to} {...route} />
+                return <NavItem key={route.to} {...route} />;
               })}
             </nav>
           </RadixCollapsible.Content>
         </RadixCollapsible.Root>
       </div>
     </div>
-  )
-}
+  );
+};
 
 const UtilitySection = () => {
-  const location = useLocation()
-  const { t } = useTranslation()
+  const location = useLocation();
+  const { t } = useTranslation();
 
   return (
     <div className="flex flex-col gap-y-0.5 py-3">
@@ -317,8 +320,8 @@ const UtilitySection = () => {
         icon={<CogSixTooth />}
       />
     </div>
-  )
-}
+  );
+};
 
 const UserSection = () => {
   return (
@@ -328,5 +331,5 @@ const UserSection = () => {
       </div>
       <UserMenu />
     </div>
-  )
-}
+  );
+};

@@ -9,11 +9,15 @@ import { PublicLayout } from "@components/layout/public-layout";
 import { SettingsLayout } from "@components/layout/settings-layout";
 import { ErrorBoundary } from "@components/utilities/error-boundary";
 
+import isB2B from "@lib/is-b2b";
+
 import { TaxRegionDetailBreadcrumb } from "@routes/tax-regions/tax-region-detail/breadcrumb";
 import { taxRegionLoader } from "@routes/tax-regions/tax-region-detail/loader";
 
 import { RouteExtensions } from "@providers/router-provider/route-extensions";
 import { SettingsExtensions } from "@providers/router-provider/settings-extensions";
+
+const isB2BPanel = isB2B();
 
 export const RouteMap: RouteObject[] = [
   {
@@ -228,10 +232,11 @@ export const RouteMap: RouteObject[] = [
             ],
           },
           {
-            path: "/products",
+            path: isB2BPanel ? "/offers" : "/products",
             errorElement: <ErrorBoundary />,
             handle: {
-              breadcrumb: () => t("products.domain"),
+              breadcrumb: () =>
+                isB2BPanel ? t("offers.domain") : t("products.domain"),
             },
             children: [
               {

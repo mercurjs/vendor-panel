@@ -1,70 +1,76 @@
-import { Trash } from "@medusajs/icons"
+import { useMemo, useState } from "react";
+
+import { Trash } from "@medusajs/icons";
+import type { HttpTypes } from "@medusajs/types";
 import {
   Button,
+  Checkbox,
   Container,
   Heading,
   toast,
   usePrompt,
-  Checkbox,
-} from "@medusajs/ui"
-import { keepPreviousData } from "@tanstack/react-query"
+} from "@medusajs/ui";
+
+import { keepPreviousData } from "@tanstack/react-query";
 import {
+  type OnChangeFn,
+  type RowSelectionState,
   createColumnHelper,
-  OnChangeFn,
-  RowSelectionState,
-} from "@tanstack/react-table"
-import { useMemo, useState } from "react"
-import { useTranslation } from "react-i18next"
-import { Link, Outlet, useLoaderData } from "react-router-dom"
+} from "@tanstack/react-table";
+import { useTranslation } from "react-i18next";
+import { Link, Outlet, useLoaderData } from "react-router-dom";
 
-import { HttpTypes } from "@medusajs/types"
-import { ActionMenu } from "../../../../../components/common/action-menu"
-import { _DataTable } from "../../../../../components/table/data-table"
+import { ActionMenu } from "@components/common/action-menu";
+import { _DataTable } from "@components/table/data-table";
+
 import {
-  useDeleteProduct,
   useBulkDeleteProducts,
+  useDeleteProduct,
   useProducts,
-} from "../../../../../hooks/api/products"
-import { useProductTableColumns } from "../../../../../hooks/table/columns/use-product-table-columns"
-import { useProductTableFilters } from "../../../../../hooks/table/filters/use-product-table-filters"
-import { useProductTableQuery } from "../../../../../hooks/table/query/use-product-table-query"
-import { useDataTable } from "../../../../../hooks/use-data-table"
-import { productsLoader } from "../../loader"
+} from "@hooks/api/products";
+import { useProductTableColumns } from "@hooks/table/columns/use-product-table-columns";
+import { useProductTableFilters } from "@hooks/table/filters";
+import { useProductTableQuery } from "@hooks/table/query/use-product-table-query";
+import { useDataTable } from "@hooks/use-data-table";
 
-export const PAGE_SIZE = 5
+import isB2B from "@lib/is-b2b";
+
+import type { productsLoader } from "@routes/products/product-list/loader";
+
+export const PAGE_SIZE = 5;
 
 export const ProductListTable = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   const updater: OnChangeFn<RowSelectionState> = (newSelection) => {
     const update =
       typeof newSelection === "function"
         ? newSelection(rowSelection)
-        : newSelection
+        : newSelection;
 
-    setRowSelection(update)
-  }
+    setRowSelection(update);
+  };
 
   const initialData = useLoaderData() as Awaited<
     ReturnType<ReturnType<typeof productsLoader>>
-  >
+  >;
 
   const { searchParams, raw } = useProductTableQuery({
     pageSize: PAGE_SIZE,
-  })
+  });
 
   const query = {
     limit: 100,
     offset: 0,
     fields: "+thumbnail,*categories,+status",
-  }
+  };
 
   const options = {
     initialData,
     placeholderData: keepPreviousData,
-  }
+  };
 
   const filter = {
     collectionId: searchParams.collection_id,
@@ -74,25 +80,25 @@ export const ProductListTable = () => {
     status: searchParams.status,
     q: searchParams.q,
     sort: searchParams.order,
-  }
+  };
 
   const { products, count, isLoading, isError, error } = useProducts(
     query,
     options,
-    filter
-  )
+    filter,
+  );
 
-  const offset = searchParams.offset || 0
+  const offset = searchParams.offset || 0;
 
   const processedProducts = (products as HttpTypes.AdminProduct[])?.slice(
     offset,
-    offset + PAGE_SIZE
-  )
+    offset + PAGE_SIZE,
+  );
   const processedCount =
-    count < (products?.length || 0) ? count : products?.length || 0
+    count < (products?.length || 0) ? count : products?.length || 0;
 
-  const filters = useProductTableFilters()
-  const columns = useColumns()
+  const filters = useProductTableFilters();
+  const columns = useColumns();
 
   const { table } = useDataTable({
     data: processedProducts,
@@ -106,16 +112,16 @@ export const ProductListTable = () => {
       state: rowSelection,
       updater,
     },
-  })
+  });
 
-  const { mutateAsync } = useBulkDeleteProducts()
-  const prompt = usePrompt()
+  const { mutateAsync } = useBulkDeleteProducts();
+  const prompt = usePrompt();
 
   const handleDelete = async () => {
-    const keys = Object.keys(rowSelection)
+    const keys = Object.keys(rowSelection);
 
     if (keys.length === 0) {
-      return
+      return;
     }
 
     const res = await prompt({
@@ -125,37 +131,41 @@ export const ProductListTable = () => {
       }),
       confirmText: t("actions.delete"),
       cancelText: t("actions.cancel"),
-    })
+    });
 
     if (!res) {
-      return
+      return;
     }
 
     await mutateAsync(keys, {
       onSuccess: () => {
-        setRowSelection({})
+        setRowSelection({});
         toast.success(
           t("products.bulkDelete.success", {
             count: keys.length,
-          })
-        )
+          }),
+        );
       },
       onError: (error) => {
         toast.error(t("products.bulkDelete.error"), {
           description: error.message,
-        })
+        });
       },
-    })
-  }
+    });
+  };
 
   if (isError) {
-    throw error
+    throw error;
   }
+
+  const isB2BPanel = isB2B();
 
   return (
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
-        <Heading level="h2">{t("products.domain")}</Heading>
+        <Heading level="h2">
+          {isB2BPanel ? t("offers.domain") : t("products.domain")}
+        </Heading>
         <div className="flex items-center justify-center gap-x-2">
           <Button size="small" variant="secondary" asChild>
             <Link to={`export${location.search}`}>{t("actions.export")}</Link>
@@ -201,20 +211,20 @@ export const ProductListTable = () => {
           title: t("products.list.noRecordsTitle"),
           message: t("products.list.noRecordsMessage"),
           action: {
-            to: "/products/create",
+            to: isB2BPanel ? "/offers/create" : "/products/create",
             label: t("actions.add"),
           },
         }}
       />
       <Outlet />
     </Container>
-  )
-}
+  );
+};
 
 const ProductActions = ({ product }: { product: HttpTypes.AdminProduct }) => {
-  const { t } = useTranslation()
-  const prompt = usePrompt()
-  const { mutateAsync } = useDeleteProduct(product.id)
+  const { t } = useTranslation();
+  const prompt = usePrompt();
+  const { mutateAsync } = useDeleteProduct(product.id);
 
   const handleDelete = async () => {
     const res = await prompt({
@@ -224,10 +234,10 @@ const ProductActions = ({ product }: { product: HttpTypes.AdminProduct }) => {
       }),
       confirmText: t("actions.delete"),
       cancelText: t("actions.cancel"),
-    })
+    });
 
     if (!res) {
-      return
+      return;
     }
 
     await mutateAsync(undefined, {
@@ -236,15 +246,15 @@ const ProductActions = ({ product }: { product: HttpTypes.AdminProduct }) => {
           description: t("products.toasts.delete.success.description", {
             title: product.title,
           }),
-        })
+        });
       },
       onError: (e) => {
         toast.error(t("products.toasts.delete.error.header"), {
           description: e.message,
-        })
+        });
       },
-    })
-  }
+    });
+  };
 
   return (
     <ActionMenu
@@ -260,14 +270,14 @@ const ProductActions = ({ product }: { product: HttpTypes.AdminProduct }) => {
         },
       ]}
     />
-  )
-}
+  );
+};
 
-const columnHelper = createColumnHelper<HttpTypes.AdminProduct>()
+const columnHelper = createColumnHelper<HttpTypes.AdminProduct>();
 
 const useColumns = () => {
-  const { t } = useTranslation()
-  const base = useProductTableColumns()
+  const { t } = useTranslation();
+  const base = useProductTableColumns();
 
   const columns = useMemo(
     () => [
@@ -285,7 +295,7 @@ const useColumns = () => {
                 table.toggleAllPageRowsSelected(!!value)
               }
             />
-          )
+          );
         },
         cell: ({ row }) => {
           return (
@@ -293,22 +303,22 @@ const useColumns = () => {
               checked={row.getIsSelected()}
               onCheckedChange={(value) => row.toggleSelected(!!value)}
               onClick={(e) => {
-                e.stopPropagation()
+                e.stopPropagation();
               }}
             />
-          )
+          );
         },
       }),
       ...base,
       columnHelper.display({
         id: "actions",
         cell: ({ row }) => {
-          return <ProductActions product={row.original} />
+          return <ProductActions product={row.original} />;
         },
       }),
     ],
-    [base, t]
-  )
+    [base, t],
+  );
 
-  return columns
-}
+  return columns;
+};

@@ -599,9 +599,10 @@ export const useBulkDeleteProducts = (
           method: "DELETE",
         }),
       );
+
       return Promise.all(deletePromises);
     },
-    onSuccess: (data: any, variables: any, context: any) => {
+    onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
         queryKey: productsQueryKeys.lists(),
       });

@@ -1,38 +1,46 @@
-import { PencilSquare, Plus, Trash } from "@medusajs/icons"
-import { HttpTypes } from "@medusajs/types"
-import { Checkbox, Container, Heading, toast, usePrompt } from "@medusajs/ui"
-import { RowSelectionState, createColumnHelper } from "@tanstack/react-table"
-import { useMemo, useState } from "react"
-import { useTranslation } from "react-i18next"
+import { useMemo, useState } from "react";
 
-import { ActionMenu } from "../../../../../components/common/action-menu"
-import { _DataTable } from "../../../../../components/table/data-table"
+import { PencilSquare, Plus, Trash } from "@medusajs/icons";
+import type { HttpTypes } from "@medusajs/types";
+import { Checkbox, Container, Heading, toast, usePrompt } from "@medusajs/ui";
+
+import {
+  type RowSelectionState,
+  createColumnHelper,
+} from "@tanstack/react-table";
+import { useTranslation } from "react-i18next";
+
+import { ActionMenu } from "@components/common/action-menu";
+import { _DataTable } from "@components/table/data-table";
+
 import {
   usePriceListLinkProducts,
   usePriceListProducts,
-} from "../../../../../hooks/api/price-lists"
-import { useProductTableColumns } from "../../../../../hooks/table/columns/use-product-table-columns"
-import { useProductTableQuery } from "../../../../../hooks/table/query/use-product-table-query"
-import { useDataTable } from "../../../../../hooks/use-data-table"
+} from "@hooks/api/price-lists";
+import { useProductTableColumns } from "@hooks/table/columns/use-product-table-columns";
+import { useProductTableQuery } from "@hooks/table/query/use-product-table-query";
+import { useDataTable } from "@hooks/use-data-table";
+
+import isB2B from "@lib/is-b2b";
 
 type PriceListProductSectionProps = {
-  priceList: HttpTypes.AdminPriceList
-}
+  priceList: HttpTypes.AdminPriceList;
+};
 
-const PAGE_SIZE = 10
-const PREFIX = "p"
+const PAGE_SIZE = 10;
+const PREFIX = "p";
 
 export const PriceListProductSection = ({
   priceList,
 }: PriceListProductSectionProps) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   const { searchParams, raw } = useProductTableQuery({
     pageSize: PAGE_SIZE,
     prefix: PREFIX,
-  })
+  });
 
   const { products, count, isLoading, isError, error } = usePriceListProducts(
     priceList.id,
@@ -40,10 +48,10 @@ export const PriceListProductSection = ({
       limit: searchParams.limit?.toString() ?? PAGE_SIZE,
       offset: searchParams.offset?.toString() ?? 0,
       fields: "+thumbnail",
-    }
-  )
+    },
+  );
 
-  const columns = useColumns(priceList)
+  const columns = useColumns(priceList);
 
   const { table } = useDataTable({
     data: products || [],
@@ -58,11 +66,13 @@ export const PriceListProductSection = ({
       updater: setRowSelection,
     },
     prefix: PREFIX,
-  })
+  });
 
   if (isError) {
-    throw error
+    throw error;
   }
+
+  const isB2BPanel = isB2B();
 
   return (
     <Container className="divide-y p-0">
@@ -93,25 +103,29 @@ export const PriceListProductSection = ({
         count={count}
         pageSize={PAGE_SIZE}
         isLoading={isLoading}
-        navigateTo={(row) => `/products/${row.original.id}`}
+        navigateTo={(row) =>
+          isB2BPanel
+            ? `/offers/${row.original.id}`
+            : `/products/${row.original.id}`
+        }
         pagination
         prefix={PREFIX}
         queryObject={raw}
       />
     </Container>
-  )
-}
+  );
+};
 
 const ProductRowAction = ({
   product,
   priceList,
 }: {
-  product: HttpTypes.AdminProduct
-  priceList: HttpTypes.AdminPriceList
+  product: HttpTypes.AdminProduct;
+  priceList: HttpTypes.AdminPriceList;
 }) => {
-  const { t } = useTranslation()
-  const prompt = usePrompt()
-  const { mutateAsync } = usePriceListLinkProducts(priceList.id)
+  const { t } = useTranslation();
+  const prompt = usePrompt();
+  const { mutateAsync } = usePriceListLinkProducts(priceList.id);
 
   const handleDelete = async () => {
     const res = await prompt({
@@ -121,10 +135,10 @@ const ProductRowAction = ({
       }),
       confirmText: t("actions.delete"),
       cancelText: t("actions.cancel"),
-    })
+    });
 
     if (!res) {
-      return
+      return;
     }
 
     mutateAsync(
@@ -133,14 +147,14 @@ const ProductRowAction = ({
       },
       {
         onSuccess: () => {
-          toast.success("Product removed from price list")
+          toast.success("Product removed from price list");
         },
         onError: (e) => {
-          toast.error(e.message)
+          toast.error(e.message);
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   return (
     <ActionMenu
@@ -165,13 +179,13 @@ const ProductRowAction = ({
         },
       ]}
     />
-  )
-}
+  );
+};
 
-const columnHelper = createColumnHelper<HttpTypes.AdminProduct>()
+const columnHelper = createColumnHelper<HttpTypes.AdminProduct>();
 
 const useColumns = (priceList: HttpTypes.AdminPriceList) => {
-  const base = useProductTableColumns()
+  const base = useProductTableColumns();
 
   return useMemo(
     () => [
@@ -189,7 +203,7 @@ const useColumns = (priceList: HttpTypes.AdminPriceList) => {
                 table.toggleAllPageRowsSelected(!!value)
               }
             />
-          )
+          );
         },
         cell: ({ row }) => {
           return (
@@ -197,10 +211,10 @@ const useColumns = (priceList: HttpTypes.AdminPriceList) => {
               checked={row.getIsSelected()}
               onCheckedChange={(value) => row.toggleSelected(!!value)}
               onClick={(e) => {
-                e.stopPropagation()
+                e.stopPropagation();
               }}
             />
-          )
+          );
         },
       }),
       ...base,
@@ -211,6 +225,6 @@ const useColumns = (priceList: HttpTypes.AdminPriceList) => {
         ),
       }),
     ],
-    [base, priceList]
-  )
-}
+    [base, priceList],
+  );
+};

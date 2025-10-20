@@ -1,44 +1,42 @@
-import { PlusMini } from "@medusajs/icons"
-import { HttpTypes } from "@medusajs/types"
-import {
-  Checkbox,
-  CommandBar,
-  Container,
-  Heading,
-  toast,
-  usePrompt,
-} from "@medusajs/ui"
-import { keepPreviousData } from "@tanstack/react-query"
-import { RowSelectionState, createColumnHelper } from "@tanstack/react-table"
-import { useMemo, useState } from "react"
-import { useTranslation } from "react-i18next"
+import { useMemo, useState } from "react";
 
-import { ActionMenu } from "../../../../../components/common/action-menu"
-import { _DataTable } from "../../../../../components/table/data-table"
-import { useUpdateProductCategoryProducts } from "../../../../../hooks/api/categories"
-import { useProducts } from "../../../../../hooks/api/products"
-import { useProductTableColumns } from "../../../../../hooks/table/columns/use-product-table-columns"
-import { useProductTableFilters } from "../../../../../hooks/table/filters/use-product-table-filters"
-import { useProductTableQuery } from "../../../../../hooks/table/query/use-product-table-query"
-import { useDataTable } from "../../../../../hooks/use-data-table"
+import type { HttpTypes } from "@medusajs/types";
+import { Container, Heading, toast, usePrompt } from "@medusajs/ui";
+
+import { keepPreviousData } from "@tanstack/react-query";
+import {
+  type RowSelectionState,
+  createColumnHelper,
+} from "@tanstack/react-table";
+import { useTranslation } from "react-i18next";
+
+import { _DataTable } from "@components/table/data-table";
+
+import { useUpdateProductCategoryProducts } from "@hooks/api/categories";
+import { useProducts } from "@hooks/api/products";
+import { useProductTableColumns } from "@hooks/table/columns/use-product-table-columns";
+import { useProductTableQuery } from "@hooks/table/query/use-product-table-query";
+import { useDataTable } from "@hooks/use-data-table";
+
+import isB2B from "@lib/is-b2b";
 
 type CategoryProductSectionProps = {
-  category: HttpTypes.AdminProductCategory
-}
+  category: HttpTypes.AdminProductCategory;
+};
 
-const PAGE_SIZE = 10
+const PAGE_SIZE = 10;
 
 export const CategoryProductSection = ({
   category,
 }: CategoryProductSectionProps) => {
-  const { t } = useTranslation()
-  const prompt = usePrompt()
+  const { t } = useTranslation();
+  const prompt = usePrompt();
 
-  const [selection, setSelection] = useState<RowSelectionState>({})
+  const [selection, setSelection] = useState<RowSelectionState>({});
 
   const { raw, searchParams } = useProductTableQuery({
     pageSize: PAGE_SIZE,
-  })
+  });
   const { products, count, isLoading, isError, error } = useProducts(
     {
       // ...searchParams,
@@ -52,11 +50,10 @@ export const CategoryProductSection = ({
     },
     {
       categoryId: category.id,
-    }
-  )
+    },
+  );
 
-  const columns = useColumns()
-  const filters = useProductTableFilters(["categories"])
+  const columns = useColumns();
 
   const { table } = useDataTable({
     data: products || [],
@@ -70,12 +67,12 @@ export const CategoryProductSection = ({
       state: selection,
       updater: setSelection,
     },
-  })
+  });
 
-  const { mutateAsync } = useUpdateProductCategoryProducts(category.id)
+  const { mutateAsync } = useUpdateProductCategoryProducts(category.id);
 
   const handleRemove = async () => {
-    const selected = Object.keys(selection)
+    const selected = Object.keys(selection);
 
     const res = await prompt({
       title: t("general.areYouSure"),
@@ -84,10 +81,10 @@ export const CategoryProductSection = ({
       }),
       confirmText: t("actions.remove"),
       cancelText: t("actions.cancel"),
-    })
+    });
 
     if (!res) {
-      return
+      return;
     }
 
     await mutateAsync(
@@ -99,26 +96,30 @@ export const CategoryProductSection = ({
           toast.success(
             t("categories.products.remove.successToast", {
               count: selected.length,
-            })
-          )
+            }),
+          );
 
-          setSelection({})
+          setSelection({});
         },
         onError: (error) => {
-          toast.error(error.message)
+          toast.error(error.message);
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   if (isError) {
-    throw error
+    throw error;
   }
+
+  const isB2BPanel = isB2B();
 
   return (
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
-        <Heading level="h2">{t("products.domain")}</Heading>
+        <Heading level="h2">
+          {isB2BPanel ? t("offers.domain") : t("products.domain")}
+        </Heading>
         {/* <ActionMenu
           groups={[
             {
@@ -150,7 +151,9 @@ export const CategoryProductSection = ({
         ]}
         pageSize={PAGE_SIZE}
         count={count}
-        navigateTo={(row) => `/products/${row.id}`}
+        navigateTo={(row) =>
+          isB2BPanel ? `/offers/${row.id}` : `/products/${row.id}`
+        }
         isLoading={isLoading}
         queryObject={raw}
         noRecords={{
@@ -173,13 +176,13 @@ export const CategoryProductSection = ({
         </CommandBar.Bar>
       </CommandBar> */}
     </Container>
-  )
-}
+  );
+};
 
-const columnHelper = createColumnHelper<HttpTypes.AdminProduct>()
+const columnHelper = createColumnHelper<HttpTypes.AdminProduct>();
 
 const useColumns = () => {
-  const base = useProductTableColumns()
+  const base = useProductTableColumns();
 
   return useMemo(
     () => [
@@ -213,6 +216,6 @@ const useColumns = () => {
       // }),
       ...base,
     ],
-    [base]
-  )
-}
+    [base],
+  );
+};

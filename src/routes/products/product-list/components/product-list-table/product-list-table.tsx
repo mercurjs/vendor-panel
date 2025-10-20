@@ -54,25 +54,32 @@ export const ProductListTable = () => {
   const { searchParams, raw } = useProductTableQuery({
     pageSize: PAGE_SIZE,
   })
+
+  const query = {
+    limit: 100,
+    offset: 0,
+    fields: "+thumbnail,*categories,+status",
+  }
+
+  const options = {
+    initialData,
+    placeholderData: keepPreviousData,
+  }
+
+  const filter = {
+    collectionId: searchParams.collection_id,
+    categoryId: searchParams.category_id,
+    typeId: searchParams.type_id,
+    tagId: searchParams.tagId,
+    status: searchParams.status,
+    q: searchParams.q,
+    sort: searchParams.order,
+  }
+
   const { products, count, isLoading, isError, error } = useProducts(
-    {
-      limit: searchParams.limit,
-      offset: searchParams.offset,
-      fields: "+thumbnail,*categories,+status",
-    },
-    {
-      initialData,
-      placeholderData: keepPreviousData,
-    },
-    {
-      collectionId: searchParams.collection_id,
-      categoryId: searchParams.category_id,
-      typeId: searchParams.type_id,
-      tagId: searchParams.tagId,
-      status: searchParams.status,
-      q: searchParams.q,
-      sort: searchParams.order,
-    }
+    query,
+    options,
+    filter
   )
 
   const offset = searchParams.offset || 0

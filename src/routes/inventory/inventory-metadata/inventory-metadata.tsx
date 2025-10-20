@@ -8,12 +8,8 @@ import { FetchError } from "@medusajs/js-sdk"
 export const InventoryItemMetadata = () => {
   const { id } = useParams()
 
-  if (!id) {
-    throw new Error("Inventory Item ID is required")
-  }
-
-  const { inventory_item, isPending, isError, error } = useInventoryItem(id)
-  const { mutateAsync, isPending: isMutating } = useUpdateInventoryItem(id)
+  const { inventory_item, isPending, isError, error } = useInventoryItem(id!)
+  const { mutateAsync, isPending: isMutating } = useUpdateInventoryItem(id!)
 
   if (isError) {
     throw error

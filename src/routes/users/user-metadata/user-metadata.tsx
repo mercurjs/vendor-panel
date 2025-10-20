@@ -7,12 +7,8 @@ import { FetchError } from "@medusajs/js-sdk"
 export const UserMetadata = () => {
   const { id } = useParams()
 
-  if (!id) {
-    throw new Error("User ID is required")
-  }
-
-  const { user, isPending, isError, error } = useUser(id)
-  const { mutateAsync, isPending: isMutating } = useUpdateUser(id)
+  const { user, isPending, isError, error } = useUser(id!)
+  const { mutateAsync, isPending: isMutating } = useUpdateUser(id!)
 
   if (isError) {
     throw error

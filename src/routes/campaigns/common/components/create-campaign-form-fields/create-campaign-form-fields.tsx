@@ -9,7 +9,7 @@ import {
   Textarea,
 } from "@medusajs/ui"
 import { useEffect } from "react"
-import { useWatch } from "react-hook-form"
+import { Path, UseFormReturn, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
 import { Form } from "../../../../../components/common/form"
@@ -18,51 +18,82 @@ import {
   currencies,
   getCurrencySymbol,
 } from "../../../../../lib/data/currencies"
+import { CampaignFormFields, WithNestedCampaign } from "./types"
 
-export const CreateCampaignFormFields = ({ form, fieldScope = "" }: { form: any, fieldScope?: string }) => {
+
+type CreateCampaignFormFieldsProps<T extends CampaignFormFields | WithNestedCampaign> = {
+  form: UseFormReturn<T>
+  fieldScope?: string
+}
+
+export const CreateCampaignFormFields = <T extends CampaignFormFields | WithNestedCampaign>({ 
+  form, 
+  fieldScope = "" 
+}: CreateCampaignFormFieldsProps<T>) => {
+  
   const { t } = useTranslation()
   const { store } = useStore()
 
   const watchValueType = useWatch({
     control: form.control,
-    name: `${fieldScope}budget.type`,
+    name: `${fieldScope}budget.type` as Path<T>,
   })
 
   const isTypeSpend = watchValueType === "spend"
 
   const currencyValue = useWatch({
     control: form.control,
-    name: `${fieldScope}budget.currency_code`,
+    name: `${fieldScope}budget.currency_code` as Path<T>,
   })
 
   const promotionCurrencyValue = useWatch({
     control: form.control,
-    name: `application_method.currency_code`,
+    name: `application_method.currency_code` as Path<T>,
   })
 
   const currency = currencyValue || promotionCurrencyValue
 
   useEffect(() => {
-    form.setValue(`${fieldScope}budget.limit`, null)
+    form.setValue(
+      `${fieldScope}budget.limit` as Path<T>, 
+      null as never
+    )
 
     if (isTypeSpend) {
-      form.setValue(`campaign.budget.currency_code`, promotionCurrencyValue)
+      form.setValue(
+        `campaign.budget.currency_code` as Path<T>, 
+        promotionCurrencyValue as never
+      )
     }
 
     if (watchValueType === "usage") {
-      form.setValue(`campaign.budget.currency_code`, null)
+      form.setValue(
+        `campaign.budget.currency_code` as Path<T>, 
+        null as never
+      )
     }
-  }, [watchValueType])
+  }, [watchValueType, fieldScope, form, isTypeSpend, promotionCurrencyValue])
 
   if (promotionCurrencyValue) {
-    const formCampaignBudget = form.getValues().campaign?.budget
+    const formValues = form.getValues() as { 
+      campaign?: { 
+        budget?: { 
+          type: "spend" | "usage"
+          currency_code?: string | null 
+        } 
+      } 
+    }
+    const formCampaignBudget = formValues.campaign?.budget
     const formCampaignCurrency = formCampaignBudget?.currency_code
 
     if (
       formCampaignBudget?.type === "spend" &&
       formCampaignCurrency !== promotionCurrencyValue
     ) {
-      form.setValue("campaign.budget.currency_code", promotionCurrencyValue)
+      form.setValue(
+        "campaign.budget.currency_code" as Path<T>, 
+        promotionCurrencyValue as never
+      )
     }
   }
 
@@ -80,14 +111,14 @@ export const CreateCampaignFormFields = ({ form, fieldScope = "" }: { form: any,
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Form.Field
             control={form.control}
-            name={`${fieldScope}name`}
+            name={`${fieldScope}name` as Path<T>}
             render={({ field }) => {
               return (
                 <Form.Item>
                   <Form.Label>{t("fields.name")}</Form.Label>
 
                   <Form.Control>
-                    <Input {...field} />
+                    <Input {...field} value={(field.value as string) ?? ""} />
                   </Form.Control>
 
                   <Form.ErrorMessage />
@@ -98,14 +129,14 @@ export const CreateCampaignFormFields = ({ form, fieldScope = "" }: { form: any,
 
           <Form.Field
             control={form.control}
-            name={`${fieldScope}campaign_identifier`}
+            name={`${fieldScope}campaign_identifier` as Path<T>}
             render={({ field }) => {
               return (
                 <Form.Item>
                   <Form.Label>{t("campaigns.fields.identifier")}</Form.Label>
 
                   <Form.Control>
-                    <Input {...field} />
+                    <Input {...field} value={(field.value as string) ?? ""} />
                   </Form.Control>
 
                   <Form.ErrorMessage />
@@ -117,14 +148,14 @@ export const CreateCampaignFormFields = ({ form, fieldScope = "" }: { form: any,
 
         <Form.Field
           control={form.control}
-          name={`${fieldScope}description`}
+          name={`${fieldScope}description` as Path<T>}
           render={({ field }) => {
             return (
               <Form.Item>
                 <Form.Label optional>{t("fields.description")}</Form.Label>
 
                 <Form.Control>
-                  <Textarea {...field} />
+                  <Textarea {...field} value={(field.value as string) ?? ""} />
                 </Form.Control>
 
                 <Form.ErrorMessage />
@@ -137,7 +168,7 @@ export const CreateCampaignFormFields = ({ form, fieldScope = "" }: { form: any,
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Form.Field
           control={form.control}
-          name={`${fieldScope}starts_at`}
+          name={`${fieldScope}starts_at` as Path<T>}
           render={({ field }) => {
             return (
               <Form.Item>
@@ -150,6 +181,7 @@ export const CreateCampaignFormFields = ({ form, fieldScope = "" }: { form: any,
                     granularity="minute"
                     shouldCloseOnSelect={false}
                     {...field}
+                    value={field.value as Date | null | undefined}
                   />
                 </Form.Control>
 
@@ -161,7 +193,7 @@ export const CreateCampaignFormFields = ({ form, fieldScope = "" }: { form: any,
 
         <Form.Field
           control={form.control}
-          name={`${fieldScope}ends_at`}
+          name={`${fieldScope}ends_at` as Path<T>}
           render={({ field }) => {
             return (
               <Form.Item>
@@ -174,6 +206,7 @@ export const CreateCampaignFormFields = ({ form, fieldScope = "" }: { form: any,
                     granularity="minute"
                     shouldCloseOnSelect={false}
                     {...field}
+                    value={field.value as Date | null | undefined}
                   />
                 </Form.Control>
 
@@ -193,7 +226,7 @@ export const CreateCampaignFormFields = ({ form, fieldScope = "" }: { form: any,
 
       <Form.Field
         control={form.control}
-        name={`${fieldScope}budget.type`}
+        name={`${fieldScope}budget.type` as Path<T>}
         render={({ field }) => {
           return (
             <Form.Item>
@@ -211,6 +244,7 @@ export const CreateCampaignFormFields = ({ form, fieldScope = "" }: { form: any,
                 <RadioGroup
                   className="flex gap-y-3"
                   {...field}
+                  value={field.value as string}
                   onValueChange={field.onChange}
                 >
                   <RadioGroup.ChoiceBox
@@ -237,7 +271,7 @@ export const CreateCampaignFormFields = ({ form, fieldScope = "" }: { form: any,
         {isTypeSpend && (
           <Form.Field
             control={form.control}
-            name={`${fieldScope}budget.currency_code`}
+            name={`${fieldScope}budget.currency_code` as Path<T>}
             render={({ field: { onChange, ref, ...field } }) => {
               return (
                 <Form.Item>
@@ -253,6 +287,7 @@ export const CreateCampaignFormFields = ({ form, fieldScope = "" }: { form: any,
                   <Form.Control>
                     <Select
                       {...field}
+                      value={field.value as string}
                       onValueChange={onChange}
                       disabled={!!fieldScope.length}
                     >
@@ -290,7 +325,7 @@ export const CreateCampaignFormFields = ({ form, fieldScope = "" }: { form: any,
 
         <Form.Field
           control={form.control}
-          name={`${fieldScope}budget.limit`}
+          name={`${fieldScope}budget.limit` as Path<T>}
           render={({ field: { onChange, value, ...field } }) => {
             return (
               <Form.Item className="basis-1/2">
@@ -311,12 +346,12 @@ export const CreateCampaignFormFields = ({ form, fieldScope = "" }: { form: any,
                       onValueChange={(value) =>
                         onChange(value ? parseInt(value) : "")
                       }
-                      code={currencyValue}
+                      code={currencyValue as string}
                       symbol={
-                        currencyValue ? getCurrencySymbol(currencyValue) : ""
+                        currencyValue ? getCurrencySymbol(currencyValue as string) : ""
                       }
                       {...field}
-                      value={value}
+                      value={value as string | number | undefined}
                       disabled={!currency && isTypeSpend}
                     />
                   ) : (
@@ -325,7 +360,7 @@ export const CreateCampaignFormFields = ({ form, fieldScope = "" }: { form: any,
                       key="usage"
                       {...field}
                       min={0}
-                      value={value}
+                      value={value as string | number | undefined ?? ""}
                       onChange={(e) => {
                         onChange(
                           e.target.value === ""

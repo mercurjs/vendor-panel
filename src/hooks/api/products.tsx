@@ -9,7 +9,10 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 
-import { ProductAttributesResponse } from "@custom-types/products";
+import type {
+  AdminUpdateProduct,
+  ProductAttributesResponse,
+} from "@custom-types/products";
 
 import { fetchQuery, importProductsQuery, sdk } from "@/lib/client";
 import { queryClient } from "@/lib/query-client";
@@ -515,7 +518,7 @@ export const useUpdateProduct = (
   options?: UseMutationOptions<
     HttpTypes.AdminProductResponse,
     FetchError,
-    HttpTypes.AdminUpdateProduct
+    AdminUpdateProduct
   >,
 ) => {
   return useMutation({
@@ -531,6 +534,7 @@ export const useUpdateProduct = (
       await delete product.id;
       await delete product.rating;
       await delete payload.status;
+      await delete product.secondary_categories;
 
       return fetchQuery(`/vendor/products/${id}`, {
         method: "POST",

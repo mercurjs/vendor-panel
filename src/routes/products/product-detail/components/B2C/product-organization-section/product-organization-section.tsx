@@ -1,21 +1,24 @@
-import { PencilSquare } from "@medusajs/icons"
-import { HttpTypes } from "@medusajs/types"
-import { Badge, Container, Heading, Tooltip } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
-import { ActionMenu } from "../../../../../components/common/action-menu"
-import { SectionRow } from "../../../../../components/common/section"
-import { useDashboardExtension } from "../../../../../extensions"
+import { PencilSquare } from "@medusajs/icons";
+import type { HttpTypes } from "@medusajs/types";
+import { Badge, Container, Heading, Tooltip } from "@medusajs/ui";
+
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+
+import { ActionMenu } from "@components/common/action-menu";
+import { SectionRow } from "@components/common/section";
+
+import { useDashboardExtension } from "@extensions/dashboard-extension-provider";
 
 type ProductOrganizationSectionProps = {
-  product: HttpTypes.AdminProduct
-}
+  product: HttpTypes.AdminProduct;
+};
 
 export const ProductOrganizationSection = ({
   product,
 }: ProductOrganizationSectionProps) => {
-  const { t } = useTranslation()
-  const { getDisplays } = useDashboardExtension()
+  const { t } = useTranslation();
+  const { getDisplays } = useDashboardExtension();
 
   return (
     <Container className="divide-y p-0">
@@ -90,11 +93,11 @@ export const ProductOrganizationSection = ({
       />
 
       {getDisplays("product", "organize").map((Component, i) => {
-        return <Component key={i} data={product} />
+        return <Component key={i} data={product} />;
       })}
     </Container>
-  )
-}
+  );
+};
 
 const OrganizationTag = ({ label, to }: { label: string; to: string }) => {
   return (
@@ -103,5 +106,5 @@ const OrganizationTag = ({ label, to }: { label: string; to: string }) => {
         <Link to={to}>{label}</Link>
       </Badge>
     </Tooltip>
-  )
-}
+  );
+};

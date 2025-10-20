@@ -616,6 +616,12 @@
       },
       "hs_code": {
         "label": "HS code"
+      },
+      "primaryCategory": {
+        "label": "Primary Category"
+      },
+      "secondaryCategories": {
+        "label": "Secondary Categories"
       }
     },
     "variant": {

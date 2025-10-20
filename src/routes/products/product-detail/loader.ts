@@ -3,9 +3,12 @@ import type { LoaderFunctionArgs } from "react-router-dom";
 import { productsQueryKeys } from "@hooks/api/products";
 
 import { fetchQuery } from "@lib/client";
+import isB2B from "@lib/is-b2b";
 import { queryClient } from "@lib/query-client";
 
 import { PRODUCT_DETAIL_FIELDS } from "@routes/products/product-detail/constants";
+
+const isB2BPanel = isB2B();
 
 const productDetailQuery = (id: string) => ({
   queryKey: productsQueryKeys.detail(id, {
@@ -15,8 +18,9 @@ const productDetailQuery = (id: string) => ({
     fetchQuery(`/vendor/products/${id}`, {
       method: "GET",
       query: {
-        fields:
-          "*variants.inventory_items,*categories,attribute_values.*,attribute_values.attribute.*",
+        fields: isB2BPanel
+          ? "*variants.inventory_items,*categories,*secondary_categories,attribute_values.*,attribute_values.attribute.*"
+          : "*variants.inventory_items,*categories,attribute_values.*,attribute_values.attribute.*",
       },
     }),
 });

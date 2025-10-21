@@ -53,9 +53,7 @@ export const CreateCampaignFormFields = <T extends CampaignFormFields | WithNest
 
   useEffect(() => {
     // Reset budget limit when budget type changes
-    const limitPath = `${fieldScope}budget.limit` as Path<T>
-    const limitValue = null as PathValue<T, typeof limitPath>
-    form.setValue(limitPath, limitValue)
+    form.resetField(`${fieldScope}budget.limit` as Path<T>)
 
     if (fieldScope) {
       const currencyPath = `campaign.budget.currency_code` as Path<T>

@@ -51,11 +51,11 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
       title: t("general.areYouSure"),
       description: includingThumbnail
         ? t("products.media.deleteWarningWithThumbnail", {
-            count: ids.length,
-          })
+          count: ids.length,
+        })
         : t("products.media.deleteWarning", {
-            count: ids.length,
-          }),
+          count: ids.length,
+        }),
       confirmText: t("actions.delete"),
       cancelText: t("actions.cancel"),
     })
@@ -84,7 +84,7 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
   return (
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
-        <Heading level="h2">{t("products.media.label")}</Heading>
+        <Heading>{t("products.media.label")}</Heading>
         <ActionMenu
           groups={[
             {

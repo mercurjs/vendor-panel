@@ -135,7 +135,7 @@ export function OrderReceiveReturnForm({
       toast.success(t("general.success"), {
         description: t("orders.returns.receive.toast.success"),
       })
-    } catch (e: any) {
+    } catch (e) {
       toast.error(t("general.error"), {
         description: e instanceof FetchError ? e.message : "An unknown error occurred",
       })

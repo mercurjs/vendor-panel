@@ -45,10 +45,10 @@ export const EditCustomerForm = ({ customer }: EditCustomerFormProps) => {
   const handleSubmit = form.handleSubmit(async (data) => {
     await mutateAsync(
       {
-        first_name: data.first_name || undefined,
-        last_name: data.last_name || undefined,
-        phone: data.phone || undefined,
-        company_name: data.company_name || undefined,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        phone: data.phone,
+        company_name: data.company_name,
         metadata: {
           email: customer.has_account ? undefined : data.email,
         },

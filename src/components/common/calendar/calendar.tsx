@@ -60,27 +60,22 @@ function Calendar({
       }}
       components={{
         PreviousMonthButton: ({ className, ...props }) => {
-          const { onClick, ...rest } = props
           return (
             <IconButton
               className={clx("absolute left-0 top-2.5", className)}
               variant="transparent"
-              onClick={onClick}
-              {...rest}
+              {...props}
             >
               <ChevronLeft />
             </IconButton>
           )
         },
         NextMonthButton: ({ className, ...props }) => {
-          const { onClick, ...rest } = props
-
           return (
             <IconButton
               className={clx("absolute right-0 top-2.5", className)}
               variant="transparent"
-              onClick={onClick}
-              {...rest}
+              {...props}
             >
               <ChevronRight />
             </IconButton>

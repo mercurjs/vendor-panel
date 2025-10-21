@@ -183,13 +183,3 @@ const filterByDate = (
     return isValid
   })
 }
-
-// Leaving for future use
-// const defaultOperators = {
-//   eq: undefined,
-//   gt: undefined,
-//   gte: undefined,
-//   lt: undefined,
-//   lte: undefined,
-// }
-

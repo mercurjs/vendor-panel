@@ -36,7 +36,7 @@ export const ProductAdditionalAttributesSection = ({
         />
       </div>
       {attribute_values
-        .filter((attribute) => attribute != null)
+        .filter(Boolean)
         .map((attribute) => (
           <SectionRow
             key={attribute.id}

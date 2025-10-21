@@ -76,8 +76,7 @@ export const CreateCampaignFormFields = <T extends CampaignFormFields | WithNest
       budget?.currency_code !== promotionCurrencyValue
     ) {
       const currencyPath = "campaign.budget.currency_code" as Path<T>
-      const currencyValue = promotionCurrencyValue as PathValue<T, typeof currencyPath>
-      form.setValue(currencyPath, currencyValue)
+      form.setValue(currencyPath, promotionCurrencyValue)
     }
   }
 

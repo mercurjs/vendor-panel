@@ -15,7 +15,7 @@ export const convertToStaticCountries = (
       const requiredFields: (keyof HttpTypes.AdminRegionCountry)[] = [
         'iso_2', 'iso_3', 'num_code', 'name', 'display_name'
       ]
-      return requiredFields.every(field => c[field] !== undefined)
+      return requiredFields.every(field => !!c[field])
     })
     .map(({ id, ...country }) => country as StaticCountry)
 }

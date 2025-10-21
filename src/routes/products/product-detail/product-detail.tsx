@@ -3,10 +3,8 @@ import { useParams } from "react-router-dom"
 import { TwoColumnPageSkeleton } from "../../../components/common/skeleton"
 import { TwoColumnPage } from "../../../components/layout/pages"
 import { useProduct } from "../../../hooks/api/products"
-import { ProductAttributeSection } from "./components/product-attribute-section"
 import { ProductGeneralSection } from "./components/product-general-section"
 import { ProductMediaSection } from "./components/product-media-section"
-import { ProductOptionSection } from "./components/product-option-section"
 import { ProductOrganizationSection } from "./components/product-organization-section"
 import { ProductVariantSection } from "./components/product-variant-section"
 
@@ -48,14 +46,14 @@ export const ProductDetail = () => {
       <TwoColumnPage.Main>
         <ProductGeneralSection product={product} />
         <ProductMediaSection product={product} />
-        <ProductOptionSection product={product} />
+        {/* <ProductOptionSection product={product} /> */}
         <ProductVariantSection product={product} />
       </TwoColumnPage.Main>
       <TwoColumnPage.Sidebar>
         {/* <ProductShippingProfileSection product={product} /> */}
         <ProductOrganizationSection product={product} />
-        <ProductAttributeSection product={product} />
-        {/* <ProductAdditionalAttributesSection product={product as any} /> */}
+        {/* <ProductAttributeSection product={product} /> */}
+        <ProductAdditionalAttributesSection product={product as any} />
       </TwoColumnPage.Sidebar>
     </TwoColumnPage>
   )

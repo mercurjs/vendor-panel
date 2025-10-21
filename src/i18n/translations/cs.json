@@ -563,6 +563,12 @@
       "categories": {
         "label": "Kategorie"
       },
+      "primaryCategory": {
+        "label": "Hlavní kategorie"
+      },
+      "secondaryCategories": {
+        "label": "Vedlejší kategorie"
+      },
       "tags": {
         "label": "Štítky"
       },

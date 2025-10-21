@@ -52,7 +52,6 @@ export const CreateCampaignFormFields = <T extends CampaignFormFields | WithNest
   const currency = currencyValue || promotionCurrencyValue
 
   useEffect(() => {
-    // Reset budget limit when budget type changes
     form.resetField(`${fieldScope}budget.limit` as Path<T>)
 
     if (fieldScope) {
@@ -70,31 +69,15 @@ export const CreateCampaignFormFields = <T extends CampaignFormFields | WithNest
 
   if (promotionCurrencyValue && fieldScope) {
     const formValues = form.getValues()
-    
-    // Check if form has nested campaign structure
-    if (
-      typeof formValues === "object" &&
-      formValues !== null &&
-      "campaign" in formValues &&
-      formValues.campaign &&
-      typeof formValues.campaign === "object" &&
-      "budget" in formValues.campaign &&
-      formValues.campaign.budget &&
-      typeof formValues.campaign.budget === "object"
-    ) {
-      const budget = formValues.campaign.budget as {
-        type?: "spend" | "usage"
-        currency_code?: string | null
-      }
+    const budget = (formValues as WithNestedCampaign)?.campaign?.budget
 
-      if (
-        budget.type === "spend" &&
-        budget.currency_code !== promotionCurrencyValue
-      ) {
-        const currencyPath = "campaign.budget.currency_code" as Path<T>
-        const currencyValue = promotionCurrencyValue as PathValue<T, typeof currencyPath>
-        form.setValue(currencyPath, currencyValue)
-      }
+    if (
+      budget?.type === "spend" &&
+      budget?.currency_code !== promotionCurrencyValue
+    ) {
+      const currencyPath = "campaign.budget.currency_code" as Path<T>
+      const currencyValue = promotionCurrencyValue as PathValue<T, typeof currencyPath>
+      form.setValue(currencyPath, currencyValue)
     }
   }
 

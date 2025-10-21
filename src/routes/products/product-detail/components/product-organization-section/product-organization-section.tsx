@@ -79,8 +79,8 @@ export const ProductOrganizationSection = ({
       <SectionRow
         title={t("products.fields.secondaryCategories.label")}
         value={
-          product.additional_data?.secondary_categories?.length
-            ? product.additional_data?.secondary_categories.map((secondaryCategory: any) => (
+          product.secondary_categories?.length
+            ? product.secondary_categories.map((secondaryCategory: any) => (
               <OrganizationTag
                 key={secondaryCategory.id}
                 label={secondaryCategory.name}

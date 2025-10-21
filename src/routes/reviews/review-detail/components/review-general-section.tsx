@@ -52,7 +52,7 @@ export const ReviewGeneralSection = ({
       </div>
       <div className="px-6 py-4 grid grid-cols-2">
         <div>Review</div>
-        <div>{review.customer_note}</div>
+        <div className="truncate">{review.customer_note}</div>
       </div>
       <div className="px-6 py-4 grid grid-cols-2">
         <div>Reply</div>

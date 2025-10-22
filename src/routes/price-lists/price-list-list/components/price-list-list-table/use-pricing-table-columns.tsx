@@ -27,7 +27,7 @@ export const usePricingTableColumns = () => {
       columnHelper.accessor("status", {
         header: t("priceLists.fields.status.label"),
         cell: ({ row }) => {
-          const { color, text } = getPriceListStatus(t, row.original)
+          const { color, text } = getPriceListStatus(t, row.original?.price_list)
 
           return <StatusCell color={color}>{text}</StatusCell>
         },

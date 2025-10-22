@@ -552,6 +552,12 @@
       "categories": {
         "label": "Categorie"
       },
+      "primaryCategory": {
+        "label": "Categoria principale"
+      },
+      "secondaryCategories": {
+        "label": "Categorie secondarie"
+      },
       "tags": {
         "label": "Tag"
       },

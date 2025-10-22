@@ -561,6 +561,12 @@
       "categories": {
         "label": "Categorii"
       },
+      "primaryCategory": {
+        "label": "Categoria principală"
+      },
+      "secondaryCategories": {
+        "label": "Categorii secundare"
+      },
       "tags": {
         "label": "Etichete"
       },

@@ -590,6 +590,12 @@
       "categories": {
         "label": "الفئات"
       },
+      "primaryCategory": {
+        "label": "الفئة الأساسية"
+      },
+      "secondaryCategories": {
+        "label": "الفئات الثانوية"
+      },
       "tags": {
         "label": "العلامات"
       },

@@ -551,6 +551,12 @@
       "categories": {
         "label": "หมวดหมู่"
       },
+      "primaryCategory": {
+        "label": "หมวดหมู่หลัก"
+      },
+      "secondaryCategories": {
+        "label": "หมวดหมู่รอง"
+      },
       "tags": {
         "label": "แท็ก"
       },

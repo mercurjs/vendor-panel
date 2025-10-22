@@ -1,20 +1,22 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { HttpTypes } from "@medusajs/types"
-import { Button } from "@medusajs/ui"
-import { useMemo } from "react"
-import { useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import * as zod from "zod"
+import { useMemo } from "react";
 
-import { RouteFocusModal, useRouteModal } from "../../../components/modals"
-import { KeyboundForm } from "../../../components/utilities/keybound-form"
-import {
-  useUpdateProductVariant,
-  useUpdateProductVariantsBatch,
-} from "../../../hooks/api/products"
-import { useRegions } from "../../../hooks/api/regions"
-import { castNumber } from "../../../lib/cast-number"
-import { VariantPricingForm } from "../common/variant-pricing-form"
+import type { HttpTypes } from "@medusajs/types";
+import { Button } from "@medusajs/ui";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import * as zod from "zod";
+
+import { RouteFocusModal, useRouteModal } from "@components/modals";
+import { KeyboundForm } from "@components/utilities/keybound-form";
+
+import { useUpdateProductVariant } from "@hooks/api/products";
+import { useRegions } from "@hooks/api/regions";
+
+import { castNumber } from "@lib/cast-number";
+
+import { VariantPricingForm } from "@routes/products/common/variant-pricing-form";
 
 export const UpdateVariantPricesSchema = zod.object({
   variants: zod.array(
@@ -22,44 +24,45 @@ export const UpdateVariantPricesSchema = zod.object({
       prices: zod
         .record(zod.string(), zod.string().or(zod.number()).optional())
         .optional(),
-    })
+    }),
   ),
-})
+});
 
 export type UpdateVariantPricesSchemaType = zod.infer<
   typeof UpdateVariantPricesSchema
->
+>;
 
 export const PricingEdit = ({
   product,
   variantId,
 }: {
-  product: HttpTypes.AdminProduct
-  variantId?: string
+  product: HttpTypes.AdminProduct;
+  variantId?: string;
 }) => {
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
   // const { mutateAsync, isPending } = useUpdateProductVariantsBatch(product.id)
   const { mutateAsync, isPending } = useUpdateProductVariant(
     product.id,
-    variantId!
-  )
+    variantId!,
+  );
 
-  const { regions } = useRegions({ limit: 9999 })
+  const { regions } = useRegions({ limit: 9999 });
   const regionsCurrencyMap = useMemo(() => {
     if (!regions?.length) {
-      return {}
+      return {};
     }
 
-    return regions.reduce((acc, reg) => {
-      acc[reg.id] = reg.currency_code
-      return acc
-    }, {})
-  }, [regions])
+    return regions.reduce((acc: Record<string, string>, reg) => {
+      acc[reg.id] = reg.currency_code;
+
+      return acc;
+    }, {});
+  }, [regions]);
 
   const variants = variantId
     ? product.variants?.filter((v) => v.id === variantId)
-    : product.variants
+    : product.variants;
 
   const form = useForm<UpdateVariantPricesSchemaType>({
     defaultValues: {
@@ -67,80 +70,80 @@ export const PricingEdit = ({
         title: variant.title,
         prices: variant.prices.reduce((acc: any, price: any) => {
           if (price.rules?.region_id) {
-            acc[price.rules.region_id] = price.amount
+            acc[price.rules.region_id] = price.amount;
           } else {
-            acc[price.currency_code] = price.amount
+            acc[price.currency_code] = price.amount;
           }
-          return acc
+          return acc;
         }, {}),
       })) as any,
     },
 
     resolver: zodResolver(UpdateVariantPricesSchema, {}),
-  })
+  });
 
   const handleSubmit = form.handleSubmit(async (values) => {
     const reqData = values.variants.map((variant, ind) => ({
       ...variants[ind],
       prices: Object.entries(variant.prices || {})
         .filter(
-          ([_, value]) => value !== "" && typeof value !== "undefined" // deleted cells
+          ([_, value]) => value !== "" && typeof value !== "undefined", // deleted cells
         )
         .map(([currencyCodeOrRegionId, value]: any) => {
           const regionId = currencyCodeOrRegionId.startsWith("reg_")
             ? currencyCodeOrRegionId
-            : undefined
+            : undefined;
           const currencyCode = currencyCodeOrRegionId.startsWith("reg_")
             ? regionsCurrencyMap[regionId]
-            : currencyCodeOrRegionId
+            : currencyCodeOrRegionId;
 
-          let existingId = undefined
+          let existingId = undefined;
 
           if (regionId) {
             existingId = variants?.[ind]?.prices?.find(
-              (p) => p.rules["region_id"] === regionId
-            )?.id
+              (p) => p.rules["region_id"] === regionId,
+            )?.id;
           } else {
             existingId = variants?.[ind]?.prices?.find(
               (p) =>
                 p.currency_code === currencyCode &&
-                Object.keys(p.rules ?? {}).length === 0
-            )?.id
+                Object.keys(p.rules ?? {}).length === 0,
+            )?.id;
           }
 
-          const amount = castNumber(value)
+          const amount = castNumber(value);
 
           return {
             id: existingId,
             currency_code: currencyCode,
             amount,
             ...(regionId ? { rules: { region_id: regionId } } : {}),
-          }
+          };
         }),
-    }))
+    }));
 
-    const data = reqData[0]
+    const data = reqData[0];
 
-    delete data["options"]
-    delete data["product_id"]
-    delete data["created_at"]
-    delete data["updated_at"]
-    delete data["deleted_at"]
-    delete data["inventory_items"]
+    delete data["options"];
+    delete data["product_id"];
+    delete data["created_at"];
+    delete data["updated_at"];
+    delete data["deleted_at"];
+    delete data["inventory_items"];
 
     await mutateAsync(data, {
       onSuccess: () => {
-        handleSuccess("..")
+        handleSuccess("..");
       },
-    })
-  })
+    });
+  });
 
   return (
     <RouteFocusModal.Form form={form}>
       <KeyboundForm onSubmit={handleSubmit} className="flex size-full flex-col">
         <RouteFocusModal.Header />
         <RouteFocusModal.Body className="flex flex-col overflow-hidden">
-          <VariantPricingForm form={form as any} />
+          <VariantPricingForm form={form as any} product={product} />
         </RouteFocusModal.Body>
         <RouteFocusModal.Footer>
           <div className="flex w-full items-center justify-end gap-x-2">
@@ -161,5 +164,5 @@ export const PricingEdit = ({
         </RouteFocusModal.Footer>
       </KeyboundForm>
     </RouteFocusModal.Form>
-  )
-}
+  );
+};

@@ -1,29 +1,34 @@
-import { HttpTypes } from "@medusajs/types"
-import { Container, Heading } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
-import { _DataTable } from "../../../../../components/table/data-table"
-import { useProducts } from "../../../../../hooks/api"
-import { useProductTableColumns } from "../../../../../hooks/table/columns"
-import { useProductTableFilters } from "../../../../../hooks/table/filters"
-import { useProductTableQuery } from "../../../../../hooks/table/query"
-import { useDataTable } from "../../../../../hooks/use-data-table"
+import type { HttpTypes } from "@medusajs/types";
+import { Container, Heading } from "@medusajs/ui";
+
+import { useTranslation } from "react-i18next";
+
+import { _DataTable } from "@components/table/data-table";
+
+import { useProducts } from "@hooks/api";
+import { useProductTableColumns } from "@hooks/table/columns";
+import { useProductTableFilters } from "@hooks/table/filters";
+import { useProductTableQuery } from "@hooks/table/query";
+import { useDataTable } from "@hooks/use-data-table";
+
+import isB2B from "@lib/is-b2b";
 
 type ProductTagProductSectionProps = {
-  productTag: HttpTypes.AdminProductTag
-}
+  productTag: HttpTypes.AdminProductTag;
+};
 
-const PAGE_SIZE = 10
-const PREFIX = "pt"
+const PAGE_SIZE = 10;
+const PREFIX = "pt";
 
 export const ProductTagProductSection = ({
   productTag,
 }: ProductTagProductSectionProps) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const { searchParams, raw } = useProductTableQuery({
     pageSize: PAGE_SIZE,
     prefix: PREFIX,
-  })
+  });
 
   const { products, count, isPending, isError, error } = useProducts(
     {
@@ -35,11 +40,11 @@ export const ProductTagProductSection = ({
     {
       ...searchParams,
       tagId: productTag.id!,
-    }
-  )
+    },
+  );
 
-  const filters = useProductTableFilters(["product_tags"])
-  const columns = useProductTableColumns()
+  const filters = useProductTableFilters(["product_tags"]);
+  const columns = useProductTableColumns();
 
   const { table } = useDataTable({
     data: products,
@@ -48,16 +53,20 @@ export const ProductTagProductSection = ({
     getRowId: (row) => row.id,
     pageSize: PAGE_SIZE,
     prefix: PREFIX,
-  })
+  });
 
   if (isError) {
-    throw error
+    throw error;
   }
+
+  const isB2BPanel = isB2B();
 
   return (
     <Container className="divide-y px-0 py-0">
       <div className="px-6 py-4">
-        <Heading level="h2">{t("products.domain")}</Heading>
+        <Heading level="h2">
+          {isB2BPanel ? t("offers.domain") : t("products.domain")}
+        </Heading>
       </div>
       <_DataTable
         table={table}
@@ -67,7 +76,11 @@ export const ProductTagProductSection = ({
         columns={columns}
         pageSize={PAGE_SIZE}
         count={count}
-        navigateTo={(row) => `/products/${row.original.id}`}
+        navigateTo={(row) =>
+          isB2BPanel
+            ? `/offers/${row.original.id}`
+            : `/products/${row.original.id}`
+        }
         search
         pagination
         orderBy={[
@@ -78,5 +91,5 @@ export const ProductTagProductSection = ({
         ]}
       />
     </Container>
-  )
-}
+  );
+};

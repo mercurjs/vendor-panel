@@ -1,32 +1,38 @@
-import { PencilSquare, Trash } from "@medusajs/icons"
-import { HttpTypes } from "@medusajs/types"
-import { Checkbox, Container, Heading, toast, usePrompt } from "@medusajs/ui"
-import { createColumnHelper } from "@tanstack/react-table"
-import { useMemo } from "react"
-import { useTranslation } from "react-i18next"
-import { ActionMenu } from "../../../../../components/common/action-menu"
-import { _DataTable } from "../../../../../components/table/data-table"
-import { useUpdateCollectionProducts } from "../../../../../hooks/api/collections"
-import { useProducts } from "../../../../../hooks/api/products"
-import { useProductTableColumns } from "../../../../../hooks/table/columns/use-product-table-columns"
-import { useProductTableFilters } from "../../../../../hooks/table/filters/use-product-table-filters"
-import { useProductTableQuery } from "../../../../../hooks/table/query/use-product-table-query"
-import { useDataTable } from "../../../../../hooks/use-data-table"
+import { useMemo } from "react";
+
+import { PencilSquare, Trash } from "@medusajs/icons";
+import type { HttpTypes } from "@medusajs/types";
+import { Checkbox, Container, Heading, toast, usePrompt } from "@medusajs/ui";
+
+import { createColumnHelper } from "@tanstack/react-table";
+import { useTranslation } from "react-i18next";
+
+import { ActionMenu } from "@components/common/action-menu";
+import { _DataTable } from "@components/table/data-table";
+
+import { useUpdateCollectionProducts } from "@hooks/api/collections";
+import { useProducts } from "@hooks/api/products";
+import { useProductTableColumns } from "@hooks/table/columns/use-product-table-columns";
+import { useProductTableFilters } from "@hooks/table/filters/use-product-table-filters";
+import { useProductTableQuery } from "@hooks/table/query/use-product-table-query";
+import { useDataTable } from "@hooks/use-data-table";
+
+import isB2B from "@lib/is-b2b";
 
 type CollectionProductSectionProps = {
-  collection: HttpTypes.AdminCollection
-}
+  collection: HttpTypes.AdminCollection;
+};
 
-const PAGE_SIZE = 10
+const PAGE_SIZE = 10;
 
 export const CollectionProductSection = ({
   collection,
 }: CollectionProductSectionProps) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const { searchParams, raw } = useProductTableQuery({
     pageSize: PAGE_SIZE,
-  })
+  });
   const { products, count, isLoading, isError, error } = useProducts(
     {
       ...searchParams,
@@ -37,11 +43,11 @@ export const CollectionProductSection = ({
     {
       ...searchParams,
       collectionId: collection.id!,
-    }
-  )
+    },
+  );
 
-  const filters = useProductTableFilters(["collections"])
-  const columns = useColumns()
+  const filters = useProductTableFilters(["collections"]);
+  const columns = useColumns();
 
   const { table } = useDataTable({
     data: products ?? [],
@@ -54,14 +60,14 @@ export const CollectionProductSection = ({
     meta: {
       collectionId: collection.id,
     },
-  })
+  });
 
-  const prompt = usePrompt()
+  const prompt = usePrompt();
 
-  const { mutateAsync } = useUpdateCollectionProducts(collection.id!)
+  const { mutateAsync } = useUpdateCollectionProducts(collection.id!);
 
   const handleRemove = async (selection: Record<string, boolean>) => {
-    const ids = Object.keys(selection)
+    const ids = Object.keys(selection);
 
     const res = await prompt({
       title: t("general.areYouSure"),
@@ -70,10 +76,10 @@ export const CollectionProductSection = ({
       }),
       confirmText: t("actions.remove"),
       cancelText: t("actions.cancel"),
-    })
+    });
 
     if (!res) {
-      return
+      return;
     }
 
     await mutateAsync(
@@ -85,24 +91,28 @@ export const CollectionProductSection = ({
           toast.success(
             t("collections.products.remove.successToast", {
               count: ids.length,
-            })
-          )
+            }),
+          );
         },
         onError: (e) => {
-          toast.error(e.message)
+          toast.error(e.message);
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   if (isError) {
-    throw error
+    throw error;
   }
+
+  const isB2BPanel = isB2B();
 
   return (
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
-        <Heading level="h2">{t("products.domain")}</Heading>
+        <Heading level="h2">
+          {isB2BPanel ? t("offers.domain") : t("products.domain")}
+        </Heading>
         {/* <ActionMenu
           groups={[
             {
@@ -123,7 +133,9 @@ export const CollectionProductSection = ({
         search
         pagination
         pageSize={PAGE_SIZE}
-        navigateTo={({ original }) => `/products/${original.id}`}
+        navigateTo={({ original }) =>
+          isB2BPanel ? `/offers/${original.id}` : `/products/${original.id}`
+        }
         count={count}
         filters={filters}
         isLoading={isLoading}
@@ -151,19 +163,19 @@ export const CollectionProductSection = ({
         }}
       />
     </Container>
-  )
-}
+  );
+};
 
 const ProductActions = ({
   product,
   collectionId,
 }: {
-  product: HttpTypes.AdminProduct
-  collectionId: string
+  product: HttpTypes.AdminProduct;
+  collectionId: string;
 }) => {
-  const { t } = useTranslation()
-  const prompt = usePrompt()
-  const { mutateAsync } = useUpdateCollectionProducts(collectionId)
+  const { t } = useTranslation();
+  const prompt = usePrompt();
+  const { mutateAsync } = useUpdateCollectionProducts(collectionId);
 
   const handleRemove = async () => {
     const res = await prompt({
@@ -173,10 +185,10 @@ const ProductActions = ({
       }),
       confirmText: t("actions.remove"),
       cancelText: t("actions.cancel"),
-    })
+    });
 
     if (!res) {
-      return
+      return;
     }
 
     await mutateAsync(
@@ -188,15 +200,17 @@ const ProductActions = ({
           toast.success(
             t("collections.products.remove.successToast", {
               count: 1,
-            })
-          )
+            }),
+          );
         },
         onError: (e) => {
-          toast.error(e.message)
+          toast.error(e.message);
         },
-      }
-    )
-  }
+      },
+    );
+  };
+
+  const isB2BPanel = isB2B();
 
   return (
     <ActionMenu
@@ -206,7 +220,9 @@ const ProductActions = ({
             {
               icon: <PencilSquare />,
               label: t("actions.edit"),
-              to: `/products/${product.id}/edit`,
+              to: isB2BPanel
+                ? `/offers/${product.id}/edit`
+                : `/products/${product.id}/edit`,
             },
           ],
         },
@@ -221,13 +237,13 @@ const ProductActions = ({
         },
       ]}
     />
-  )
-}
+  );
+};
 
-const columnHelper = createColumnHelper<HttpTypes.AdminProduct>()
+const columnHelper = createColumnHelper<HttpTypes.AdminProduct>();
 
 const useColumns = () => {
-  const columns = useProductTableColumns()
+  const columns = useProductTableColumns();
 
   return useMemo(
     () => [
@@ -245,7 +261,7 @@ const useColumns = () => {
                 table.toggleAllPageRowsSelected(!!value)
               }
             />
-          )
+          );
         },
         cell: ({ row }) => {
           return (
@@ -253,10 +269,10 @@ const useColumns = () => {
               checked={row.getIsSelected()}
               onCheckedChange={(value) => row.toggleSelected(!!value)}
               onClick={(e) => {
-                e.stopPropagation()
+                e.stopPropagation();
               }}
             />
-          )
+          );
         },
       }),
       ...columns,
@@ -264,18 +280,18 @@ const useColumns = () => {
         id: "actions",
         cell: ({ row, table }) => {
           const { collectionId } = table.options.meta as {
-            collectionId: string
-          }
+            collectionId: string;
+          };
 
           return (
             <ProductActions
               product={row.original}
               collectionId={collectionId}
             />
-          )
+          );
         },
       }),
     ],
-    [columns]
-  )
-}
+    [columns],
+  );
+};

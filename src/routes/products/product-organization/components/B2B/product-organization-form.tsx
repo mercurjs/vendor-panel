@@ -1,42 +1,46 @@
-import { HttpTypes } from "@medusajs/types"
-import { Button, toast } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
-import * as zod from "zod"
+import { useEffect } from "react";
 
-import { Form } from "../../../../../components/common/form"
-import { Combobox } from "../../../../../components/inputs/combobox"
-import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
-import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import {
-  FormExtensionZone,
-  useDashboardExtension,
-  useExtendableForm,
-} from "../../../../../extensions"
-import { useUpdateProduct } from "../../../../../hooks/api/products"
-import { useComboboxData } from "../../../../../hooks/use-combobox-data"
-import { fetchQuery } from "../../../../../lib/client"
+import { Button, toast } from "@medusajs/ui";
+
+import { useTranslation } from "react-i18next";
+import * as zod from "zod";
+
+import type { AdminProductWithAttributes } from "@custom-types/products";
+
+import { Form } from "@components/common/form";
+import { Combobox } from "@components/inputs/combobox";
+import { RouteDrawer, useRouteModal } from "@components/modals";
+import { KeyboundForm } from "@components/utilities/keybound-form";
+
+import { useDashboardExtension } from "@extensions/dashboard-extension-provider";
+import { FormExtensionZone, useExtendableForm } from "@extensions/forms";
+
+import { useUpdateProduct } from "@hooks/api/products";
+import { useComboboxData } from "@hooks/use-combobox-data";
+
+import { fetchQuery } from "@lib/client";
 
 type ProductOrganizationFormProps = {
-  product: HttpTypes.AdminProduct
-}
+  product: AdminProductWithAttributes;
+};
 
 const ProductOrganizationSchema = zod.object({
   type_id: zod.string().nullable(),
   collection_id: zod.string().nullable(),
-  category_ids: zod.string().nullable(),
-  // category_ids: zod.array(zod.string()),
+  primary_category_id: zod.string().nullable(),
+  secondary_category_ids: zod.array(zod.string()),
   tag_ids: zod.array(zod.string()),
-})
+});
 
 export const ProductOrganizationForm = ({
   product,
 }: ProductOrganizationFormProps) => {
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
-  const { getFormConfigs, getFormFields } = useDashboardExtension()
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
+  const { getFormConfigs, getFormFields } = useDashboardExtension();
 
-  const configs = getFormConfigs("product", "organize")
-  const fields = getFormFields("product", "organize")
+  const configs = getFormConfigs("product", "organize");
+  const fields = getFormFields("product", "organize");
 
   const categories = useComboboxData({
     queryKey: ["product_categories"],
@@ -50,7 +54,7 @@ export const ProductOrganizationForm = ({
         label: category.name!,
         value: category.id!,
       })),
-  })
+  });
 
   const collections = useComboboxData({
     queryKey: ["product_collections"],
@@ -64,7 +68,7 @@ export const ProductOrganizationForm = ({
         label: collection.title!,
         value: collection.id!,
       })),
-  })
+  });
 
   const types = useComboboxData({
     queryKey: ["product_types"],
@@ -78,7 +82,7 @@ export const ProductOrganizationForm = ({
         label: type.value,
         value: type.id,
       })),
-  })
+  });
 
   const tags = useComboboxData({
     queryKey: ["product_tags"],
@@ -92,45 +96,77 @@ export const ProductOrganizationForm = ({
         label: tag.value,
         value: tag.id,
       })),
-  })
+  });
 
   const form = useExtendableForm({
     defaultValues: {
       type_id: product.type_id ?? "",
       collection_id: product.collection_id ?? "",
-      category_ids: product.categories?.[0]?.id || "",
+      primary_category_id: product.categories?.[0]?.id || "",
+      secondary_category_ids:
+        product.secondary_categories
+          ?.map((sc) => sc.category_id)
+          .filter((id) => id !== product.categories?.[0]?.id) || [],
       tag_ids: product.tags?.map((t) => t.id) || [],
     },
     schema: ProductOrganizationSchema,
     configs: configs,
     data: product,
-  })
+  });
 
-  const { mutateAsync, isPending } = useUpdateProduct(product.id)
+  const { mutateAsync, isPending } = useUpdateProduct(product.id);
+
+  const primaryCategoryId = form.watch("primary_category_id");
+
+  useEffect(() => {
+    if (primaryCategoryId) {
+      const currentSecondaryIds = form.getValues("secondary_category_ids");
+      if (currentSecondaryIds?.includes(primaryCategoryId)) {
+        form.setValue(
+          "secondary_category_ids",
+          currentSecondaryIds.filter((id) => id !== primaryCategoryId),
+        );
+      }
+    }
+  }, [primaryCategoryId, form]);
 
   const handleSubmit = form.handleSubmit(async (data) => {
+    const filteredSecondaryCategories = (
+      data.secondary_category_ids || []
+    ).filter((id) => id !== data.primary_category_id);
+
     await mutateAsync(
       {
         type_id: data.type_id || null,
         collection_id: data.collection_id || null,
-        categories: [{ id: data.category_ids || "" }],
+        categories: data.primary_category_id
+          ? [{ id: data.primary_category_id }]
+          : [],
         tags: data.tag_ids?.map((t) => ({ id: t })),
+        additional_data: {
+          secondary_categories: [
+            {
+              product_id: product.id,
+              secondary_categories_ids: filteredSecondaryCategories,
+            },
+          ],
+        },
       },
       {
         onSuccess: ({ product }) => {
           toast.success(
             t("products.organization.edit.toasts.success", {
               title: product.title,
-            })
-          )
-          handleSuccess()
+            }),
+          );
+          handleSuccess();
         },
         onError: (error) => {
-          toast.error(error.message)
+          toast.error(error.message);
         },
-      }
-    )
-  })
+      },
+    );
+  });
 
   return (
     <RouteDrawer.Form form={form}>
@@ -157,7 +193,7 @@ export const ProductOrganizationForm = ({
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
             <Form.Field
@@ -180,17 +216,17 @@ export const ProductOrganizationForm = ({
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
             <Form.Field
               control={form.control}
-              name="category_ids"
+              name="primary_category_id"
               render={({ field }) => {
                 return (
                   <Form.Item>
                     <Form.Label optional>
-                      {t("products.fields.categories.label")}
+                      {t("products.fields.primaryCategory.label")}
                     </Form.Label>
                     <Form.Control>
                       {/* <CategoryCombobox {...field} /> */}
@@ -204,7 +240,35 @@ export const ProductOrganizationForm = ({
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
+              }}
+            />
+            <Form.Field
+              control={form.control}
+              name="secondary_category_ids"
+              render={({ field }) => {
+                const primaryCategoryId = form.watch("primary_category_id");
+                const filteredOptions = categories.options.filter(
+                  (option) => option.value !== primaryCategoryId,
+                );
+
+                return (
+                  <Form.Item>
+                    <Form.Label optional>
+                      {t("products.fields.secondaryCategories.label")}
+                    </Form.Label>
+                    <Form.Control>
+                      <Combobox
+                        {...field}
+                        multiple
+                        options={filteredOptions}
+                        onSearchValueChange={categories.onSearchValueChange}
+                        searchValue={categories.searchValue}
+                      />
+                    </Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                );
               }}
             />
             <Form.Field
@@ -227,7 +291,7 @@ export const ProductOrganizationForm = ({
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
             <FormExtensionZone fields={fields} form={form} />
@@ -247,5 +311,5 @@ export const ProductOrganizationForm = ({
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  )
-}
+  );
+};

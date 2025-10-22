@@ -1,14 +1,19 @@
-import { Container, Heading, Text } from "@medusajs/ui"
-import { OnboardingRow } from "./onboarding-row"
-import { useUpdateOnboarding } from "../../../hooks/api"
-import { useEffect } from "react"
+import { useEffect } from "react";
+
+import { Container, Heading, Text } from "@medusajs/ui";
+
+import { useUpdateOnboarding } from "@hooks/api";
+
+import isB2B from "@lib/is-b2b";
+
+import { OnboardingRow } from "./onboarding-row";
 
 type DashboardProps = {
-  products: boolean
-  locations_shipping: boolean
-  store_information: boolean
-  stripe_connect: boolean
-}
+  products: boolean;
+  locations_shipping: boolean;
+  store_information: boolean;
+  stripe_connect: boolean;
+};
 
 export const DashboardOnboarding = ({
   products,
@@ -16,11 +21,13 @@ export const DashboardOnboarding = ({
   store_information,
   // stripe_connect,
 }: DashboardProps) => {
-  const { mutateAsync } = useUpdateOnboarding()
+  const { mutateAsync } = useUpdateOnboarding();
 
   useEffect(() => {
-    mutateAsync()
-  }, [])
+    mutateAsync();
+  }, []);
+
+  const isB2BPanel = isB2B();
 
   return (
     <Container className="divide-y p-0">
@@ -55,10 +62,10 @@ export const DashboardOnboarding = ({
         <OnboardingRow
           label="Add products and start selling"
           state={products}
-          link="/products/create"
+          link={isB2BPanel ? "/offers/create" : "/products/create"}
           buttonLabel="Add"
         />
       </div>
     </Container>
-  )
-}
+  );
+};

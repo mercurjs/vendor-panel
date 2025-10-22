@@ -1,24 +1,26 @@
-import { Button, Input, Select, Text, Textarea, toast } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
-import * as zod from "zod"
+import type { HttpTypes } from "@medusajs/types";
+import { Button, Input, Text, Textarea, toast } from "@medusajs/ui";
 
-import { HttpTypes } from "@medusajs/types"
-import { Form } from "../../../../../components/common/form"
-import { SwitchBox } from "../../../../../components/common/switch-box"
-import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
-import { useExtendableForm } from "../../../../../extensions/forms/hooks"
-import { useUpdateProduct } from "../../../../../hooks/api/products"
-import { transformNullableFormData } from "../../../../../lib/form-helpers"
+import { useTranslation } from "react-i18next";
+import * as zod from "zod";
 
-import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import {
-  FormExtensionZone,
-  useDashboardExtension,
-} from "../../../../../extensions"
+import { Form } from "@components/common/form";
+import { SwitchBox } from "@components/common/switch-box";
+import { RouteDrawer, useRouteModal } from "@components/modals";
+import { KeyboundForm } from "@components/utilities/keybound-form";
+
+import { useDashboardExtension } from "@extensions/dashboard-extension-provider";
+import { FormExtensionZone } from "@extensions/forms";
+import { useExtendableForm } from "@extensions/forms/hooks";
+
+import { useUpdateProduct } from "@hooks/api/products";
+
+import { transformNullableFormData } from "@lib/form-helpers";
+import isB2B from "@lib/is-b2b";
 
 type EditProductFormProps = {
-  product: HttpTypes.AdminProduct
-}
+  product: HttpTypes.AdminProduct;
+};
 
 const EditProductSchema = zod.object({
   status: zod.enum(["draft", "published", "proposed", "rejected"]),
@@ -28,15 +30,15 @@ const EditProductSchema = zod.object({
   material: zod.string().optional(),
   description: zod.string().optional(),
   discountable: zod.boolean(),
-})
+});
 
 export const EditProductForm = ({ product }: EditProductFormProps) => {
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
 
-  const { getFormFields, getFormConfigs } = useDashboardExtension()
-  const fields = getFormFields("product", "edit")
-  const configs = getFormConfigs("product", "edit")
+  const { getFormFields, getFormConfigs } = useDashboardExtension();
+  const fields = getFormFields("product", "edit");
+  const configs = getFormConfigs("product", "edit");
 
   const form = useExtendableForm({
     defaultValues: {
@@ -51,14 +53,16 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
     schema: EditProductSchema,
     configs: configs,
     data: product,
-  })
+  });
 
-  const { mutateAsync, isPending } = useUpdateProduct(product.id)
+  const { mutateAsync, isPending } = useUpdateProduct(product.id);
+
+  const isB2BPanel = isB2B();
 
   const handleSubmit = form.handleSubmit(async (data) => {
-    const { title, discountable, handle, status, ...optional } = data
+    const { title, discountable, handle, status, ...optional } = data;
 
-    const nullableData = transformNullableFormData(optional)
+    const nullableData = transformNullableFormData(optional);
 
     await mutateAsync(
       {
@@ -73,16 +77,18 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
           toast.success(
             t("products.edit.successToast", {
               title: product.title,
-            })
-          )
-          handleSuccess(`/products/${product.id}`)
+            }),
+          );
+          handleSuccess(
+            isB2BPanel ? `/offers/${product.id}` : `/products/${product.id}`,
+          );
         },
         onError: (e) => {
-          toast.error(e.message)
+          toast.error(e.message);
         },
-      }
-    )
-  })
+      },
+    );
+  });
 
   return (
     <RouteDrawer.Form form={form}>
@@ -140,7 +146,7 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
                       </Form.Control>
                       <Form.ErrorMessage />
                     </Form.Item>
-                  )
+                  );
                 }}
               />
               {/* <Form.Field
@@ -184,7 +190,7 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
                       </Form.Control>
                       <Form.ErrorMessage />
                     </Form.Item>
-                  )
+                  );
                 }}
               />
               {/* <Form.Field
@@ -218,7 +224,7 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
                       </Form.Control>
                       <Form.ErrorMessage />
                     </Form.Item>
-                  )
+                  );
                 }}
               />
             </div>
@@ -245,5 +251,5 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  )
-}
+  );
+};

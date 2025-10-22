@@ -500,26 +500,26 @@ export const useUpdateProduct = (
 ) => {
   return useMutation({
     mutationFn: async (payload) => {
-      const { product } = await fetchQuery(`/vendor/products/${id}`, {
-        method: "GET",
-        query: {
-          fields:
-            "-status,-options,-variants,-type,-collection,-attribute_values",
-        },
-      })
+      // const { product } = await fetchQuery(`/vendor/products/${id}`, {
+      //   method: "GET",
+      //   query: {
+      //     fields:
+      //       "-status,-options,-variants,-type,-collection,-attribute_values",
+      //   },
+      // })
 
-      await delete product.id
-      await delete product.rating
-      await delete payload.status
+      // await delete product.id
+      // await delete product.rating
+      // await delete payload.status
 
       return fetchQuery(`/vendor/products/${id}`, {
         method: "POST",
         body: {
-          ...product,
-          height: parseInt(product.height),
-          width: parseInt(product.width),
-          weight: parseInt(product.weight),
-          length: parseInt(product.length),
+          // ...product,
+          // height: parseInt(product.height),
+          // width: parseInt(product.width),
+          // weight: parseInt(product.weight),
+          // length: parseInt(product.length),
           ...payload,
         },
       })

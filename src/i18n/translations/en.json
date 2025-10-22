@@ -2938,6 +2938,7 @@
     "expiryDate": "Expiry date",
     "price": "Price",
     "priceTemplate": "Price {{regionOrCurrency}}",
+    "currentPriceTemplate": "Current price {{regionOrCurrency}}",
     "height": "Height",
     "width": "Width",
     "length": "Length",

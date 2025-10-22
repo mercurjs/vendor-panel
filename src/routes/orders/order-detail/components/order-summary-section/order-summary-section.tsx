@@ -262,13 +262,7 @@ export const OrderSummarySection = ({
   )
 }
 
-const Header = ({
-  // order,
-  // orderPreview,
-}: {
-  order: AdminOrder
-  orderPreview?: AdminOrderPreview
-}) => {
+const Header = () => {
   const { t } = useTranslation()
 
     // is ture if there is no shipped items ATM

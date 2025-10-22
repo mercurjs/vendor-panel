@@ -6,17 +6,16 @@ import { HttpTypes } from "@medusajs/types"
  * StaticCountry requires all fields to be non-optional (except id which is omitted).
  */
 export const convertToStaticCountries = (
-    apiCountries: HttpTypes.AdminRegionCountry[] | undefined
-  ): StaticCountry[] => {
-    if (!apiCountries) return []
-    
-    return apiCountries
-      .filter((c): c is Required<HttpTypes.AdminRegionCountry> => 
-        c.iso_2 !== undefined &&
-        c.iso_3 !== undefined &&
-        c.num_code !== undefined &&
-        c.name !== undefined &&
-        c.display_name !== undefined
-      )
-      .map(({ id, ...country }) => country as StaticCountry)
-  }
+  apiCountries: HttpTypes.AdminRegionCountry[] | undefined
+): StaticCountry[] => {
+  if (!apiCountries) return []
+  
+  return apiCountries
+    .filter((c): c is Required<HttpTypes.AdminRegionCountry> => {
+      const requiredFields: (keyof HttpTypes.AdminRegionCountry)[] = [
+        'iso_2', 'iso_3', 'num_code', 'name', 'display_name'
+      ]
+      return requiredFields.every(field => !!c[field])
+    })
+    .map(({ id, ...country }) => country as StaticCountry)
+}

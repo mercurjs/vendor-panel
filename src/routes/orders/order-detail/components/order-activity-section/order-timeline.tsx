@@ -39,12 +39,6 @@ type OrderTimelineProps = {
 }
 
 /**
- * Arbitrary high limit to ensure all notes are fetched
- */
-// const NOTE_LIMIT = 9999
-
-
-/**
  * Order Changes that are not related to RMA flows
  */
 const NON_RMA_CHANGE_TYPES = ["transfer", "update_order"]

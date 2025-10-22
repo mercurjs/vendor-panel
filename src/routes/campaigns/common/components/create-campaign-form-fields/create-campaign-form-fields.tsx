@@ -9,7 +9,7 @@ import {
   Textarea,
 } from "@medusajs/ui"
 import { useEffect } from "react"
-import { Path, UseFormReturn, useWatch } from "react-hook-form"
+import { Path, PathValue, UseFormReturn, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
 import { Form } from "../../../../../components/common/form"
@@ -18,7 +18,7 @@ import {
   currencies,
   getCurrencySymbol,
 } from "../../../../../lib/data/currencies"
-import { CampaignFormFields, WithNestedCampaign } from "./types"
+import { CampaignFormFields, WithNestedCampaign } from "../../../../../types/campaign"
 
 
 type CreateCampaignFormFieldsProps<T extends CampaignFormFields | WithNestedCampaign> = {
@@ -28,7 +28,7 @@ type CreateCampaignFormFieldsProps<T extends CampaignFormFields | WithNestedCamp
 
 export const CreateCampaignFormFields = <T extends CampaignFormFields | WithNestedCampaign>({ 
   form, 
-  fieldScope = "" 
+  fieldScope = ""
 }: CreateCampaignFormFieldsProps<T>) => {
   
   const { t } = useTranslation()
@@ -54,46 +54,31 @@ export const CreateCampaignFormFields = <T extends CampaignFormFields | WithNest
   const currency = currencyValue || promotionCurrencyValue
 
   useEffect(() => {
-    form.setValue(
-      `${fieldScope}budget.limit` as Path<T>, 
-      null as never
-    )
+    form.resetField(`${fieldScope}budget.limit` as Path<T>)
 
-    if (isTypeSpend) {
-      form.setValue(
-        `campaign.budget.currency_code` as Path<T>, 
-        promotionCurrencyValue as never
-      )
-    }
-
-    if (watchValueType === "usage") {
-      form.setValue(
-        `campaign.budget.currency_code` as Path<T>, 
-        null as never
-      )
+    if (fieldScope) {
+      const currencyPath = `campaign.budget.currency_code` as Path<T>
+      
+      if (isTypeSpend && promotionCurrencyValue) {
+        const currencyValue = promotionCurrencyValue as PathValue<T, typeof currencyPath>
+        form.setValue(currencyPath, currencyValue)
+      } else if (watchValueType === "usage") {
+        const nullValue = null as PathValue<T, typeof currencyPath>
+        form.setValue(currencyPath, nullValue)
+      }
     }
   }, [watchValueType, fieldScope, form, isTypeSpend, promotionCurrencyValue])
 
-  if (promotionCurrencyValue) {
-    const formValues = form.getValues() as { 
-      campaign?: { 
-        budget?: { 
-          type: "spend" | "usage"
-          currency_code?: string | null 
-        } 
-      } 
-    }
-    const formCampaignBudget = formValues.campaign?.budget
-    const formCampaignCurrency = formCampaignBudget?.currency_code
+  if (promotionCurrencyValue && fieldScope) {
+    const formValues = form.getValues()
+    const budget = (formValues as WithNestedCampaign)?.campaign?.budget
 
     if (
-      formCampaignBudget?.type === "spend" &&
-      formCampaignCurrency !== promotionCurrencyValue
+      budget?.type === "spend" &&
+      budget?.currency_code !== promotionCurrencyValue
     ) {
-      form.setValue(
-        "campaign.budget.currency_code" as Path<T>, 
-        promotionCurrencyValue as never
-      )
+      const currencyPath = "campaign.budget.currency_code" as Path<T>
+      form.setValue(currencyPath, promotionCurrencyValue)
     }
   }
 
@@ -289,7 +274,7 @@ export const CreateCampaignFormFields = <T extends CampaignFormFields | WithNest
                       {...field}
                       value={field.value as string}
                       onValueChange={onChange}
-                      disabled={!!fieldScope.length}
+                      disabled={!!fieldScope?.length}
                     >
                       <Select.Trigger ref={ref}>
                         <Select.Value />

@@ -65,7 +65,7 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
     }
 
     const mediaToKeep = product.images
-      ?.filter((i) => !ids.includes(i.id))
+      ?.filter((i) => ids.includes(i.id))
       .map((i) => ({ url: i.url }))
 
     await mutateAsync(

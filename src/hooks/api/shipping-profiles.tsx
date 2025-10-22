@@ -70,7 +70,7 @@ export const useShippingProfile = (
         ...data.shipping_profile,
         name: data.shipping_profile.name?.includes(":")
           ? data.shipping_profile.name.split(":")[1]
-          : data.shipping_profile.name || "",
+          : data.shipping_profile.name,
       }
     : undefined
 

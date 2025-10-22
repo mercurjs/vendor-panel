@@ -6,7 +6,6 @@ import { FetchError } from "@medusajs/js-sdk"
 export const CustomerMetadata = () => {
   const { id } = useParams()
   
-  // ✅ All hooks must be called before any conditional logic
   const { customer, isPending, isError, error } = useCustomer(id!)
   const { mutateAsync, isPending: isMutating } = useUpdateCustomer(id!)
 

@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
-  ColumnDef,
   RowSelectionState,
   createColumnHelper,
 } from "@tanstack/react-table"
@@ -19,7 +18,7 @@ import { _DataTable } from "../../../../../components/table/data-table"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useUpdateRegion } from "../../../../../hooks/api/regions"
 import { useDataTable } from "../../../../../hooks/use-data-table"
-import { countries as staticCountries } from "../../../../../lib/data/countries"
+import { countries as staticCountries, StaticCountry } from "../../../../../lib/data/countries"
 import { useCountries } from "../../../common/hooks/use-countries"
 import { useCountryTableColumns } from "../../../common/hooks/use-country-table-columns"
 import { useCountryTableQuery } from "../../../common/hooks/use-country-table-query"
@@ -163,7 +162,7 @@ export const AddCountriesForm = ({ region }: AddCountriesFormProps) => {
   )
 }
 
-const columnHelper = createColumnHelper<HttpTypes.AdminRegionCountry>()
+const columnHelper = createColumnHelper<StaticCountry>()
 
 const useColumns = () => {
   const base = useCountryTableColumns()
@@ -204,5 +203,5 @@ const useColumns = () => {
       ...base,
     ],
     [base]
-  ) as ColumnDef<HttpTypes.AdminRegionCountry>[]
+  )
 }

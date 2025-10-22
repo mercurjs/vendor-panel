@@ -84,7 +84,6 @@ const useVariantPriceGridColumns = ({
         ProductCreateSchemaType
       >({
         currencies: currencies.map((c) => c.currency_code),
-        regions,
         pricePreferences,
         getFieldName: (context, value) => {
           if (context.column.id?.startsWith("currency_prices")) {

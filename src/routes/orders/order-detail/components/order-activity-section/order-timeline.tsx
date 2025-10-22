@@ -21,12 +21,11 @@ import {
   useOrderChanges,
   useOrderLineItems,
 } from "../../../../../hooks/api"
-import { useCancelClaim, useClaims } from "../../../../../hooks/api/claims"
+import { useCancelClaim } from "../../../../../hooks/api/claims"
 import {
   useCancelExchange,
-  useExchanges,
 } from "../../../../../hooks/api/exchanges"
-import { useCancelReturn, useReturns } from "../../../../../hooks/api/returns"
+import { useCancelReturn } from "../../../../../hooks/api/returns"
 import { useDate } from "../../../../../hooks/use-date"
 import { getFormattedAddress } from "../../../../../lib/addresses"
 import { getStylizedAmount } from "../../../../../lib/money-amount-helpers"
@@ -37,11 +36,6 @@ import ChangeDetailsTooltip from "./change-details-tooltip"
 type OrderTimelineProps = {
   order: AdminOrder
 }
-
-/**
- * Arbitrary high limit to ensure all notes are fetched
- */
-const NOTE_LIMIT = 9999
 
 /**
  * Order Changes that are not related to RMA flows
@@ -391,8 +385,9 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
         continue
       }
 
+      const translationKey = `orders.activity.events.edit.${edit.status}` as const
       items.push({
-        title: t(`orders.activity.events.edit.${edit.status}`, {
+        title: t(translationKey as any, {
           editId: edit.id.slice(-7),
         }),
         timestamp:

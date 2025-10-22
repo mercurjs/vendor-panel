@@ -213,6 +213,7 @@ export const useUpdateUser = (
       language?: string
       phone?: string
       bio?: string
+      metadata?: Record<string, unknown>
     },
     QueryKey
   >

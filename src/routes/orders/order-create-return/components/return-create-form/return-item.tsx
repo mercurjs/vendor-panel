@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next"
 
-import React from "react"
 import { IconButton, Input, Text } from "@medusajs/ui"
 import { UseFormReturn } from "react-hook-form"
 import { HttpTypes, AdminOrderLineItem } from "@medusajs/types"

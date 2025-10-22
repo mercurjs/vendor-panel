@@ -1,15 +1,13 @@
-import { Divider, Heading, Input, RadioGroup, Select, Text } from "@medusajs/ui"
+import { Heading, Input, RadioGroup, Text } from "@medusajs/ui"
 import { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
 import { HttpTypes } from "@medusajs/types"
 
 import { Form } from "../../../../../components/common/form"
-import { SwitchBox } from "../../../../../components/common/switch-box"
 import { Combobox } from "../../../../../components/inputs/combobox"
 import { useComboboxData } from "../../../../../hooks/use-combobox-data"
-import { fetchQuery, sdk } from "../../../../../lib/client"
-import { formatProvider } from "../../../../../lib/format-provider"
+import { fetchQuery } from "../../../../../lib/client"
 import {
   FulfillmentSetType,
   ShippingOptionPriceType,
@@ -20,9 +18,6 @@ type CreateShippingOptionDetailsFormProps = {
   form: UseFormReturn<CreateShippingOptionSchema>
   isReturn?: boolean
   zone: HttpTypes.AdminServiceZone
-  locationId: string
-  fulfillmentProviderOptions: HttpTypes.AdminFulfillmentProviderOption[]
-  selectedProviderId?: string
   type: FulfillmentSetType
 }
 
@@ -30,9 +25,6 @@ export const CreateShippingOptionDetailsForm = ({
   form,
   isReturn = false,
   zone,
-  locationId,
-  fulfillmentProviderOptions,
-  selectedProviderId,
   type,
 }: CreateShippingOptionDetailsFormProps) => {
   const { t } = useTranslation()

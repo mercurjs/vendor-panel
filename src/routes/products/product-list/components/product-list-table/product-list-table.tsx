@@ -31,7 +31,7 @@ import { useProductTableQuery } from "../../../../../hooks/table/query/use-produ
 import { useDataTable } from "../../../../../hooks/use-data-table"
 import { productsLoader } from "../../loader"
 
-export const PAGE_SIZE = 5
+export const PAGE_SIZE = 10
 
 export const ProductListTable = () => {
   const { t } = useTranslation()
@@ -58,7 +58,7 @@ export const ProductListTable = () => {
   const query = {
     limit: 100,
     offset: 0,
-    fields: "+thumbnail,*categories,+status",
+    fields: "+thumbnail,*categories,+status,+created_at,+updated_at",
   }
 
   const options = {

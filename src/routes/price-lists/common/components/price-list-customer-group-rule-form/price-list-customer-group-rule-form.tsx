@@ -66,15 +66,18 @@ export const PriceListCustomerGroupRuleForm = ({
       : raw.order
     : undefined
 
-  const { customer_groups, count, isLoading, isError, error } =
+  const { customer_groups: customerGroupsData, count, isLoading, isError, error } =
     useCustomerGroups(
       { ...searchParams, fields: "id,name,customers.id" },
       {
         placeholderData: keepPreviousData,
       },
-      undefined,
-      sortParam
+      sortParam ? { sort: sortParam } : undefined
     )
+
+  // Map CustomerGroupData to flat AdminCustomerGroup structure for the table
+  const customer_groups = customerGroupsData
+    ?.map((item) => item.customer_group)
 
   const updater: OnChangeFn<RowSelectionState> = (value) => {
     const state = typeof value === "function" ? value(rowSelection) : value
@@ -87,10 +90,10 @@ export const PriceListCustomerGroupRuleForm = ({
 
     const newCustomerGroups =
       customer_groups
-        ?.filter((cg) => newIds.includes(cg.customer_group.id))
+        ?.filter((cg) => newIds.includes(cg.id))
         .map((cg) => ({
-          id: cg.customer_group.id,
-          name: cg.customer_group.name!,
+          id: cg.id,
+          name: cg.name!,
         })) || []
 
     const filteredIntermediate = intermediate.filter(
@@ -114,7 +117,7 @@ export const PriceListCustomerGroupRuleForm = ({
     count,
     enablePagination: true,
     enableRowSelection: true,
-    getRowId: (row) => row.customer_group_id,
+    getRowId: (row) => row.id,
     rowSelection: {
       state: rowSelection,
       updater,
@@ -139,16 +142,16 @@ export const PriceListCustomerGroupRuleForm = ({
           count={count}
           isLoading={isLoading}
           filters={filters}
-          orderBy={[
-            { key: "name", label: t("fields.name") },
-            { key: "created_at", label: t("fields.createdAt") },
-            { key: "updated_at", label: t("fields.updatedAt") },
-          ]}
           layout="fill"
           pagination
           search
           prefix={PREFIX}
           queryObject={raw}
+          orderBy={[
+            { key: "name", label: t("fields.name") },
+            { key: "created_at", label: t("fields.createdAt") },
+            { key: "updated_at", label: t("fields.updatedAt") },
+          ]}
         />
       </Component.Body>
       <Component.Footer>

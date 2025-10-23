@@ -1,4 +1,4 @@
-import { RuleAttributeOptionsResponse, StoreDTO } from "@medusajs/types"
+import { HttpTypes } from "@medusajs/types"
 import { Input, Select } from "@medusajs/ui"
 import { useWatch } from "react-hook-form"
 import { Form } from "../../../../../../components/common/form"
@@ -16,11 +16,11 @@ type RuleValueFormFieldType = {
   name: string
   operator: string
   fieldRule: any
-  attributes: RuleAttributeOptionsResponse[]
+  attributes: HttpTypes.AdminRuleAttributeOption[]
   ruleType: "rules" | "target-rules" | "buy-rules"
 }
 
-const buildFilters = (attribute?: string, store?: StoreDTO) => {
+const buildFilters = (attribute?: string, store?: HttpTypes.AdminStore) => {
   if (!attribute || !store) {
     return {}
   }

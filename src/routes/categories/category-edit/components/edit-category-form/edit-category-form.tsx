@@ -9,7 +9,6 @@ import { Form } from "../../../../../components/common/form"
 import { HandleInput } from "../../../../../components/inputs/handle-input"
 import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import { useUpdateProductCategory } from "../../../../../hooks/api/categories"
 import { useUpdateRequest } from "../../../../../hooks/api"
 
 const EditCategorySchema = z.object({

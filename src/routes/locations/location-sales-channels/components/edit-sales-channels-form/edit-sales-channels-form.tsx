@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { HttpTypes } from "@medusajs/types"
+import { VendorExtendedAdminStockLocation } from "../../../../../types/stock-location"
 import {
   Button,
   createDataTableColumnHelper,
@@ -24,7 +25,7 @@ import { useSalesChannels } from "../../../../../hooks/api/sales-channels"
 import { useUpdateStockLocationSalesChannels } from "../../../../../hooks/api/stock-locations"
 
 type EditSalesChannelsFormProps = {
-  location: HttpTypes.AdminStockLocation
+  location: VendorExtendedAdminStockLocation
 }
 
 const EditSalesChannelsSchema = zod.object({
@@ -167,7 +168,7 @@ const useColumns = () => {
   return useMemo(() => [columnHelper.select(), ...base], [base])
 }
 
-function getInitialState(location: HttpTypes.AdminStockLocation) {
+function getInitialState(location: VendorExtendedAdminStockLocation) {
   return (
     location.sales_channels?.reduce((acc, curr) => {
       acc[curr.id] = true

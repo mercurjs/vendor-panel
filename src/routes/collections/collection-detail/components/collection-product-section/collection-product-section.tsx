@@ -12,6 +12,7 @@ import { useProductTableColumns } from "../../../../../hooks/table/columns/use-p
 import { useProductTableFilters } from "../../../../../hooks/table/filters/use-product-table-filters"
 import { useProductTableQuery } from "../../../../../hooks/table/query/use-product-table-query"
 import { useDataTable } from "../../../../../hooks/use-data-table"
+import { ExtendedAdminProduct } from "../../../../../types/extended-product"
 
 type CollectionProductSectionProps = {
   collection: HttpTypes.AdminCollection
@@ -158,7 +159,7 @@ const ProductActions = ({
   product,
   collectionId,
 }: {
-  product: HttpTypes.AdminProduct
+  product: ExtendedAdminProduct
   collectionId: string
 }) => {
   const { t } = useTranslation()
@@ -224,7 +225,7 @@ const ProductActions = ({
   )
 }
 
-const columnHelper = createColumnHelper<HttpTypes.AdminProduct>()
+const columnHelper = createColumnHelper<ExtendedAdminProduct>()
 
 const useColumns = () => {
   const columns = useProductTableColumns()

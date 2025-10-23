@@ -11,6 +11,7 @@ import { useMemo } from "react"
 import { HttpTypes } from "@medusajs/types"
 import { Thumbnail } from "../../../../../components/common/thumbnail"
 import { useNavigate } from "react-router-dom"
+import { FetchError } from "@medusajs/js-sdk"
 
 type OrderActiveEditSectionProps = {
   order: HttpTypes.AdminOrder
@@ -61,11 +62,14 @@ export const OrderActiveEditSection = ({
   const { mutateAsync: cancelOrderEdit } = useCancelOrderEdit(order.id)
   const { mutateAsync: confirmOrderEdit } = useConfirmOrderEdit(order.id)
 
+  if (!orderPreview) return null
+
   const isPending = orderPreview.order_change?.status === "pending"
 
   const [addedItems, removedItems] = useMemo(() => {
-    const added = []
-    const removed = []
+    
+    const added: Array<{ item: any; quantity: number }> = []
+    const removed: Array<{ item: any; quantity: number }> = []
 
     const orderLookupMap = new Map(order.items!.map((i) => [i.id, i]))
 
@@ -101,7 +105,7 @@ export const OrderActiveEditSection = ({
 
       toast.success(t("orders.edits.toast.confirmedSuccessfully"))
     } catch (e) {
-      toast.error(e.message)
+      toast.error(e instanceof FetchError ? e.message : "An error occurred")
     }
   }
 
@@ -111,7 +115,7 @@ export const OrderActiveEditSection = ({
 
       toast.success(t("orders.edits.toast.canceledSuccessfully"))
     } catch (e) {
-      toast.error(e.message)
+      toast.error(e instanceof FetchError ? e.message : "An error occurred")
     }
   }
 

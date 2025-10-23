@@ -9,6 +9,7 @@ import { useOrder, useOrderPreview } from "../../../hooks/api/orders"
 import { useReturn } from "../../../hooks/api/returns"
 import { DEFAULT_FIELDS } from "../order-detail/constants"
 import { ExchangeCreateForm } from "./components/exchange-create-form"
+import { FetchError } from "@medusajs/js-sdk"
 
 let IS_REQUEST_RUNNING = false
 
@@ -59,7 +60,7 @@ export const ExchangeCreate = () => {
 
         setActiveExchangeId(createdExchange.id)
       } catch (e) {
-        toast.error(e.message)
+        toast.error(e instanceof FetchError ? e.message : "An error occurred")
         navigate(`/orders/${preview.id}`, { replace: true })
       } finally {
         IS_REQUEST_RUNNING = false

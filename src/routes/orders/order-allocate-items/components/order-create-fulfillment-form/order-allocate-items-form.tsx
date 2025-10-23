@@ -19,6 +19,7 @@ import { useStockLocations } from "../../../../../hooks/api/stock-locations"
 import { queryClient } from "../../../../../lib/query-client"
 import { AllocateItemsSchema } from "./constants"
 import { OrderAllocateItemsItem } from "./order-allocate-items-item"
+import { FetchError } from "@medusajs/js-sdk"
 
 type OrderAllocateItemsFormProps = {
   order: AdminOrder
@@ -48,13 +49,12 @@ export function OrderAllocateItemsForm({ order }: OrderAllocateItemsFormProps) {
   const filteredItems = useMemo(() => {
     return itemsToAllocate.filter(
       (i) =>
-        i.variant_title.toLowerCase().includes(filterTerm) ||
-        i.product_title.toLowerCase().includes(filterTerm)
+        i.variant_title?.toLowerCase().includes(filterTerm) ||
+        i.product_title?.toLowerCase().includes(filterTerm)
     )
   }, [itemsToAllocate, filterTerm])
 
   // TODO - empty state UI
-  const noItemsToAllocate = !itemsToAllocate.length
 
   const form = useForm<zod.infer<typeof AllocateItemsSchema>>({
     defaultValues: {
@@ -84,9 +84,9 @@ export function OrderAllocateItemsForm({ order }: OrderAllocateItemsFormProps) {
       const promises = payload.map(([itemId, inventoryId, quantity]) =>
         allocateItems({
           location_id: data.location_id,
-          inventory_item_id: inventoryId,
-          line_item_id: itemId,
-          quantity,
+          inventory_item_id: String(inventoryId),
+          line_item_id: String(itemId),
+          quantity: typeof quantity === 'string' ? Number(quantity) : quantity,
         })
       )
 
@@ -104,12 +104,10 @@ export function OrderAllocateItemsForm({ order }: OrderAllocateItemsFormProps) {
 
       toast.success(t("general.success"), {
         description: t("orders.allocateItems.toast.created"),
-        dismissLabel: t("actions.close"),
       })
     } catch (e) {
       toast.error(t("general.error"), {
-        description: e.message,
-        dismissLabel: t("actions.close"),
+        description: e instanceof FetchError ? e.message : "An unknown error occurred",
       })
     }
   })
@@ -151,9 +149,13 @@ export function OrderAllocateItemsForm({ order }: OrderAllocateItemsFormProps) {
 
       const item = itemsToAllocate.find((i) => i.id === lineItem.id)
 
-      item.variant?.inventory_items.forEach((ii, ind) => {
+      if (!item) return
+
+      item.variant?.inventory_items?.forEach((ii, ind) => {
         const num = value || 0
-        const inventory = item.variant?.inventory[ind]
+        const inventory = item.variant?.inventory?.[ind]
+
+        if (!inventory) return
 
         form.setValue(
           `quantity.${lineItem.id}-${inventory.id}`,

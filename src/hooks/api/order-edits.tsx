@@ -12,7 +12,7 @@ import { inventoryItemsQueryKeys } from "./inventory.tsx"
 export const useCreateOrderEdit = (
   orderId: string,
   options?: UseMutationOptions<
-    HttpTypes.AdminOrderEditPreviewResponse,
+    HttpTypes.AdminOrderEditResponse,
     FetchError,
     HttpTypes.AdminInitiateOrderEditRequest
   >
@@ -131,7 +131,7 @@ export const useCancelOrderEdit = (
       })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.lineItems(id),
+        queryKey: ordersQueryKeys.lineItems(orderId),
       })
       options?.onSuccess?.(data, variables, context)
     },

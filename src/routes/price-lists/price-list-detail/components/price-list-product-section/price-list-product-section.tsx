@@ -14,6 +14,7 @@ import {
 import { useProductTableColumns } from "../../../../../hooks/table/columns/use-product-table-columns"
 import { useProductTableQuery } from "../../../../../hooks/table/query/use-product-table-query"
 import { useDataTable } from "../../../../../hooks/use-data-table"
+import { ExtendedAdminProduct } from "../../../../../types/extended-product"
 
 type PriceListProductSectionProps = {
   priceList: HttpTypes.AdminPriceList
@@ -42,7 +43,7 @@ export const PriceListProductSection = ({
       fields: "+thumbnail",
     }
   )
-
+console.log(products,'products')
   const columns = useColumns(priceList)
 
   const { table } = useDataTable({
@@ -106,7 +107,7 @@ const ProductRowAction = ({
   product,
   priceList,
 }: {
-  product: HttpTypes.AdminProduct
+  product: ExtendedAdminProduct
   priceList: HttpTypes.AdminPriceList
 }) => {
   const { t } = useTranslation()
@@ -168,7 +169,7 @@ const ProductRowAction = ({
   )
 }
 
-const columnHelper = createColumnHelper<HttpTypes.AdminProduct>()
+const columnHelper = createColumnHelper<ExtendedAdminProduct>()
 
 const useColumns = (priceList: HttpTypes.AdminPriceList) => {
   const base = useProductTableColumns()

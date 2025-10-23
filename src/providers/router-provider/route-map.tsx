@@ -505,11 +505,6 @@ export const RouteMap: RouteObject[] = [
                       import("../../routes/orders/order-create-fulfillment"),
                   },
                   {
-                    path: "returns/:return_id/receive",
-                    lazy: () =>
-                      import("../../routes/orders/order-receive-return"),
-                  },
-                  {
                     path: "allocate-items",
                     lazy: () =>
                       import("../../routes/orders/order-allocate-items"),
@@ -518,53 +513,6 @@ export const RouteMap: RouteObject[] = [
                     path: ":f_id/create-shipment",
                     lazy: () =>
                       import("../../routes/orders/order-create-shipment"),
-                  },
-                  {
-                    path: "returns",
-                    lazy: () =>
-                      import("../../routes/orders/order-create-return"),
-                  },
-                  {
-                    path: "claims",
-                    lazy: () =>
-                      import("../../routes/orders/order-create-claim"),
-                  },
-                  {
-                    path: "exchanges",
-                    lazy: () =>
-                      import("../../routes/orders/order-create-exchange"),
-                  },
-                  {
-                    path: "edits",
-                    lazy: () => import("../../routes/orders/order-create-edit"),
-                  },
-                  {
-                    path: "refund",
-                    lazy: () =>
-                      import("../../routes/orders/order-create-refund"),
-                  },
-                  {
-                    path: "transfer",
-                    lazy: () =>
-                      import("../../routes/orders/order-request-transfer"),
-                  },
-                  {
-                    path: "email",
-                    lazy: () => import("../../routes/orders/order-edit-email"),
-                  },
-                  {
-                    path: "shipping-address",
-                    lazy: () =>
-                      import("../../routes/orders/order-edit-shipping-address"),
-                  },
-                  {
-                    path: "billing-address",
-                    lazy: () =>
-                      import("../../routes/orders/order-edit-billing-address"),
-                  },
-                  {
-                    path: "metadata/edit",
-                    lazy: () => import("../../routes/orders/order-metadata"),
                   },
                 ],
               },
@@ -844,11 +792,6 @@ export const RouteMap: RouteObject[] = [
                       import(
                         "../../routes/customers/customers-add-customer-group"
                       ),
-                  },
-                  {
-                    path: ":order_id/transfer",
-                    lazy: () =>
-                      import("../../routes/orders/order-request-transfer"),
                   },
                   {
                     path: "metadata/edit",

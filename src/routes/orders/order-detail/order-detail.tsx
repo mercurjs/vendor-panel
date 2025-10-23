@@ -3,10 +3,7 @@ import { useLoaderData, useParams } from "react-router-dom"
 import { TwoColumnPageSkeleton } from "../../../components/common/skeleton"
 import { TwoColumnPage } from "../../../components/layout/pages"
 import { useDashboardExtension } from "../../../extensions"
-import { useOrder, useOrderPreview } from "../../../hooks/api/orders"
-import { ActiveOrderClaimSection } from "./components/active-order-claim-section"
-import { ActiveOrderExchangeSection } from "./components/active-order-exchange-section"
-import { ActiveOrderReturnSection } from "./components/active-order-return-section"
+import { useOrder } from "../../../hooks/api/orders"
 import { OrderCustomerSection } from "./components/order-customer-section"
 import { OrderFulfillmentSection } from "./components/order-fulfillment-section"
 import { OrderGeneralSection } from "./components/order-general-section"
@@ -46,11 +43,7 @@ export const OrderDetail = () => {
     })
   }
 
-  const { order: orderPreview, isLoading: isPreviewLoading } = useOrderPreview(
-    id!
-  )
-
-  if (isLoading || !order || isPreviewLoading) {
+  if (isLoading || !order) {
     return (
       <TwoColumnPageSkeleton mainSections={4} sidebarSections={2} showJSON />
     )
@@ -59,7 +52,6 @@ export const OrderDetail = () => {
   if (isError) {
     throw error
   }
-
   return (
     <TwoColumnPage
       widgets={{
@@ -72,10 +64,6 @@ export const OrderDetail = () => {
       hasOutlet
     >
       <TwoColumnPage.Main>
-        {/* <OrderActiveEditSection order={order} /> */}
-        <ActiveOrderClaimSection orderPreview={orderPreview!} />
-        <ActiveOrderExchangeSection orderPreview={orderPreview!} />
-        <ActiveOrderReturnSection orderPreview={orderPreview!} />
         <OrderGeneralSection order={order} />
         <OrderSummarySection order={order} />
         <OrderPaymentSection order={order} />

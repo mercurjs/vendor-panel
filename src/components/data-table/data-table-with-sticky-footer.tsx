@@ -1,4 +1,4 @@
-import { Container, Heading } from "@medusajs/ui"
+import { clx, Container, Heading } from "@medusajs/ui"
 import React, { useLayoutEffect, useRef, useState } from "react"
 
 import { _DataTable } from "../table/data-table/data-table"
@@ -54,7 +54,7 @@ export function DataTableWithStickyFooter<TData>({
   return (
     <Container
       ref={containerRef}
-      className={`divide-y p-0 flex flex-col ${className ?? ""}`}
+      className={clx("divide-y p-0 flex flex-col", className)}
       style={{
         maxHeight: containerMaxHeight ? `${containerMaxHeight}px` : undefined,
       }}

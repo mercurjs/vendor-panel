@@ -20,11 +20,8 @@ type EditProductFormProps = {
 }
 
 const EditProductSchema = zod.object({
-  // status: zod.enum(["draft", "published", "proposed", "rejected"]),
   title: zod.string().min(1),
-  // subtitle: zod.string().optional(),
   handle: zod.string().min(1),
-  // material: zod.string().optional(),
   description: zod.string().optional(),
   discountable: zod.boolean(),
 })
@@ -39,10 +36,7 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
 
   const form = useExtendableForm({
     defaultValues: {
-      // status: product.status,
       title: product.title,
-      // material: product.material || "",
-      // subtitle: product.subtitle || "",
       handle: product.handle || "",
       description: product.description || "",
       discountable: product.discountable,
@@ -55,10 +49,6 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
   const { mutateAsync, isPending } = useUpdateProduct(product.id)
 
   const handleSubmit = form.handleSubmit(async (data) => {
-    // const { title, discountable, handle, status, ...optional } = data
-
-    // const nullableData = transformNullableFormData(optional)
-
     const { description, discountable, handle, title } = data
 
     await mutateAsync(
@@ -67,11 +57,6 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
         discountable,
         handle,
         title,
-        // title,
-        // discountable,
-        // handle,
-        // status: status as HttpTypes.AdminProductStatus,
-        // ...nullableData,
       },
       {
         onSuccess: ({ product }) => {

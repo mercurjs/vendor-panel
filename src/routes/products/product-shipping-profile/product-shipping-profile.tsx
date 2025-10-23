@@ -27,7 +27,7 @@ export const ProductShippingProfile = () => {
         </RouteDrawer.Title>
       </RouteDrawer.Header>
       {!isLoading && product && (
-        <ProductShippingProfileForm product={product} />
+        <ProductShippingProfileForm product={product as any} />
       )}
     </RouteDrawer>
   )

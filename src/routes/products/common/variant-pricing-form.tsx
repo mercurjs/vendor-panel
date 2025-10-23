@@ -1,7 +1,7 @@
-import { HttpTypes } from "@medusajs/types"
 import { useMemo } from "react"
 import { UseFormReturn, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
+import { HttpTypes } from "@medusajs/types"
 
 import {
   DataGrid,

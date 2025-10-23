@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { XMarkMini } from "@medusajs/icons"
-import { AdminProductVariant, HttpTypes } from "@medusajs/types"
+import { HttpTypes } from "@medusajs/types"
 import { Button, Heading, IconButton, Input, Label, toast } from "@medusajs/ui"
 import i18next from "i18next"
 import { useFieldArray, useForm } from "react-hook-form"
@@ -18,14 +18,11 @@ import { useProductVariantsInventoryItemsBatch } from "../../../../../hooks/api/
 import { useComboboxData } from "../../../../../hooks/use-combobox-data"
 import { castNumber } from "../../../../../lib/cast-number"
 import { sdk } from "../../../../../lib/client"
+import { ExtendedAdminProductVariant } from "../../../../../types/extended-product"
 
 type ManageVariantInventoryItemsFormProps = {
-  variant: AdminProductVariant & {
-    inventory_items: {
-      inventory: HttpTypes.AdminInventoryItem
-      inventory_item_id: string
-      required_quantity: number
-    }[]
+  variant: ExtendedAdminProductVariant & {
+    inventory_items: NonNullable<ExtendedAdminProductVariant["inventory_items"]>
   }
 }
 
@@ -67,7 +64,7 @@ export function ManageVariantInventoryItemsForm({
       inventory: variant.inventory_items.length
         ? variant.inventory_items!.map((i) => ({
             required_quantity: i.required_quantity,
-            inventory_item_id: i.inventory.id,
+            inventory_item_id: i.inventory?.id || i.inventory_item_id,
           }))
         : [
             {

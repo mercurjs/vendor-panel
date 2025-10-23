@@ -1,7 +1,7 @@
-import { HttpTypes } from "@medusajs/types"
 import { useMemo } from "react"
 import { UseFormReturn, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
+import { HttpTypes } from "@medusajs/types"
 
 import {
   createDataGridHelper,
@@ -20,6 +20,11 @@ type ProductCreateVariantsFormProps = {
   regions?: HttpTypes.AdminRegion[]
   store?: HttpTypes.AdminStore
   pricePreferences?: HttpTypes.AdminPricePreference[]
+}
+
+// Extended variant type for DataGrid with original index tracking
+type VariantWithIndex = ProductCreateVariantSchema & {
+  originalIndex: number
 }
 
 export const ProductCreateVariantsForm = ({
@@ -58,7 +63,7 @@ export const ProductCreateVariantsForm = ({
   })
 
   const variantData = useMemo(() => {
-    const ret: any[] = []
+    const ret: VariantWithIndex[] = []
 
     variants.forEach((v, i) => {
       if (v.should_create) {
@@ -82,7 +87,7 @@ export const ProductCreateVariantsForm = ({
 }
 
 const columnHelper = createDataGridHelper<
-  ProductCreateVariantSchema,
+  VariantWithIndex,
   ProductCreateSchemaType
 >()
 
@@ -144,10 +149,7 @@ const useColumns = ({
         },
       }),
 
-      ...createDataGridPriceColumns<
-        ProductCreateVariantSchema,
-        ProductCreateSchemaType
-      >({
+      ...createDataGridPriceColumns<VariantWithIndex, ProductCreateSchemaType>({
         currencies,
         pricePreferences,
         getFieldName: (context, value) => {

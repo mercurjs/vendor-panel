@@ -13,6 +13,7 @@ import { queryKeysFactory, TQueryKey } from "../../lib/query-key-factory"
 import { inventoryItemsQueryKeys } from "./inventory"
 import { reservationItemsQueryKeys } from "./reservations"
 import { filterOrders } from "../../routes/orders/common/orderFiltering"
+import { OrderCommission } from "../../types/order"
 
 const ORDERS_QUERY_KEY = "orders" as const
 const _orderKeys = queryKeysFactory(ORDERS_QUERY_KEY) as TQueryKey<"orders"> & {
@@ -50,6 +51,27 @@ export const useOrder = (
         query,
       }),
     queryKey: ordersQueryKeys.detail(id, query),
+    ...options,
+  })
+
+  return { ...data, ...rest }
+}
+
+export const useOrderCommission = (
+  id: string,
+  query?: Record<string, any>,
+  options?: Omit<
+    UseQueryOptions<OrderCommission, FetchError, OrderCommission, QueryKey>,
+    "queryFn" | "queryKey"
+  >
+) => {
+  const { data, ...rest } = useQuery({
+    queryFn: async () =>
+      fetchQuery(`/vendor/orders/${id}/commission`, {
+        method: "GET",
+        query,
+      }),
+    queryKey: ordersQueryKeys.detail(`${id}/commission`, query),
     ...options,
   })
 

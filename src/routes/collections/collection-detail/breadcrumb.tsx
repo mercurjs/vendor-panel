@@ -10,14 +10,13 @@ export const CollectionDetailBreadcrumb = (
 ) => {
   const { id } = props.params || {}
 
-  const { collection } = useCollection(id!, {
-    initialData: props.data,
-    enabled: Boolean(id),
+  const { product_collection } = useCollection(id!, {
+    initialData: { product_collection: props.data.collection },
   })
 
-  if (!collection) {
+  if (!product_collection) {
     return null
   }
 
-  return <span>{collection.title}</span>
+  return <span>{product_collection.title}</span>
 }

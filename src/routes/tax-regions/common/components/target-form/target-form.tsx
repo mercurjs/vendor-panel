@@ -46,6 +46,7 @@ import {
 import { useDataTable } from "../../../../../hooks/use-data-table"
 import { TaxRateRuleReferenceType } from "../../constants"
 import { TaxRateRuleReference } from "../../schemas"
+import { CustomerGroupData } from "../../../../orders/common/customerGroupFiltering"
 
 type TargetFormProps = {
   referenceType: TaxRateRuleReferenceType
@@ -140,8 +141,6 @@ const CustomerGroupTable = ({
   intermediate,
   setIntermediate,
 }: TableImplementationProps) => {
-  const { t } = useTranslation()
-
   const [rowSelection, setRowSelection] =
     useState<RowSelectionState>(initialRowState)
 
@@ -167,8 +166,8 @@ const CustomerGroupTable = ({
 
     const newCustomerGroups =
       customer_groups
-        ?.filter((cg) => newIds.includes(cg.id))
-        .map((cg) => ({ value: cg.id, label: cg.name! })) || []
+        ?.filter((cg) => newIds.includes(cg.customer_group_id))
+        .flatMap((cg) => ({ value: cg.customer_group_id, label: cg.customer_group.name! })) || []
 
     const filteredIntermediate = intermediate.filter(
       (cg) => !removedIds.includes(cg.value)
@@ -187,7 +186,7 @@ const CustomerGroupTable = ({
     count,
     enablePagination: true,
     enableRowSelection: true,
-    getRowId: (row) => row.id,
+    getRowId: (row) => row.customer_group_id,
     rowSelection: {
       state: rowSelection,
       updater,
@@ -208,11 +207,6 @@ const CustomerGroupTable = ({
       count={count}
       isLoading={isLoading}
       filters={filters}
-      orderBy={[
-        { key: "name", label: t("fields.name") },
-        { key: "created_at", label: t("fields.createdAt") },
-        { key: "updated_at", label: t("fields.updatedAt") },
-      ]}
       layout="fill"
       pagination
       search
@@ -222,7 +216,7 @@ const CustomerGroupTable = ({
   )
 }
 
-const cgColumnHelper = createColumnHelper<HttpTypes.AdminCustomerGroup>()
+const cgColumnHelper = createColumnHelper<CustomerGroupData>()
 
 const useGroupColumns = () => {
   const base = useCustomerGroupTableColumns()
@@ -418,7 +412,7 @@ const ProductCollectionTable = ({
     prefix: PREFIX_PRODUCT_COLLECTION,
   })
 
-  const { collections, count, isLoading, isError, error } = useCollections(
+  const { product_collections: collections, count, isLoading, isError, error } = useCollections(
     searchParams,
     {
       placeholderData: keepPreviousData,

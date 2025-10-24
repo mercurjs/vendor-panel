@@ -1,3 +1,4 @@
+import { HttpTypes } from "@medusajs/types"
 import { createColumnHelper } from "@tanstack/react-table"
 import { useMemo } from "react"
 
@@ -6,7 +7,6 @@ import {
   TextCell,
   TextHeader,
 } from "../../../components/table/table-cells/common/text-cell"
-import { HttpTypes } from "@medusajs/types"
 
 const columnHelper = createColumnHelper<HttpTypes.AdminCustomerGroup>()
 
@@ -20,9 +20,7 @@ export const useCustomerGroupTableColumns = () => {
         cell: ({ row }) => {
           return (
             <TextCell
-              text={
-                row.original?.customer_group?.name || row.original?.name || "-"
-              }
+              text={row.original?.name || "-"}
             />
           )
         },

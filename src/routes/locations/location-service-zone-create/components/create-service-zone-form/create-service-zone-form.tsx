@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { HttpTypes } from "@medusajs/types"
+import { VendorExtendedAdminStockLocation, VendorExtendedAdminFulfillmentSet } from "../../../../../types/stock-location"
 import { Button, Heading, InlineTip, Input, toast } from "@medusajs/ui"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -27,9 +27,9 @@ const CreateServiceZoneSchema = z.object({
 })
 
 type CreateServiceZoneFormProps = {
-  fulfillmentSet: HttpTypes.AdminFulfillmentSet
+  fulfillmentSet: VendorExtendedAdminFulfillmentSet
   type: FulfillmentSetType
-  location: HttpTypes.AdminStockLocation
+  location: VendorExtendedAdminStockLocation
 }
 
 export function CreateServiceZoneForm({

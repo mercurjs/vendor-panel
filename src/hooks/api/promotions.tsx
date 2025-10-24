@@ -334,7 +334,6 @@ export const usePromotionUpdateRules = (
       )
 
       const rulesIds = rules.map((rule: any) => rule.id)
-      console.log("rules", rulesIds)
       await fetchQuery(`/vendor/promotions/${id}/${ruleType}/batch`, {
         method: "POST",
         body: { delete: rulesIds },

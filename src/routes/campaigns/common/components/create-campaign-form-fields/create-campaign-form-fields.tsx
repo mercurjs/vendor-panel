@@ -20,6 +20,7 @@ import {
 } from "../../../../../lib/data/currencies"
 import { CampaignFormFields, WithNestedCampaign } from "../../../../../types/campaign"
 
+
 type CreateCampaignFormFieldsProps<T extends CampaignFormFields | WithNestedCampaign> = {
   form: UseFormReturn<T>
   fieldScope?: string
@@ -29,6 +30,7 @@ export const CreateCampaignFormFields = <T extends CampaignFormFields | WithNest
   form, 
   fieldScope = ""
 }: CreateCampaignFormFieldsProps<T>) => {
+  
   const { t } = useTranslation()
   const { store } = useStore()
 

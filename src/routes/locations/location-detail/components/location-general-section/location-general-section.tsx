@@ -50,9 +50,10 @@ import {
   FulfillmentSetType,
   ShippingOptionPriceType,
 } from "../../../common/constants"
+import { VendorExtendedAdminStockLocation, VendorExtendedAdminFulfillmentSet, VendorExtendedAdminServiceZone } from "../../../../../types/stock-location"
 
 type LocationGeneralSectionProps = {
-  location: HttpTypes.AdminStockLocation
+  location: VendorExtendedAdminStockLocation
 }
 
 export const LocationGeneralSection = ({
@@ -183,7 +184,7 @@ function ShippingOption({
 }
 
 type ServiceZoneOptionsProps = {
-  zone: HttpTypes.AdminServiceZone
+  zone: VendorExtendedAdminServiceZone
   locationId: string
   fulfillmentSetId: string
   type: FulfillmentSetType
@@ -264,7 +265,7 @@ function ServiceZoneOptions({
 }
 
 type ServiceZoneProps = {
-  zone: HttpTypes.AdminServiceZone
+  zone: VendorExtendedAdminServiceZone
   locationId: string
   fulfillmentSetId: string
   type: FulfillmentSetType
@@ -435,7 +436,7 @@ function ServiceZone({
 }
 
 type FulfillmentSetProps = {
-  fulfillmentSet?: HttpTypes.AdminFulfillmentSet
+  fulfillmentSet?: VendorExtendedAdminFulfillmentSet
   locationName: string
   locationId: string
   type: FulfillmentSetType
@@ -583,7 +584,7 @@ function FulfillmentSet(props: FulfillmentSetProps) {
   )
 }
 
-const Actions = ({ location }: { location: HttpTypes.AdminStockLocation }) => {
+const Actions = ({ location }: { location: VendorExtendedAdminStockLocation }) => {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { mutateAsync } = useDeleteStockLocation(location.id)

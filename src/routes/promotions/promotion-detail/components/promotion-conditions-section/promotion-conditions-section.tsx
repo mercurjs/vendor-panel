@@ -1,17 +1,26 @@
 import { PencilSquare } from "@medusajs/icons"
-import { HttpTypes, PromotionRuleTypes } from "@medusajs/types"
+import { PromotionRuleTypes } from "@medusajs/types"
 import { Badge, Container, Heading } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { BadgeListSummary } from "../../../../../components/common/badge-list-summary"
 import { NoRecords } from "../../../../../components/common/empty-table-content"
+import { ExtendedPromotionRuleWithValues } from "../../../../../types/promotion"
 
 type RuleProps = {
-  rule: HttpTypes.AdminPromotionRule
+  rule: ExtendedPromotionRuleWithValues
 }
-
 function RuleBlock({ rule }: RuleProps) {
+  const getValuesList = (): string[] => {
+    if (rule.field_type === "number") {
+      return Array.isArray(rule.values) 
+        ? rule.values.map((v) => String(v.value || v))
+        : [String(rule.values)]
+    }
+    return rule.values?.map((v) => v.label || v.value || String(v)).filter(Boolean) || []
+  }
+
   return (
     <div className="bg-ui-bg-subtle shadow-borders-base align-center flex justify-around rounded-md p-2">
       <div className="text-ui-fg-subtle txt-compact-xsmall flex items-center whitespace-nowrap">
@@ -30,11 +39,7 @@ function RuleBlock({ rule }: RuleProps) {
         <BadgeListSummary
           inline
           className="!txt-compact-small-plus"
-          list={
-            rule.field_type === "number"
-              ? [rule.values]
-              : rule.values?.map((v) => v.label)
-          }
+          list={getValuesList()}
         />
       </div>
     </div>
@@ -42,7 +47,7 @@ function RuleBlock({ rule }: RuleProps) {
 }
 
 type PromotionConditionsSectionProps = {
-  rules: HttpTypes.AdminPromotionRule[]
+  rules: ExtendedPromotionRuleWithValues[]
   ruleType: PromotionRuleTypes
 }
 
@@ -51,7 +56,7 @@ export const PromotionConditionsSection = ({
   ruleType,
 }: PromotionConditionsSectionProps) => {
   const { t } = useTranslation()
-
+  
   const translationKey = `promotions.fields.conditions.${ruleType === "target_rules" ? "target-rules" : "buy-rules"}.title` as const
   return (
     <Container className="p-0">
@@ -69,7 +74,7 @@ export const PromotionConditionsSection = ({
                 {
                   icon: <PencilSquare />,
                   label: t("actions.edit"),
-                  to: `${ruleType}/edit`,
+                  to: `${ruleType.replace("_", "-")}/edit`,
                 },
               ],
             },
@@ -84,7 +89,7 @@ export const PromotionConditionsSection = ({
             title={t("general.noRecordsTitle")}
             message={t("promotions.conditions.list.noRecordsMessage")}
             action={{
-              to: `${ruleType}/edit`,
+              to: `${ruleType.replace("_", "-")}/edit`,
               label: t("promotions.conditions.add"),
             }}
             buttonVariant="transparentIconLeft"

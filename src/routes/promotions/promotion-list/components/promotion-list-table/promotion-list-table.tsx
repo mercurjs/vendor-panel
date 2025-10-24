@@ -1,5 +1,5 @@
 import { PencilSquare, Trash } from "@medusajs/icons"
-import { HttpTypes, PromotionDTO } from "@medusajs/types"
+import { HttpTypes } from "@medusajs/types"
 import { Button, Container, Heading, usePrompt } from "@medusajs/ui"
 import { createColumnHelper } from "@tanstack/react-table"
 import { useMemo } from "react"
@@ -90,7 +90,7 @@ export const PromotionListTable = () => {
   )
 }
 
-const PromotionActions = ({ promotion }: { promotion: PromotionDTO }) => {
+const PromotionActions = ({ promotion }: { promotion: HttpTypes.AdminPromotion }) => {
   const { t } = useTranslation()
   const prompt = usePrompt()
   const navigate = useNavigate()
@@ -147,7 +147,7 @@ const PromotionActions = ({ promotion }: { promotion: PromotionDTO }) => {
   )
 }
 
-const columnHelper = createColumnHelper<PromotionDTO>()
+const columnHelper = createColumnHelper<HttpTypes.AdminPromotion>()
 
 const useColumns = () => {
   const base = usePromotionTableColumns()

@@ -242,7 +242,6 @@ export function OrderAllocateItemsItem({
           const location = i.location_levels?.find(
             (l) => l.location_id === locationId
           )
-          console.log(i, 'INVENTORY')
 
           const hasQuantityError =
             !!quantityField[`${item.id}-${i.id}`] &&

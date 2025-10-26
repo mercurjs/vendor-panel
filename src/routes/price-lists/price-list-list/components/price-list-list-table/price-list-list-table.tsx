@@ -23,7 +23,7 @@ export const PriceListListTable = () => {
       placeholderData: keepPreviousData,
     }
   )
-
+  
   const filters = usePricingTableFilters()
   const columns = usePricingTableColumns()
 
@@ -72,7 +72,7 @@ export const PriceListListTable = () => {
         ]}
         queryObject={raw}
         pageSize={PAGE_SIZE}
-        navigateTo={(row) => row.original.price_list_id}
+        navigateTo={(row) => row.original.id}
         isLoading={isLoading}
         pagination
         search

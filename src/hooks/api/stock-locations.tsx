@@ -8,10 +8,11 @@ import {
 
 import { FetchError } from "@medusajs/js-sdk"
 import { HttpTypes } from "@medusajs/types"
-import { fetchQuery, sdk } from "../../lib/client"
+import { fetchQuery } from "../../lib/client"
 import { queryClient } from "../../lib/query-client"
 import { queryKeysFactory } from "../../lib/query-key-factory"
 import { fulfillmentProvidersQueryKeys } from "./fulfillment-providers"
+import { VendorExtendedAdminStockLocationResponse } from "../../types/stock-location"
 
 const STOCK_LOCATIONS_QUERY_KEY = "stock_locations" as const
 export const stockLocationsQueryKeys = queryKeysFactory(
@@ -25,7 +26,7 @@ export const useStockLocation = (
     UseQueryOptions<
       HttpTypes.AdminStockLocationResponse,
       FetchError,
-      HttpTypes.AdminStockLocationResponse,
+      VendorExtendedAdminStockLocationResponse,
       QueryKey
     >,
     "queryKey" | "queryFn"
@@ -40,7 +41,7 @@ export const useStockLocation = (
     queryKey: stockLocationsQueryKeys.detail(id, query),
     ...options,
   })
-
+  
   return { ...data, ...rest }
 }
 

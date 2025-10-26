@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { HttpTypes } from "@medusajs/types"
+import { VendorExtendedAdminServiceZone } from "../../../../../types/stock-location"
 import { Button, Heading, toast } from "@medusajs/ui"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -25,7 +25,7 @@ const EditeServiceZoneSchema = z.object({
 type EditServiceZoneAreasFormProps = {
   fulfillmentSetId: string
   locationId: string
-  zone: HttpTypes.AdminServiceZone
+  zone: VendorExtendedAdminServiceZone
 }
 
 export function EditServiceZoneAreasForm({

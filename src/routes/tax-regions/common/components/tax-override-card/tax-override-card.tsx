@@ -329,7 +329,7 @@ const useReferenceValues = (
         isPending: products.isPending,
         additional:
           products.products && products.count
-            ? products.count - products.products.length
+            ? products.count - (products.products?.length ?? 0)
             : 0,
         isError: products.isError,
         error: products.error,
@@ -378,5 +378,13 @@ const useReferenceValues = (
     //     isError: customerGroups.isError,
     //     error: customerGroups.error,
     //   }
+    default:
+      return {
+        labels: undefined,
+        isPending: false,
+        additional: 0,
+        isError: false,
+        error: null,
+      }
   }
 }

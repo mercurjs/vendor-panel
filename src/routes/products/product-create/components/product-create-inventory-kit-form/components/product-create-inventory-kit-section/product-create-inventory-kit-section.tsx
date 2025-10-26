@@ -33,7 +33,7 @@ function VariantSection({ form, variant, index }: VariantSectionProps) {
     queryFn: (params) => sdk.admin.inventoryItem.list(params),
     getOptions: (data) =>
       data.inventory_items.map((item) => ({
-        label: item.title,
+        label: item.title || item.sku || item.id,
         value: item.id,
       })),
   })

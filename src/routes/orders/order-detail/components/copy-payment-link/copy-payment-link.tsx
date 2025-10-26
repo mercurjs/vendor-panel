@@ -1,15 +1,15 @@
 import { CheckCircleSolid, SquareTwoStack } from "@medusajs/icons"
-import { AdminOrder, AdminPaymentCollection } from "@medusajs/types"
 import { Button, Tooltip } from "@medusajs/ui"
 import copy from "copy-to-clipboard"
 import React, { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { getStylizedAmount } from "../../../../../lib/money-amount-helpers"
 import { MEDUSA_STOREFRONT_URL } from "../../../../../lib/storefront"
+import { ExtendedAdminOrder, ExtendedAdminPaymentCollection } from "../../../../../types/order"
 
 type CopyPaymentLinkProps = {
-  paymentCollection: Partial<AdminPaymentCollection>
-  order: AdminOrder
+  paymentCollection: Partial<ExtendedAdminPaymentCollection>
+  order: ExtendedAdminOrder
 }
 
 /**

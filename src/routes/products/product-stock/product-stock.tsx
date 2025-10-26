@@ -1,4 +1,3 @@
-import { HttpTypes } from "@medusajs/types"
 import { AnimatePresence } from "motion/react"
 import { Suspense, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -68,10 +67,7 @@ export const ProductStock = () => {
         </RouteFocusModal.Description>
         <Suspense fallback={<ProductStockFallback />}>
           <Await resolve={{ allVariants, locations: stock_locations }}>
-            {(data: {
-              variants: HttpTypes.AdminProductVariant[]
-              locations: HttpTypes.AdminStockLocation[]
-            }) => {
+            {() => {
               return (
                 <ProductStockForm
                   variants={allVariants || []}

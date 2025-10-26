@@ -17,12 +17,14 @@ export function OrderCreateShipment() {
 
   const ready = !isLoading && order
 
+  const fulfillment = order?.fulfillments?.find((f) => f.id === f_id)
+
   return (
     <RouteFocusModal>
-      {ready && (
+      {ready && fulfillment && (
         <OrderCreateShipmentForm
           order={order}
-          fulfillment={order.fulfillments?.find((f) => f.id === f_id)}
+          fulfillment={fulfillment}
         />
       )}
     </RouteFocusModal>

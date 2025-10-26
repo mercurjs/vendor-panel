@@ -1,10 +1,6 @@
 import { XCircle } from "@medusajs/icons"
 import {
-  AdminOrder,
-  AdminOrderFulfillment,
   AdminOrderLineItem,
-  HttpTypes,
-  OrderLineItemDTO,
 } from "@medusajs/types"
 import {
   Button,
@@ -31,9 +27,10 @@ import { useStockLocation } from "../../../../../hooks/api/stock-locations"
 import { formatProvider } from "../../../../../lib/format-provider"
 import { getLocaleAmount } from "../../../../../lib/money-amount-helpers"
 import { FulfillmentSetType } from "../../../../locations/common/constants"
+import { ExtendedAdminOrder, ExtendedAdminOrderFulfillment } from "../../../../../types/order"
 
 type OrderFulfillmentSectionProps = {
-  order: AdminOrder
+  order: ExtendedAdminOrder
 }
 
 export const OrderFulfillmentSection = ({
@@ -55,9 +52,7 @@ const UnfulfilledItem = ({
   item,
   currencyCode,
 }: {
-  item: OrderLineItemDTO & {
-    variant: HttpTypes.AdminProductVariant
-  }
+  item: AdminOrderLineItem
   currencyCode: string
 }) => {
   return (
@@ -111,14 +106,14 @@ const UnfulfilledItem = ({
   )
 }
 
-const UnfulfilledItemBreakdown = ({ order }: { order: AdminOrder }) => {
+const UnfulfilledItemBreakdown = ({ order }: { order: ExtendedAdminOrder }) => {
   // Create an array of order items that haven't been fulfilled or at least not fully fulfilled
   const unfulfilledItemsWithShipping = order.items!.filter(
-    (i) => i.requires_shipping && i.detail.fulfilled_quantity < i.quantity
+    (i) => i.requires_shipping && i.detail && i.quantity && i.detail.fulfilled_quantity < i.quantity
   )
 
   const unfulfilledItemsWithoutShipping = order.items!.filter(
-    (i) => !i.requires_shipping && i.detail.fulfilled_quantity < i.quantity
+    (i) => !i.requires_shipping && i.detail && i.quantity && i.detail.fulfilled_quantity < i.quantity
   )
 
   return (
@@ -147,7 +142,7 @@ const UnfulfilledItemDisplay = ({
   unfulfilledItems,
   requiresShipping = false,
 }: {
-  order: AdminOrder
+  order: ExtendedAdminOrder
   unfulfilledItems: AdminOrderLineItem[]
   requiresShipping: boolean
 }) => {
@@ -199,8 +194,8 @@ const Fulfillment = ({
   order,
   index,
 }: {
-  fulfillment: AdminOrderFulfillment
-  order: AdminOrder
+  fulfillment: ExtendedAdminOrderFulfillment
+  order: ExtendedAdminOrder
   index: number
 }) => {
   const { t } = useTranslation()
@@ -355,7 +350,7 @@ const Fulfillment = ({
           {t("orders.fulfillment.itemsLabel")}
         </Text>
         <ul>
-          {fulfillment.items.map((f_item) => (
+          {(fulfillment.items || []).map((f_item) => (
             <li key={f_item.line_item_id}>
               <Text size="small" leading="compact">
                 {f_item.quantity}x {f_item.title}
@@ -401,13 +396,13 @@ const Fulfillment = ({
             <ul>
               {fulfillment.labels.map((tlink) => {
                 const hasUrl =
-                  tlink.url && tlink.url.length > 0 && tlink.url !== "#"
+                  tlink.tracking_url && tlink.tracking_url.length > 0 && tlink.tracking_url !== "#"
 
                 if (hasUrl) {
                   return (
                     <li key={tlink.tracking_number}>
                       <a
-                        href={tlink.url}
+                        href={tlink.tracking_url || ""}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover transition-fg"

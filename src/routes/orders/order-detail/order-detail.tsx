@@ -52,6 +52,7 @@ export const OrderDetail = () => {
   if (isError) {
     throw error
   }
+
   return (
     <TwoColumnPage
       widgets={{
@@ -71,6 +72,7 @@ export const OrderDetail = () => {
       </TwoColumnPage.Main>
       <TwoColumnPage.Sidebar>
         <OrderCustomerSection order={order} />
+        {/* TODO: Uncomment when API returns data about payment cancel/capture/refund dates + when section is adapted to the changes */}
         {/* <OrderActivitySection order={order} /> */}
       </TwoColumnPage.Sidebar>
     </TwoColumnPage>

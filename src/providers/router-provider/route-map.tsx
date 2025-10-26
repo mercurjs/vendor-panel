@@ -12,6 +12,7 @@ import { taxRegionLoader } from "../../routes/tax-regions/tax-region-detail/load
 import { RouteExtensions } from "./route-extensions"
 import { SettingsExtensions } from "./settings-extensions"
 import { ExtendedAdminProductResponse } from "../../types/extended-product"
+import { ExtendedAdminOrderResponse } from "../../types/order"
 
 export const RouteMap: RouteObject[] = [
   {
@@ -493,7 +494,7 @@ export const RouteMap: RouteObject[] = [
                     loader,
                     handle: {
                       breadcrumb: (
-                        match: UIMatch<HttpTypes.AdminOrderResponse>
+                        match: UIMatch<ExtendedAdminOrderResponse>
                       ) => <Breadcrumb {...match} />,
                     },
                   }

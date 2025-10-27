@@ -18,6 +18,8 @@ import { useProductTableQuery } from "../../../../../hooks/table/query/use-produ
 import { useDataTable } from "../../../../../hooks/use-data-table"
 import { PriceListCreateProductsSchema } from "../../../common/schemas"
 import { PricingCreateSchemaType } from "./schema"
+import { useLoaderData } from "react-router-dom"
+import { productsLoader } from "../../../../products/product-list/loader"
 
 type PriceListProductsFormProps = {
   form: UseFormReturn<PricingCreateSchemaType>
@@ -54,12 +56,20 @@ export const PriceListProductsForm = ({ form }: PriceListProductsFormProps) => {
   const { searchParams, raw } = useProductTableQuery({
     pageSize: PAGE_SIZE,
     prefix: PREFIX,
+
   })
+
+  const initialData = useLoaderData() as Awaited<
+    ReturnType<ReturnType<typeof productsLoader>>
+  >
+
+  const options = {
+    initialData,
+    placeholderData: keepPreviousData,
+  }
   const { products, count, isLoading, isError, error } = useProducts(
-    { ...searchParams, fields: "+thumbnail" },
-    {
-      placeholderData: keepPreviousData,
-    }
+    { ...searchParams, fields: "+thumbnail,+created_at,+updated_at,+status" },
+    options
   )
 
   const updater: OnChangeFn<RowSelectionState> = (fn) => {
@@ -101,7 +111,7 @@ export const PriceListProductsForm = ({ form }: PriceListProductsFormProps) => {
   const { table } = useDataTable({
     data: products || [],
     columns,
-    count,
+    count: count,
     enablePagination: true,
     enableRowSelection: (row) => {
       return !!row.original.variants?.length
@@ -112,6 +122,7 @@ export const PriceListProductsForm = ({ form }: PriceListProductsFormProps) => {
       updater,
     },
     pageSize: PAGE_SIZE,
+    prefix: PREFIX,
   })
 
   if (isError) {

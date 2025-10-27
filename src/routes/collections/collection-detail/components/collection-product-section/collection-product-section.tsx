@@ -29,7 +29,6 @@ export const CollectionProductSection = ({
   })
   const { products, count, isLoading, isError, error } = useProducts({
     ...searchParams,
-    limit: 9999,
     fields: "+thumbnail",
     collection_id: collection.id!,
   })

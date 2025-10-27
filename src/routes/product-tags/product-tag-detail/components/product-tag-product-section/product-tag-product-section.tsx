@@ -28,7 +28,6 @@ export const ProductTagProductSection = ({
   const { products, count, isPending, isError, error } = useProducts({
     ...searchParams,
     fields: "*tags",
-    limit: 9999,
     tag_id: productTag.id!,
   })
 

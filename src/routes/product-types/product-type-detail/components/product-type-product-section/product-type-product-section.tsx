@@ -26,7 +26,6 @@ export const ProductTypeProductSection = ({
   const { products, count, isPending, isError, error } = useProducts({
     ...searchParams,
     fields: "+type_id",
-    limit: 9999,
     type_id: productType.id,
   })
 

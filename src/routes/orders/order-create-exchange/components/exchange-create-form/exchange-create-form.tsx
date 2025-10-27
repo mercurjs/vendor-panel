@@ -19,7 +19,7 @@ import {
   useRouteModal,
 } from "../../../../../components/modals"
 
-import { Form } from "../../../../../components/common/form"
+import { Form } from "../../../../../components/common/form" 
 import { getStylizedAmount } from "../../../../../lib/money-amount-helpers"
 import { CreateExchangeSchemaType, ExchangeCreateSchema } from "./schema"
 
@@ -34,6 +34,7 @@ import {
 import { currencies } from "../../../../../lib/data/currencies"
 import { ExchangeInboundSection } from "./exchange-inbound-section.tsx"
 import { ExchangeOutboundSection } from "./exchange-outbound-section"
+import { FetchError } from "@medusajs/js-sdk"
 
 type ReturnCreateFormProps = {
   order: AdminOrder
@@ -204,7 +205,7 @@ export const ExchangeCreateForm = ({
       handleSuccess()
     } catch (e) {
       toast.error(t("general.error"), {
-        description: e.message,
+        description: e instanceof FetchError ? e.message : "An error occurred",
       })
     }
   })

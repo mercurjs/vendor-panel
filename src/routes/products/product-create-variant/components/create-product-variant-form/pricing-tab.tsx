@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import { useMemo } from "react"
 import { UseFormReturn, useWatch } from "react-hook-form"
 import { HttpTypes } from "@medusajs/types"
 import { useTranslation } from "react-i18next"
@@ -83,7 +83,6 @@ const useVariantPriceGridColumns = ({
         z.infer<typeof CreateProductVariantSchema>
       >({
         currencies: currencies.map((c) => c.currency_code),
-        regions,
         pricePreferences,
         getFieldName: (context, value) => {
           if (context.column.id?.startsWith("currency_prices")) {

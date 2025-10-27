@@ -22,6 +22,7 @@ import {
 import { getStylizedAmount } from "../../../../../lib/money-amount-helpers"
 import { ReceiveReturnSchema } from "./constants"
 import DismissedQuantity from "./dismissed-quantity"
+import { FetchError } from "@medusajs/js-sdk"
 
 type OrderAllocateItemsFormProps = {
   order: AdminOrder
@@ -41,7 +42,7 @@ export function OrderReceiveReturnForm({
    * Items on the preview order that are part of the return we are receiving currently.
    */
   const previewItems = useMemo(() => {
-    const idsMap = {}
+    const idsMap: Record<string, boolean> = {}
 
     orderReturn.items?.forEach((i) => (idsMap[i.item_id] = true))
 
@@ -80,7 +81,7 @@ export function OrderReceiveReturnForm({
   )
 
   const itemsMap = useMemo(() => {
-    const ret = {}
+    const ret: Record<string, any> = {}
     order.items.forEach((i) => (ret[i.id] = i))
     return ret
   }, [order.items])
@@ -133,12 +134,10 @@ export function OrderReceiveReturnForm({
 
       toast.success(t("general.success"), {
         description: t("orders.returns.receive.toast.success"),
-        dismissLabel: t("actions.close"),
       })
-    } catch (e: any) {
+    } catch (e) {
       toast.error(t("general.error"), {
-        description: e.message,
-        dismissLabel: t("actions.close"),
+        description: e instanceof FetchError ? e.message : "An unknown error occurred",
       })
     }
   })
@@ -152,6 +151,8 @@ export function OrderReceiveReturnForm({
     const action = item?.actions?.find(
       (a) => a.action === "RECEIVE_RETURN_ITEM"
     )
+
+    if (!item) return
 
     if (typeof value === "number" && value < 0) {
       form.setValue(
@@ -194,7 +195,7 @@ export function OrderReceiveReturnForm({
         }
       }
     } catch (e) {
-      toast.error(e.message)
+      toast.error(e instanceof FetchError ? e.message : "An error occurred")
     }
   }
 
@@ -204,7 +205,7 @@ export function OrderReceiveReturnForm({
         await cancelReceiveReturn()
       }
     } catch (e) {
-      toast.error(e.message)
+      toast.error(e instanceof FetchError ? e.message : "An error occurred")
     }
   }
 
@@ -231,7 +232,7 @@ export function OrderReceiveReturnForm({
             </span>
           </div>
           {previewItems.map((item, ind) => {
-            const originalItem = itemsMap[item.id]
+            const originalItem = (itemsMap as Record<string, any>)[item.id]
 
             return (
               <div

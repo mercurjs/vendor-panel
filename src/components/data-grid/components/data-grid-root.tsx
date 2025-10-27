@@ -855,10 +855,10 @@ const DataGridCell = <TData,>({
 type DataGridRowProps<TData> = {
   row: Row<TData>
   rowIndex: number
-  virtualRow: VirtualItem<Element>
+  virtualRow: VirtualItem
   virtualPaddingLeft?: number
   virtualPaddingRight?: number
-  virtualColumns: VirtualItem<Element>[]
+  virtualColumns: VirtualItem[]
   flatColumns: Column<TData, unknown>[]
   anchor: DataGridCoordinates | null
   onDragToFillStart: (e: React.MouseEvent<HTMLElement>) => void

@@ -149,7 +149,6 @@ const useColumns = ({
         ProductCreateSchemaType
       >({
         currencies,
-        regions,
         pricePreferences,
         getFieldName: (context, value) => {
           if (context.column.id?.startsWith("currency_prices")) {

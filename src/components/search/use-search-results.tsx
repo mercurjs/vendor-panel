@@ -720,7 +720,7 @@ const transformMap: TransformMap = {
   },
 }
 
-function transformDynamicSearchResults<T extends { count: number }>(
+function transformDynamicSearchResults<T extends { count?: number }>(
   type: SearchArea,
   limit: number,
   t: TFunction,
@@ -737,11 +737,13 @@ function transformDynamicSearchResults<T extends { count: number }>(
     return undefined
   }
 
+  const count = response.count ?? 0
+
   return {
     title: t(`app.search.groups.${type}`),
     area: type,
-    hasMore: response.count > limit,
-    count: response.count,
+    hasMore: count > limit,
+    count,
     items: data.map(transform),
   }
 }

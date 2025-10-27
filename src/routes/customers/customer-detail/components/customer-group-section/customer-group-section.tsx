@@ -26,6 +26,7 @@ import { useCustomerGroupTableColumns } from "../../../../../hooks/table/columns
 import { useCustomerGroupTableFilters } from "../../../../../hooks/table/filters/use-customer-group-table-filters"
 import { useCustomerGroupTableQuery } from "../../../../../hooks/table/query/use-customer-group-table-query"
 import { useDataTable } from "../../../../../hooks/use-data-table"
+import { CustomerGroupData } from "../../../../../routes/orders/common/customerGroupFiltering"
 
 type CustomerGroupSectionProps = {
   customer: HttpTypes.AdminCustomer
@@ -44,7 +45,7 @@ export const CustomerGroupSection = ({
     pageSize: PAGE_SIZE,
     prefix: PREFIX,
   })
-
+  
   const {
     customer_groups: customerGroups,
     isLoading,
@@ -95,8 +96,8 @@ export const CustomerGroupSection = ({
       title: t("general.areYouSure"),
       description: t("customers.groups.removeMany", {
         groups: customer_groups
-          ?.filter((g) => customerGroupIds.includes(g.id))
-          .map((g) => g.name)
+          ?.filter((g) => customerGroupIds.includes(g.customer_group_id))
+          .map((g) => g.customer_group.name)
           .join(","),
       }),
       confirmText: t("actions.remove"),
@@ -114,8 +115,8 @@ export const CustomerGroupSection = ({
           toast.success(
             t("customers.groups.removed.success", {
               groups: customer_groups!
-                .filter((cg) => customerGroupIds.includes(cg.id))
-                .map((cg) => cg?.name),
+                .filter((cg) => customerGroupIds.includes(cg.customer_group_id))
+                .map((cg) => cg.customer_group.name),
             })
           )
         },
@@ -147,20 +148,14 @@ export const CustomerGroupSection = ({
         isLoading={isLoading}
         count={customer_groups?.length ?? 0}
         prefix={PREFIX}
-        navigateTo={(row) => `/customer-groups/${row.id}`}
+        navigateTo={(row) => `/customer-groups/${row.original.customer_group_id}`}
         filters={filters}
         search
         pagination
         orderBy={[
-          { key: "name", label: t("fields.name") },
-          {
-            key: "created_at",
-            label: t("fields.createdAt"),
-          },
-          {
-            key: "updated_at",
-            label: t("fields.updatedAt"),
-          },
+          { key: "customer_group.name", label: t("fields.name") },
+          { key: "customer_group.created_at", label: t("fields.createdAt") },
+          { key: "customer_group.updated_at", label: t("fields.updatedAt") },
         ]}
         commands={[
           {
@@ -182,7 +177,7 @@ const CustomerGroupRowActions = ({
   group,
   customerId,
 }: {
-  group: HttpTypes.AdminCustomerGroup
+  group: CustomerGroupData
   customerId: string
 }) => {
   const prompt = usePrompt()
@@ -194,7 +189,7 @@ const CustomerGroupRowActions = ({
     const res = await prompt({
       title: t("general.areYouSure"),
       description: t("customers.groups.remove", {
-        name: group.name,
+        name: group.customer_group.name,
       }),
       confirmText: t("actions.remove"),
       cancelText: t("actions.cancel"),
@@ -219,7 +214,7 @@ const CustomerGroupRowActions = ({
             {
               label: t("actions.edit"),
               icon: <PencilSquare />,
-              to: `/customer-groups/${group.id}/edit`,
+              to: `/customer-groups/${group.customer_group.id}/edit`,
             },
             {
               label: t("actions.remove"),
@@ -233,7 +228,7 @@ const CustomerGroupRowActions = ({
   )
 }
 
-const columnHelper = createColumnHelper<HttpTypes.AdminCustomerGroup>()
+const columnHelper = createColumnHelper<CustomerGroupData>()
 
 const useColumns = (customerId: string) => {
   const columns = useCustomerGroupTableColumns()

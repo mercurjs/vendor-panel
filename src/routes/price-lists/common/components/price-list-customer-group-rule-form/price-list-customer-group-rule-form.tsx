@@ -12,11 +12,11 @@ import { StackedDrawer } from "../../../../../components/modals/stacked-drawer"
 import { StackedFocusModal } from "../../../../../components/modals/stacked-focus-modal"
 import { _DataTable } from "../../../../../components/table/data-table"
 import { useCustomerGroups } from "../../../../../hooks/api/customer-groups"
-import { useCustomerGroupTableColumns } from "../../../../../hooks/table/columns/use-customer-group-table-columns"
 import { useCustomerGroupTableFilters } from "../../../../../hooks/table/filters/use-customer-group-table-filters"
 import { useCustomerGroupTableQuery } from "../../../../../hooks/table/query/use-customer-group-table-query"
 import { useDataTable } from "../../../../../hooks/use-data-table"
 import { PriceListCustomerGroup } from "../../schemas"
+import { TextCell, TextHeader } from "../../../../../components/table/table-cells/common/text-cell"
 
 const PAGE_SIZE = 50
 const PREFIX = "cg"
@@ -171,7 +171,7 @@ export const PriceListCustomerGroupRuleForm = ({
 const columnHelper = createColumnHelper<HttpTypes.AdminCustomerGroup>()
 
 const useColumns = () => {
-  const base = useCustomerGroupTableColumns()
+  const { t } = useTranslation()
 
   return useMemo(
     () => [
@@ -203,8 +203,17 @@ const useColumns = () => {
           )
         },
       }),
-      ...base,
+      columnHelper.accessor("name", {
+        header: () => <TextHeader text={t("fields.name")} />,
+        cell: ({ row }) => {
+          return (
+            <TextCell
+              text={row.original?.name || "-"}
+            />
+          )
+        },
+      }),
     ],
-    [base]
+    [t]
   )
 }

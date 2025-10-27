@@ -4,8 +4,9 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router-dom"
 
+
 export type DataTableOrderByKey<TData> = {
-  key: keyof TData
+  key: keyof TData | (string & Record<never, never>)
   label: string
 }
 

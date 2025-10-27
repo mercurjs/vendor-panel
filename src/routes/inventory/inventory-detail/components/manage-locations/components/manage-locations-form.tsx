@@ -47,7 +47,7 @@ export const ManageLocationsForm = ({
 }: EditInventoryItemAttributeFormProps) => {
   const existingLocationLevels = useMemo(
     () => new Set(item.location_levels?.map((l) => l.location_id) ?? []),
-    item.location_levels
+    [item.location_levels]
   )
 
   const { t } = useTranslation()
@@ -70,6 +70,10 @@ export const ManageLocationsForm = ({
 
     const [selectedLocations, unselectedLocations] = locations.reduce(
       (acc, location) => {
+        if (!location.location_id) {
+          return acc
+        }
+
         // If the location is not changed do nothing
         if (
           (!location.selected &&

@@ -10,7 +10,6 @@ import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import * as zod from "zod"
 
-import { HttpTypes } from "@medusajs/types"
 import {
   RouteFocusModal,
   useRouteModal,
@@ -23,6 +22,7 @@ import { useCustomerGroupTableColumns } from "../../../../../hooks/table/columns
 import { useCustomerGroupTableFilters } from "../../../../../hooks/table/filters/use-customer-group-table-filters"
 import { useCustomerGroupTableQuery } from "../../../../../hooks/table/query/use-customer-group-table-query"
 import { useDataTable } from "../../../../../hooks/use-data-table"
+import { CustomerGroupData } from "../../../../orders/common/customerGroupFiltering"
 
 type AddCustomerGroupsFormProps = {
   customerId: string
@@ -54,10 +54,9 @@ export const AddCustomerGroupsForm = ({
   const { setValue } = form
 
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
-
   useEffect(() => {
     setValue(
-      "customer_group_ids",
+      "customer_group_ids", 
       Object.keys(rowSelection).filter((k) => rowSelection[k]),
       {
         shouldDirty: true,
@@ -103,7 +102,7 @@ export const AddCustomerGroupsForm = ({
     count,
     enablePagination: true,
     enableRowSelection: (row) => {
-      return !row.original.customers?.map((c) => c.id).includes(customerId)
+      return !row.original.customer_group.customers?.map((c) => c.id).includes(customerId)
     },
     getRowId: (row) => row.customer_group_id,
     pageSize: PAGE_SIZE,
@@ -158,9 +157,9 @@ export const AddCustomerGroupsForm = ({
             count={count}
             filters={filters}
             orderBy={[
-              { key: "name", label: t("fields.name") },
-              { key: "created_at", label: t("fields.createdAt") },
-              { key: "updated_at", label: t("fields.updatedAt") },
+              { key: "customer_group.name", label: t("fields.name") },
+              { key: "customer_group.created_at", label: t("fields.createdAt") },
+              { key: "customer_group.updated_at", label: t("fields.updatedAt") },
             ]}
             isLoading={isLoading}
             layout="fill"
@@ -191,7 +190,7 @@ export const AddCustomerGroupsForm = ({
   )
 }
 
-const columnHelper = createColumnHelper<HttpTypes.AdminCustomerGroup>()
+const columnHelper = createColumnHelper<CustomerGroupData>()
 
 const useColumns = () => {
   const { t } = useTranslation()

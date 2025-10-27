@@ -7,13 +7,17 @@ import { useTranslation } from "react-i18next"
 import { PlaceholderCell } from "../../../../components/table/table-cells/common/placeholder-cell"
 import { InventoryActions } from "./inventory-actions"
 
-/**
- * Adds missing properties to the InventoryItemDTO type.
- */
+
 interface ExtendedInventoryItem extends InventoryTypes.InventoryItemDTO {
   variants?: ProductVariantDTO[] | null
   stocked_quantity?: number
   reserved_quantity?: number
+  location_levels?: {
+    available_quantity: number
+    reserved_quantity: number
+    stocked_quantity?: number
+    location_id?: string
+  }[]
 }
 
 const columnHelper = createColumnHelper<ExtendedInventoryItem>()

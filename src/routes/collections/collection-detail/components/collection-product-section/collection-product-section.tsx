@@ -27,18 +27,12 @@ export const CollectionProductSection = ({
   const { searchParams, raw } = useProductTableQuery({
     pageSize: PAGE_SIZE,
   })
-  const { products, count, isLoading, isError, error } = useProducts(
-    {
-      ...searchParams,
-      limit: 9999,
-      fields: "+thumbnail",
-    },
-    undefined,
-    {
-      ...searchParams,
-      collectionId: collection.id!,
-    }
-  )
+  const { products, count, isLoading, isError, error } = useProducts({
+    ...searchParams,
+    limit: 9999,
+    fields: "+thumbnail",
+    collection_id: collection.id!,
+  })
 
   const filters = useProductTableFilters(["collections"])
   const columns = useColumns()

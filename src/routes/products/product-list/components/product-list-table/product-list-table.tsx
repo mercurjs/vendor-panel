@@ -55,49 +55,24 @@ export const ProductListTable = () => {
     pageSize: PAGE_SIZE,
   })
 
-  const query = {
-    limit: 100,
-    offset: 0,
-    fields: "+thumbnail,*categories,+status",
-  }
-
   const options = {
     initialData,
     placeholderData: keepPreviousData,
   }
 
-  const filter = {
-    collectionId: searchParams.collection_id,
-    categoryId: searchParams.category_id,
-    typeId: searchParams.type_id,
-    tagId: searchParams.tagId,
-    status: searchParams.status,
-    q: searchParams.q,
-    sort: searchParams.order,
-  }
 
   const { products, count, isLoading, isError, error } = useProducts(
-    query,
+    { ...searchParams, fields: "+thumbnail,*categories,+status,+created_at,+updated_at" },
     options,
-    filter
   )
-
-  const offset = searchParams.offset || 0
-
-  const processedProducts = (products as HttpTypes.AdminProduct[])?.slice(
-    offset,
-    offset + PAGE_SIZE
-  )
-  const processedCount =
-    count < (products?.length || 0) ? count : products?.length || 0
 
   const filters = useProductTableFilters()
   const columns = useColumns()
 
   const { table } = useDataTable({
-    data: processedProducts,
+    data: products || [],
     columns,
-    count: processedCount,
+    count: count,
     enablePagination: true,
     enableRowSelection: true,
     pageSize: PAGE_SIZE,
@@ -171,7 +146,7 @@ export const ProductListTable = () => {
       <_DataTable
         table={table}
         columns={columns}
-        count={processedCount}
+        count={count}
         pageSize={PAGE_SIZE}
         filters={filters}
         search

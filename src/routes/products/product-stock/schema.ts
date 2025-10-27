@@ -7,7 +7,7 @@ const LocationQuantitySchema = z.object({
   disabledToggle: z.boolean(),
 })
 
-const ProductStockLocationsSchema = z.record(LocationQuantitySchema)
+export const ProductStockLocationsSchema = z.record(LocationQuantitySchema)
 
 const ProductStockInventoryItemSchema = z.object({
   locations: ProductStockLocationsSchema,

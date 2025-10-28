@@ -1,11 +1,13 @@
 import { Select } from "@medusajs/ui"
+import { ProductAttributePossibleValue } from "../../../../types/products"
+import { ControllerRenderProps } from "react-hook-form"
 
 export const AttributeSelect = ({
   values,
   field,
 }: {
-  values: any[]
-  field: any
+  values: ProductAttributePossibleValue[]
+  field: ControllerRenderProps<any, string>
 }) => {
   const handleChange = (value: string) => {
     field.onChange(value)

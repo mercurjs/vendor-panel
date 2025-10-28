@@ -14,7 +14,8 @@ import { ProductAdditionalAttributesSection } from "./components/product-additio
 export const ProductDetail = () => {
   const { id } = useParams()
   const { product, isLoading, isError, error } = useProduct(id!, {
-    fields: "*variants.inventory_items,*categories",
+    fields:
+      "*variants.inventory_items,*categories,attribute_values.*,attribute_values.attribute.*",
   })
 
   const { getWidgets } = useDashboardExtension()

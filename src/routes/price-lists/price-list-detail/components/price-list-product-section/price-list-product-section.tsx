@@ -39,7 +39,6 @@ export const PriceListProductSection = ({
     {
       limit: searchParams.limit?.toString() ?? PAGE_SIZE,
       offset: searchParams.offset?.toString() ?? 0,
-      fields: "+thumbnail",
     }
   )
 

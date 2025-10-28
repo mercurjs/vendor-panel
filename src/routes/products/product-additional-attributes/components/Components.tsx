@@ -1,13 +1,14 @@
-
 import { Input, Switch, Textarea } from "@medusajs/ui"
 import { AttributeSelect } from "./AttributeSelect"
+import { ProductAttribute } from "../../../../types/products"
+import { ControllerRenderProps } from "react-hook-form"
 
 export const Components = ({
   attribute,
   field,
 }: {
-  attribute: any
-  field: any
+  attribute: ProductAttribute
+  field: ControllerRenderProps<any, string>
 }) => {
   const { ui_component, possible_values } = attribute
 

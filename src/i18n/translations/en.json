@@ -495,6 +495,11 @@
       "filtered": {
         "heading": "No results",
         "description": "No variants match the current filter criteria."
+      },
+      "editStocksAndPrices": {
+        "header": "Edit stock levels & prices",
+        "description": "Edit the stock levels and prices for the product variants.",
+        "successToast": "Stock levels and prices were successfully updated."
       }
     },
     "attributes": "Attributes",
@@ -2944,6 +2949,8 @@
     "expiryDate": "Expiry date",
     "price": "Price",
     "priceTemplate": "Price {{regionOrCurrency}}",
+    "currentPriceTemplate": "Current price {{regionOrCurrency}}",
+    "stockTemplate": "Stock Location {{stockLocation}}",
     "height": "Height",
     "width": "Width",
     "length": "Length",

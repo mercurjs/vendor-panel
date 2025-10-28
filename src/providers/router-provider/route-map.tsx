@@ -352,6 +352,13 @@ export const RouteMap: RouteObject[] = [
                         lazy: () =>
                           import("../../routes/products/product-metadata"),
                       },
+                      {
+                        path: "edit-stocks-and-prices",
+                        lazy: () =>
+                          import(
+                            "../../routes/products/product-edit-stocks-and-prices"
+                          ),
+                      },
                     ],
                   },
                   {

@@ -20,7 +20,7 @@ export const ProductOrganizationSection = ({
   return (
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
-        <Heading level="h2">{t("products.organization.header")}</Heading>
+        <Heading>{t("products.organization.header")}</Heading>
         <ActionMenu
           groups={[
             {
@@ -39,14 +39,14 @@ export const ProductOrganizationSection = ({
       <SectionRow
         title={t("fields.tags")}
         value={
-          product.tags?.length
+          !!product.tags?.length
             ? product.tags.map((tag) => (
-                <OrganizationTag
-                  key={tag.id}
-                  label={tag.value}
-                  to={`/settings/product-tags/${tag.id}`}
-                />
-              ))
+              <OrganizationTag
+                key={tag.id}
+                label={tag.value}
+                to={`/settings/product-tags/${tag.id}`}
+              />
+            ))
             : undefined
         }
       />
@@ -63,6 +63,34 @@ export const ProductOrganizationSection = ({
       />
 
       <SectionRow
+        title={t("products.fields.primaryCategory.label")}
+        value={
+          !!product.categories?.length
+            ? product.categories.map((pcat) => (
+              <OrganizationTag
+                key={pcat.id}
+                label={pcat.name}
+                to={`/categories/${pcat.id}`}
+              />
+            ))
+            : undefined
+        }
+      />
+      <SectionRow
+        title={t("products.fields.secondaryCategories.label")}
+        value={
+          !!product.secondary_categories?.length
+            ? product.secondary_categories.map((secondaryCategory: any) => (
+              <OrganizationTag
+                key={secondaryCategory.id}
+                label={secondaryCategory.name}
+                to={`/categories/${secondaryCategory.id}`}
+              />
+            ))
+            : undefined
+        }
+      />
+      <SectionRow
         title={t("fields.collection")}
         value={
           product.collection ? (
@@ -74,20 +102,6 @@ export const ProductOrganizationSection = ({
         }
       />
 
-      <SectionRow
-        title={t("fields.categories")}
-        value={
-          product.categories?.length
-            ? product.categories.map((pcat) => (
-                <OrganizationTag
-                  key={pcat.id}
-                  label={pcat.name}
-                  to={`/categories/${pcat.id}`}
-                />
-              ))
-            : undefined
-        }
-      />
 
       {getDisplays("product", "organize").map((Component, i) => {
         return <Component key={i} data={product} />

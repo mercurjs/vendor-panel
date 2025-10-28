@@ -563,6 +563,12 @@
       "categories": {
         "label": "分类"
       },
+      "primaryCategory": {
+        "label": "主要分类"
+      },
+      "secondaryCategories": {
+        "label": "次要分类"
+      },
       "tags": {
         "label": "标签"
       },

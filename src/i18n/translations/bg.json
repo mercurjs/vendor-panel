@@ -567,6 +567,12 @@
       "categories": {
         "label": "Категории"
       },
+      "primaryCategory": {
+        "label": "Основна категория"
+      },
+      "secondaryCategories": {
+        "label": "Вторични категории"
+      },
       "tags": {
         "label": "Етикети"
       },

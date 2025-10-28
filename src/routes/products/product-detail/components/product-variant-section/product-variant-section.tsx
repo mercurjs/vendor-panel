@@ -63,6 +63,19 @@ export const ProductVariantSection = ({
             description: t("products.variants.filtered.description"),
           },
         }}
+        actionMenu={{
+          groups: [
+            {
+              actions: [
+                {
+                  label: t("products.variants.editStocksAndPrices.header"),
+                  to: `edit-stocks-and-prices`,
+                  icon: <PencilSquare />,
+                },
+              ],
+            },
+          ],
+        }}
         action={{
           label: t("actions.create"),
           to: `variants/create`,

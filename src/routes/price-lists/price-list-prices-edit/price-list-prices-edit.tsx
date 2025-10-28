@@ -46,9 +46,7 @@ export const PriceListPricesEdit = () => {
         <PriceListPricesEditForm
           priceList={price_list}
           products={products}
-          regions={priceListCurrencyData.regions}
-          currencies={priceListCurrencyData.currencies}
-          pricePreferences={priceListCurrencyData.pricePreferences}
+          {...priceListCurrencyData}
         />
       )}
     </RouteFocusModal>

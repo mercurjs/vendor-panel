@@ -204,7 +204,7 @@ export const TaxRegionTaxOverrideEditForm = ({
       // case TaxRateRuleReferenceType.CUSTOMER_GROUP:
       //   return customerGroups
       default:
-        return products // Fallback to products for unsupported types
+        return products
     }
   }
 

@@ -56,7 +56,6 @@ export const CustomerGroupListTable = () => {
           subHeading="Organize customers into groups. Groups can have different promotions and prices."
           rowCount={count}
           getRowId={(row) => row.customer_group_id}
-          // For some reason the table requires accessing data on row.original in this specific case
           rowHref={(row: any) => `/customer-groups/${row.original.customer_group_id}`
           }
           action={{

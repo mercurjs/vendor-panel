@@ -78,10 +78,9 @@ const CustomerGroupDisplay = ({
     return <Skeleton className="h-5 w-full max-w-48" />
   }
 
-  // Map CustomerGroupData to flat AdminCustomerGroup
-  const customer_groups = customerGroupsData.map((item) => item.customer_group)
+  const flatCustomerGroups = customerGroupsData.map((item) => item.customer_group)
 
-  const customerGroups = customer_groups
+  const filteredCustomerGroups = flatCustomerGroups
     .filter((group) => customerGroupIds.includes(group.id))
 
   return (
@@ -91,7 +90,7 @@ const CustomerGroupDisplay = ({
       </span>
       <span>·</span>
       <ListSummary
-        list={customerGroups.map((group) => group.name!)}
+        list={filteredCustomerGroups.map((group) => group.name!)}
         n={1}
         className="txt-small-plus text-ui-fg-muted"
       />

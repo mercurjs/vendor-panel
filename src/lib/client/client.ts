@@ -12,7 +12,7 @@ export const sdk = new Medusa({
 
 // useful when you want to call the BE from the console and try things out quickly
 if (typeof window !== "undefined") {
-  ;(window as any).__sdk = sdk
+  ; (window as any).__sdk = sdk
 }
 
 export const importProductsQuery = async (file: File) => {
@@ -65,18 +65,10 @@ export const fetchQuery = async (
   }
 ) => {
   const bearer = (await window.localStorage.getItem("medusa_auth_token")) || ""
-  const params = Object.entries(query || {}).reduce(
-    (acc, [key, value], index) => {
-      if (value && value !== undefined) {
-        const queryLength = Object.values(query || {}).filter(
-          (i) => i && i !== undefined
-        ).length
-        acc += `${key}=${value}${index + 1 <= queryLength ? "&" : ""}`
-      }
-      return acc
-    },
-    ""
-  )
+  const params = Object.entries(query || {})
+    .filter(([, value]) => value !== undefined && value !== null && value !== '')
+    .map(([key, value]) => `${key}=${value}`)
+    .join('&')
   const response = await fetch(`${backendUrl}${url}${params && `?${params}`}`, {
     method: method,
     headers: {

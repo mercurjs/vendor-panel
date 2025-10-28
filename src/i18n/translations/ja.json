@@ -11,6 +11,13 @@
     "apply": "適用",
     "range": "範囲",
     "search": "検索",
+    "searchOptions": "オプションを検索",
+    "noOptionsFound": "オプションが見つかりません。",
+    "noOptionsAvailable": "利用可能なオプションがありません。",
+    "yes": "はい",
+    "no": "いいえ",
+    "true": "真",
+    "false": "偽",
     "of": "の",
     "results": "結果",
     "pages": "ページ",
@@ -23,6 +30,7 @@
     "tip": "ヒント",
     "error": "エラー",
     "select": "選択",
+    "selectValues": "値を選択",
     "selected": "選択済み",
     "enabled": "有効",
     "disabled": "無効",
@@ -400,12 +408,15 @@
         "details": "詳細",
         "organize": "整理",
         "variants": "バリエーション",
-        "inventory": "在庫キット"
+        "inventory": "在庫キット",
+        "attributes": "属性"
       },
       "errors": {
         "variants": "少なくとも1つのバリエーションを選択してください。",
         "options": "少なくとも1つのオプションを作成してください。",
-        "uniqueSku": "SKUは一意である必要があります。"
+        "uniqueSku": "SKUは一意である必要があります。",
+        "titleRequired": "タイトルを入力してください",
+        "primaryCategoryRequired": "プライマリカテゴリーを選択してください"
       },
       "inventory": {
         "heading": "在庫キット",
@@ -552,6 +563,13 @@
       "categories": {
         "label": "カテゴリー"
       },
+      "primaryCategory": {
+        "label": "プライマリカテゴリー",
+        "tooltip": "プライマリカテゴリーは、この商品に適用される属性を定義できます。"
+      },
+      "secondaryCategories": {
+        "label": "セカンダリカテゴリー"
+      },
       "tags": {
         "label": "タグ"
       },
@@ -564,6 +582,40 @@
       },
       "material": {
         "label": "素材"
+      },
+      "attributes": {
+        "size": {
+          "label": "サイズ",
+          "tooltip": "この商品の利用可能なサイズを選択してください",
+          "placeholder": "値を選択"
+        },
+        "brand": {
+          "label": "ブランド",
+          "tooltip": "この商品のブランドを選択してください",
+          "placeholder": "値を選択"
+        },
+        "articleNumber": {
+          "label": "記事番号",
+          "tooltip": "この商品の記事番号を入力してください",
+          "placeholder": "値を入力"
+        },
+        "color": {
+          "label": "色（オプション）",
+          "tooltip": "この商品の利用可能な色を選択してください",
+          "placeholder": "値を選択"
+        },
+        "useForVariants": {
+          "label": "バリエーションに使用",
+          "description": "チェックすると、この属性でバリエーションを作成します"
+        },
+        "requiredTooltip": "この属性は管理者によって必須とされています。値を追加する必要があります。",
+        "enterValuePlaceholder": "値を入力",
+        "validation": {
+          "required": "{{name}} は必須です",
+          "requiredSelect": "この属性は管理者によって必須とされています。値を選択してください。",
+          "requiredSelectMultiple": "この属性は管理者によって必須とされています。値を選択してください。",
+          "requiredEnter": "この属性は管理者によって必須とされています。値を入力してください。"
+        }
       },
       "width": {
         "label": "幅"

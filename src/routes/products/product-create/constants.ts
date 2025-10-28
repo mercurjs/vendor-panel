@@ -40,6 +40,7 @@ const ProductCreateVariantSchema = z.object({
       })
     )
     .optional(),
+  media: z.array(MediaSchema).optional(),
 })
 
 export type ProductCreateVariantSchema = z.infer<
@@ -57,7 +58,7 @@ export type ProductCreateOptionSchema = z.infer<
 
 export const ProductCreateSchema = z
   .object({
-    title: z.string().min(1),
+    title: z.string().min(1, i18n.t("products.create.errors.titleRequired")),
     subtitle: z.string().optional(),
     handle: z.string().optional(),
     description: z.string().optional(),
@@ -65,7 +66,8 @@ export const ProductCreateSchema = z
     type_id: z.string().optional(),
     collection_id: z.string().optional(),
     shipping_profile_id: z.string().optional(),
-    categories: z.array(z.string()),
+    categories: z.array(z.string()).min(1, i18n.t("products.create.errors.primaryCategoryRequired")),
+    secondary_categories: z.array(z.string()).optional(),
     tags: z.array(z.string()).optional(),
     sales_channels: z
       .array(
@@ -83,6 +85,8 @@ export const ProductCreateSchema = z
     weight: z.string().optional(),
     mid_code: z.string().optional(),
     hs_code: z.string().optional(),
+    // Dynamic attributes fields - these will be populated based on API data
+    // The actual fields will be added dynamically in the form component
     options: z.array(ProductCreateOptionSchema).min(1),
     enable_variants: z.boolean(),
     variants: z.array(ProductCreateVariantSchema).min(1),
@@ -145,6 +149,7 @@ export const PRODUCT_CREATE_FORM_DEFAULTS: Partial<
   enable_variants: false,
   media: [],
   categories: [],
+  secondary_categories: [],
   collection_id: "",
   shipping_profile_id: "",
   description: "",
@@ -160,4 +165,5 @@ export const PRODUCT_CREATE_FORM_DEFAULTS: Partial<
   type_id: "",
   weight: "",
   width: "",
+  // Dynamic attributes defaults will be set in the form component
 }

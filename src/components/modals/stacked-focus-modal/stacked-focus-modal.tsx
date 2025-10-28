@@ -76,7 +76,7 @@ const Content = forwardRef<
   return (
     <FocusModal.Content
       ref={ref}
-      className={clx("!top-6", className)}
+      className={clx("!inset-x-5 !inset-y-3", className)}
       overlayProps={{
         className: "bg-transparent",
       }}

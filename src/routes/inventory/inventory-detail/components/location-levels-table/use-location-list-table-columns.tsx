@@ -23,10 +23,11 @@ export const useLocationListTableColumns = () => {
 
   return useMemo(
     () => [
-      columnHelper.accessor("stock_locations.0.name", {
+      columnHelper.display({
+        id: "location",
         header: t("fields.location"),
-        cell: ({ getValue }) => {
-          const locationName = getValue()
+        cell: ({ row }) => {
+          const locationName = row.original.stock_locations?.map((location) => location.name).join(", ")
 
           if (!locationName) {
             return <PlaceholderCell />

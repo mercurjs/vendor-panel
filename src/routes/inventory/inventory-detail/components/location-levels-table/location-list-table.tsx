@@ -22,7 +22,6 @@ export const ItemLocationListTable = ({
       fields: "*stock_locations",
     }
   )
-
   const columns = useLocationListTableColumns()
 
   const filteredLocationLevels = location_levels?.filter(

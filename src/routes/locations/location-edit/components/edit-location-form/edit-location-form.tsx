@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { HttpTypes } from "@medusajs/types"
+import { VendorExtendedAdminStockLocation } from "../../../../../types/stock-location"
 import { Button, Input, toast } from "@medusajs/ui"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -12,7 +12,7 @@ import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useUpdateStockLocation } from "../../../../../hooks/api/stock-locations"
 
 type EditLocationFormProps = {
-  location: HttpTypes.AdminStockLocation
+  location: VendorExtendedAdminStockLocation
 }
 
 const EditLocationSchema = zod.object({

@@ -1,5 +1,4 @@
 import { PencilSquare, Trash } from "@medusajs/icons"
-import { HttpTypes } from "@medusajs/types"
 import {
   Container,
   createDataTableColumnHelper,
@@ -19,8 +18,8 @@ import {
   useDeleteCustomerGroupLazy,
 } from "../../../../../hooks/api"
 import { useDate } from "../../../../../hooks/use-date"
-import { _DataTable } from "../../../../../components/table/data-table"
 import { TextCell } from "../../../../../components/table/table-cells/common/text-cell"
+import { CustomerGroupData } from "../../../../orders/common/customerGroupFiltering"
 
 const PAGE_SIZE = 10
 
@@ -56,10 +55,9 @@ export const CustomerGroupListTable = () => {
           heading={t("customerGroups.domain")}
           subHeading="Organize customers into groups. Groups can have different promotions and prices."
           rowCount={count}
-          getRowId={(row) => row.id}
-          rowHref={(row) => {
-            return `/customer-groups/${row.original.customer_group_id}`
-          }}
+          getRowId={(row) => row.customer_group_id}
+          rowHref={(row: any) => `/customer-groups/${row.original.customer_group_id}`
+          }
           action={{
             label: t("actions.create"),
             to: "/customer-groups/create",
@@ -82,7 +80,7 @@ export const CustomerGroupListTable = () => {
   )
 }
 
-const columnHelper = createDataTableColumnHelper<HttpTypes.AdminCustomerGroup>()
+const columnHelper = createDataTableColumnHelper<CustomerGroupData>()
 
 const useColumns = () => {
   const { t } = useTranslation()
@@ -130,7 +128,7 @@ const useColumns = () => {
 
   return useMemo(() => {
     return [
-      columnHelper.accessor("name", {
+      columnHelper.accessor("customer_group.name", {
         header: t("fields.name"),
         enableSorting: true,
         sortAscLabel: t("filters.sorting.alphabeticallyAsc"),
@@ -139,7 +137,7 @@ const useColumns = () => {
           return <TextCell text={row?.original?.customer_group?.name || "-"} />
         },
       }),
-      columnHelper.accessor("customers", {
+      columnHelper.accessor("customer_group.customers", {
         header: t("customers.domain"),
         cell: ({ row }) => {
           return (

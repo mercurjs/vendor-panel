@@ -10,6 +10,10 @@ import {
 import { fetchQuery, sdk } from "../../lib/client"
 import { queryClient } from "../../lib/query-client"
 import { queryKeysFactory } from "../../lib/query-key-factory"
+import {
+  ExtendedPriceList,
+  PriceListListResponse,
+} from "../../types/price-list"
 import { customerGroupsQueryKeys } from "./customer-groups"
 import { productsQueryKeys } from "./products"
 
@@ -72,9 +76,9 @@ export const usePriceLists = (
   query?: HttpTypes.AdminPriceListListParams,
   options?: Omit<
     UseQueryOptions<
-      HttpTypes.AdminPriceListListResponse,
+      PriceListListResponse,
       FetchError,
-      any,
+      PriceListListResponse,
       QueryKey
     >,
     "queryKey" | "queryFn"
@@ -90,8 +94,12 @@ export const usePriceLists = (
     ...options,
   })
 
-  const price_lists = data?.price_lists?.filter((item: any) => item.price_list)
-  const count = price_lists?.length || 0
+  const price_lists: ExtendedPriceList[] = (data?.price_lists || [])
+    .filter((item) => item.price_list)
+    .map((item) => ({ ...item.price_list, id: item.price_list.id }))
+
+  const count = price_lists?.length
+
   return { ...data, price_lists, count, ...rest }
 }
 

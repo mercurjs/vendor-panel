@@ -378,5 +378,13 @@ const useReferenceValues = (
     //     isError: customerGroups.isError,
     //     error: customerGroups.error,
     //   }
+    default:
+      return {
+        labels: undefined,
+        isPending: false,
+        additional: 0,
+        isError: false,
+        error: null,
+      }
   }
 }

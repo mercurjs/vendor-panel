@@ -1,5 +1,5 @@
 import { XMarkMini } from "@medusajs/icons"
-import { PromotionDTO } from "@medusajs/types"
+import { HttpTypes } from "@medusajs/types"
 import { Badge, Button, Heading, IconButton, Select, Text } from "@medusajs/ui"
 import { forwardRef, Fragment, useEffect } from "react"
 import {
@@ -20,7 +20,7 @@ import { RuleValueFormField } from "../rule-value-form-field"
 import { requiredProductRule } from "./constants"
 
 type RulesFormFieldType = {
-  promotion?: PromotionDTO
+  promotion?: HttpTypes.AdminPromotion
   form: UseFormReturn<CreatePromotionSchemaType>
   ruleType: "rules" | "target-rules" | "buy-rules"
   setRulesToRemove?: any
@@ -84,28 +84,29 @@ export const RulesFormField = ({
 
     if (ruleType === "rules" && !fields.length) {
       form.resetField("rules")
-
-      replace(generateRuleAttributes(rules) as any)
+      
+      const formRules = generateRuleAttributes(rules)
+      replace(formRules)
     }
 
     if (ruleType === "buy-rules" && !fields.length) {
       form.resetField("application_method.buy_rules")
-      const rulesToAppend =
-        promotion?.id || promotionType === "standard"
-          ? rules
-          : [...rules, requiredProductRule]
-
-      replace(generateRuleAttributes(rulesToAppend) as any)
+      const apiRules = promotion?.id || promotionType === "standard"
+        ? rules || []
+        : [...(rules || []), requiredProductRule]
+      
+      const formRules = generateRuleAttributes(apiRules)
+      replace(formRules)
     }
 
     if (ruleType === "target-rules" && !fields.length) {
       form.resetField("application_method.target_rules")
-      const rulesToAppend =
-        promotion?.id || promotionType === "standard"
-          ? rules
-          : [...rules, requiredProductRule]
-
-      replace(generateRuleAttributes(rulesToAppend) as any)
+      const apiRules = promotion?.id || promotionType === "standard"
+        ? rules || []
+        : [...(rules || []), requiredProductRule]
+      
+      const formRules = generateRuleAttributes(apiRules)
+      replace(formRules)
     }
   }, [
     promotionType,
@@ -300,7 +301,7 @@ export const RulesFormField = ({
                     name={`${scope}.${index}.values`}
                     operator={`${scope}.${index}.operator`}
                     fieldRule={fieldRule}
-                    attributes={attributes}
+                    attributes={attributes || []}
                     ruleType={ruleType}
                   />
                 </div>
@@ -383,7 +384,13 @@ export const RulesFormField = ({
 
 type DisabledAttributeProps = {
   label: string
-  field: ControllerRenderProps
+  field:
+    | ControllerRenderProps<CreatePromotionSchemaType, `rules.${number}.attribute`>
+    | ControllerRenderProps<CreatePromotionSchemaType, `rules.${number}.operator`>
+    | ControllerRenderProps<CreatePromotionSchemaType, `application_method.buy_rules.${number}.attribute`>
+    | ControllerRenderProps<CreatePromotionSchemaType, `application_method.buy_rules.${number}.operator`>
+    | ControllerRenderProps<CreatePromotionSchemaType, `application_method.target_rules.${number}.attribute`>
+    | ControllerRenderProps<CreatePromotionSchemaType, `application_method.target_rules.${number}.operator`>
 }
 
 /**

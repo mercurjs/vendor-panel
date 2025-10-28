@@ -44,7 +44,7 @@ export const CreateShippingOptionDetailsForm = ({
       fetchQuery(`/vendor/shipping-profiles`, {
         method: "GET",
       }),
-    queryKey: ["shipping_profiles"],
+    queryKey: ["shipping_profiles_create_shipping_option"],
     getOptions: (data) =>
       (data.shipping_profiles || []).map((profile: any) => ({
         label: profile.shipping_profile.name.includes(":")

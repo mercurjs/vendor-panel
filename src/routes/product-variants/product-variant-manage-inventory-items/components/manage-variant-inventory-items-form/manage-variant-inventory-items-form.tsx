@@ -21,9 +21,7 @@ import { sdk } from "../../../../../lib/client"
 import { ExtendedAdminProductVariant } from "../../../../../types/extended-product"
 
 type ManageVariantInventoryItemsFormProps = {
-  variant: ExtendedAdminProductVariant & {
-    inventory_items: NonNullable<ExtendedAdminProductVariant["inventory_items"]>
-  }
+  variant: ExtendedAdminProductVariant
 }
 
 const ManageVariantInventoryItemsSchema = zod.object({
@@ -61,7 +59,7 @@ export function ManageVariantInventoryItemsForm({
 
   const form = useForm<zod.infer<typeof ManageVariantInventoryItemsSchema>>({
     defaultValues: {
-      inventory: variant.inventory_items.length
+      inventory: variant.inventory_items?.length
         ? variant.inventory_items!.map((i) => ({
             required_quantity: i.required_quantity,
             inventory_item_id: i.inventory?.id || i.inventory_item_id,
@@ -102,7 +100,7 @@ export function ManageVariantInventoryItemsForm({
     const existingItems: Record<string, number> = {}
     const selectedItems: Record<string, boolean> = {}
 
-    variant.inventory_items.forEach((i) => {
+    variant.inventory_items?.forEach((i) => {
       if (i.inventory?.id) {
         existingItems[i.inventory.id] = i.required_quantity
       }
@@ -134,7 +132,7 @@ export function ManageVariantInventoryItemsForm({
       }
     })
 
-    variant.inventory_items.forEach((i) => {
+    variant.inventory_items?.forEach((i) => {
       if (i.inventory?.id && !(i.inventory.id in selectedItems)) {
         payload.delete = payload.delete || []
 

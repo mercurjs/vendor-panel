@@ -43,7 +43,7 @@ export const PriceListProductSection = ({
       fields: "+thumbnail",
     }
   )
-console.log(products,'products')
+  
   const columns = useColumns(priceList)
 
   const { table } = useDataTable({

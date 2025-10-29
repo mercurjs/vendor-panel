@@ -15,9 +15,9 @@ import {
 } from "@tanstack/react-table"
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Link, Outlet, useLoaderData } from "react-router-dom"
+import { Link, Outlet } from "react-router-dom"
 
-import { HttpTypes } from "@medusajs/types"
+import { ExtendedAdminProduct } from "../../../../../types/extended-product"
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { _DataTable } from "../../../../../components/table/data-table"
 import {
@@ -29,7 +29,6 @@ import { useProductTableColumns } from "../../../../../hooks/table/columns/use-p
 import { useProductTableFilters } from "../../../../../hooks/table/filters/use-product-table-filters"
 import { useProductTableQuery } from "../../../../../hooks/table/query/use-product-table-query"
 import { useDataTable } from "../../../../../hooks/use-data-table"
-import { productsLoader } from "../../loader"
 
 export const PAGE_SIZE = 5
 
@@ -47,10 +46,6 @@ export const ProductListTable = () => {
     setRowSelection(update)
   }
 
-  const initialData = useLoaderData() as Awaited<
-    ReturnType<ReturnType<typeof productsLoader>>
-  >
-
   const { searchParams, raw } = useProductTableQuery({
     pageSize: PAGE_SIZE,
   })
@@ -62,7 +57,6 @@ export const ProductListTable = () => {
   }
 
   const options = {
-    initialData,
     placeholderData: keepPreviousData,
   }
 
@@ -84,10 +78,7 @@ export const ProductListTable = () => {
 
   const offset = searchParams.offset || 0
 
-  const processedProducts = (products as HttpTypes.AdminProduct[])?.slice(
-    offset,
-    offset + PAGE_SIZE
-  )
+  const processedProducts = products?.slice(offset, offset + PAGE_SIZE) || []
   const processedCount =
     count < (products?.length || 0) ? count : products?.length || 0
 
@@ -147,7 +138,7 @@ export const ProductListTable = () => {
       },
     })
   }
-
+  
   if (isError) {
     throw error
   }
@@ -211,7 +202,7 @@ export const ProductListTable = () => {
   )
 }
 
-const ProductActions = ({ product }: { product: HttpTypes.AdminProduct }) => {
+const ProductActions = ({ product }: { product: ExtendedAdminProduct }) => {
   const { t } = useTranslation()
   const prompt = usePrompt()
   const { mutateAsync } = useDeleteProduct(product.id)
@@ -263,7 +254,7 @@ const ProductActions = ({ product }: { product: HttpTypes.AdminProduct }) => {
   )
 }
 
-const columnHelper = createColumnHelper<HttpTypes.AdminProduct>()
+const columnHelper = createColumnHelper<ExtendedAdminProduct>()
 
 const useColumns = () => {
   const { t } = useTranslation()

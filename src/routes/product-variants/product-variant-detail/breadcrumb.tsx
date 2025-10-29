@@ -22,7 +22,6 @@ export const ProductVariantDetailBreadcrumb = (
       enabled: Boolean(id) && Boolean(variant_id),
     }
   )
-
   if (!variant) {
     return null
   }

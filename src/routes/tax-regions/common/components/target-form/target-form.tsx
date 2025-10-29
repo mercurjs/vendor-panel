@@ -44,6 +44,7 @@ import {
   useProductTypeTableQuery,
 } from "../../../../../hooks/table/query"
 import { useDataTable } from "../../../../../hooks/use-data-table"
+import { ExtendedAdminProduct } from "../../../../../types/extended-product"
 import { TaxRateRuleReferenceType } from "../../constants"
 import { TaxRateRuleReference } from "../../schemas"
 import { CustomerGroupData } from "../../../../orders/common/customerGroupFiltering"
@@ -352,7 +353,7 @@ const ProductTable = ({
   )
 }
 
-const pColumnHelper = createColumnHelper<HttpTypes.AdminProduct>()
+const pColumnHelper = createColumnHelper<ExtendedAdminProduct>()
 
 const useProductColumns = () => {
   const base = useProductTableColumns()

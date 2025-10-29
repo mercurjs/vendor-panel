@@ -19,6 +19,10 @@ import {
   checkStatusMatch,
 } from "./helpers/productFilters"
 import productsImagesFormatter from "../../utils/products-images-formatter"
+import {
+  ExtendedAdminProductResponse,
+  ExtendedAdminProductListResponse,
+} from "../../types/extended-product"
 
 const PRODUCTS_QUERY_KEY = "products" as const
 export const productsQueryKeys = queryKeysFactory(PRODUCTS_QUERY_KEY)
@@ -350,27 +354,32 @@ export const useProduct = (
   query?: Record<string, any>,
   options?: Omit<
     UseQueryOptions<
-      HttpTypes.AdminProductResponse,
+      ExtendedAdminProductResponse,
       FetchError,
-      HttpTypes.AdminProductResponse,
+      ExtendedAdminProductResponse,
       QueryKey
     >,
     "queryFn" | "queryKey"
   >
 ) => {
   const { data, ...rest } = useQuery({
-    queryFn: () =>
-      fetchQuery(`/vendor/products/${id}`, {
+    queryFn: async () => {
+      const response = await fetchQuery(`/vendor/products/${id}`, {
         method: "GET",
         query: query as { [key: string]: string | number },
-      }),
-    queryKey: productsQueryKeys.detail(id),
+      })
+
+      return {
+        ...response,
+        product: productsImagesFormatter(response.product),
+      }
+    },
+    queryKey: productsQueryKeys.detail(id, query),
     ...options,
   })
 
   return {
     ...data,
-    product: productsImagesFormatter(data?.product),
     ...rest,
   }
 }
@@ -379,9 +388,9 @@ export const useProducts = (
   query?: HttpTypes.AdminProductListParams,
   options?: Omit<
     UseQueryOptions<
-      HttpTypes.AdminProductListResponse,
+      ExtendedAdminProductListResponse,
       FetchError,
-      HttpTypes.AdminProductListResponse,
+      ExtendedAdminProductListResponse,
       QueryKey
     >,
     "queryFn" | "queryKey"
@@ -397,11 +406,17 @@ export const useProducts = (
   }
 ) => {
   const { data, ...rest } = useQuery({
-    queryFn: () =>
-      fetchQuery("/vendor/products", {
+    queryFn: async () => {
+      const response = await fetchQuery("/vendor/products", {
         method: "GET",
         query: query as Record<string, string | number>,
-      }),
+      })
+
+      return {
+        ...response,
+        products: productsImagesFormatter(response.products) || [],
+      }
+    },
     queryKey: productsQueryKeys.list(query),
     ...options,
   })
@@ -460,9 +475,13 @@ export const useProducts = (
     }
   }
 
+  const limitedProducts = filter?.limit
+    ? products.slice(0, filter.limit)
+    : products
+
   return {
     ...data,
-    products: productsImagesFormatter(products?.slice(0, filter?.limit)) || [],
+    products: limitedProducts,
     count: products?.length || 0,
     ...rest,
   }

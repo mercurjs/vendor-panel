@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 import { UseFormReturn, useWatch } from "react-hook-form"
-import { HttpTypes } from "@medusajs/types"
 import { useTranslation } from "react-i18next"
+import { HttpTypes } from "@medusajs/types"
 import { z } from "zod"
 
 import { CreateProductVariantSchema } from "./constants"

@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod"
 
+import { ExtendedAdminProduct } from "../../../../../types/extended-product"
 import { DataGrid } from "../../../../../components/data-grid"
 import {
   RouteFocusModal,
@@ -23,7 +24,7 @@ import { ExtendedPriceList } from "../../../../../types/price-list"
 
 type PriceListPricesEditFormProps = {
   priceList: ExtendedPriceList
-  products: HttpTypes.AdminProduct[]
+  products: ExtendedAdminProduct[]
   regions: HttpTypes.AdminRegion[]
   currencies: HttpTypes.AdminStoreCurrency[]
   pricePreferences: HttpTypes.AdminPricePreference[]
@@ -124,7 +125,7 @@ export const PriceListPricesEditForm = ({
 
 function initRecord(
   priceList: ExtendedPriceList,
-  products: HttpTypes.AdminProduct[]
+  products: ExtendedAdminProduct[]
 ): PriceListUpdateProductsSchema {
   const record: PriceListUpdateProductsSchema = {}
 

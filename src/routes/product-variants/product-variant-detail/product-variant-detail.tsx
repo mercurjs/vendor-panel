@@ -18,9 +18,7 @@ export const ProductVariantDetail = () => {
     fields: "*variants.inventory_items",
   })
 
-  const variant = product?.variants
-    ? product?.variants.find((item) => item.id === variant_id)
-    : null
+  const variant = product?.variants?.find((item) => item.id === variant_id)
 
   const { getWidgets } = useDashboardExtension()
 
@@ -31,7 +29,6 @@ export const ProductVariantDetail = () => {
   if (isError) {
     throw error
   }
-
   return (
     <TwoColumnPage
       data={variant}

@@ -1,8 +1,9 @@
 import { Button, Input, Text, Textarea, toast } from "@medusajs/ui"
+import { HttpTypes } from "@medusajs/types"
 import { useTranslation } from "react-i18next"
 import * as zod from "zod"
 
-import { HttpTypes } from "@medusajs/types"
+import { ExtendedAdminProduct } from "../../../../../types/extended-product"
 import { Form } from "../../../../../components/common/form"
 import { SwitchBox } from "../../../../../components/common/switch-box"
 import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
@@ -17,7 +18,7 @@ import {
 } from "../../../../../extensions"
 
 type EditProductFormProps = {
-  product: HttpTypes.AdminProduct
+  product: ExtendedAdminProduct
 }
 
 const EditProductSchema = zod.object({

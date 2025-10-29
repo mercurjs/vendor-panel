@@ -1,12 +1,12 @@
 import { Container, Heading } from "@medusajs/ui"
 
-import { HttpTypes } from "@medusajs/types"
+import { ExtendedAdminProduct } from "../../../../../types/extended-product"
 import { PencilSquare } from "@medusajs/icons"
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { SectionRow } from "../../../../../components/common/section"
 
 type ProductAttributeSectionProps = {
-  product: HttpTypes.AdminProduct & { attribute_values: any[] }
+  product: ExtendedAdminProduct & { attribute_values: any[] }
 }
 
 export const ProductAdditionalAttributesSection = ({
@@ -37,7 +37,7 @@ export const ProductAdditionalAttributesSection = ({
           key={attribute.id}
           title={attribute.attribute.name}
           value={attribute.value}
-          tooltip={attribute.attribute.description}
+          tooltip={attribute.attribute.description ?? undefined}
         />
       ))}
     </Container>

@@ -58,7 +58,7 @@ export const ProductListTable = () => {
   const query = {
     limit: 100,
     offset: 0,
-    fields: "+thumbnail,*categories,+status",
+    fields: "+thumbnail,*categories,+status,+created_at,+updated_at",
   }
 
   const options = {

@@ -13,7 +13,6 @@
     "i18n:schema": "node ./scripts/i18n/generate-schema.js",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write .",
-    "ts-check": "node ./scripts/ts-check.js > ts-errors.log 2>&1 && echo 'TypeScript check complete. Results saved to ts-errors.log'",
     "typecheck": "tsc --noEmit"
   },
   "main": "dist/app.js",

@@ -41,17 +41,15 @@ export const CategoryProductSection = ({
   })
   const { products, count, isLoading, isError, error } = useProducts(
     {
-      // ...searchParams,
+      ...searchParams,
       fields: "*categories.id",
       // limit: 9999,
       limit: searchParams.limit,
       offset: searchParams.offset,
+      category_id: category.id,
     },
     {
       placeholderData: keepPreviousData,
-    },
-    {
-      categoryId: category.id,
     }
   )
 

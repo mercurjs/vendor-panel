@@ -23,6 +23,10 @@ import {
   useReservationItems,
   useShippingOptions,
 } from "../../../../../hooks/api"
+import {
+  isReturnOption,
+  isSameLocation,
+} from "../../../../../lib/shipping-options"
 
 type OrderCreateFulfillmentFormProps = {
   order: AdminOrder
@@ -82,10 +86,13 @@ export function OrderCreateFulfillmentForm({
 
   const { shipping_options = [], isLoading: isShippingOptionsLoading } =
     useShippingOptions({
-      fields: "+service_zone.fulfillment_set.location.id",
+      fields: "+service_zone.fulfillment_set.location.id,*rules",
     })
 
-  const filteredShippingOptions = shipping_options.filter((o) => o !== null)
+  const filteredShippingOptions = shipping_options.filter(
+    (o) =>
+      o !== null && !isReturnOption(o) && isSameLocation(o, selectedLocationId)
+  )
 
   const shippingOptionId = useWatch({
     name: "shipping_option_id",

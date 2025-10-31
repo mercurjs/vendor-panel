@@ -20,3 +20,12 @@ export function isOptionEnabledInStore(
 export function getShippingProfileName(name: string) {
   return name.split(":")[1]
 }
+
+export function isSameLocation(
+  shippingOption: HttpTypes.AdminShippingOption,
+  locationId: string
+) {
+  return (
+    shippingOption?.service_zone?.fulfillment_set?.location?.id === locationId
+  )
+}

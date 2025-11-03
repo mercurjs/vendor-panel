@@ -38,7 +38,7 @@ export const CreateProductOptionForm = ({
   const { mutateAsync, isPending } = useCreateProductOption(product.id)
 
   const handleSubmit = form.handleSubmit(async (values) => {
-    const payload: HttpTypes.AdminCreateProductOption = {
+    const payload = {
       title: values.title,
       values: values.values || [],
     }

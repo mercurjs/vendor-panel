@@ -35,8 +35,8 @@ export const CreateProductOptionForm = ({
   })
 
   const { mutateAsync, isPending } = useUpdateProductOption(
-    option.product_id || "",
-    option.id || ""
+    option.product_id!,
+    option.id
   )
 
   const handleSubmit = form.handleSubmit(async (values) => {

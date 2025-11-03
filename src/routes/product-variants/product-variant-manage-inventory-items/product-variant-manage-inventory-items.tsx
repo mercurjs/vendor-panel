@@ -22,9 +22,7 @@ export function ProductVariantManageInventoryItems() {
     throw error
   }
 
-  const extendedVariant = variant as ExtendedAdminProductVariant & {
-    inventory_items: NonNullable<ExtendedAdminProductVariant["inventory_items"]>
-  }
+  const extendedVariant = variant as ExtendedAdminProductVariant
 
   return (
     <RouteFocusModal>

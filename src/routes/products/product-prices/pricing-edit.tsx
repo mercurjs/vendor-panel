@@ -108,7 +108,7 @@ export const PricingEdit = ({
               ? regionsCurrencyMap[regionId as string]
               : currencyCodeOrRegionId
 
-            let existingId: string | undefined = undefined
+            let existingId: string | undefined
 
             if (regionId && currentVariant.prices) {
               existingId = currentVariant.prices.find((p) => {
@@ -147,7 +147,6 @@ export const PricingEdit = ({
       return
     }
 
-    // Create a clean payload for the API
     const cleanData: HttpTypes.AdminUpdateProductVariant = {
       title: data.title || undefined,
       sku: data.sku || undefined,

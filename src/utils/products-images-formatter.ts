@@ -3,7 +3,7 @@ import { HttpTypes } from "@medusajs/types"
 import { ExtendedAdminProduct } from "../types/extended-product"
 
 function formatProductImages(
-  images: HttpTypes.AdminProductImage[] | null | undefined
+  images?: HttpTypes.AdminProductImage[] | null
 ) {
   if (!images) {
     return []
@@ -24,7 +24,7 @@ function formatSingleProduct(product: ExtendedAdminProduct) {
 }
 
 function productsImagesFormatter(
-  products: ExtendedAdminProduct[] | ExtendedAdminProduct | undefined
+  products?: ExtendedAdminProduct[] | ExtendedAdminProduct
 ): ExtendedAdminProduct[] | ExtendedAdminProduct | null {
   if (!products) {
     return null

@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 
 import { PlaceholderCell } from "../../common/placeholder-cell"
-import { ExtendedAdminProductVariant } from "../../../../../types/extended-product"
+import { ExtendedAdminProductVariant } from "../../../../../types/products"
 
 type VariantCellProps = {
   variants?: ExtendedAdminProductVariant[] | null

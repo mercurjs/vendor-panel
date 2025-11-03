@@ -27,7 +27,7 @@ import {
 import {
   ExtendedAdminProductVariant,
   ProductStockGridRow,
-} from "../../../../../types/extended-product"
+} from "../../../../../types/products"
 
 type ProductStockFormProps = {
   variants: ExtendedAdminProductVariant[]

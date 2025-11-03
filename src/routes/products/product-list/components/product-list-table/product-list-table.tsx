@@ -17,7 +17,7 @@ import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, Outlet } from "react-router-dom"
 
-import { ExtendedAdminProduct } from "../../../../../types/extended-product"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { _DataTable } from "../../../../../components/table/data-table"
 import {

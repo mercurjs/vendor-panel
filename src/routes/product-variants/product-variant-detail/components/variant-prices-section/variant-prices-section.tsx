@@ -7,7 +7,7 @@ import { Button, Container, Heading } from "@medusajs/ui"
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { NoRecords } from "../../../../../components/common/empty-table-content"
 import { getLocaleAmount } from "../../../../../lib/money-amount-helpers"
-import { ExtendedAdminProductVariant } from "../../../../../types/extended-product"
+import { ExtendedAdminProductVariant } from "../../../../../types/products"
 
 type VariantPricesSectionProps = {
   variant: ExtendedAdminProductVariant

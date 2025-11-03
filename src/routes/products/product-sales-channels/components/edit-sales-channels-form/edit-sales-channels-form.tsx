@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next"
 import * as zod from "zod"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { ExtendedAdminProduct } from "../../../../../types/extended-product"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 import { keepPreviousData } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import { DataTable } from "../../../../../components/data-table"

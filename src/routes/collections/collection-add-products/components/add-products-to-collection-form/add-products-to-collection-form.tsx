@@ -23,7 +23,7 @@ import { useProductTableColumns } from "../../../../../hooks/table/columns/use-p
 import { useProductTableFilters } from "../../../../../hooks/table/filters/use-product-table-filters.tsx"
 import { useProductTableQuery } from "../../../../../hooks/table/query/use-product-table-query.tsx"
 import { useDataTable } from "../../../../../hooks/use-data-table.tsx"
-import { ExtendedAdminProduct } from "../../../../../types/extended-product.ts"
+import { ExtendedAdminProduct } from "../../../../../types/products.ts"
 
 type AddProductsToCollectionFormProps = {
   collection: HttpTypes.AdminCollection

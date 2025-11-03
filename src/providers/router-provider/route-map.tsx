@@ -11,7 +11,7 @@ import { TaxRegionDetailBreadcrumb } from "../../routes/tax-regions/tax-region-d
 import { taxRegionLoader } from "../../routes/tax-regions/tax-region-detail/loader"
 import { RouteExtensions } from "./route-extensions"
 import { SettingsExtensions } from "./settings-extensions"
-import { ExtendedAdminProductResponse } from "../../types/extended-product"
+import { ExtendedAdminProductResponse } from "../../types/products"
 
 export const RouteMap: RouteObject[] = [
   {

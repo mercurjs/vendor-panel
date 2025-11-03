@@ -1,4 +1,4 @@
-import { ExtendedAdminProduct } from "../../../../../types/extended-product"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 import { Button, toast } from "@medusajs/ui"
 import { HttpTypes } from "@medusajs/types"
 import { useTranslation } from "react-i18next"

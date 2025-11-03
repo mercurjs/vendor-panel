@@ -18,7 +18,7 @@ import { useProductVariantsInventoryItemsBatch } from "../../../../../hooks/api/
 import { useComboboxData } from "../../../../../hooks/use-combobox-data"
 import { castNumber } from "../../../../../lib/cast-number"
 import { sdk } from "../../../../../lib/client"
-import { ExtendedAdminProductVariant } from "../../../../../types/extended-product"
+import { ExtendedAdminProductVariant } from "../../../../../types/products"
 
 type ManageVariantInventoryItemsFormProps = {
   variant: ExtendedAdminProductVariant

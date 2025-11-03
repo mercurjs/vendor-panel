@@ -16,7 +16,7 @@ import productsImagesFormatter from "../../utils/products-images-formatter"
 import {
   ExtendedAdminProductResponse,
   ExtendedAdminProductListResponse,
-} from "../../types/extended-product"
+} from "../../types/products"
 
 const PRODUCTS_QUERY_KEY = "products" as const
 export const productsQueryKeys = queryKeysFactory(PRODUCTS_QUERY_KEY)

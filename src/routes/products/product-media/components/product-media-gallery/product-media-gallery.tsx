@@ -11,7 +11,7 @@ import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, useLocation } from "react-router-dom"
 
-import { ExtendedAdminProduct } from "../../../../../types/extended-product"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 import { RouteFocusModal } from "../../../../../components/modals"
 import { useUpdateProduct } from "../../../../../hooks/api/products"
 

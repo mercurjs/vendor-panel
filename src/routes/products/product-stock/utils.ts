@@ -2,7 +2,7 @@ import { HttpTypes } from "@medusajs/types"
 import {
   ExtendedAdminProductVariant,
   ProductStockGridRow,
-} from "../../../types/extended-product"
+} from "../../../types/products"
 
 export function isProductVariant(
   row: ProductStockGridRow

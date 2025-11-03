@@ -1,5 +1,5 @@
 import { Buildings, Component, PencilSquare, Trash } from "@medusajs/icons"
-import { ExtendedAdminProduct, ExtendedAdminProductVariant } from "../../../../../types/extended-product"
+import { ExtendedAdminProduct, ExtendedAdminProductVariant } from "../../../../../types/products"
 import {
   Badge,
   clx,

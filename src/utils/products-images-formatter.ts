@@ -1,6 +1,6 @@
 import imagesConverter from "./images-conventer"
 import { HttpTypes } from "@medusajs/types"
-import { ExtendedAdminProduct } from "../types/extended-product"
+import { ExtendedAdminProduct } from "../types/products"
 
 function formatProductImages(
   images?: HttpTypes.AdminProductImage[] | null

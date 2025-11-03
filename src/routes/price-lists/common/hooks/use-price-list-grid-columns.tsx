@@ -11,7 +11,7 @@ import {
 import { createDataGridPriceColumns } from "../../../../components/data-grid/helpers/create-data-grid-price-columns"
 import { PricingCreateSchemaType } from "../../price-list-create/components/price-list-create-form/schema"
 import { isProductRow } from "../utils"
-import { ExtendedAdminProduct, ExtendedAdminProductVariant } from "../../../../types/extended-product"
+import { ExtendedAdminProduct, ExtendedAdminProductVariant } from "../../../../types/products"
 
 const columnHelper = createDataGridHelper<
  ExtendedAdminProduct | ExtendedAdminProductVariant,

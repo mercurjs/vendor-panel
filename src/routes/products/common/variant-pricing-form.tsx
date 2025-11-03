@@ -14,10 +14,11 @@ import { usePricePreferences } from "../../../hooks/api/price-preferences"
 import { useRegions } from "../../../hooks/api/regions.tsx"
 import { useStore } from "../../../hooks/api/store"
 import { ProductCreateSchemaType } from "../product-create/types"
+import { ExtendedAdminProduct } from "../../../types/products.ts"
 
 type VariantPricingFormProps = {
   form: UseFormReturn<ProductCreateSchemaType>
-  product: HttpTypes.AdminProduct
+  product: ExtendedAdminProduct
 }
 
 export const VariantPricingForm = ({

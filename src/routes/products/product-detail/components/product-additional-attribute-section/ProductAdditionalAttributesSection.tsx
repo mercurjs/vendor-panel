@@ -1,5 +1,5 @@
 import { Container, Heading } from "@medusajs/ui"
-import { ExtendedAdminProduct } from "../../../../../types/extended-product"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 import { PencilSquare } from "@medusajs/icons"
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { useProductAttributes } from "../../../../../hooks/api/products"

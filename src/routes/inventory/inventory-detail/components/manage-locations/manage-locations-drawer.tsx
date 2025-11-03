@@ -6,6 +6,7 @@ import { RouteDrawer } from "../../../../../components/modals"
 import { useInventoryItem } from "../../../../../hooks/api/inventory"
 import { useStockLocations } from "../../../../../hooks/api/stock-locations"
 import { ManageLocationsForm } from "./components/manage-locations-form"
+import { INVENTORY_DETAIL_FIELDS } from "../../constants"
 
 export const ManageLocationsDrawer = () => {
   const { id } = useParams()
@@ -16,7 +17,9 @@ export const ManageLocationsDrawer = () => {
     isPending: isLoading,
     isError,
     error,
-  } = useInventoryItem(id!)
+  } = useInventoryItem(id!, {
+    fields: INVENTORY_DETAIL_FIELDS,
+  })
 
   const { stock_locations, isLoading: loadingLocations } = useStockLocations()
 

@@ -8,7 +8,6 @@ import { SwitchBox } from "../../../../../components/common/switch-box"
 import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
 import { useExtendableForm } from "../../../../../extensions/forms/hooks"
 import { useUpdateProduct } from "../../../../../hooks/api/products"
-import { transformNullableFormData } from "../../../../../lib/form-helpers"
 
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import {
@@ -21,11 +20,8 @@ type EditProductFormProps = {
 }
 
 const EditProductSchema = zod.object({
-  status: zod.enum(["draft", "published", "proposed", "rejected"]),
   title: zod.string().min(1),
-  subtitle: zod.string().optional(),
   handle: zod.string().min(1),
-  material: zod.string().optional(),
   description: zod.string().optional(),
   discountable: zod.boolean(),
 })
@@ -40,10 +36,7 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
 
   const form = useExtendableForm({
     defaultValues: {
-      status: product.status,
       title: product.title,
-      material: product.material || "",
-      subtitle: product.subtitle || "",
       handle: product.handle || "",
       description: product.description || "",
       discountable: product.discountable,
@@ -56,17 +49,14 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
   const { mutateAsync, isPending } = useUpdateProduct(product.id)
 
   const handleSubmit = form.handleSubmit(async (data) => {
-    const { title, discountable, handle, status, ...optional } = data
-
-    const nullableData = transformNullableFormData(optional)
+    const { description, discountable, handle, title } = data
 
     await mutateAsync(
       {
-        title,
+        description,
         discountable,
         handle,
-        status: status as HttpTypes.AdminProductStatus,
-        ...nullableData,
+        title,
       },
       {
         onSuccess: ({ product }) => {

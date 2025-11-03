@@ -152,7 +152,7 @@ export const AdjustInventoryForm = ({
                       type="number"
                       value={value}
                       onChange={onChange}
-                      onKeyDown={sanitizeNumberInput}
+                      onKeyDown={(e) => sanitizeNumberInput(e, [",", "."])}
                       {...field}
                     />
                   </Form.Control>

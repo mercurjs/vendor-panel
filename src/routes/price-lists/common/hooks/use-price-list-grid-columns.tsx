@@ -83,6 +83,7 @@ export const usePriceListGridColumns = ({
           return `products.${entity.product_id}.variants.${entity.id}.region_prices.${value}.amount`
         },
         t,
+        showCurrentPriceCell: true,
       }),
     ]
   }, [t, currencies, regions, pricePreferences])

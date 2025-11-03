@@ -7,6 +7,7 @@ import {
   useProductAttributes,
   useUpdateProduct,
 } from "../../../hooks/api/products"
+import { ProductAttribute } from "../../../types/products"
 import { useParams } from "react-router-dom"
 import { Components } from "./components/Components"
 import { useForm } from "react-hook-form"
@@ -18,7 +19,9 @@ export const ProductAdditionalAttributesForm = () => {
   const { id } = useParams()
   const { product, isLoading: isProductLoading } = useProduct(id!)
 
-  const { attributes, isLoading } = useProductAttributes(id!)
+  const { attributes, isLoading: isAttributesLoading } = useProductAttributes(
+    id!
+  )
 
   // @ts-ignore
   const defaultValues = product?.attribute_values?.reduce(
@@ -36,31 +39,12 @@ export const ProductAdditionalAttributesForm = () => {
 
   const { mutate: updateProduct } = useUpdateProduct(id!)
 
-  if (isLoading || isProductLoading) return <div>Loading...</div>
+  if (isAttributesLoading || isProductLoading) return <div>Loading...</div>
 
   const onSubmit = async (data: any) => {
-    const formattedData = Object.keys(data).map((key) => {
-      const attribute = attributes.find(
-        (a: any) => a.id === key && a.ui_component === "select"
-      )
-      const value = attribute?.possible_values.find(
-        (pv: any) => pv.id === data[key]
-      )?.value
-
-      return (
-        value && {
-          [key]: value,
-        }
-      )
-    })
-    const payload = {
-      ...data,
-      ...Object.assign({}, ...formattedData.filter(Boolean)),
-    }
-
-    const values = Object.keys(payload).reduce(
+    const values = Object.keys(data).reduce(
       (acc: Array<Record<string, string>>, key) => {
-        acc.push({ attribute_id: key, value: payload[key] })
+        acc.push({ attribute_id: key, value: data[key] })
         return acc
       },
       []
@@ -88,7 +72,7 @@ export const ProductAdditionalAttributesForm = () => {
       <RouteDrawer.Body className="max-h-[calc(86vh)] overflow-y-auto py-2">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            {attributes.map((a: any) => (
+            {attributes?.map((a: ProductAttribute) => (
               <Form.Field
                 key={`form-field-${a.handle}-${a.id}`}
                 control={form.control}

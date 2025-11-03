@@ -202,7 +202,7 @@ export const TaxRegionCreateTaxOverrideForm = ({
       // case TaxRateRuleReferenceType.CUSTOMER_GROUP:
       //   return customerGroups
       default:
-        return products // Fallback to products for unsupported types
+        return products
     }
   }
 
@@ -286,6 +286,7 @@ export const TaxRegionCreateTaxOverrideForm = ({
     form.setValue(type as "product" | "product_type", [], {
       shouldDirty: true,
     })
+
     form.setValue(`enabled_rules.${type}` as "enabled_rules.product" | "enabled_rules.product_type", false, {
       shouldDirty: true,
     })

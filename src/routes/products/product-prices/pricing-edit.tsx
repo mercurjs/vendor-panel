@@ -165,7 +165,7 @@ export const PricingEdit = ({
       <KeyboundForm onSubmit={handleSubmit} className="flex size-full flex-col">
         <RouteFocusModal.Header />
         <RouteFocusModal.Body className="flex flex-col overflow-hidden">
-          <VariantPricingForm form={form as any} />
+          <VariantPricingForm form={form as any} product={product} />
         </RouteFocusModal.Body>
         <RouteFocusModal.Footer>
           <div className="flex w-full items-center justify-end gap-x-2">

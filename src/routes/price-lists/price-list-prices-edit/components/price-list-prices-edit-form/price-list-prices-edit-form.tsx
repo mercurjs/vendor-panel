@@ -132,14 +132,12 @@ function initRecord(
   const variantPrices = priceList.prices?.reduce((variants, price) => {
     const variantObject = variants[price.price_set.variant.id] || {}
 
-    const isRegionPrice = !!price.price_rules.find(
+    const regionPrice = price.price_rules.find(
       (item: { attribute: string }) => item.attribute === "region_id"
     )
 
-    if (isRegionPrice) {
-      const regionId = price.price_rules.find(
-        (item: { attribute: string }) => item.attribute === "region_id"
-      )!.value as string
+    if (!!regionPrice) {
+      const regionId = regionPrice.value
 
       variantObject.region_prices = {
         ...variantObject.region_prices,

@@ -55,12 +55,12 @@ export const PromotionDetail = () => {
         />
         <PromotionConditionsSection
           rules={targetRules || []}
-          ruleType="target_rules"
+          ruleType="target-rules"
         />
         {promotion.type === "buyget" && (
           <PromotionConditionsSection
             rules={buyRules || []}
-            ruleType="buy_rules"
+            ruleType="buy-rules"
           />
         )}
       </TwoColumnPage.Main>

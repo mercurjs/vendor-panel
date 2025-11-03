@@ -1877,9 +1877,25 @@
               },
               "required": ["heading", "description"],
               "additionalProperties": false
+            },
+            "editStocksAndPrices": {
+              "type": "object",
+              "properties": {
+                "header": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "successToast": {
+                  "type": "string"
+                }
+              },
+              "required": ["header", "description", "successToast"],
+              "additionalProperties": false
             }
           },
-          "required": ["header", "empty", "filtered"],
+          "required": ["header", "empty", "filtered", "editStocksAndPrices"],
           "additionalProperties": false
         },
         "attributes": {
@@ -10850,6 +10866,9 @@
         "priceTemplate": {
           "type": "string"
         },
+        "stockTemplate": {
+          "type": "string"
+        },
         "height": {
           "type": "string"
         },
@@ -11078,6 +11097,7 @@
         "expiryDate",
         "price",
         "priceTemplate",
+        "stockTemplate",
         "height",
         "width",
         "length",

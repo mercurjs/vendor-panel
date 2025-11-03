@@ -6,12 +6,18 @@ import {
   UseQueryOptions,
   useMutation,
   useQuery,
+  useQueries,
 } from "@tanstack/react-query"
 
 import { fetchQuery, sdk } from "../../lib/client"
 import { queryClient } from "../../lib/query-client"
 import { queryKeysFactory } from "../../lib/query-key-factory"
 import { variantsQueryKeys } from "./products"
+import type {
+  InventoryItemLocationLevel,
+  InventoryItemWithLevels,
+  UseMultipleInventoryItemLevelsReturn,
+} from "../../types/inventory"
 
 const INVENTORY_ITEMS_QUERY_KEY = "inventory_items" as const
 export const inventoryItemsQueryKeys = queryKeysFactory(
@@ -307,4 +313,60 @@ export const useBatchInventoryItemsLocationLevels = (
     },
     ...options,
   })
+}
+
+// TODO: Change this to use endpoint that returns location levels for specific inventory items insted of mapping inventory items to location levels
+export const useMultipleInventoryItemLevels = (
+  inventoryItemIds: string[],
+  query?: Record<string, any>
+): UseMultipleInventoryItemLevelsReturn => {
+  const queries = useQueries({
+    queries: inventoryItemIds.map((id) => ({
+      queryKey: inventoryItemLevelsQueryKeys.detail(id, query),
+      queryFn: () =>
+        fetchQuery(`/vendor/inventory-items/${id}/location-levels`, {
+          method: "GET",
+          query: { fields: "*stock_locations", ...query } as {
+            [key: string]: string | number
+          },
+        }),
+      enabled: Boolean(id),
+    })),
+  })
+
+  const isPending = queries.some((q) => q.isPending)
+  const isRefetching = queries.some((q) => q.isRefetching)
+  const isError = queries.some((q) => q.isError)
+  const error = queries.find((q) => q.error)?.error
+
+  const allLocationLevels: InventoryItemLocationLevel[] = queries
+    .filter((q) => q.data?.location_levels)
+    .flatMap((q) => q.data?.location_levels || [])
+
+  const inventoryItemsWithLevels: InventoryItemWithLevels[] = queries
+    .map((query, index) => {
+      if (query.data?.location_levels) {
+        return {
+          inventory_item_id: inventoryItemIds[index],
+          location_levels: query.data
+            .location_levels as InventoryItemLocationLevel[],
+        }
+      }
+      return null
+    })
+    .filter((item): item is InventoryItemWithLevels => item !== null)
+
+  const refetch = async () => {
+    await Promise.all(queries.map((q) => q.refetch()))
+  }
+
+  return {
+    inventoryItemsWithLevels,
+    allLocationLevels,
+    isPending,
+    isRefetching,
+    isError,
+    error,
+    refetch,
+  }
 }

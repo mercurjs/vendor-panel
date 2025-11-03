@@ -11,6 +11,7 @@ import { KeyboundForm } from "../../../../../../components/utilities/keybound-fo
 import { useUpdateInventoryLevel } from "../../../../../../hooks/api/inventory"
 import { castNumber } from "../../../../../../lib/cast-number"
 import { VendorExtendedAdminStockLocation } from "../../../../../../types/stock-location"
+import { sanitizeNumberInput } from "../../../../../../lib/sanitize-number-input"
 
 type AdjustInventoryFormProps = {
   item: HttpTypes.AdminInventoryItem
@@ -152,6 +153,7 @@ export const AdjustInventoryForm = ({
                       type="number"
                       value={value}
                       onChange={onChange}
+                      onKeyDown={sanitizeNumberInput}
                       {...field}
                     />
                   </Form.Control>

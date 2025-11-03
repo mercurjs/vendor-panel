@@ -41,7 +41,6 @@ export const getFormattedAddress = ({
     country_code,
   } = address
 
-  // Check if it's an AdminOrderAddress (has first_name/last_name)
   const first_name = 'first_name' in address ? address.first_name : undefined
   const last_name = 'last_name' in address ? address.last_name : undefined
   const country = 'country' in address ? address.country : undefined

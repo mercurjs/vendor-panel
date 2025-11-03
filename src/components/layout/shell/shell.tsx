@@ -18,35 +18,46 @@ import { useSidebar } from "../../../providers/sidebar-provider"
 import { ProgressBar } from "../../common/progress-bar"
 import { Notifications } from "../notifications"
 import { AdminChat } from "../admin-chat"
+import { useMe } from "../../../hooks/api"
 
 export const Shell = ({ children }: PropsWithChildren) => {
   const globalShortcuts = useGlobalShortcuts()
   const navigation = useNavigation()
+  const { seller } = useMe()
+
+  const isSuspended = seller?.store_status === "SUSPENDED"
 
   const loading = navigation.state === "loading"
 
   return (
     <KeybindProvider shortcuts={globalShortcuts}>
-      <div className="relative flex h-screen flex-col items-start overflow-hidden lg:flex-row">
-        <NavigationBar loading={loading} />
-        <div>
-          <MobileSidebarContainer>{children}</MobileSidebarContainer>
-          <DesktopSidebarContainer>{children}</DesktopSidebarContainer>
-        </div>
-        <div className="flex h-screen w-full flex-col overflow-auto">
-          <Topbar />
-          <main
-            className={clx(
-              "flex h-full w-full flex-col items-center overflow-y-auto transition-opacity delay-200 duration-200",
-              {
-                "opacity-25": loading,
-              }
-            )}
-          >
-            <Gutter>
-              <Outlet />
-            </Gutter>
-          </main>
+      <div className="flex flex-col h-screen">
+        {isSuspended && (
+          <div className="w-full bg-red-600 text-white p-1 text-center text-sm">
+            Your store is <b>suspended</b>. Please contact support.
+          </div>
+        )}
+        <div className="relative flex flex-1 h-full items-start overflow-hidden lg:flex-row">
+          <NavigationBar loading={loading} />
+          <div className="h-full">
+            <MobileSidebarContainer>{children}</MobileSidebarContainer>
+            <DesktopSidebarContainer>{children}</DesktopSidebarContainer>
+          </div>
+          <div className="flex h-full w-full flex-col overflow-auto">
+            <Topbar />
+            <main
+              className={clx(
+                "flex h-full w-full flex-col items-center overflow-y-auto transition-opacity delay-200 duration-200",
+                {
+                  "opacity-25": loading,
+                }
+              )}
+            >
+              <Gutter>
+                <Outlet />
+              </Gutter>
+            </main>
+          </div>
         </div>
       </div>
     </KeybindProvider>
@@ -212,7 +223,7 @@ const DesktopSidebarContainer = ({ children }: PropsWithChildren) => {
 
   return (
     <div
-      className={clx("hidden h-screen w-[220px] border-r", {
+      className={clx("hidden h-full w-[220px] border-r", {
         "lg:flex": desktop,
       })}
     >

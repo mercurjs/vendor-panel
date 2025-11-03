@@ -7,6 +7,7 @@ import { DataGridCurrencyCell } from "../components/data-grid-currency-cell"
 import { DataGridReadonlyCell } from "../components/data-grid-readonly-cell"
 import { FieldContext } from "../types"
 import { createDataGridHelper } from "./create-data-grid-column-helper"
+import { formatCurrency } from "../../../lib/format-currency"
 
 type CreateDataGridPriceColumnsProps<
   TData,
@@ -21,6 +22,7 @@ type CreateDataGridPriceColumnsProps<
     value: string
   ) => FieldPath<TFieldValues> | null
   t: TFunction
+  showCurrentPriceCell?: boolean
 }
 
 export const createDataGridPriceColumns = <
@@ -33,6 +35,7 @@ export const createDataGridPriceColumns = <
   isReadyOnly,
   getFieldName,
   t,
+  showCurrentPriceCell = false,
 }: CreateDataGridPriceColumnsProps<TData, TFieldValues>): ColumnDef<
   TData,
   unknown
@@ -40,7 +43,7 @@ export const createDataGridPriceColumns = <
   const columnHelper = createDataGridHelper<TData, TFieldValues>()
 
   return [
-    ...(currencies?.map((currency) => {
+    ...(currencies?.flatMap((currency) => {
       const preference = pricePreferences?.find(
         (p) => p.attribute === "currency_code" && p.value === currency
       )
@@ -49,7 +52,11 @@ export const createDataGridPriceColumns = <
         regionOrCurrency: currency.toUpperCase(),
       })
 
-      return columnHelper.column({
+      const translatedCurrentCurrencyName = t("fields.currentPriceTemplate", {
+        regionOrCurrency: currency.toUpperCase(),
+      })
+
+      const editableCol = columnHelper.column({
         id: `currency_prices.${currency}`,
         name: t("fields.priceTemplate", {
           regionOrCurrency: currency.toUpperCase(),
@@ -80,6 +87,51 @@ export const createDataGridPriceColumns = <
           return <DataGridCurrencyCell code={currency} context={context} />
         },
       })
+
+      const currentPriceCol = showCurrentPriceCell
+        ? columnHelper.column({
+            id: `currency_current_price.${currency}`,
+            name: translatedCurrentCurrencyName,
+            field: () => null,
+            type: "number",
+            header: () => (
+              <div className="flex w-full items-center justify-between gap-3">
+                <span
+                  className="truncate"
+                  title={translatedCurrentCurrencyName}
+                >
+                  {translatedCurrentCurrencyName}
+                </span>
+              </div>
+            ),
+            cell: (context) => {
+              const prices = (
+                context.row.original as HttpTypes.AdminProductVariant
+              ).prices
+
+              const currentPrice = prices?.find(
+                ({ currency_code }) => currency_code === currency
+              )
+
+              const amount = currentPrice?.amount
+
+              return (
+                <DataGridReadonlyCell context={context}>
+                  {typeof amount === "number"
+                    ? formatCurrency(amount, currency.toUpperCase())
+                    : isReadyOnly?.(context)
+                      ? ""
+                      : "—"}
+                </DataGridReadonlyCell>
+              )
+            },
+          })
+        : null
+
+      return [editableCol, currentPriceCol].filter(Boolean) as ColumnDef<
+        TData,
+        unknown
+      >[]
     }) ?? []),
   ]
 }

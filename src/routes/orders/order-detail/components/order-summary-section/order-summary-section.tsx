@@ -286,7 +286,9 @@ const Item = ({
   const isInventoryManaged = item.variant?.manage_inventory
   const hasUnfulfilledItems = item.quantity - item.detail.fulfilled_quantity > 0
 
-  const original_price = item.variant?.prices?.[0].amount || 0
+  const original_price =
+    item.variant?.prices?.find((price) => price.currency_code === currencyCode)
+      ?.amount || 0
   const price = item.unit_price
 
   return (
@@ -304,7 +306,7 @@ const Item = ({
               weight="plus"
               className="text-ui-fg-base"
             >
-              {item.product_title} {item.title}
+              {item.title || item.product_title}
             </Text>
 
             {item.variant_sku && (

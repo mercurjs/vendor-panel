@@ -12,7 +12,7 @@ import { useUpdateProductVariant } from "../../../hooks/api/products"
 import { useRegions } from "../../../hooks/api/regions"
 import { castNumber } from "../../../lib/cast-number"
 import { VariantPricingForm } from "../common/variant-pricing-form"
-import { ExtendedAdminProduct } from "../../../types/extended-product"
+import { ExtendedAdminProduct } from "../../../types/products"
 
 export const UpdateVariantPricesSchema = zod.object({
   variants: zod.array(
@@ -32,7 +32,7 @@ export const PricingEdit = ({
   product,
   variantId,
 }: {
-  product: ExtendedAdminProduct | HttpTypes.AdminProduct
+  product: ExtendedAdminProduct
   variantId?: string
 }) => {
   const { t } = useTranslation()
@@ -108,7 +108,7 @@ export const PricingEdit = ({
               ? regionsCurrencyMap[regionId as string]
               : currencyCodeOrRegionId
 
-            let existingId: string | undefined = undefined
+            let existingId: string | undefined
 
             if (regionId && currentVariant.prices) {
               existingId = currentVariant.prices.find((p) => {
@@ -147,7 +147,6 @@ export const PricingEdit = ({
       return
     }
 
-    // Create a clean payload for the API
     const cleanData: HttpTypes.AdminUpdateProductVariant = {
       title: data.title || undefined,
       sku: data.sku || undefined,
@@ -166,7 +165,7 @@ export const PricingEdit = ({
       <KeyboundForm onSubmit={handleSubmit} className="flex size-full flex-col">
         <RouteFocusModal.Header />
         <RouteFocusModal.Body className="flex flex-col overflow-hidden">
-          <VariantPricingForm form={form as any} />
+          <VariantPricingForm form={form as any} product={product} />
         </RouteFocusModal.Body>
         <RouteFocusModal.Footer>
           <div className="flex w-full items-center justify-end gap-x-2">

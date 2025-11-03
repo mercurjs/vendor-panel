@@ -84,14 +84,13 @@ export const RulesFormField = ({
 
     if (ruleType === "rules" && !fields.length) {
       form.resetField("rules")
-      // Convert API rules to form data format
+      
       const formRules = generateRuleAttributes(rules)
       replace(formRules)
     }
 
     if (ruleType === "buy-rules" && !fields.length) {
       form.resetField("application_method.buy_rules")
-      // Add required product rule if creating new promotion for buy-get promotions
       const apiRules = promotion?.id || promotionType === "standard"
         ? rules || []
         : [...(rules || []), requiredProductRule]
@@ -102,7 +101,6 @@ export const RulesFormField = ({
 
     if (ruleType === "target-rules" && !fields.length) {
       form.resetField("application_method.target_rules")
-      // Add required product rule if creating new promotion for buy-get promotions 
       const apiRules = promotion?.id || promotionType === "standard"
         ? rules || []
         : [...(rules || []), requiredProductRule]
@@ -369,7 +367,7 @@ export const RulesFormField = ({
             onClick={() => {
               const indicesToRemove = fields
                 .map((field: any, index) => (field.required ? null : index))
-                .filter((f): f is number => f !== null)
+                .filter((f) => f !== null)
 
               setRulesToRemove &&
                 setRulesToRemove(fields.filter((field: any) => !field.required))

@@ -11,8 +11,8 @@ import { TaxRegionDetailBreadcrumb } from "../../routes/tax-regions/tax-region-d
 import { taxRegionLoader } from "../../routes/tax-regions/tax-region-detail/loader"
 import { RouteExtensions } from "./route-extensions"
 import { SettingsExtensions } from "./settings-extensions"
-import { ExtendedAdminProductResponse } from "../../types/extended-product"
 import { ExtendedAdminOrderResponse } from "../../types/order"
+import { ExtendedAdminProductResponse } from "../../types/products"
 
 export const RouteMap: RouteObject[] = [
   {
@@ -353,6 +353,13 @@ export const RouteMap: RouteObject[] = [
                         path: "metadata/edit",
                         lazy: () =>
                           import("../../routes/products/product-metadata"),
+                      },
+                      {
+                        path: "edit-stocks-and-prices",
+                        lazy: () =>
+                          import(
+                            "../../routes/products/product-edit-stocks-and-prices"
+                          ),
                       },
                     ],
                   },

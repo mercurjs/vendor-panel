@@ -75,8 +75,7 @@ export const PriceListCustomerGroupRuleForm = ({
       sortParam ? { sort: sortParam } : undefined
     )
 
-  // Map CustomerGroupData to flat AdminCustomerGroup structure for the table
-  const customer_groups = customerGroupsData
+  const customerGroups = customerGroupsData
     ?.map((item) => item.customer_group)
 
   const updater: OnChangeFn<RowSelectionState> = (value) => {
@@ -89,7 +88,7 @@ export const PriceListCustomerGroupRuleForm = ({
     const removedIds = currentIds.filter((id) => !ids.includes(id))
 
     const newCustomerGroups =
-      customer_groups
+      customerGroups
         ?.filter((cg) => newIds.includes(cg.id))
         .map((cg) => ({
           id: cg.id,
@@ -112,7 +111,7 @@ export const PriceListCustomerGroupRuleForm = ({
   const columns = useColumns()
 
   const { table } = useDataTable({
-    data: customer_groups || [],
+    data: customerGroups || [],
     columns,
     count,
     enablePagination: true,

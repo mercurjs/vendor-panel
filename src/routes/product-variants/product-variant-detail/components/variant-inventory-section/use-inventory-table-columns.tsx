@@ -2,7 +2,7 @@ import { PlaceholderCell } from "../../../../../components/table/table-cells/com
 import { createColumnHelper } from "@tanstack/react-table"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { ExtendedAdminProductVariant } from "../../../../../types/extended-product"
+import { ExtendedAdminProductVariant } from "../../../../../types/products"
 
 export interface ExtendedInventoryItem {
   id: string

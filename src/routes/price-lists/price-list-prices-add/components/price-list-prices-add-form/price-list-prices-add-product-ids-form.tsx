@@ -18,7 +18,7 @@ import { useDataTable } from "../../../../../hooks/use-data-table"
 import { PriceListCreateProductsSchema } from "../../../common/schemas"
 import { PriceListPricesAddSchema } from "./schema"
 import { usePriceListProducts } from "../../../../../hooks/api"
-import { ExtendedAdminProduct } from "../../../../../types/extended-product"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 
 type PriceListPricesAddProductIdsFormProps = {
   form: UseFormReturn<PriceListPricesAddSchema>

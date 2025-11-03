@@ -10,7 +10,10 @@ import {
 import { fetchQuery, sdk } from "../../lib/client"
 import { queryClient } from "../../lib/query-client"
 import { queryKeysFactory } from "../../lib/query-key-factory"
-import { ExtendedPriceList, PriceListListResponse } from "../../types/price-list"
+import {
+  ExtendedPriceList,
+  PriceListListResponse,
+} from "../../types/price-list"
 import { customerGroupsQueryKeys } from "./customer-groups"
 import { productsQueryKeys } from "./products"
 
@@ -91,15 +94,12 @@ export const usePriceLists = (
     ...options,
   })
 
-  const price_lists: ExtendedPriceList[] | undefined = data?.price_lists
-    ?.filter((item) => item.price_list)
-    .map((item) => ({
-      ...item.price_list,
-      id: item.price_list.id,
-    }))
+  const price_lists: ExtendedPriceList[] = (data?.price_lists || [])
+    .filter((item) => item.price_list)
+    .map((item) => ({ ...item.price_list, id: item.price_list.id }))
 
-  const count = price_lists?.length || 0
-  
+  const count = price_lists?.length
+
   return { ...data, price_lists, count, ...rest }
 }
 

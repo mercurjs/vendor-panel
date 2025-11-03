@@ -1,5 +1,5 @@
 import { PencilSquare } from "@medusajs/icons"
-import { ExtendedAdminProduct } from "../../../../../types/extended-product"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 import { Badge, Container, Heading, Tooltip } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"

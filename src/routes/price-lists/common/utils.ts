@@ -8,7 +8,7 @@ import {
   PriceListCreateProductVariantSchema,
   PriceListCreateProductsSchema,
 } from "./schemas"
-import { ExtendedAdminProduct, ExtendedAdminProductVariant } from "../../../types/extended-product"
+import { ExtendedAdminProduct, ExtendedAdminProductVariant } from "../../../types/products"
 
 const getValues = (priceList: HttpTypes.AdminPriceList) => {
   const startsAt = priceList.starts_at

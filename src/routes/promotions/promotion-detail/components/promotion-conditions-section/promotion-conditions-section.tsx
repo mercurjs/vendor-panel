@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next"
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { BadgeListSummary } from "../../../../../components/common/badge-list-summary"
 import { NoRecords } from "../../../../../components/common/empty-table-content"
-import { ExtendedPromotionRuleWithValues } from "../../../../../types/promotion"
+import { ExtendedPromotionRuleWithValues, FormattedPromotionRuleTypes } from "../../../../../types/promotion"
 
 type RuleProps = {
   rule: ExtendedPromotionRuleWithValues
@@ -48,7 +48,7 @@ function RuleBlock({ rule }: RuleProps) {
 
 type PromotionConditionsSectionProps = {
   rules: ExtendedPromotionRuleWithValues[]
-  ruleType: PromotionRuleTypes
+  ruleType: FormattedPromotionRuleTypes
 }
 
 export const PromotionConditionsSection = ({
@@ -56,8 +56,8 @@ export const PromotionConditionsSection = ({
   ruleType,
 }: PromotionConditionsSectionProps) => {
   const { t } = useTranslation()
+  const translationKey = `promotions.fields.conditions.${ruleType}.title` as const
   
-  const translationKey = `promotions.fields.conditions.${ruleType === "target_rules" ? "target-rules" : "buy-rules"}.title` as const
   return (
     <Container className="p-0">
       <div className="flex items-center justify-between px-6 py-4">
@@ -74,7 +74,7 @@ export const PromotionConditionsSection = ({
                 {
                   icon: <PencilSquare />,
                   label: t("actions.edit"),
-                  to: `${ruleType.replace("_", "-")}/edit`,
+                  to: `${ruleType}/edit`,
                 },
               ],
             },
@@ -89,7 +89,7 @@ export const PromotionConditionsSection = ({
             title={t("general.noRecordsTitle")}
             message={t("promotions.conditions.list.noRecordsMessage")}
             action={{
-              to: `${ruleType.replace("_", "-")}/edit`,
+              to: `${ruleType}/edit`,
               label: t("promotions.conditions.add"),
             }}
             buttonVariant="transparentIconLeft"

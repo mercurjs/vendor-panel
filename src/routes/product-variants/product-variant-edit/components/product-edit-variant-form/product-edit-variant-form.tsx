@@ -15,7 +15,7 @@ import {
   transformNullableFormNumber,
 } from "../../../../../lib/form-helpers"
 import { optionalInt } from "../../../../../lib/validation"
-import { ExtendedAdminProduct, ExtendedAdminProductVariant } from "../../../../../types/extended-product"
+import { ExtendedAdminProduct, ExtendedAdminProductVariant } from "../../../../../types/products"
 
 type ProductEditVariantFormProps = {
   product: ExtendedAdminProduct

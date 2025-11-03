@@ -14,7 +14,7 @@ import {
 import { useProductTableColumns } from "../../../../../hooks/table/columns/use-product-table-columns"
 import { useProductTableQuery } from "../../../../../hooks/table/query/use-product-table-query"
 import { useDataTable } from "../../../../../hooks/use-data-table"
-import { ExtendedAdminProduct } from "../../../../../types/extended-product"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 
 type PriceListProductSectionProps = {
   priceList: HttpTypes.AdminPriceList
@@ -40,7 +40,6 @@ export const PriceListProductSection = ({
     {
       limit: searchParams.limit?.toString() ?? PAGE_SIZE,
       offset: searchParams.offset?.toString() ?? 0,
-      fields: "+thumbnail",
     }
   )
   

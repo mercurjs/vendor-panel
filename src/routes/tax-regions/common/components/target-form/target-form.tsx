@@ -44,7 +44,7 @@ import {
   useProductTypeTableQuery,
 } from "../../../../../hooks/table/query"
 import { useDataTable } from "../../../../../hooks/use-data-table"
-import { ExtendedAdminProduct } from "../../../../../types/extended-product"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 import { TaxRateRuleReferenceType } from "../../constants"
 import { TaxRateRuleReference } from "../../schemas"
 import { CustomerGroupData } from "../../../../orders/common/customerGroupFiltering"

@@ -20,7 +20,7 @@ import { useProductTableColumns } from "../../../../hooks/table/columns/use-prod
 import { useProductTableFilters } from "../../../../hooks/table/filters/use-product-table-filters"
 import { useProductTableQuery } from "../../../../hooks/table/query/use-product-table-query"
 import { useDataTable } from "../../../../hooks/use-data-table"
-import { ExtendedAdminProduct } from "../../../../types/extended-product"
+import { ExtendedAdminProduct } from "../../../../types/products"
 
 type AddProductsToSalesChannelFormProps = {
   salesChannel: SalesChannelDTO

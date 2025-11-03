@@ -11,7 +11,7 @@ import { DataGridDuplicateCell } from "../../../../components/data-grid/componen
 import { DataGridTogglableNumberCell } from "../../../../components/data-grid/components/data-grid-toggleable-number-cell"
 import { ProductStockSchema } from "../schema"
 import { isProductVariant } from "../utils"
-import { ProductStockGridRow } from "../../../../types/extended-product"
+import { ProductStockGridRow } from "../../../../types/products"
 
 const helper = createDataGridHelper<ProductStockGridRow, ProductStockSchema>()
 

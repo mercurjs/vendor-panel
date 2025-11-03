@@ -1,5 +1,5 @@
 import { Buildings, Component, PencilSquare, Trash } from "@medusajs/icons"
-import { ExtendedAdminProduct, ExtendedAdminProductVariant } from "../../../../../types/extended-product"
+import { ExtendedAdminProduct, ExtendedAdminProductVariant } from "../../../../../types/products"
 import {
   Badge,
   clx,
@@ -62,6 +62,19 @@ export const ProductVariantSection = ({
             heading: t("products.variants.filtered.heading"),
             description: t("products.variants.filtered.description"),
           },
+        }}
+        actionMenu={{
+          groups: [
+            {
+              actions: [
+                {
+                  label: t("products.variants.editStocksAndPrices.header"),
+                  to: `edit-stocks-and-prices`,
+                  icon: <PencilSquare />,
+                },
+              ],
+            },
+          ],
         }}
         action={{
           label: t("actions.create"),

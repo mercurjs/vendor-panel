@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next"
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { SectionRow } from "../../../../../components/common/section"
 import { useDeleteProductOption } from "../../../../../hooks/api/products"
-import { ExtendedAdminProduct } from "../../../../../types/extended-product"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 import { HttpTypes } from "@medusajs/types"
 
 const OptionActions = ({

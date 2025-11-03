@@ -66,11 +66,8 @@ export const EditRulesWrapper = ({
         applicationMethodData[rule.attribute] = null
       }
 
-      // This variable will contain the rules that are actual rule objects, without the disguised
-      // objects
       const rulesData = allRules.filter((rule) => !rule.disguised)
       
-      // Separate into create rules (no id) / edit rules (with id)
       const rulesToCreate: CreatePromotionRuleDTO[] = []
       const rulesToUpdate: ExtendedPromotionRule[] = []
       

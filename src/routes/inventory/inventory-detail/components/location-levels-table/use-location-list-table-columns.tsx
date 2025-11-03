@@ -27,7 +27,7 @@ export const useLocationListTableColumns = () => {
         id: "location",
         header: t("fields.location"),
         cell: ({ row }) => {
-          const locationName = row.original.stock_locations?.[0]?.name
+          const locationName = row.original.stock_locations?.map((location) => location.name).join(", ")
 
           if (!locationName) {
             return <PlaceholderCell />

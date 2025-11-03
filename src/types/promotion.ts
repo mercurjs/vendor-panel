@@ -29,3 +29,5 @@ export interface PromotionRuleFormData {
   disguised?: boolean
   field_type?: string
 }
+
+export type FormattedPromotionRuleTypes = "buy-rules" | "target-rules" | "rules"

@@ -24,10 +24,9 @@ export const PriceListConfiguration = () => {
     error: customerGroupsError,
   } = useCustomerGroups(undefined, { enabled: !!customerGroupIds?.length })
 
-  // Map CustomerGroupData to flat AdminCustomerGroup
-  const customer_groups = customerGroupsData?.map((item) => item.customer_group)
+  const customerGroups = customerGroupsData?.map((item) => item.customer_group)
 
-  const initialCustomerGroups = (customer_groups || [])
+  const initialCustomerGroups = (customerGroups || [])
     .filter((group) => customerGroupIds.includes(group.id))
 
   const isCustomerGroupsReady = isPending

@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next"
 import { z } from "zod"
 
 import { AdminCreateProductVariantPrice } from "@medusajs/types"
-import { ExtendedAdminProduct } from "../../../../../types/extended-product"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 import {
   RouteDrawer,
   RouteFocusModal,
@@ -237,7 +237,7 @@ export const CreateProductVariantForm = ({
             }
           })
           .filter(
-            (price): price is AdminCreateProductVariantPrice => price !== undefined
+            (price) => !!price
           ),
       },
       {

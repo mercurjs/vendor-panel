@@ -17,7 +17,7 @@ import { useProductTableQuery } from "../../../../../hooks/table/query/use-produ
 import { useDataTable } from "../../../../../hooks/use-data-table"
 import { PriceListCreateProductsSchema } from "../../../common/schemas"
 import { PricingCreateSchemaType } from "./schema"
-import { ExtendedAdminProduct } from "../../../../../types/extended-product"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 
 type PriceListProductsFormProps = {
   form: UseFormReturn<PricingCreateSchemaType>

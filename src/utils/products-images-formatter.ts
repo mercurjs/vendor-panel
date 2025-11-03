@@ -1,9 +1,9 @@
 import imagesConverter from "./images-conventer"
 import { HttpTypes } from "@medusajs/types"
-import { ExtendedAdminProduct } from "../types/extended-product"
+import { ExtendedAdminProduct } from "../types/products"
 
 function formatProductImages(
-  images: HttpTypes.AdminProductImage[] | null | undefined
+  images?: HttpTypes.AdminProductImage[] | null
 ) {
   if (!images) {
     return []
@@ -24,7 +24,7 @@ function formatSingleProduct(product: ExtendedAdminProduct) {
 }
 
 function productsImagesFormatter(
-  products: ExtendedAdminProduct[] | ExtendedAdminProduct | undefined
+  products?: ExtendedAdminProduct[] | ExtendedAdminProduct
 ): ExtendedAdminProduct[] | ExtendedAdminProduct | null {
   if (!products) {
     return null

@@ -22,7 +22,6 @@ type ProductCreateVariantsFormProps = {
   pricePreferences?: HttpTypes.AdminPricePreference[]
 }
 
-// Extended variant type for DataGrid with original index tracking
 type VariantWithIndex = ProductCreateVariantSchema & {
   originalIndex: number
 }

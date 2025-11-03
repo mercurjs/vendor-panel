@@ -21,7 +21,7 @@ import {
   VariantCell,
   VariantHeader,
 } from "../../../components/table/table-cells/product/variant-cell"
-import { ExtendedAdminProduct } from "../../../types/extended-product"
+import { ExtendedAdminProduct } from "../../../types/products"
 
 const columnHelper = createColumnHelper<ExtendedAdminProduct>()
 

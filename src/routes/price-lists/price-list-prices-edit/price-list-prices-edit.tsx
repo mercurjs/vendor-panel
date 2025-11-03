@@ -16,9 +16,7 @@ export const PriceListPricesEdit = () => {
     isLoading: isProductsLoading,
     isError: isProductsError,
     error: productError,
-  } = usePriceListProducts(id!, {
-    fields: "title,thumbnail,*variants,+status",
-  })
+  } = usePriceListProducts(id!)
 
   const priceListCurrencyData =
     usePriceListCurrencyData()
@@ -46,9 +44,7 @@ export const PriceListPricesEdit = () => {
         <PriceListPricesEditForm
           priceList={price_list}
           products={products}
-          regions={priceListCurrencyData.regions}
-          currencies={priceListCurrencyData.currencies}
-          pricePreferences={priceListCurrencyData.pricePreferences}
+          {...priceListCurrencyData}
         />
       )}
     </RouteFocusModal>

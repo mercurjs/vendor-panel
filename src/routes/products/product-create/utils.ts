@@ -82,7 +82,7 @@ export const normalizeVariants = (
           item !== false
       ),
     prices: Object.entries(variant.prices || {})
-      .map(([key, value]): HttpTypes.AdminCreateProductVariantPrice | undefined => {
+      .map(([key, value]) => {
         if (value === "" || value === undefined) {
           return undefined
         }
@@ -100,7 +100,7 @@ export const normalizeVariants = (
           } as HttpTypes.AdminCreateProductVariantPrice
         }
       })
-      .filter((v): v is HttpTypes.AdminCreateProductVariantPrice => v !== undefined),
+      .filter((v) => v !== undefined),
   }))
 }
 

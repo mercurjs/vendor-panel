@@ -12,7 +12,7 @@ import { useProductTableColumns } from "../../../../../hooks/table/columns/use-p
 import { useProductTableFilters } from "../../../../../hooks/table/filters/use-product-table-filters"
 import { useProductTableQuery } from "../../../../../hooks/table/query/use-product-table-query"
 import { useDataTable } from "../../../../../hooks/use-data-table"
-import { ExtendedAdminProduct } from "../../../../../types/extended-product"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 
 type CollectionProductSectionProps = {
   collection: HttpTypes.AdminCollection
@@ -28,18 +28,11 @@ export const CollectionProductSection = ({
   const { searchParams, raw } = useProductTableQuery({
     pageSize: PAGE_SIZE,
   })
-  const { products, count, isLoading, isError, error } = useProducts(
-    {
-      ...searchParams,
-      limit: 9999,
-      fields: "+thumbnail",
-    },
-    undefined,
-    {
-      ...searchParams,
-      collectionId: collection.id!,
-    }
-  )
+  const { products, count, isLoading, isError, error } = useProducts({
+    ...searchParams,
+    fields: "+thumbnail",
+    collection_id: collection.id!,
+  })
 
   const filters = useProductTableFilters(["collections"])
   const columns = useColumns()

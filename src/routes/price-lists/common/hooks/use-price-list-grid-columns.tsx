@@ -63,7 +63,6 @@ export const usePriceListGridColumns = ({
         PricingCreateSchemaType
       >({
         currencies: currencies.map((c) => c.currency_code),
-        regions,
         pricePreferences,
         isReadyOnly: (context) => {
           const entity = context.row.original

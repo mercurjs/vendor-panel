@@ -35,7 +35,6 @@ const CreateRefundSchema = zod.object({
 
 export const CreateRefundForm = ({
   order,
-  refundReasons,
 }: CreateRefundFormProps) => {
   const { t } = useTranslation()
   const { handleSuccess } = useRouteModal()
@@ -121,10 +120,10 @@ export const CreateRefundForm = ({
 
               <Select.Content>
                 {payments.map((payment) => {
-                  const totalRefunded = payment.refunds.reduce(
+                  const totalRefunded = payment.refunds?.reduce(
                     (acc, next) => next.amount + acc,
                     0
-                  )
+                  ) ?? 0
 
                   return (
                     <Select.Item

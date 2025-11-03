@@ -1,4 +1,4 @@
-import { Button, Input, Select, Text, Textarea, toast } from "@medusajs/ui"
+import { Button, Input, Text, Textarea, toast } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import * as zod from "zod"
 

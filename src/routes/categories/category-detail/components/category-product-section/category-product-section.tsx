@@ -1,24 +1,13 @@
-import { PlusMini } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
-import {
-  Checkbox,
-  CommandBar,
-  Container,
-  Heading,
-  toast,
-  usePrompt,
-} from "@medusajs/ui"
+import { Container, Heading } from "@medusajs/ui"
 import { keepPreviousData } from "@tanstack/react-query"
-import { RowSelectionState, createColumnHelper } from "@tanstack/react-table"
+import { RowSelectionState } from "@tanstack/react-table"
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
-import { ActionMenu } from "../../../../../components/common/action-menu"
 import { _DataTable } from "../../../../../components/table/data-table"
-import { useUpdateProductCategoryProducts } from "../../../../../hooks/api/categories"
 import { useProducts } from "../../../../../hooks/api/products"
 import { useProductTableColumns } from "../../../../../hooks/table/columns/use-product-table-columns"
-import { useProductTableFilters } from "../../../../../hooks/table/filters/use-product-table-filters"
 import { useProductTableQuery } from "../../../../../hooks/table/query/use-product-table-query"
 import { useDataTable } from "../../../../../hooks/use-data-table"
 
@@ -32,7 +21,6 @@ export const CategoryProductSection = ({
   category,
 }: CategoryProductSectionProps) => {
   const { t } = useTranslation()
-  const prompt = usePrompt()
 
   const [selection, setSelection] = useState<RowSelectionState>({})
 
@@ -54,10 +42,14 @@ export const CategoryProductSection = ({
   )
 
   const columns = useColumns()
-  const filters = useProductTableFilters(["categories"])
 
   const { table } = useDataTable({
-    data: products || [],
+    data: Array.isArray(products)
+      ? products.map((p) => ({
+          ...p,
+          images: p.images ?? null,
+        }))
+      : [],
     columns,
     count,
     getRowId: (original) => original.id,
@@ -70,44 +62,45 @@ export const CategoryProductSection = ({
     },
   })
 
-  const { mutateAsync } = useUpdateProductCategoryProducts(category.id)
+  // Not used, there's a lot of commented code, leaving it commented for future
+  // const { mutateAsync } = useUpdateProductCategoryProducts(category.id)
 
-  const handleRemove = async () => {
-    const selected = Object.keys(selection)
+  // const handleRemove = async () => {
+  //   const selected = Object.keys(selection)
 
-    const res = await prompt({
-      title: t("general.areYouSure"),
-      description: t("categories.products.remove.confirmation", {
-        count: selected.length,
-      }),
-      confirmText: t("actions.remove"),
-      cancelText: t("actions.cancel"),
-    })
+  //   const res = await prompt({
+  //     title: t("general.areYouSure"),
+  //     description: t("categories.products.remove.confirmation", {
+  //       count: selected.length,
+  //     }),
+  //     confirmText: t("actions.remove"),
+  //     cancelText: t("actions.cancel"),
+  //   })
 
-    if (!res) {
-      return
-    }
+  //   if (!res) {
+  //     return
+  //   }
 
-    await mutateAsync(
-      {
-        remove: selected,
-      },
-      {
-        onSuccess: () => {
-          toast.success(
-            t("categories.products.remove.successToast", {
-              count: selected.length,
-            })
-          )
+  //   await mutateAsync(
+  //     {
+  //       remove: selected,
+  //     },
+  //     {
+  //       onSuccess: () => {
+  //         toast.success(
+  //           t("categories.products.remove.successToast", {
+  //             count: selected.length,
+  //           })
+  //         )
 
-          setSelection({})
-        },
-        onError: (error) => {
-          toast.error(error.message)
-        },
-      }
-    )
-  }
+  //         setSelection({})
+  //       },
+  //       onError: (error) => {
+  //         toast.error(error.message)
+  //       },
+  //     }
+  //   )
+  // }
 
   if (isError) {
     throw error
@@ -174,7 +167,7 @@ export const CategoryProductSection = ({
   )
 }
 
-const columnHelper = createColumnHelper<HttpTypes.AdminProduct>()
+// const columnHelper = createColumnHelper<HttpTypes.AdminProduct>()
 
 const useColumns = () => {
   const base = useProductTableColumns()

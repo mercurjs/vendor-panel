@@ -14,7 +14,7 @@ import {
   ListCheckbox,
   ChatBubbleLeftRight,
 } from "@medusajs/icons"
-import { Avatar, Divider, Text, clx } from "@medusajs/ui"
+import { Divider, Text, clx } from "@medusajs/ui"
 import { Collapsible as RadixCollapsible } from "radix-ui"
 import { useTranslation } from "react-i18next"
 

@@ -1,5 +1,5 @@
 import { toast } from "@medusajs/ui"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 
@@ -8,6 +8,7 @@ import { useOrder, useOrderPreview } from "../../../hooks/api/orders"
 import { DEFAULT_FIELDS } from "../order-detail/constants"
 import { OrderEditCreateForm } from "./components/order-edit-create-form"
 import { useCreateOrderEdit } from "../../../hooks/api/order-edits"
+import { FetchError } from "@medusajs/js-sdk"
 
 let IS_REQUEST_RUNNING = false
 
@@ -41,11 +42,11 @@ export const OrderEditCreate = () => {
       IS_REQUEST_RUNNING = true
 
       try {
-        const { order } = await createOrderEdit({
+        await createOrderEdit({
           order_id: preview.id,
         })
       } catch (e) {
-        toast.error(e.message)
+        toast.error(e instanceof FetchError ? e.message : "An error occurred")
         navigate(`/orders/${preview.id}`, { replace: true })
       } finally {
         IS_REQUEST_RUNNING = false

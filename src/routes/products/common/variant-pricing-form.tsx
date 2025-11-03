@@ -112,7 +112,6 @@ const useVariantPriceGridColumns = ({
         ProductCreateSchemaType
       >({
         currencies: currencies.map((c) => c.currency_code),
-        regions,
         pricePreferences,
         isReadyOnly: (context) => (context.row.original as any).isProductInfo,
         getFieldName: (context, value) => {

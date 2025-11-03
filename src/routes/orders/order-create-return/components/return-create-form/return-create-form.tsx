@@ -51,6 +51,7 @@ import { ReturnShippingPlaceholder } from "../../../common/placeholders"
 import { AddReturnItemsTable } from "../add-return-items-table"
 import { ReturnItem } from "./return-item"
 import { ReturnCreateSchema, ReturnCreateSchemaType } from "./schema"
+import { FetchError } from "@medusajs/js-sdk"
 
 type ReturnCreateFormProps = {
   order: AdminOrder
@@ -271,8 +272,7 @@ export const ReturnCreateForm = ({
       handleSuccess()
     } catch (e) {
       toast.error(t("general.error"), {
-        description: e.message,
-        dismissLabel: t("actions.close"),
+        description: e instanceof FetchError ? e.message : "An unknown error occurred",
       })
     }
   })
@@ -351,7 +351,7 @@ export const ReturnCreateForm = ({
           items.map(async (_i) => {
             const item = itemsMap.get(_i.item_id)
 
-            if (!item.variant_id) {
+            if (!item || !item.variant_id) {
               return undefined
             }
             return await sdk.admin.product.retrieveVariant(

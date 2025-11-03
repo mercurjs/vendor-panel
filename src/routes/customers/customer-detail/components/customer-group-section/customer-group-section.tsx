@@ -47,7 +47,6 @@ export const CustomerGroupSection = ({
 
   const {
     customer_groups: customerGroups,
-    count,
     isLoading,
     isError,
     error,

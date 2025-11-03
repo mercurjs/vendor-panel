@@ -4,7 +4,6 @@ import { TFunction } from "i18next"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import {
-  useApiKeys,
   useCampaigns,
   useCollections,
   useCustomerGroups,
@@ -21,11 +20,8 @@ import {
   useSalesChannels,
   useShippingProfiles,
   useStockLocations,
-  useTaxRegions,
   useUsers,
-  useVariants,
 } from "../../hooks/api"
-import { useReturnReasons } from "../../hooks/api/return-reasons"
 import { Shortcut, ShortcutType } from "../../providers/keybind-provider"
 import { useGlobalShortcuts } from "../../providers/keybind-provider/hooks"
 import { DynamicSearchResult, SearchArea } from "./types"

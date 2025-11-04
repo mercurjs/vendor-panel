@@ -15,14 +15,17 @@ import {
   useRouteModal,
 } from "../../../../../components/modals"
 import { _DataTable } from "../../../../../components/table/data-table"
+import {
+  TextCell,
+  TextHeader,
+} from "../../../../../components/table/table-cells/common/text-cell"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useBatchCustomerCustomerGroups } from "../../../../../hooks/api"
 import { useCustomerGroups } from "../../../../../hooks/api/customer-groups"
-import { useCustomerGroupTableColumns } from "../../../../../hooks/table/columns/use-customer-group-table-columns"
 import { useCustomerGroupTableFilters } from "../../../../../hooks/table/filters/use-customer-group-table-filters"
 import { useCustomerGroupTableQuery } from "../../../../../hooks/table/query/use-customer-group-table-query"
 import { useDataTable } from "../../../../../hooks/use-data-table"
-import { CustomerGroupData } from "../../../../orders/common/customerGroupFiltering"
+import { HttpTypes } from "@medusajs/types"
 
 type AddCustomerGroupsFormProps = {
   customerId: string
@@ -96,15 +99,20 @@ export const AddCustomerGroupsForm = ({
 
   const columns = useColumns()
 
+
+  const flatCustomerGroups = customer_groups?.map((cg) => ({
+    ...cg.customer_group
+  }))
+
   const { table } = useDataTable({
-    data: customer_groups ?? [],
+    data: flatCustomerGroups ?? [],
     columns,
     count,
     enablePagination: true,
     enableRowSelection: (row) => {
-      return !row.original.customer_group.customers?.map((c) => c.id).includes(customerId)
+      return !row.original.customers?.some((c) => c.id === customerId)
     },
-    getRowId: (row) => row.customer_group_id,
+    getRowId: (row) => row.id,
     pageSize: PAGE_SIZE,
     rowSelection: {
       state: rowSelection,
@@ -157,9 +165,9 @@ export const AddCustomerGroupsForm = ({
             count={count}
             filters={filters}
             orderBy={[
-              { key: "customer_group.name", label: t("fields.name") },
-              { key: "customer_group.created_at", label: t("fields.createdAt") },
-              { key: "customer_group.updated_at", label: t("fields.updatedAt") },
+              { key: "name", label: t("fields.name") },
+              { key: "created_at", label: t("fields.createdAt") },
+              { key: "updated_at", label: t("fields.updatedAt") },
             ]}
             isLoading={isLoading}
             layout="fill"
@@ -190,11 +198,10 @@ export const AddCustomerGroupsForm = ({
   )
 }
 
-const columnHelper = createColumnHelper<CustomerGroupData>()
+const columnHelper = createColumnHelper<HttpTypes.AdminCustomerGroup>()
 
 const useColumns = () => {
   const { t } = useTranslation()
-  const base = useCustomerGroupTableColumns()
 
   const columns = useMemo(
     () => [
@@ -243,9 +250,14 @@ const useColumns = () => {
           return Component
         },
       }),
-      ...base,
+      columnHelper.accessor("name", {
+        header: () => <TextHeader text={t("fields.name")} />,
+        cell: ({ row }) => {
+          return <TextCell text={row.original?.name || "-"} />
+        },
+      }),
     ],
-    [t, base]
+    [t]
   )
 
   return columns

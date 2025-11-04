@@ -76,7 +76,7 @@ export type ExtendedAdminOrder = Omit<HttpTypes.AdminOrder, "items" | "fulfillme
 
 export interface ExtendedAdminOrderFulfillment
   extends HttpTypes.AdminOrderFulfillment {
-  items?: AdminOrderLineItem & { line_item_id: string }[]
+  items?: (AdminOrderLineItem & { line_item_id: string })[]
   labels?: {
     id: string
     tracking_number: string

@@ -18,7 +18,7 @@ import { queryClient } from "../../../../../lib/query-client"
 import { AllocateItemsSchema } from "./constants"
 import { OrderAllocateItemsItem } from "./order-allocate-items-item"
 import { FetchError } from "@medusajs/js-sdk"
-import { ExtendedAdminOrder, ExtendedAdminOrderLineItemWithInventory } from "../../../../../types/order"
+import { ExtendedAdminOrder, ExtendedAdminOrderLineItemWithInventory, ExtendedAdminProductVariantInventory } from "../../../../../types/order"
 
 type OrderAllocateItemsFormProps = {
   order: ExtendedAdminOrder
@@ -39,11 +39,8 @@ export function OrderAllocateItemsForm({ order }: OrderAllocateItemsFormProps) {
       order.items.filter(
         (item) =>
           item.variant?.manage_inventory &&
-          item.variant?.inventory &&
-          item.variant.inventory.length > 0 &&
-          item.quantity &&
-          item.detail &&
-          item.quantity - item.detail.fulfilled_quantity > 0
+          !!item.variant.inventory?.length &&
+          item?.quantity - item.detail?.fulfilled_quantity > 0
       ),
     [order.items]
   )
@@ -115,7 +112,7 @@ export function OrderAllocateItemsForm({ order }: OrderAllocateItemsFormProps) {
   })
 
   const onQuantityChange = (
-    inventoryItem: { id: string; location_levels?: { location_id: string; available_quantity: number }[] },
+    inventoryItem: ExtendedAdminProductVariantInventory,
     lineItem: ExtendedAdminOrderLineItemWithInventory,
     hasInventoryKit: boolean,
     value: number | null,

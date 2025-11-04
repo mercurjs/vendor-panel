@@ -9,7 +9,6 @@ import {
 import {
   AdminOrder,
   AdminOrderLineItem,
-  AdminRegion,
   AdminReservation,
   PaymentStatus,
 } from "@medusajs/types"
@@ -426,7 +425,7 @@ const Cost = ({
 const CostBreakdown = ({
   order,
 }: {
-  order: ExtendedAdminOrder & { region?: AdminRegion | null }
+  order: ExtendedAdminOrder
 }) => {
   const { t } = useTranslation()
   const [isTaxOpen, setIsTaxOpen] = useState(false)

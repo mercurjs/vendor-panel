@@ -13,21 +13,20 @@ import { Thumbnail } from "../../../../../components/common/thumbnail"
 import { getFulfillableQuantity } from "../../../../../lib/order-item"
 import { Form } from "../../../../../components/common/form"
 import { AllocateItemsSchema } from "./constants"
-import { ExtendedAdminOrderLineItemWithInventory } from "../../../../../types/order"
+import { ExtendedAdminOrderLineItemWithInventory, ExtendedAdminProductVariantInventory } from "../../../../../types/order"
 
 type OrderEditItemProps = {
   item: ExtendedAdminOrderLineItemWithInventory
   locationId?: string
   form: UseFormReturn<zod.infer<typeof AllocateItemsSchema>>
   onQuantityChange: (
-    inventoryItem: { id: string; location_levels?: { location_id: string; available_quantity: number }[] },
+    inventoryItem: ExtendedAdminProductVariantInventory,
     lineItem: ExtendedAdminOrderLineItemWithInventory,
     hasInventoryKit: boolean,
     value: number | null,
     isRoot?: boolean
   ) => void
 }
-
 export function OrderAllocateItemsItem({
   item,
   form,
@@ -35,7 +34,6 @@ export function OrderAllocateItemsItem({
   onQuantityChange,
 }: OrderEditItemProps) {
   const { t } = useTranslation()
-
   const variant = item.variant
   const inventory = item.variant?.inventory || []
 
@@ -81,7 +79,7 @@ export function OrderAllocateItemsItem({
     getFulfillableQuantity(item) ?? 0,
     availableQuantity || Number.MAX_SAFE_INTEGER
   )
-
+  
   return (
     <div className="bg-ui-bg-subtle shadow-elevation-card-rest my-2 min-w-[720px] divide-y divide-dashed rounded-xl">
       <div className="flex items-center gap-x-3 p-3 text-sm">

@@ -1,4 +1,4 @@
-import { HttpTypes } from "@medusajs/types"
+import { AdminOrderLineItem, AdminRegion, HttpTypes } from "@medusajs/types"
 
 export type OrderPaymentStatus =
   | "pending"
@@ -71,28 +71,13 @@ export type ExtendedAdminOrder = Omit<HttpTypes.AdminOrder, "items" | "fulfillme
     captured_amount: number
     refunded_amount: number
   } | null
+  region?: HttpTypes.AdminRegion
 }
 
 export interface ExtendedAdminOrderFulfillment
   extends HttpTypes.AdminOrderFulfillment {
-  items?: Array<{
-    id: string
-    title: string
-    sku: string
-    barcode: string
-    line_item_id: string
-    inventory_item_id: string
-    fulfillment_id: string
-    raw_quantity: {
-      value: string
-      precision: number
-    }
-    created_at: string
-    updated_at: string
-    deleted_at: string | null
-    quantity: number
-  }>
-  labels?: Array<{
+  items?: AdminOrderLineItem & { line_item_id: string }[]
+  labels?: {
     id: string
     tracking_number: string
     tracking_url: string
@@ -101,7 +86,7 @@ export interface ExtendedAdminOrderFulfillment
     created_at: string
     updated_at: string
     deleted_at: string | null
-  }>
+  }[]
   shipping_option?: {
     id: string
     name?: string
@@ -133,22 +118,13 @@ export type ExtendedAdminProductVariant = Omit<
   HttpTypes.AdminProductVariant,
   "inventory_items"
 > & {
-  inventory?: Array<{
-    id: string
-    title?: string | null
-    sku?: string | null
-    location_levels?: Array<{
-      location_id: string
-      available_quantity: number
-      stocked_quantity: number
-    }>
-  }>
-  inventory_items?: Array<{
+  inventory?: ExtendedAdminProductVariantInventory[]
+  inventory_items?: {
     id: string
     required_quantity: number
     inventory_item_id: string
     variant_id: string
-  }>
+  }[]
 }
 
 export type ExtendedAdminOrderLineItemWithInventory = Omit<
@@ -156,4 +132,15 @@ export type ExtendedAdminOrderLineItemWithInventory = Omit<
   "variant"
 > & {
   variant?: ExtendedAdminProductVariant
+}
+
+export type ExtendedAdminProductVariantInventory = {
+  id: string
+  title?: string | null
+  sku?: string | null
+  location_levels?: {
+    location_id: string
+    available_quantity: number
+    stocked_quantity: number
+  }[]
 }

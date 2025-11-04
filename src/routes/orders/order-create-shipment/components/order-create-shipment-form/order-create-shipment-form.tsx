@@ -12,7 +12,10 @@ import {
 } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useCreateOrderShipment } from "../../../../../hooks/api"
-import { ExtendedAdminOrder, ExtendedAdminOrderFulfillment } from "../../../../../types/order"
+import {
+  ExtendedAdminOrder,
+  ExtendedAdminOrderFulfillment,
+} from "../../../../../types/order"
 import { CreateShipmentSchema } from "./constants"
 
 type OrderCreateFulfillmentFormProps = {
@@ -43,16 +46,17 @@ export function OrderCreateShipmentForm({
   const handleSubmit = form.handleSubmit(async (data) => {
     await createShipment(
       {
-        items: fulfillment?.items?.map((i) => ({
-          id: i.line_item_id ?? "",
-          quantity: i.quantity,
-        })).filter((item) => item.id !== "") ?? [],
+        items:
+          fulfillment?.items
+            ?.map((i) => ({ id: i?.line_item_id, quantity: i.quantity }))
+            .filter((item) => !!item.id) ?? [],
         labels: data.labels
           .filter((l) => !!l.tracking_number)
           .map((l) => ({
             tracking_number: l.tracking_number,
             tracking_url: "#",
-            label_url: "#",
+            label_url: "#"
+            ,
           })),
       },
       {

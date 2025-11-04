@@ -1,7 +1,5 @@
 import { XCircle } from "@medusajs/icons"
-import {
-  AdminOrderLineItem,
-} from "@medusajs/types"
+import { AdminOrderLineItem } from "@medusajs/types"
 import {
   Button,
   Container,
@@ -27,7 +25,10 @@ import { useStockLocation } from "../../../../../hooks/api/stock-locations"
 import { formatProvider } from "../../../../../lib/format-provider"
 import { getLocaleAmount } from "../../../../../lib/money-amount-helpers"
 import { FulfillmentSetType } from "../../../../locations/common/constants"
-import { ExtendedAdminOrder, ExtendedAdminOrderFulfillment } from "../../../../../types/order"
+import {
+  ExtendedAdminOrder,
+  ExtendedAdminOrderFulfillment,
+} from "../../../../../types/order"
 
 type OrderFulfillmentSectionProps = {
   order: ExtendedAdminOrder
@@ -78,7 +79,7 @@ const UnfulfilledItem = ({
             </div>
           )}
           <Text size="small">
-          {item.variant?.options?.map((o) => o.value).join(" · ")}
+            {item.variant?.options?.map((o) => o.value).join(" · ")}
           </Text>
         </div>
       </div>
@@ -109,11 +110,19 @@ const UnfulfilledItem = ({
 const UnfulfilledItemBreakdown = ({ order }: { order: ExtendedAdminOrder }) => {
   // Create an array of order items that haven't been fulfilled or at least not fully fulfilled
   const unfulfilledItemsWithShipping = order.items!.filter(
-    (i) => i.requires_shipping && i.detail && i.quantity && i.detail.fulfilled_quantity < i.quantity
+    (i) =>
+      i.requires_shipping &&
+      i.detail &&
+      i.quantity &&
+      i.detail.fulfilled_quantity < i.quantity
   )
 
   const unfulfilledItemsWithoutShipping = order.items!.filter(
-    (i) => !i.requires_shipping && i.detail && i.quantity && i.detail.fulfilled_quantity < i.quantity
+    (i) =>
+      !i.requires_shipping &&
+      i.detail &&
+      i.quantity &&
+      i.detail.fulfilled_quantity < i.quantity
   )
 
   return (
@@ -396,7 +405,7 @@ const Fulfillment = ({
             <ul>
               {fulfillment.labels.map((tlink) => {
                 const hasUrl =
-                  tlink.tracking_url && tlink.tracking_url.length > 0 && tlink.tracking_url !== "#"
+                  !!tlink.tracking_url?.length && tlink.tracking_url !== "#"
 
                 if (hasUrl) {
                   return (

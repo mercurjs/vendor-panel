@@ -1,3 +1,4 @@
+
 import { PencilSquare, Trash } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 
@@ -24,7 +25,7 @@ export const PriceListListTableActions = ({
           actions: [
             {
               label: t("actions.edit"),
-              to: `${priceList.price_list_id}/edit`,
+              to: `${priceList.id}/edit`,
               icon: <PencilSquare />,
             },
           ],

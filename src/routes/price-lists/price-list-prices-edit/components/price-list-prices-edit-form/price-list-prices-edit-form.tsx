@@ -19,9 +19,10 @@ import {
   PriceListUpdateProductsSchema,
 } from "../../../common/schemas"
 import { isProductRow } from "../../../common/utils"
+import { ExtendedPriceList } from "../../../../../types/price-list"
 
 type PriceListPricesEditFormProps = {
-  priceList: HttpTypes.AdminPriceList
+  priceList: ExtendedPriceList
   products: HttpTypes.AdminProduct[]
   regions: HttpTypes.AdminRegion[]
   currencies: HttpTypes.AdminStoreCurrency[]
@@ -122,7 +123,7 @@ export const PriceListPricesEditForm = ({
 }
 
 function initRecord(
-  priceList: HttpTypes.AdminPriceList,
+  priceList: ExtendedPriceList,
   products: HttpTypes.AdminProduct[]
 ): PriceListUpdateProductsSchema {
   const record: PriceListUpdateProductsSchema = {}
@@ -130,14 +131,12 @@ function initRecord(
   const variantPrices = priceList.prices?.reduce((variants, price) => {
     const variantObject = variants[price.price_set.variant.id] || {}
 
-    const isRegionPrice = !!price.price_rules.find(
-      (item) => item.attribute === "region_id"
+    const regionPrice = price.price_rules.find(
+      (item: { attribute: string }) => item.attribute === "region_id"
     )
 
-    if (isRegionPrice) {
-      const regionId = price.price_rules.find(
-        (item) => item.attribute === "region_id"
-      ).value as string
+    if (!!regionPrice) {
+      const regionId = regionPrice.value
 
       variantObject.region_prices = {
         ...variantObject.region_prices,

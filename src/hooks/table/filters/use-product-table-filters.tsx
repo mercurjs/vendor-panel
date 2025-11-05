@@ -8,6 +8,7 @@ const excludeableFields = [
   "categories",
   "product_types",
   "product_tags",
+  "sales_channel_id",
 ] as const
 
 export const useProductTableFilters = (

@@ -49,15 +49,18 @@ export const PromotionDetail = () => {
     >
       <TwoColumnPage.Main>
         <PromotionGeneralSection promotion={promotion} />
-        <PromotionConditionsSection rules={rules || []} ruleType={"rules"} />
+        <PromotionConditionsSection 
+          rules={rules || []} 
+          ruleType="rules" 
+        />
         <PromotionConditionsSection
           rules={targetRules || []}
-          ruleType={"target_rules"}
+          ruleType="target-rules"
         />
         {promotion.type === "buyget" && (
           <PromotionConditionsSection
             rules={buyRules || []}
-            ruleType={"buy_rules"}
+            ruleType="buy-rules"
           />
         )}
       </TwoColumnPage.Main>

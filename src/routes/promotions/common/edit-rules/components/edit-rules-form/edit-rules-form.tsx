@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { PromotionDTO, PromotionRuleDTO } from "@medusajs/types"
+import { HttpTypes, PromotionRuleDTO } from "@medusajs/types"
 import { Button } from "@medusajs/ui"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
@@ -11,7 +11,7 @@ import { RulesFormField } from "../rules-form-field"
 import { EditRules, EditRulesType } from "./form-schema"
 
 type EditPromotionFormProps = {
-  promotion: PromotionDTO
+  promotion: HttpTypes.AdminPromotion
   rules: PromotionRuleDTO[]
   ruleType: RuleTypeValues
   handleSubmit: any

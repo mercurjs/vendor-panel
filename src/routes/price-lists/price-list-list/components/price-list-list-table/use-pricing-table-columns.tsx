@@ -1,4 +1,3 @@
-import { HttpTypes } from "@medusajs/types"
 import { createColumnHelper } from "@tanstack/react-table"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
@@ -10,8 +9,9 @@ import {
 } from "../../../../../components/table/table-cells/common/text-cell"
 import { getPriceListStatus } from "../../../common/utils"
 import { PriceListListTableActions } from "./price-list-list-table-actions"
+import { ExtendedPriceList } from "../../../../../types/price-list"
 
-const columnHelper = createColumnHelper<HttpTypes.AdminPriceList>()
+const columnHelper = createColumnHelper<ExtendedPriceList>()
 
 export const usePricingTableColumns = () => {
   const { t } = useTranslation()
@@ -21,7 +21,7 @@ export const usePricingTableColumns = () => {
       columnHelper.accessor("title", {
         header: () => <TextHeader text={t("fields.title")} />,
         cell: ({ row }) => {
-          return row.original?.price_list?.title || "-"
+          return row.original?.title || "-"
         },
       }),
       columnHelper.accessor("status", {
@@ -35,7 +35,7 @@ export const usePricingTableColumns = () => {
       columnHelper.accessor("prices", {
         header: t("priceLists.fields.priceOverrides.header"),
         cell: ({ row }) => {
-          const prices = row.original?.price_list?.prices?.length || "-"
+          const prices = row.original?.prices?.length || "-"
           return <TextCell text={prices} />
         },
       }),

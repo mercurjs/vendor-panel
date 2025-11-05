@@ -401,10 +401,9 @@ interface OperatorInputProps {
   currency: CurrencyInfo
   placeholder: string
   label: string
-  field: ControllerRenderProps<
-    CondtionalPriceRuleSchemaType,
-    `prices.${number}.lte` | `prices.${number}.gte`
-  >
+  field:
+    | ControllerRenderProps<CondtionalPriceRuleSchemaType, `prices.${number}.gte`>
+    | ControllerRenderProps<CondtionalPriceRuleSchemaType, `prices.${number}.lte`>
 }
 
 const OperatorInput = ({

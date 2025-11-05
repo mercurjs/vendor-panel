@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { HttpTypes } from "@medusajs/types"
+import { VendorExtendedAdminServiceZone } from "../../../../../types/stock-location"
 import { Button, ProgressStatus, ProgressTabs, toast } from "@medusajs/ui"
 import { useForm, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -30,7 +30,7 @@ enum Tab {
 }
 
 type CreateShippingOptionFormProps = {
-  zone: HttpTypes.AdminServiceZone
+  zone: VendorExtendedAdminServiceZone
   locationId: string
   isReturn?: boolean
   type: FulfillmentSetType
@@ -278,9 +278,6 @@ export function CreateShippingOptionsForm({
                 zone={zone}
                 isReturn={isReturn}
                 type={type}
-                locationId={locationId}
-                fulfillmentProviderOptions={fulfillmentProviderOptions || []}
-                selectedProviderId={selectedProviderId}
               />
             </ProgressTabs.Content>
             <ProgressTabs.Content value={Tab.PRICING} className="size-full">

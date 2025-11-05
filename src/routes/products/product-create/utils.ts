@@ -60,8 +60,8 @@ export const normalizeVariants = (
     manage_inventory: !!variant.manage_inventory,
     allow_backorder: !!variant.allow_backorder,
     variant_rank: variant.variant_rank,
-    inventory_items: variant
-      .inventory!.map((i) => {
+    inventory_items: (variant.inventory || [])
+      .map((i) => {
         const quantity = i.required_quantity
           ? castNumber(i.required_quantity)
           : null
@@ -82,7 +82,7 @@ export const normalizeVariants = (
           item !== false
       ),
     prices: Object.entries(variant.prices || {})
-      .map(([key, value]: any) => {
+      .map(([key, value]) => {
         if (value === "" || value === undefined) {
           return undefined
         }
@@ -92,15 +92,15 @@ export const normalizeVariants = (
             currency_code: regionsCurrencyMap[key],
             amount: castNumber(value),
             rules: { region_id: key },
-          }
+          } as HttpTypes.AdminCreateProductVariantPrice
         } else {
           return {
             currency_code: key,
             amount: castNumber(value),
-          }
+          } as HttpTypes.AdminCreateProductVariantPrice
         }
       })
-      .filter((v) => !!v),
+      .filter((v) => v !== undefined),
   }))
 }
 

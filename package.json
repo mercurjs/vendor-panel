@@ -12,7 +12,8 @@
     "i18n:validate": "node ./scripts/i18n/validate-translation.js",
     "i18n:schema": "node ./scripts/i18n/generate-schema.js",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit"
   },
   "main": "dist/app.js",
   "module": "dist/app.mjs",
@@ -84,6 +85,7 @@
     "@medusajs/admin-vite-plugin": "^2.5.0",
     "@medusajs/types": "^2.5.0",
     "@medusajs/ui-preset": "^2.5.0",
+    "@types/lodash": "^4.17.20",
     "@types/node": "^20.11.15",
     "@types/react": "^18.2.79",
     "@types/react-dom": "^18.2.25",

@@ -1,10 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button, Input } from "@medusajs/ui"
+import { HttpTypes } from "@medusajs/types"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod"
 
-import { HttpTypes } from "@medusajs/types"
 import { Form } from "../../../../../components/common/form"
 import { ChipInput } from "../../../../../components/inputs/chip-input"
 import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
@@ -35,22 +35,16 @@ export const CreateProductOptionForm = ({
   })
 
   const { mutateAsync, isPending } = useUpdateProductOption(
-    option.product_id,
+    option.product_id!,
     option.id
   )
 
   const handleSubmit = form.handleSubmit(async (values) => {
-    mutateAsync(
-      {
-        id: option.id,
-        ...values,
+    mutateAsync(values, {
+      onSuccess: () => {
+        handleSuccess()
       },
-      {
-        onSuccess: () => {
-          handleSuccess()
-        },
-      }
-    )
+    })
   })
 
   return (

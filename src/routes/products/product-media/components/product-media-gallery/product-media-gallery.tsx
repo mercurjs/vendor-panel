@@ -6,16 +6,17 @@ import {
   TriangleRightMini,
 } from "@medusajs/icons"
 import { Button, IconButton, Text, Tooltip, clx, usePrompt } from "@medusajs/ui"
+import { HttpTypes } from "@medusajs/types"
 import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, useLocation } from "react-router-dom"
 
-import { HttpTypes } from "@medusajs/types"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 import { RouteFocusModal } from "../../../../../components/modals"
 import { useUpdateProduct } from "../../../../../hooks/api/products"
 
 type ProductMediaGalleryProps = {
-  product: HttpTypes.AdminProduct
+  product: ExtendedAdminProduct
 }
 
 export const ProductMediaGallery = ({ product }: ProductMediaGalleryProps) => {

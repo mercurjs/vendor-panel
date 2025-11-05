@@ -1,5 +1,6 @@
-import { HttpTypes } from "@medusajs/types"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 import { Button, toast } from "@medusajs/ui"
+import { HttpTypes } from "@medusajs/types"
 import { useTranslation } from "react-i18next"
 import * as zod from "zod"
 
@@ -15,7 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect } from "react"
 
 type ProductShippingProfileFormProps = {
-  product: HttpTypes.AdminProduct & {
+  product: ExtendedAdminProduct & {
     shipping_profile?: HttpTypes.AdminShippingProfile
   }
 }

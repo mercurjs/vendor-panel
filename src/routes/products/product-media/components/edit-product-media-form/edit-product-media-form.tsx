@@ -22,6 +22,7 @@ import { CSS } from "@dnd-kit/utilities"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ThumbnailBadge } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 import { Button, Checkbox, clx, CommandBar, toast, Tooltip } from "@medusajs/ui"
 import { Fragment, useCallback, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
@@ -44,7 +45,7 @@ import {
 import { EditProductMediaSchemaType } from "../../../product-create/types"
 
 type ProductMediaViewProps = {
-  product: HttpTypes.AdminProduct
+  product: ExtendedAdminProduct
 }
 
 type Media = z.infer<typeof MediaSchema>

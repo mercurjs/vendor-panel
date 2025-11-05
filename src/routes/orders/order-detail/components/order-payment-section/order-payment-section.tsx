@@ -1,16 +1,17 @@
-import { AdminOrder, HttpTypes } from "@medusajs/types"
+import { HttpTypes } from "@medusajs/types"
 import { Container, Heading, StatusBadge, Text } from "@medusajs/ui"
 
 import { useTranslation } from "react-i18next"
 
 import { getStylizedAmount } from "../../../../../lib/money-amount-helpers"
 import { getOrderPaymentStatus } from "../../../../../lib/order-helpers"
+import { ExtendedAdminOrder } from "../../../../../types/order"
 
 type OrderPaymentSectionProps = {
-  order: HttpTypes.AdminOrder
+  order: ExtendedAdminOrder
 }
 
-export const getPaymentsFromOrder = (order: HttpTypes.AdminOrder) => {
+export const getPaymentsFromOrder = (order: HttpTypes.AdminOrder | ExtendedAdminOrder) => {
   return order.payment_collections
     ?.map((collection: HttpTypes.AdminPaymentCollection) => collection.payments)
     .flat(1)
@@ -26,7 +27,7 @@ export const OrderPaymentSection = ({ order }: OrderPaymentSectionProps) => {
   )
 }
 
-const Header = ({ order }: { order: any }) => {
+const Header = ({ order }: { order: ExtendedAdminOrder }) => {
   const { t } = useTranslation()
   const { label, color } = getOrderPaymentStatus(t, order.payment_status)
 
@@ -41,8 +42,13 @@ const Header = ({ order }: { order: any }) => {
   )
 }
 
-const Total = ({ order }: { order: AdminOrder }) => {
+const Total = ({ order }: { order: ExtendedAdminOrder }) => {
   const { t } = useTranslation()
+  
+  if (!order.split_order_payment) {
+    return null
+  }
+  
   const totalPending =
     order.split_order_payment.authorized_amount -
     order.split_order_payment.captured_amount

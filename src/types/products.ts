@@ -3,7 +3,7 @@ import { HttpTypes } from "@medusajs/types"
 export type ExtendedAdminProduct = Omit<HttpTypes.AdminProduct, 'variants'> & {
   thumbnail: string
   images: Array<HttpTypes.AdminProductImage & { url: string }>
-  attribute_values?: Array<{
+  attribute_values?: {
     id: string
     value: string
     rank: number
@@ -25,7 +25,7 @@ export type ExtendedAdminProduct = Omit<HttpTypes.AdminProduct, 'variants'> & {
     created_at: string
     updated_at: string
     deleted_at: string | null
-  }>
+  }[]
   variants?: ExtendedAdminProductVariant[]
   shipping_profile: HttpTypes.AdminShippingProfile
 }

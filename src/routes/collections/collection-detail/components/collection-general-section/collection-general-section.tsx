@@ -1,8 +1,6 @@
-import { PencilSquare } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import { Container, Heading, Text } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
-import { ActionMenu } from "../../../../../components/common/action-menu"
 
 type CollectionGeneralSectionProps = {
   collection: HttpTypes.AdminCollection
@@ -17,20 +15,6 @@ export const CollectionGeneralSection = ({
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
         <Heading>{collection.title}</Heading>
-        <ActionMenu
-          groups={[
-            {
-              actions: [
-                {
-                  icon: <PencilSquare />,
-                  label: t("actions.edit"),
-                  to: `/collections/${collection.id}/edit`,
-                  disabled: !collection.id,
-                },
-              ],
-            },
-          ]}
-        />
       </div>
       <div className="text-ui-fg-subtle grid grid-cols-2 items-center px-6 py-4">
         <Text size="small" leading="compact" weight="plus">

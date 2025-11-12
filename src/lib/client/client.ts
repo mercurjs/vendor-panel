@@ -66,12 +66,10 @@ export const fetchQuery = async (
 ) => {
   const bearer = (await window.localStorage.getItem("medusa_auth_token")) || ""
   const params = Object.entries(query || {}).reduce(
-    (acc, [key, value], index) => {
+    (acc, [key, value]) => {
       if (value && value !== undefined) {
-        const queryLength = Object.values(query || {}).filter(
-          (i) => i && i !== undefined
-        ).length
-        acc += `${key}=${value}${index + 1 <= queryLength ? "&" : ""}`
+        const separator = acc ? "&" : ""
+        acc += `${separator}${key}=${value}`
       }
       return acc
     },

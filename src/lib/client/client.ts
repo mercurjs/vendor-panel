@@ -67,7 +67,7 @@ export const fetchQuery = async (
   const bearer = (await window.localStorage.getItem("medusa_auth_token")) || ""
   const params = Object.entries(query || {}).reduce(
     (acc, [key, value]) => {
-      if (value !== null && value !== undefined) {
+      if (value !== null && value !== undefined && value !== "") {
         const separator = acc ? "&" : ""
         acc += `${separator}${encodeURIComponent(key)}=${encodeURIComponent(value)}`
       }

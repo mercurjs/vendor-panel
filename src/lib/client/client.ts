@@ -69,7 +69,7 @@ export const fetchQuery = async (
     (acc, [key, value]) => {
       if (value !== null && value !== undefined) {
         const separator = acc ? "&" : ""
-        acc += `${separator}${key}=${value}`
+        acc += `${separator}${encodeURIComponent(key)}=${encodeURIComponent(value)}`
       }
       return acc
     },

@@ -52,12 +52,9 @@ export const EditRulesWrapper = ({
       const disguisedRulesToRemove =
         rulesToRemove?.filter((r) => r.disguised) || []
 
-      // For all the rules that were disguised, convert them to actual values in the
-      // database, they are currently all under application_method. If more of these are coming
-      // up, abstract this away.
       for (const rule of disguisedRules) {
         const ruleValue = getRuleValue(rule)
-        applicationMethodData[rule.attribute!] = Array.isArray(ruleValue) 
+        applicationMethodData[rule.attribute!] = Array.isArray(ruleValue)
           ? ruleValue[0]?.value || null
           : ruleValue
       }
@@ -67,10 +64,10 @@ export const EditRulesWrapper = ({
       }
 
       const rulesData = allRules.filter((rule) => !rule.disguised)
-      
+
       const rulesToCreate: CreatePromotionRuleDTO[] = []
       const rulesToUpdate: ExtendedPromotionRule[] = []
-      
+
       for (const rule of rulesData) {
         if ("id" in rule && typeof rule.id === "string") {
           rulesToUpdate.push(rule)
@@ -89,27 +86,50 @@ export const EditRulesWrapper = ({
         } as any)
       }
 
-      if (rulesToCreate.length) {
-        await addPromotionRules({
-          rules: rulesToCreate,
-        })
-      }
+      if (rulesToCreate.length > 0) {
+        const rulesToUpdateIds = rulesToUpdate
+          .map((r) => r.id)
+          .filter(Boolean) as string[]
+        if (rulesToUpdateIds.length > 0) {
+          await removePromotionRules({
+            rules: rulesToUpdateIds,
+          } as any)
+        }
 
-      if (rulesToRemove?.length) {
-        await removePromotionRules({
-          rules: rulesToRemove.map((r) => r.id).filter(Boolean) as string[],
-        } as any)
-      }
+        if (rulesToRemove?.length) {
+          await removePromotionRules({
+            rules: rulesToRemove.map((r) => r.id).filter(Boolean) as string[],
+          } as any)
+        }
 
-      if (rulesToUpdate.length) {
-        await updatePromotionRules({
-          rules: rulesToUpdate.map((rule) => ({
-            id: rule.id,
-            attribute: rule.attribute,
-            operator: rule.operator as PromotionRuleOperatorValues,
+        const allRulesToAdd = [
+          ...rulesToCreate,
+          ...rulesToUpdate.map((rule) => ({
+            attribute: rule.attribute!,
+            operator: rule.operator!,
             values: rule.values as unknown as string | string[],
           })),
+        ]
+        await addPromotionRules({
+          rules: allRulesToAdd,
         })
+      } else {
+        if (rulesToRemove?.length) {
+          await removePromotionRules({
+            rules: rulesToRemove.map((r) => r.id).filter(Boolean) as string[],
+          } as any)
+        }
+
+        if (rulesToUpdate.length) {
+          await updatePromotionRules({
+            rules: rulesToUpdate.map((rule) => ({
+              id: rule.id,
+              attribute: rule.attribute,
+              operator: rule.operator as PromotionRuleOperatorValues,
+              values: rule.values as unknown as string | string[],
+            })),
+          })
+        }
       }
 
       handleSuccess()

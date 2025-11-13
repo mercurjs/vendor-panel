@@ -383,12 +383,13 @@ export const RulesFormField = ({
           variant="secondary"
           className="inline-block"
           onClick={() => {
-            append({
+            const newRule = {
               attribute: "",
               operator: "",
               values: [],
               required: false,
-            } as any)
+            } as any
+            append(newRule)
           }}
         >
           {t("promotions.fields.addCondition")}

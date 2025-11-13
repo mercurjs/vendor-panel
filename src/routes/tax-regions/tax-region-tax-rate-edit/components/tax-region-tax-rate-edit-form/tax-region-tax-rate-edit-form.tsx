@@ -52,7 +52,7 @@ export const TaxRegionTaxRateEditForm = ({
     await mutateAsync(
       {
         name: values.name,
-        code: values.code,
+        code: values.code || taxRate.code,
         rate: values.rate?.float,
         is_combinable: values.is_combinable,
       },

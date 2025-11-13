@@ -5,7 +5,8 @@ import { useFieldArray, useForm, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod"
 
-import { AdminCreateProductVariantPrice, HttpTypes } from "@medusajs/types"
+import { AdminCreateProductVariantPrice } from "@medusajs/types"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 import {
   RouteDrawer,
   RouteFocusModal,
@@ -42,7 +43,7 @@ const initialTabState: TabState = {
 }
 
 type CreateProductVariantFormProps = {
-  product: HttpTypes.AdminProduct
+  product: ExtendedAdminProduct
 }
 
 export const CreateProductVariantForm = ({
@@ -220,21 +221,24 @@ export const CreateProductVariantForm = ({
               return undefined
             }
 
-            const ret: AdminCreateProductVariantPrice = {}
             const amount = castNumber(value)
 
             if (currencyOrRegion.startsWith("reg_")) {
-              ret.rules = { region_id: currencyOrRegion }
-              ret.currency_code = regionsCurrencyMap[currencyOrRegion]
+              return {
+                rules: { region_id: currencyOrRegion },
+                currency_code: regionsCurrencyMap[currencyOrRegion],
+                amount,
+              } as AdminCreateProductVariantPrice
             } else {
-              ret.currency_code = currencyOrRegion
+              return {
+                currency_code: currencyOrRegion,
+                amount,
+              } as AdminCreateProductVariantPrice
             }
-
-            ret.amount = amount
-
-            return ret
           })
-          .filter(Boolean),
+          .filter(
+            (price) => !!price
+          ),
       },
       {
         onSuccess: () => {

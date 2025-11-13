@@ -65,14 +65,17 @@ export const useShippingProfile = (
     ...options,
   })
 
+  const shipping_profile = data?.shipping_profile
+    ? {
+        ...data.shipping_profile,
+        name: data.shipping_profile.name?.includes(":")
+          ? data.shipping_profile.name.split(":")[1]
+          : data.shipping_profile.name,
+      }
+    : undefined
+
   return {
-    ...data,
-    shipping_profile: {
-      ...data?.shipping_profile,
-      name: data?.shipping_profile.name.includes(":")
-        ? data?.shipping_profile.name.split(":")[1]
-        : data?.shipping_profile.name,
-    },
+    shipping_profile,
     ...rest,
   }
 }

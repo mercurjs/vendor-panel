@@ -8,10 +8,10 @@ export const PriceListProductsAdd = () => {
   const { id } = useParams<{ id: string }>()
 
   const { price_list, isPending, isError, error } = usePriceList(id!)
-  const { currencies, regions, pricePreferences, isReady } =
+  const currencyData =
     usePriceListCurrencyData()
 
-  const ready = isReady && !isPending && !!price_list
+  const ready = currencyData.isReady && !isPending && !!price_list
 
   if (isError) {
     throw error
@@ -22,9 +22,7 @@ export const PriceListProductsAdd = () => {
       {ready && (
         <PriceListPricesAddForm
           priceList={price_list}
-          currencies={currencies}
-          regions={regions}
-          pricePreferences={pricePreferences}
+          {...currencyData}
         />
       )}
     </RouteFocusModal>

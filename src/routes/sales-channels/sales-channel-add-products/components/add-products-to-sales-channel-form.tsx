@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { HttpTypes, SalesChannelDTO } from "@medusajs/types"
+import { SalesChannelDTO } from "@medusajs/types"
 import { Button, Checkbox, Hint, Tooltip, toast } from "@medusajs/ui"
 import { keepPreviousData } from "@tanstack/react-query"
 import {
@@ -20,6 +20,7 @@ import { useProductTableColumns } from "../../../../hooks/table/columns/use-prod
 import { useProductTableFilters } from "../../../../hooks/table/filters/use-product-table-filters"
 import { useProductTableQuery } from "../../../../hooks/table/query/use-product-table-query"
 import { useDataTable } from "../../../../hooks/use-data-table"
+import { ExtendedAdminProduct } from "../../../../types/products"
 
 type AddProductsToSalesChannelFormProps = {
   salesChannel: SalesChannelDTO
@@ -173,7 +174,7 @@ export const AddProductsToSalesChannelForm = ({
   )
 }
 
-const columnHelper = createColumnHelper<HttpTypes.AdminProduct>()
+const columnHelper = createColumnHelper<ExtendedAdminProduct>()
 
 const useColumns = () => {
   const base = useProductTableColumns()

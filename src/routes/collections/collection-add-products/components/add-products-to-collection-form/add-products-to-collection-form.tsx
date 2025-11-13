@@ -23,6 +23,7 @@ import { useProductTableColumns } from "../../../../../hooks/table/columns/use-p
 import { useProductTableFilters } from "../../../../../hooks/table/filters/use-product-table-filters.tsx"
 import { useProductTableQuery } from "../../../../../hooks/table/query/use-product-table-query.tsx"
 import { useDataTable } from "../../../../../hooks/use-data-table.tsx"
+import { ExtendedAdminProduct } from "../../../../../types/products.ts"
 
 type AddProductsToCollectionFormProps = {
   collection: HttpTypes.AdminCollection
@@ -192,7 +193,7 @@ export const AddProductsToCollectionForm = ({
   )
 }
 
-const columnHelper = createColumnHelper<HttpTypes.AdminProduct>()
+const columnHelper = createColumnHelper<ExtendedAdminProduct>()
 
 const useColumns = () => {
   const { t } = useTranslation()

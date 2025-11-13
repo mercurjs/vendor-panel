@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { HttpTypes, InventoryLevelDTO, StockLocationDTO } from "@medusajs/types"
+import { HttpTypes, InventoryLevelDTO } from "@medusajs/types"
 import { Button, Input, Text, toast } from "@medusajs/ui"
 import { useForm, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -10,12 +10,13 @@ import { RouteDrawer, useRouteModal } from "../../../../../../components/modals"
 import { KeyboundForm } from "../../../../../../components/utilities/keybound-form"
 import { useUpdateInventoryLevel } from "../../../../../../hooks/api/inventory"
 import { castNumber } from "../../../../../../lib/cast-number"
+import { VendorExtendedAdminStockLocation } from "../../../../../../types/stock-location"
 import { sanitizeNumberInput } from "../../../../../../lib/sanitize-number-input"
 
 type AdjustInventoryFormProps = {
   item: HttpTypes.AdminInventoryItem
   level: InventoryLevelDTO
-  location: StockLocationDTO
+  location: VendorExtendedAdminStockLocation
 }
 
 const AttributeGridRow = ({
@@ -152,7 +153,7 @@ export const AdjustInventoryForm = ({
                       type="number"
                       value={value}
                       onChange={onChange}
-                      onKeyDown={sanitizeNumberInput}
+                      onKeyDown={(e) => sanitizeNumberInput(e, [",", "."])}
                       {...field}
                     />
                   </Form.Control>

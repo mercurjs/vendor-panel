@@ -1,9 +1,9 @@
-import { HttpTypes } from "@medusajs/types"
 import { UIMatch } from "react-router-dom"
 import { useProduct } from "../../../hooks/api"
 import { PRODUCT_DETAIL_FIELDS } from "./constants"
+import { ExtendedAdminProductResponse } from "../../../types/products"
 
-type ProductDetailBreadcrumbProps = UIMatch<HttpTypes.AdminProductResponse>
+type ProductDetailBreadcrumbProps = UIMatch<ExtendedAdminProductResponse>
 
 export const ProductDetailBreadcrumb = (
   props: ProductDetailBreadcrumbProps
@@ -16,7 +16,6 @@ export const ProductDetailBreadcrumb = (
       fields: PRODUCT_DETAIL_FIELDS,
     },
     {
-      initialData: props.data,
       enabled: Boolean(id),
     }
   )
@@ -25,5 +24,5 @@ export const ProductDetailBreadcrumb = (
     return null
   }
 
-  return <span>{product.title}</span>
+  return <span>{product?.title}</span>
 }

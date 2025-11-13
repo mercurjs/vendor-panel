@@ -13,7 +13,10 @@ import { queryKeysFactory, TQueryKey } from "../../lib/query-key-factory"
 import { inventoryItemsQueryKeys } from "./inventory"
 import { reservationItemsQueryKeys } from "./reservations"
 import { filterOrders } from "../../routes/orders/common/orderFiltering"
-import { OrderCommission } from "../../types/order"
+import {
+  ExtendedAdminOrderResponse,
+  OrderCommission,
+} from "../../types/order"
 
 const ORDERS_QUERY_KEY = "orders" as const
 const _orderKeys = queryKeysFactory(ORDERS_QUERY_KEY) as TQueryKey<"orders"> & {
@@ -40,7 +43,12 @@ export const useOrder = (
   id: string,
   query?: Record<string, any>,
   options?: Omit<
-    UseQueryOptions<any, FetchError, any, QueryKey>,
+    UseQueryOptions<
+      ExtendedAdminOrderResponse,
+      FetchError,
+      ExtendedAdminOrderResponse,
+      QueryKey
+    >,
     "queryFn" | "queryKey"
   >
 ) => {
@@ -54,7 +62,7 @@ export const useOrder = (
     ...options,
   })
 
-  return { ...data, ...rest }
+  return { order: data?.order, ...rest }
 }
 
 export const useOrderCommission = (
@@ -75,38 +83,7 @@ export const useOrderCommission = (
     ...options,
   })
 
-  return { ...data, ...rest }
-}
-
-export const useUpdateOrder = (
-  id: string,
-  options?: UseMutationOptions<
-    HttpTypes.AdminOrderResponse,
-    FetchError,
-    HttpTypes.AdminUpdateOrder
-  >
-) => {
-  return useMutation({
-    mutationFn: (payload: HttpTypes.AdminUpdateOrder) =>
-      sdk.admin.order.update(id, payload),
-    onSuccess: (data: any, variables: any, context: any) => {
-      queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.detail(id),
-      })
-
-      queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.changes(id),
-      })
-
-      // TODO: enable when needed
-      // queryClient.invalidateQueries({
-      //   queryKey: ordersQueryKeys.lists(),
-      // })
-
-      options?.onSuccess?.(data, variables, context)
-    },
-    ...options,
-  })
+  return { commission: data?.commission, ...rest }
 }
 
 export const useOrderPreview = (

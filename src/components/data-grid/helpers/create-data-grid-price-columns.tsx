@@ -14,7 +14,6 @@ type CreateDataGridPriceColumnsProps<
   TFieldValues extends FieldValues,
 > = {
   currencies?: string[]
-  regions?: HttpTypes.AdminRegion[]
   pricePreferences?: HttpTypes.AdminPricePreference[]
   isReadyOnly?: (context: FieldContext<TData>) => boolean
   getFieldName: (
@@ -30,7 +29,6 @@ export const createDataGridPriceColumns = <
   TFieldValues extends FieldValues,
 >({
   currencies,
-  regions,
   pricePreferences,
   isReadyOnly,
   getFieldName,

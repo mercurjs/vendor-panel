@@ -12,11 +12,11 @@ import { StackedDrawer } from "../../../../../components/modals/stacked-drawer"
 import { StackedFocusModal } from "../../../../../components/modals/stacked-focus-modal"
 import { _DataTable } from "../../../../../components/table/data-table"
 import { useCustomerGroups } from "../../../../../hooks/api/customer-groups"
-import { useCustomerGroupTableColumns } from "../../../../../hooks/table/columns/use-customer-group-table-columns"
 import { useCustomerGroupTableFilters } from "../../../../../hooks/table/filters/use-customer-group-table-filters"
 import { useCustomerGroupTableQuery } from "../../../../../hooks/table/query/use-customer-group-table-query"
 import { useDataTable } from "../../../../../hooks/use-data-table"
 import { PriceListCustomerGroup } from "../../schemas"
+import { TextCell, TextHeader } from "../../../../../components/table/table-cells/common/text-cell"
 
 const PAGE_SIZE = 50
 const PREFIX = "cg"
@@ -66,15 +66,17 @@ export const PriceListCustomerGroupRuleForm = ({
       : raw.order
     : undefined
 
-  const { customer_groups, count, isLoading, isError, error } =
+  const { customer_groups: customerGroupsData, count, isLoading, isError, error } =
     useCustomerGroups(
       { ...searchParams, fields: "id,name,customers.id" },
       {
         placeholderData: keepPreviousData,
       },
-      undefined,
-      sortParam
+      sortParam ? { sort: sortParam } : undefined
     )
+
+  const customerGroups = customerGroupsData
+    ?.map((item) => item.customer_group)
 
   const updater: OnChangeFn<RowSelectionState> = (value) => {
     const state = typeof value === "function" ? value(rowSelection) : value
@@ -86,11 +88,11 @@ export const PriceListCustomerGroupRuleForm = ({
     const removedIds = currentIds.filter((id) => !ids.includes(id))
 
     const newCustomerGroups =
-      customer_groups
-        ?.filter((cg) => newIds.includes(cg.customer_group.id))
+      customerGroups
+        ?.filter((cg) => newIds.includes(cg.id))
         .map((cg) => ({
-          id: cg.customer_group.id,
-          name: cg.customer_group.name!,
+          id: cg.id,
+          name: cg.name!,
         })) || []
 
     const filteredIntermediate = intermediate.filter(
@@ -109,12 +111,12 @@ export const PriceListCustomerGroupRuleForm = ({
   const columns = useColumns()
 
   const { table } = useDataTable({
-    data: customer_groups || [],
+    data: customerGroups || [],
     columns,
     count,
     enablePagination: true,
     enableRowSelection: true,
-    getRowId: (row) => row.customer_group_id,
+    getRowId: (row) => row.id,
     rowSelection: {
       state: rowSelection,
       updater,
@@ -139,16 +141,16 @@ export const PriceListCustomerGroupRuleForm = ({
           count={count}
           isLoading={isLoading}
           filters={filters}
-          orderBy={[
-            { key: "name", label: t("fields.name") },
-            { key: "created_at", label: t("fields.createdAt") },
-            { key: "updated_at", label: t("fields.updatedAt") },
-          ]}
           layout="fill"
           pagination
           search
           prefix={PREFIX}
           queryObject={raw}
+          orderBy={[
+            { key: "name", label: t("fields.name") },
+            { key: "created_at", label: t("fields.createdAt") },
+            { key: "updated_at", label: t("fields.updatedAt") },
+          ]}
         />
       </Component.Body>
       <Component.Footer>
@@ -168,7 +170,7 @@ export const PriceListCustomerGroupRuleForm = ({
 const columnHelper = createColumnHelper<HttpTypes.AdminCustomerGroup>()
 
 const useColumns = () => {
-  const base = useCustomerGroupTableColumns()
+  const { t } = useTranslation()
 
   return useMemo(
     () => [
@@ -200,8 +202,17 @@ const useColumns = () => {
           )
         },
       }),
-      ...base,
+      columnHelper.accessor("name", {
+        header: () => <TextHeader text={t("fields.name")} />,
+        cell: ({ row }) => {
+          return (
+            <TextCell
+              text={row.original?.name || "-"}
+            />
+          )
+        },
+      }),
     ],
-    [base]
+    [t]
   )
 }

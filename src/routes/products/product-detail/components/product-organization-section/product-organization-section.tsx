@@ -1,5 +1,5 @@
 import { PencilSquare } from "@medusajs/icons"
-import { HttpTypes } from "@medusajs/types"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 import { Badge, Container, Heading, Tooltip } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
@@ -8,7 +8,7 @@ import { SectionRow } from "../../../../../components/common/section"
 import { useDashboardExtension } from "../../../../../extensions"
 
 type ProductOrganizationSectionProps = {
-  product: HttpTypes.AdminProduct
+  product: ExtendedAdminProduct
 }
 
 export const ProductOrganizationSection = ({

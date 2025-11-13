@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { HttpTypes } from "@medusajs/types"
 import { Button, toast, usePrompt } from "@medusajs/ui"
+import { HttpTypes } from "@medusajs/types"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { DefaultValues, useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -24,9 +24,13 @@ import {
   getDisabledInventoryRows,
   isProductVariantWithInventoryPivot,
 } from "../../utils"
+import {
+  ExtendedAdminProductVariant,
+  ProductStockGridRow,
+} from "../../../../../types/products"
 
 type ProductStockFormProps = {
-  variants: HttpTypes.AdminProductVariant[]
+  variants: ExtendedAdminProductVariant[]
   locations: HttpTypes.AdminStockLocation[]
   onLoaded: () => void
 }
@@ -146,7 +150,7 @@ export const ProductStockForm = ({
           <DataGrid
             state={form}
             columns={columns}
-            data={variants}
+            data={variants as ProductStockGridRow[]}
             getSubRows={getSubRows}
             onEditingChange={(editing) => setCloseOnEscape(!editing)}
             disableInteractions={isPending || isPromptOpen}
@@ -170,18 +174,14 @@ export const ProductStockForm = ({
   )
 }
 
-function getSubRows(
-  row:
-    | HttpTypes.AdminProductVariant
-    | HttpTypes.AdminProductVariantInventoryItemLink
-): HttpTypes.AdminProductVariantInventoryItemLink[] | undefined {
+function getSubRows(row: ProductStockGridRow): ProductStockGridRow[] | undefined {
   if (isProductVariantWithInventoryPivot(row)) {
     return row.inventory_items
   }
 }
 
 function getDefaultValue(
-  variants: HttpTypes.AdminProductVariant[],
+  variants: ExtendedAdminProductVariant[],
   locations: HttpTypes.AdminStockLocation[]
 ): DefaultValues<ProductStockSchema> {
   return {

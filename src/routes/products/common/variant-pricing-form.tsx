@@ -1,7 +1,7 @@
-import { HttpTypes } from "@medusajs/types"
 import { useMemo } from "react"
 import { UseFormReturn, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
+import { HttpTypes } from "@medusajs/types"
 import { Text } from "@medusajs/ui"
 
 import {
@@ -14,10 +14,11 @@ import { usePricePreferences } from "../../../hooks/api/price-preferences"
 import { useRegions } from "../../../hooks/api/regions.tsx"
 import { useStore } from "../../../hooks/api/store"
 import { ProductCreateSchemaType } from "../product-create/types"
+import { ExtendedAdminProduct } from "../../../types/products.ts"
 
 type VariantPricingFormProps = {
   form: UseFormReturn<ProductCreateSchemaType>
-  product: HttpTypes.AdminProduct
+  product: ExtendedAdminProduct
 }
 
 export const VariantPricingForm = ({
@@ -112,7 +113,6 @@ const useVariantPriceGridColumns = ({
         ProductCreateSchemaType
       >({
         currencies: currencies.map((c) => c.currency_code),
-        regions,
         pricePreferences,
         isReadyOnly: (context) => (context.row.original as any).isProductInfo,
         getFieldName: (context, value) => {

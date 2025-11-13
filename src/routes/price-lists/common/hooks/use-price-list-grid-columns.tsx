@@ -11,9 +11,10 @@ import {
 import { createDataGridPriceColumns } from "../../../../components/data-grid/helpers/create-data-grid-price-columns"
 import { PricingCreateSchemaType } from "../../price-list-create/components/price-list-create-form/schema"
 import { isProductRow } from "../utils"
+import { ExtendedAdminProduct, ExtendedAdminProductVariant } from "../../../../types/products"
 
 const columnHelper = createDataGridHelper<
-  HttpTypes.AdminProduct | HttpTypes.AdminProductVariant,
+ ExtendedAdminProduct | ExtendedAdminProductVariant,
   PricingCreateSchemaType
 >()
 
@@ -29,7 +30,7 @@ export const usePriceListGridColumns = ({
   const { t } = useTranslation()
 
   const colDefs: ColumnDef<
-    HttpTypes.AdminProduct | HttpTypes.AdminProductVariant
+    ExtendedAdminProduct | ExtendedAdminProductVariant
   >[] = useMemo(() => {
     return [
       columnHelper.column({
@@ -59,11 +60,10 @@ export const usePriceListGridColumns = ({
         disableHiding: true,
       }),
       ...createDataGridPriceColumns<
-        HttpTypes.AdminProduct | HttpTypes.AdminProductVariant,
+        ExtendedAdminProduct | ExtendedAdminProductVariant,
         PricingCreateSchemaType
       >({
         currencies: currencies.map((c) => c.currency_code),
-        regions,
         pricePreferences,
         isReadyOnly: (context) => {
           const entity = context.row.original

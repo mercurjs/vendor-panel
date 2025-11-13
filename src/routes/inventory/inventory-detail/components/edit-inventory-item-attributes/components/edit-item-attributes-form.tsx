@@ -4,7 +4,7 @@ import { Button, Input, toast } from "@medusajs/ui"
 import { RouteDrawer, useRouteModal } from "../../../../../../components/modals"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { InventoryTypes } from "@medusajs/types"
+import { HttpTypes } from "@medusajs/types"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod"
@@ -15,7 +15,7 @@ import { KeyboundForm } from "../../../../../../components/utilities/keybound-fo
 import { useUpdateInventoryItem } from "../../../../../../hooks/api/inventory"
 
 type EditInventoryItemAttributeFormProps = {
-  item: InventoryTypes.InventoryItemDTO
+  item: HttpTypes.AdminInventoryItem
 }
 
 const EditInventoryItemAttributesSchema = z.object({
@@ -28,7 +28,7 @@ const EditInventoryItemAttributesSchema = z.object({
   origin_country: z.string().optional(),
 })
 
-const getDefaultValues = (item: InventoryTypes.InventoryItemDTO) => {
+const getDefaultValues = (item: HttpTypes.AdminInventoryItem) => {
   return {
     height: item.height ?? undefined,
     width: item.width ?? undefined,
@@ -45,7 +45,6 @@ export const EditInventoryItemAttributesForm = ({
 }: EditInventoryItemAttributeFormProps) => {
   const { t } = useTranslation()
   const { handleSuccess } = useRouteModal()
-
   const form = useForm<zod.infer<typeof EditInventoryItemAttributesSchema>>({
     defaultValues: getDefaultValues(item),
     resolver: zodResolver(EditInventoryItemAttributesSchema),

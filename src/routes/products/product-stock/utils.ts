@@ -1,27 +1,31 @@
 import { HttpTypes } from "@medusajs/types"
+import {
+  ExtendedAdminProductVariant,
+  ProductStockGridRow,
+} from "../../../types/products"
 
 export function isProductVariant(
-  row:
-    | HttpTypes.AdminProductVariant
-    | HttpTypes.AdminProductVariantInventoryItemLink
-): row is HttpTypes.AdminProductVariant {
+  row: ProductStockGridRow
+): row is ExtendedAdminProductVariant {
   return row.id.startsWith("variant_")
 }
 
 export function isProductVariantWithInventoryPivot(
-  row:
-    | HttpTypes.AdminProductVariant
-    | HttpTypes.AdminProductVariantInventoryItemLink
-): row is HttpTypes.AdminProductVariant & {
+  row: ProductStockGridRow
+): row is ExtendedAdminProductVariant & {
   inventory_items: HttpTypes.AdminProductVariantInventoryItemLink[]
 } {
-  return (row as any).inventory_items && (row as any).inventory_items.length > 0
+  return (
+    "inventory_items" in row &&
+    Array.isArray(row.inventory_items) &&
+    row.inventory_items.length > 0
+  )
 }
 
 export function getDisabledInventoryRows(
-  variants: HttpTypes.AdminProductVariant[]
+  variants: ExtendedAdminProductVariant[]
 ) {
-  const seen: Record<string, HttpTypes.AdminProductVariant> = {}
+  const seen: Record<string, ExtendedAdminProductVariant> = {}
   const disabled: Record<string, { id: string; title: string; sku: string }> =
     {}
 

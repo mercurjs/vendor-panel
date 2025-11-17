@@ -2,7 +2,6 @@ import {
   CreatePromotionRuleDTO,
   HttpTypes,
   PromotionRuleDTO,
-  PromotionRuleOperatorValues,
 } from "@medusajs/types"
 import { useRouteModal } from "../../../../../../components/modals"
 import {
@@ -75,7 +74,7 @@ export const EditRulesWrapper = ({
         } else {
           const createRule: CreatePromotionRuleDTO = {
             attribute: rule.attribute!,
-            operator: rule.operator as PromotionRuleOperatorValues,
+            operator: rule.operator,
             values: rule.values,
           }
           rulesToCreate.push(createRule)
@@ -111,7 +110,7 @@ export const EditRulesWrapper = ({
           ...rulesToCreate,
           ...rulesToUpdate.map((rule) => ({
             attribute: rule.attribute!,
-            operator: rule.operator as PromotionRuleOperatorValues,
+            operator: rule.operator,
             values: rule.values,
           })),
         ]
@@ -132,7 +131,7 @@ export const EditRulesWrapper = ({
           const updateRules = rulesToUpdate.map((rule) => ({
             id: rule.id!,
             attribute: rule.attribute,
-            operator: rule.operator as PromotionRuleOperatorValues,
+            operator: rule.operator,
             values: rule.values,
           }))
           await updatePromotionRules({

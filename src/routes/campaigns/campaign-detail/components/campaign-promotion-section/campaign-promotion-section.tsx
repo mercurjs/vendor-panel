@@ -7,7 +7,11 @@ import { useTranslation } from "react-i18next"
 
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { _DataTable } from "../../../../../components/table/data-table"
-import { useAddOrRemoveCampaignPromotions } from "../../../../../hooks/api/campaigns"
+import { useRemovePromotionFromCampaign } from "../../../../../hooks/api/promotions"
+import { fetchQuery } from "../../../../../lib/client"
+import { queryClient } from "../../../../../lib/query-client"
+import { campaignsQueryKeys } from "../../../../../hooks/api/campaigns"
+import { promotionsQueryKeys } from "../../../../../hooks/api/promotions"
 import { usePromotionTableColumns } from "../../../../../hooks/table/columns/use-promotion-table-columns"
 import { usePromotionTableFilters } from "../../../../../hooks/table/filters/use-promotion-table-filters"
 import { usePromotionTableQuery } from "../../../../../hooks/table/query/use-promotion-table-query"
@@ -49,8 +53,6 @@ export const CampaignPromotionSection = ({
     meta: { campaignId: campaign.id },
   })
 
-  const { mutateAsync } = useAddOrRemoveCampaignPromotions(campaign.id)
-
   const handleRemove = async () => {
     const keys = Object.keys(rowSelection)
 
@@ -69,10 +71,25 @@ export const CampaignPromotionSection = ({
       return
     }
 
-    await mutateAsync(
-      { remove: keys },
-      { onSuccess: () => setRowSelection({}) }
+    /* Solution below isn't ideal, we should consider making additional backend logic for assigning/unassigning promotions from campaigns, especially batched */
+
+    await Promise.all(
+      keys.map((promotionId) =>
+        fetchQuery(`/vendor/promotions/${promotionId}`, {
+          method: "POST",
+          body: { campaign_id: null },
+        })
+      )
     )
+
+    queryClient.invalidateQueries({
+      queryKey: campaignsQueryKeys.details(),
+    })
+    queryClient.invalidateQueries({
+      queryKey: promotionsQueryKeys.all,
+    })
+
+    setRowSelection({})
   }
 
   return (
@@ -124,15 +141,9 @@ export const CampaignPromotionSection = ({
   )
 }
 
-const PromotionActions = ({
-  promotion,
-  campaignId,
-}: {
-  promotion: AdminPromotion
-  campaignId: string
-}) => {
+const PromotionActions = ({ promotion }: { promotion: AdminPromotion }) => {
   const { t } = useTranslation()
-  const { mutateAsync } = useAddOrRemoveCampaignPromotions(campaignId)
+  const { mutateAsync } = useRemovePromotionFromCampaign(promotion.id)
 
   const prompt = usePrompt()
 
@@ -152,9 +163,7 @@ const PromotionActions = ({
       return
     }
 
-    await mutateAsync({
-      remove: [promotion.id],
-    })
+    await mutateAsync()
   }
 
   return (
@@ -221,17 +230,8 @@ const useColumns = () => {
       ...columns,
       columnHelper.display({
         id: "actions",
-        cell: ({ row, table }) => {
-          const { campaignId } = table.options.meta as {
-            campaignId: string
-          }
-
-          return (
-            <PromotionActions
-              promotion={row.original}
-              campaignId={campaignId}
-            />
-          )
+        cell: ({ row }) => {
+          return <PromotionActions promotion={row.original} />
         },
       }),
     ],

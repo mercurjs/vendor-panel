@@ -1,1 +1,1 @@
-export { LocationCreateServiceZone as Component } from "./location-service-zone-create"
+export { LocationCreateServiceZone as Component } from './location-service-zone-create';

@@ -1,1 +1,1 @@
-export { AdjustInventoryDrawer as Component } from "./adjust-inventory-drawer"
+export { AdjustInventoryDrawer as Component } from './adjust-inventory-drawer';

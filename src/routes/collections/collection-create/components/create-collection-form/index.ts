@@ -1,1 +1,1 @@
-export * from "./create-collection-form"
+export * from './create-collection-form';

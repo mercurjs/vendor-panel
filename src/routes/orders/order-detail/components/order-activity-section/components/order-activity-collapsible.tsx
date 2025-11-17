@@ -1,31 +1,34 @@
-import { Text } from "@medusajs/ui"
-import { Collapsible as RadixCollapsible } from "radix-ui"
-import { useState } from "react"
-import { useTranslation } from "react-i18next"
-import { Activity } from "../hooks/use-activity-items"
-import { OrderActivityItem } from "./order-activity-item"
+import { useState } from 'react';
+
+import { Text } from '@medusajs/ui';
+import { Collapsible as RadixCollapsible } from 'radix-ui';
+import { useTranslation } from 'react-i18next';
+
+import { Activity } from '../hooks/use-activity-items';
+import { OrderActivityItem } from './order-activity-item';
 
 type OrderActivityCollapsibleProps = {
-  activities: Activity[]
-}
+  activities: Activity[];
+};
 
-export const OrderActivityCollapsible = ({
-  activities,
-}: OrderActivityCollapsibleProps) => {
-  const [open, setOpen] = useState(false)
+export const OrderActivityCollapsible = ({ activities }: OrderActivityCollapsibleProps) => {
+  const [open, setOpen] = useState(false);
 
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   if (!activities.length) {
-    return null
+    return null;
   }
 
   return (
-    <RadixCollapsible.Root open={open} onOpenChange={setOpen}>
+    <RadixCollapsible.Root
+      open={open}
+      onOpenChange={setOpen}
+    >
       {!open && (
         <div className="grid grid-cols-[20px_1fr] items-start gap-2">
           <div className="flex size-full flex-col items-center">
-            <div className="border-ui-border-strong w-px flex-1 bg-[linear-gradient(var(--border-strong)_33%,rgba(255,255,255,0)_0%)] bg-[length:1px_3px] bg-right bg-repeat-y" />
+            <div className="w-px flex-1 border-ui-border-strong bg-[linear-gradient(var(--border-strong)_33%,rgba(255,255,255,0)_0%)] bg-[length:1px_3px] bg-right bg-repeat-y" />
           </div>
           <div className="pb-4">
             <RadixCollapsible.Trigger className="text-left">
@@ -35,8 +38,8 @@ export const OrderActivityCollapsible = ({
                 weight="plus"
                 className="text-ui-fg-muted"
               >
-                {t("orders.activity.showMoreActivities", {
-                  count: activities.length,
+                {t('orders.activity.showMoreActivities', {
+                  count: activities.length
                 })}
               </Text>
             </RadixCollapsible.Trigger>
@@ -57,11 +60,10 @@ export const OrderActivityCollapsible = ({
               >
                 {item.children}
               </OrderActivityItem>
-            )
+            );
           })}
         </div>
       </RadixCollapsible.Content>
     </RadixCollapsible.Root>
-  )
-}
-
+  );
+};

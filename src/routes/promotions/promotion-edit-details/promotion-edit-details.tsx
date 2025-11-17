@@ -1,30 +1,28 @@
-import { Heading } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
-import { useParams } from "react-router-dom"
+import { Heading } from '@medusajs/ui';
+import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 
-import { RouteDrawer } from "../../../components/modals"
-import { usePromotion } from "../../../hooks/api/promotions"
-import { EditPromotionDetailsForm } from "./components/edit-promotion-form"
+import { RouteDrawer } from '../../../components/modals';
+import { usePromotion } from '../../../hooks/api/promotions';
+import { EditPromotionDetailsForm } from './components/edit-promotion-form';
 
 export const PromotionEditDetails = () => {
-  const { id } = useParams()
-  const { t } = useTranslation()
+  const { id } = useParams();
+  const { t } = useTranslation();
 
-  const { promotion, isLoading, isError, error } = usePromotion(id!)
+  const { promotion, isLoading, isError, error } = usePromotion(id!);
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   return (
     <RouteDrawer>
       <RouteDrawer.Header>
-        <Heading>{t("promotions.edit.title")}</Heading>
+        <Heading>{t('promotions.edit.title')}</Heading>
       </RouteDrawer.Header>
 
-      {!isLoading && promotion && (
-        <EditPromotionDetailsForm promotion={promotion} />
-      )}
+      {!isLoading && promotion && <EditPromotionDetailsForm promotion={promotion} />}
     </RouteDrawer>
-  )
-}
+  );
+};

@@ -1,1 +1,1 @@
-export * from "./region-country-section"
+export * from './region-country-section';

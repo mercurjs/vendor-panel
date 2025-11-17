@@ -1,1 +1,1 @@
-export * from "./json-view-section"
+export * from './json-view-section';

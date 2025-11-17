@@ -1,1 +1,1 @@
-export * from "./tax-region-card"
+export * from './tax-region-card';

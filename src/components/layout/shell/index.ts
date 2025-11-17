@@ -1,1 +1,1 @@
-export * from "./shell"
+export * from './shell';

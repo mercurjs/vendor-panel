@@ -1,27 +1,30 @@
-import { Container, Heading, Text } from "@medusajs/ui"
-import { Inbox } from "@talkjs/react"
+import { Container, Heading, Text } from '@medusajs/ui';
+import { Inbox } from '@talkjs/react';
 
 export const Messages = () => {
   return (
-    <Container className="divide-y p-0 min-h-[700px]">
+    <Container className="min-h-[700px] divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
         <div>
           <Heading>Messages</Heading>
         </div>
       </div>
 
-      <div className="px-6 py-4 h-[655px]">
+      <div className="h-[655px] px-6 py-4">
         {__TALK_JS_APP_ID__ ? (
           <Inbox className="h-full" />
         ) : (
-          <div className="flex flex-col items-center w-full h-full justify-center">
+          <div className="flex h-full w-full flex-col items-center justify-center">
             <Heading>No TalkJS App ID</Heading>
-            <Text className="text-ui-fg-subtle mt-4" size="small">
+            <Text
+              className="mt-4 text-ui-fg-subtle"
+              size="small"
+            >
               Connect TalkJS to manage your messages
             </Text>
           </div>
         )}
       </div>
     </Container>
-  )
-}
+  );
+};

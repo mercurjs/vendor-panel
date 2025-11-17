@@ -1,1 +1,1 @@
-export const CAMPAIGN_DETAIL_FIELDS = "*promotions"
+export const CAMPAIGN_DETAIL_FIELDS = '*promotions';

@@ -1,4 +1,4 @@
 export enum ApiKeyType {
-  SECRET = "secret",
-  PUBLISHABLE = "publishable",
+  SECRET = 'secret',
+  PUBLISHABLE = 'publishable'
 }

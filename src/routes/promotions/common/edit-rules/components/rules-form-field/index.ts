@@ -1,1 +1,1 @@
-export * from "./rules-form-field"
+export * from './rules-form-field';

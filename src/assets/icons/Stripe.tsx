@@ -7,7 +7,12 @@ export const StripeIcon = () => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <rect width="16" height="16" rx="2" fill="url(#pattern0_8182_811)" />
+      <rect
+        width="16"
+        height="16"
+        rx="2"
+        fill="url(#pattern0_8182_811)"
+      />
       <defs>
         <pattern
           id="pattern0_8182_811"
@@ -15,7 +20,10 @@ export const StripeIcon = () => {
           width="1"
           height="1"
         >
-          <use xlinkHref="#image0_8182_811" transform="scale(0.00195312)" />
+          <use
+            xlinkHref="#image0_8182_811"
+            transform="scale(0.00195312)"
+          />
         </pattern>
         <image
           id="image0_8182_811"
@@ -26,5 +34,5 @@ export const StripeIcon = () => {
         />
       </defs>
     </svg>
-  )
-}
+  );
+};

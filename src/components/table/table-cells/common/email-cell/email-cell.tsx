@@ -1,28 +1,29 @@
-import { useTranslation } from "react-i18next"
-import { PlaceholderCell } from "../placeholder-cell"
+import { useTranslation } from 'react-i18next';
+
+import { PlaceholderCell } from '../placeholder-cell';
 
 type EmailCellProps = {
-  email?: string | null
-}
+  email?: string | null;
+};
 
 export const EmailCell = ({ email }: EmailCellProps) => {
   if (!email) {
-    return <PlaceholderCell />
+    return <PlaceholderCell />;
   }
 
   return (
     <div className="flex h-full w-full items-center overflow-hidden">
       <span className="truncate">{email}</span>
     </div>
-  )
-}
+  );
+};
 
 export const EmailHeader = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <div className="flex h-full w-full items-center">
-      <span className="truncate">{t("fields.email")}</span>
+      <span className="truncate">{t('fields.email')}</span>
     </div>
-  )
-}
+  );
+};

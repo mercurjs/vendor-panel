@@ -1,21 +1,22 @@
-import { UIMatch } from "react-router-dom"
-import { useReview } from "../../../hooks/api/review"
+import { UIMatch } from 'react-router-dom';
 
-type ReviewDetailBreadcrumbProps = UIMatch<any>
+import { useReview } from '../../../hooks/api/review';
+
+type ReviewDetailBreadcrumbProps = UIMatch<any>;
 
 export const RequestDetailBreadcrumb = (props: ReviewDetailBreadcrumbProps) => {
-  const { id } = props.params || {}
+  const { id } = props.params || {};
 
   const { review } = useReview(id!, undefined, {
     initialData: props.data,
-    enabled: Boolean(id),
-  }) as any
+    enabled: Boolean(id)
+  }) as any;
 
   if (!review) {
-    return null
+    return null;
   }
 
-  const display = review.id
+  const display = review.id;
 
-  return <span>{display}</span>
-}
+  return <span>{display}</span>;
+};

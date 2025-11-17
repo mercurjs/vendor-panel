@@ -1,1 +1,1 @@
-export * from "./edit-rules-wrapper"
+export * from './edit-rules-wrapper';

@@ -1,1 +1,1 @@
-export * from "./user-general-section"
+export * from './user-general-section';

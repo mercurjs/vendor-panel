@@ -1,1 +1,1 @@
-export { StoreAddCurrencies as Component } from "./store-add-currencies"
+export { StoreAddCurrencies as Component } from './store-add-currencies';

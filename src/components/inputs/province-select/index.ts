@@ -1,1 +1,1 @@
-export * from "./province-select"
+export * from './province-select';

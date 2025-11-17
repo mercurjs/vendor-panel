@@ -1,1 +1,1 @@
-export * from "./product-shipping-profile-section"
+export * from './product-shipping-profile-section';

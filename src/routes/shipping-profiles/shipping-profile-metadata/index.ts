@@ -1,1 +1,1 @@
-export { ShippingProfileMetadata as Component } from "./shipping-profile-metadata"
+export { ShippingProfileMetadata as Component } from './shipping-profile-metadata';

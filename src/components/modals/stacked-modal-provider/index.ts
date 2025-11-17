@@ -1,2 +1,2 @@
-export * from "./stacked-modal-provider"
-export * from "./use-stacked-modal"
+export * from './stacked-modal-provider';
+export * from './use-stacked-modal';

@@ -1,1 +1,1 @@
-export * from "./money-amount-cell"
+export * from './money-amount-cell';

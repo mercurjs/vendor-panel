@@ -1,1 +1,1 @@
-export { WorkflowExcecutionList as Component } from "./workflow-execution-list"
+export { WorkflowExcecutionList as Component } from './workflow-execution-list';

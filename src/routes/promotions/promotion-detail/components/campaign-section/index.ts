@@ -1,1 +1,1 @@
-export * from "./campaign-section.tsx"
+export * from './campaign-section.tsx';

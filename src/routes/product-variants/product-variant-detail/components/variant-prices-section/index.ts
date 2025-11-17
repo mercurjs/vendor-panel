@@ -1,1 +1,1 @@
-export * from "./variant-prices-section"
+export * from './variant-prices-section';

@@ -1,1 +1,1 @@
-export * from "./admin-only-cell"
+export * from './admin-only-cell';

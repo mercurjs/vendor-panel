@@ -1,1 +1,1 @@
-export * from "./api-key-general-section"
+export * from './api-key-general-section';

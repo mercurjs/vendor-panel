@@ -1,1 +1,1 @@
-export * from "./edit-api-key-form"
+export * from './edit-api-key-form';

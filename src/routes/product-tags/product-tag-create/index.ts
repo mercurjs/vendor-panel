@@ -1,1 +1,1 @@
-export { ProductTagCreate as Component } from "./product-tag-create"
+export { ProductTagCreate as Component } from './product-tag-create';

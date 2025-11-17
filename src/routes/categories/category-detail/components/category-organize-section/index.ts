@@ -1,1 +1,1 @@
-export * from "./category-organize-section"
+export * from './category-organize-section';

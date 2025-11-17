@@ -1,7 +1,7 @@
-import { useDateTableFilters } from "./use-date-table-filters"
+import { useDateTableFilters } from './use-date-table-filters';
 
 export const useCollectionTableFilters = () => {
-  const dateFilters = useDateTableFilters()
+  const dateFilters = useDateTableFilters();
 
-  return dateFilters
-}
+  return dateFilters;
+};

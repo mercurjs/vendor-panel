@@ -1,1 +1,1 @@
-export * from "./conditional-tooltip"
+export * from './conditional-tooltip';

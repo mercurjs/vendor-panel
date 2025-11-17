@@ -1,19 +1,20 @@
-import { useTranslation } from "react-i18next"
-import { Filter } from "../../../components/table/data-table"
+import { useTranslation } from 'react-i18next';
+
+import { Filter } from '../../../components/table/data-table';
 
 export const useRegionTableFilters = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const dateFilters: Filter[] = [
-    { label: t("fields.createdAt"), key: "created_at" },
-    { label: t("fields.updatedAt"), key: "updated_at" },
-  ].map((f) => ({
+    { label: t('fields.createdAt'), key: 'created_at' },
+    { label: t('fields.updatedAt'), key: 'updated_at' }
+  ].map(f => ({
     key: f.key,
     label: f.label,
-    type: "date",
-  }))
+    type: 'date'
+  }));
 
-  const filters = [...dateFilters]
+  const filters = [...dateFilters];
 
-  return filters
-}
+  return filters;
+};

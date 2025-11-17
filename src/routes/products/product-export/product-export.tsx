@@ -1,55 +1,56 @@
-import { Button, Heading, toast } from "@medusajs/ui"
-import { RouteDrawer, useRouteModal } from "../../../components/modals"
-import { useTranslation } from "react-i18next"
-import { ExportFilters } from "./components/export-filters"
-import { useExportProducts } from "../../../hooks/api"
-import { useProductTableQuery } from "../../../hooks/table/query"
+import { Button, Heading, toast } from '@medusajs/ui';
+import { useTranslation } from 'react-i18next';
+
+import { RouteDrawer, useRouteModal } from '../../../components/modals';
+import { useExportProducts } from '../../../hooks/api';
+import { useProductTableQuery } from '../../../hooks/table/query';
+import { ExportFilters } from './components/export-filters';
 
 export const ProductExport = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <RouteDrawer>
       <RouteDrawer.Header>
         <RouteDrawer.Title asChild>
-          <Heading>{t("products.export.header")}</Heading>
+          <Heading>{t('products.export.header')}</Heading>
         </RouteDrawer.Title>
         <RouteDrawer.Description className="sr-only">
-          {t("products.export.description")}
+          {t('products.export.description')}
         </RouteDrawer.Description>
       </RouteDrawer.Header>
       <ProductExportContent />
     </RouteDrawer>
-  )
-}
+  );
+};
 
 const ProductExportContent = () => {
-  const { t } = useTranslation()
-  const { searchParams } = useProductTableQuery({})
-  const { mutateAsync } = useExportProducts(searchParams)
-  const { handleSuccess } = useRouteModal()
+  const { t } = useTranslation();
+  const { searchParams } = useProductTableQuery({});
+  const { mutateAsync } = useExportProducts(searchParams);
+  const { handleSuccess } = useRouteModal();
 
   const handleExportRequest = async () => {
     await mutateAsync(
       {},
       {
         onSuccess: ({ url }) => {
-          toast.info(t("products.export.success.title"))
+          toast.info(t('products.export.success.title'));
 
-          const link = document.createElement("a")
-          link.href = url
-          link.setAttribute("download", `FileName.pdf`)
-          document.body.appendChild(link)
-          link.click()
-          link.parentNode?.removeChild(link)
-          handleSuccess()
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', `FileName.pdf`);
+          document.body.appendChild(link);
+          link.click();
+          link.parentNode?.removeChild(link);
+          handleSuccess();
         },
-        onError: (err) => {
-          toast.error(err.message)
-        },
+        onError: err => {
+          toast.error(err.message);
+        }
       }
-    )
-  }
+    );
+  };
 
   return (
     <>
@@ -60,15 +61,21 @@ const ProductExportContent = () => {
       <RouteDrawer.Footer>
         <div className="flex items-center gap-x-2">
           <RouteDrawer.Close asChild>
-            <Button size="small" variant="secondary">
-              {t("actions.cancel")}
+            <Button
+              size="small"
+              variant="secondary"
+            >
+              {t('actions.cancel')}
             </Button>
           </RouteDrawer.Close>
-          <Button onClick={handleExportRequest} size="small">
-            {t("actions.export")}
+          <Button
+            onClick={handleExportRequest}
+            size="small"
+          >
+            {t('actions.export')}
           </Button>
         </div>
       </RouteDrawer.Footer>
     </>
-  )
-}
+  );
+};

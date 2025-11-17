@@ -1,1 +1,1 @@
-export { ProductCreateOption as Component } from "./product-create-option"
+export { ProductCreateOption as Component } from './product-create-option';

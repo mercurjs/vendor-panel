@@ -1,1 +1,1 @@
-export * from "./workflow-execution-list-table"
+export * from './workflow-execution-list-table';

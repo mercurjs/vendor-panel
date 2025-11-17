@@ -1,1 +1,1 @@
-export * from "./price-list-customer-group-rule-form"
+export * from './price-list-customer-group-rule-form';

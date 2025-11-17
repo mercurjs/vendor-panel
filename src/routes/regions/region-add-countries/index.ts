@@ -1,1 +1,1 @@
-export { RegionAddCountries as Component } from "./region-add-countries"
+export { RegionAddCountries as Component } from './region-add-countries';

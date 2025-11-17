@@ -1,36 +1,34 @@
-import { useTranslation } from "react-i18next"
-import { PaymentProviderDTO } from "@medusajs/types"
+import { PaymentProviderDTO } from '@medusajs/types';
+import { useTranslation } from 'react-i18next';
 
-import { formatProvider } from "../../../../../lib/format-provider"
-import { PlaceholderCell } from "../../common/placeholder-cell"
-import { ListSummary } from "../../../../common/list-summary"
+import { formatProvider } from '../../../../../lib/format-provider';
+import { ListSummary } from '../../../../common/list-summary';
+import { PlaceholderCell } from '../../common/placeholder-cell';
 
 type PaymentProvidersCellProps = {
-  paymentProviders?: PaymentProviderDTO[] | null
-}
+  paymentProviders?: PaymentProviderDTO[] | null;
+};
 
-export const PaymentProvidersCell = ({
-  paymentProviders,
-}: PaymentProvidersCellProps) => {
+export const PaymentProvidersCell = ({ paymentProviders }: PaymentProvidersCellProps) => {
   if (!paymentProviders || paymentProviders.length === 0) {
-    return <PlaceholderCell />
+    return <PlaceholderCell />;
   }
 
-  const displayValues = paymentProviders.map((p) => formatProvider(p.id))
+  const displayValues = paymentProviders.map(p => formatProvider(p.id));
 
   return (
     <div className="flex size-full items-center overflow-hidden">
       <ListSummary list={displayValues} />
     </div>
-  )
-}
+  );
+};
 
 export const PaymentProvidersHeader = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <div className="flex size-full items-center overflow-hidden">
-      <span className="truncate">{t("fields.paymentProviders")}</span>
+      <span className="truncate">{t('fields.paymentProviders')}</span>
     </div>
-  )
-}
+  );
+};

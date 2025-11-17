@@ -1,29 +1,24 @@
-import { HttpTypes } from "@medusajs/types"
-import { UIMatch } from "react-router-dom"
+import { HttpTypes } from '@medusajs/types';
+import { UIMatch } from 'react-router-dom';
 
-import { useReservationItem } from "../../../hooks/api"
+import { useReservationItem } from '../../../hooks/api';
 
-type ReservationDetailBreadcrumbProps =
-  UIMatch<HttpTypes.AdminReservationResponse>
+type ReservationDetailBreadcrumbProps = UIMatch<HttpTypes.AdminReservationResponse>;
 
-export const ReservationDetailBreadcrumb = (
-  props: ReservationDetailBreadcrumbProps
-) => {
-  const { id } = props.params || {}
+export const ReservationDetailBreadcrumb = (props: ReservationDetailBreadcrumbProps) => {
+  const { id } = props.params || {};
 
   const { reservation } = useReservationItem(id!, undefined, {
     initialData: props.data,
-    enabled: Boolean(id),
-  })
+    enabled: Boolean(id)
+  });
 
   if (!reservation) {
-    return null
+    return null;
   }
 
   const display =
-    reservation?.inventory_item?.title ??
-    reservation?.inventory_item?.sku ??
-    reservation.id
+    reservation?.inventory_item?.title ?? reservation?.inventory_item?.sku ?? reservation.id;
 
-  return <span>{display}</span>
-}
+  return <span>{display}</span>;
+};

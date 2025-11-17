@@ -1,1 +1,1 @@
-export * from "./location-fulfillment-providers-section"
+export * from './location-fulfillment-providers-section';

@@ -1,1 +1,1 @@
-export { RegionList as Component } from "./region-list"
+export { RegionList as Component } from './region-list';

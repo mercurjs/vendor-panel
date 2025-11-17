@@ -1,28 +1,25 @@
-export type KeybindContextState = {}
+export type KeybindContextState = {};
 
-export type Platform = "Mac" | "Windows" | "Linux"
+export type Platform = 'Mac' | 'Windows' | 'Linux';
 
 export type Keys = {
-  [key in Platform]?: string[]
-}
+  [key in Platform]?: string[];
+};
 
-export type ShortcutType =
-  | "pageShortcut"
-  | "settingShortcut"
-  | "commandShortcut"
+export type ShortcutType = 'pageShortcut' | 'settingShortcut' | 'commandShortcut';
 
 export type Shortcut = {
-  keys: Keys
-  type: ShortcutType
-  label: string
-  _defaultKeys?: Keys
+  keys: Keys;
+  type: ShortcutType;
+  label: string;
+  _defaultKeys?: Keys;
 } & (
   | {
-      callback: () => void
-      to?: never
+      callback: () => void;
+      to?: never;
     }
   | {
-      to: string
-      callback?: never
+      to: string;
+      callback?: never;
     }
-)
+);

@@ -1,1 +1,1 @@
-export * from "./date-range-display"
+export * from './date-range-display';

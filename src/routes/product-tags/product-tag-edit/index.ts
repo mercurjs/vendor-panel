@@ -1,1 +1,1 @@
-export { ProductTagEdit as Component } from "./product-tag-edit"
+export { ProductTagEdit as Component } from './product-tag-edit';

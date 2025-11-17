@@ -1,2 +1,1 @@
-export * from "./use-activity-items"
-
+export * from './use-activity-items';

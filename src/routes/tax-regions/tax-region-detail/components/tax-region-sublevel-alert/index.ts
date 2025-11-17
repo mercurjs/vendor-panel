@@ -1,1 +1,1 @@
-export * from "./tax-region-sublevel-alert"
+export * from './tax-region-sublevel-alert';

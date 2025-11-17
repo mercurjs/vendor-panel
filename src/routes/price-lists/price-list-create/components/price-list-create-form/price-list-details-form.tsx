@@ -1,6 +1,7 @@
-import { MagnifyingGlass, XMarkMini } from "@medusajs/icons"
+import { MagnifyingGlass, XMarkMini } from '@medusajs/icons';
 import {
   Button,
+  clx,
   DatePicker,
   Divider,
   Heading,
@@ -9,60 +10,57 @@ import {
   RadioGroup,
   Select,
   Text,
-  Textarea,
-  clx,
-} from "@medusajs/ui"
-import { useFieldArray, type UseFormReturn } from "react-hook-form"
-import { useTranslation } from "react-i18next"
+  Textarea
+} from '@medusajs/ui';
+import { useFieldArray, type UseFormReturn } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
-import { Form } from "../../../../../components/common/form"
-import { StackedFocusModal } from "../../../../../components/modals/stacked-focus-modal"
-import { useStackedModal } from "../../../../../components/modals/stacked-modal-provider"
-import { PriceListCustomerGroupRuleForm } from "../../../common/components/price-list-customer-group-rule-form"
-import type {
-  PricingCreateSchemaType,
-  PricingCustomerGroupsArrayType,
-} from "./schema"
+import { Form } from '../../../../../components/common/form';
+import { StackedFocusModal } from '../../../../../components/modals/stacked-focus-modal';
+import { useStackedModal } from '../../../../../components/modals/stacked-modal-provider';
+import { PriceListCustomerGroupRuleForm } from '../../../common/components/price-list-customer-group-rule-form';
+import type { PricingCreateSchemaType, PricingCustomerGroupsArrayType } from './schema';
 
 type PriceListDetailsFormProps = {
-  form: UseFormReturn<PricingCreateSchemaType>
-}
+  form: UseFormReturn<PricingCreateSchemaType>;
+};
 
 export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const { fields, remove, append } = useFieldArray({
     control: form.control,
-    name: "rules.customer_group_id",
-    keyName: "cg_id",
-  })
+    name: 'rules.customer_group_id',
+    keyName: 'cg_id'
+  });
 
-  const { setIsOpen } = useStackedModal()
+  const { setIsOpen } = useStackedModal();
 
   const handleAddCustomerGroup = (groups: PricingCustomerGroupsArrayType) => {
-    const newIds = groups.map((group) => group.id)
+    const newIds = groups.map(group => group.id);
 
-    const fieldsToAdd = groups.filter(
-      (group) => !fields.some((field) => field.id === group.id)
-    )
+    const fieldsToAdd = groups.filter(group => !fields.some(field => field.id === group.id));
 
     for (const field of fields) {
       if (!newIds.includes(field.id)) {
-        remove(fields.indexOf(field))
+        remove(fields.indexOf(field));
       }
     }
 
-    append(fieldsToAdd)
-    setIsOpen("cg", false)
-  }
+    append(fieldsToAdd);
+    setIsOpen('cg', false);
+  };
 
   return (
     <div className="flex flex-1 flex-col items-center overflow-y-auto">
       <div className="flex w-full max-w-[720px] flex-col gap-y-8 px-8 py-16">
         <div>
-          <Heading>{t("priceLists.create.header")}</Heading>
-          <Text size="small" className="text-ui-fg-subtle">
-            {t("priceLists.create.subheader")}
+          <Heading>{t('priceLists.create.header')}</Heading>
+          <Text
+            size="small"
+            className="text-ui-fg-subtle"
+          >
+            {t('priceLists.create.subheader')}
           </Text>
         </div>
         <Form.Field
@@ -73,8 +71,8 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
               <Form.Item>
                 <div className="flex flex-col gap-y-4">
                   <div>
-                    <Form.Label>{t("priceLists.fields.type.label")}</Form.Label>
-                    <Form.Hint>{t("priceLists.fields.type.hint")}</Form.Hint>
+                    <Form.Label>{t('priceLists.fields.type.label')}</Form.Label>
+                    <Form.Hint>{t('priceLists.fields.type.hint')}</Form.Hint>
                   </div>
                   <Form.Control>
                     <RadioGroup
@@ -83,44 +81,38 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
                       className="grid grid-cols-1 gap-4 md:grid-cols-2"
                     >
                       <RadioGroup.ChoiceBox
-                        value={"sale"}
-                        label={t("priceLists.fields.type.options.sale.label")}
-                        description={t(
-                          "priceLists.fields.type.options.sale.description"
-                        )}
+                        value={'sale'}
+                        label={t('priceLists.fields.type.options.sale.label')}
+                        description={t('priceLists.fields.type.options.sale.description')}
                       />
                       <RadioGroup.ChoiceBox
-                        value={"override"}
-                        label={t(
-                          "priceLists.fields.type.options.override.label"
-                        )}
-                        description={t(
-                          "priceLists.fields.type.options.override.description"
-                        )}
+                        value={'override'}
+                        label={t('priceLists.fields.type.options.override.label')}
+                        description={t('priceLists.fields.type.options.override.description')}
                       />
                     </RadioGroup>
                   </Form.Control>
                 </div>
                 <Form.ErrorMessage />
               </Form.Item>
-            )
+            );
           }}
         />
         <div className="flex flex-col gap-y-4">
-          <div className="grid grid-cols-1  gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Form.Field
               control={form.control}
               name="title"
               render={({ field }) => {
                 return (
                   <Form.Item>
-                    <Form.Label>{t("fields.title")}</Form.Label>
+                    <Form.Label>{t('fields.title')}</Form.Label>
                     <Form.Control>
                       <Input {...field} />
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
             <Form.Field
@@ -129,27 +121,28 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
               render={({ field: { onChange, ref, ...field } }) => {
                 return (
                   <Form.Item>
-                    <Form.Label>
-                      {t("priceLists.fields.status.label")}
-                    </Form.Label>
+                    <Form.Label>{t('priceLists.fields.status.label')}</Form.Label>
                     <Form.Control>
-                      <Select {...field} onValueChange={onChange}>
+                      <Select
+                        {...field}
+                        onValueChange={onChange}
+                      >
                         <Select.Trigger ref={ref}>
                           <Select.Value />
                         </Select.Trigger>
                         <Select.Content>
                           <Select.Item value="active">
-                            {t("priceLists.fields.status.options.active")}
+                            {t('priceLists.fields.status.options.active')}
                           </Select.Item>
                           <Select.Item value="draft">
-                            {t("priceLists.fields.status.options.draft")}
+                            {t('priceLists.fields.status.options.draft')}
                           </Select.Item>
                         </Select.Content>
                       </Select>
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
           </div>
@@ -159,13 +152,13 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
             render={({ field }) => {
               return (
                 <Form.Item>
-                  <Form.Label>{t("fields.description")}</Form.Label>
+                  <Form.Label>{t('fields.description')}</Form.Label>
                   <Form.Control>
                     <Textarea {...field} />
                   </Form.Control>
                   <Form.ErrorMessage />
                 </Form.Item>
-              )
+              );
             }}
           />
         </div>
@@ -178,12 +171,8 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
               <Form.Item>
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                   <div className="flex flex-col">
-                    <Form.Label optional>
-                      {t("priceLists.fields.startsAt.label")}
-                    </Form.Label>
-                    <Form.Hint>
-                      {t("priceLists.fields.startsAt.hint")}
-                    </Form.Hint>
+                    <Form.Label optional>{t('priceLists.fields.startsAt.label')}</Form.Label>
+                    <Form.Hint>{t('priceLists.fields.startsAt.hint')}</Form.Hint>
                   </div>
                   <Form.Control>
                     <DatePicker
@@ -195,7 +184,7 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
                 </div>
                 <Form.ErrorMessage />
               </Form.Item>
-            )
+            );
           }}
         />
         <Divider />
@@ -207,10 +196,8 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
               <Form.Item>
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                   <div className="flex flex-col">
-                    <Form.Label optional>
-                      {t("priceLists.fields.endsAt.label")}
-                    </Form.Label>
-                    <Form.Hint>{t("priceLists.fields.endsAt.hint")}</Form.Hint>
+                    <Form.Label optional>{t('priceLists.fields.endsAt.label')}</Form.Label>
+                    <Form.Hint>{t('priceLists.fields.endsAt.hint')}</Form.Hint>
                   </div>
                   <Form.Control>
                     <DatePicker
@@ -222,7 +209,7 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
                 </div>
                 <Form.ErrorMessage />
               </Form.Item>
-            )
+            );
           }}
         />
         <Divider />
@@ -234,27 +221,25 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
               <Form.Item>
                 <div>
                   <Form.Label optional>
-                    {t("priceLists.fields.customerAvailability.label")}
+                    {t('priceLists.fields.customerAvailability.label')}
                   </Form.Label>
-                  <Form.Hint>
-                    {t("priceLists.fields.customerAvailability.hint")}
-                  </Form.Hint>
+                  <Form.Hint>{t('priceLists.fields.customerAvailability.hint')}</Form.Hint>
                 </div>
                 <Form.Control>
                   <div
                     className={clx(
-                      "bg-ui-bg-component shadow-elevation-card-rest transition-fg grid gap-1.5 rounded-xl py-1.5",
+                      'grid gap-1.5 rounded-xl bg-ui-bg-component py-1.5 shadow-elevation-card-rest transition-fg',
                       "aria-[invalid='true']:shadow-borders-error"
                     )}
                     role="application"
                     ref={field.ref}
                   >
-                    <div className="text-ui-fg-subtle grid gap-1.5 px-1.5 md:grid-cols-2">
-                      <div className="bg-ui-bg-field shadow-borders-base txt-compact-small rounded-md px-2 py-1.5">
-                        {t("priceLists.fields.customerAvailability.attribute")}
+                    <div className="grid gap-1.5 px-1.5 text-ui-fg-subtle md:grid-cols-2">
+                      <div className="txt-compact-small rounded-md bg-ui-bg-field px-2 py-1.5 shadow-borders-base">
+                        {t('priceLists.fields.customerAvailability.attribute')}
                       </div>
-                      <div className="bg-ui-bg-field shadow-borders-base txt-compact-small rounded-md px-2 py-1.5">
-                        {t("operators.in")}
+                      <div className="txt-compact-small rounded-md bg-ui-bg-field px-2 py-1.5 shadow-borders-base">
+                        {t('operators.in')}
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5 px-1.5">
@@ -262,18 +247,14 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
                         <StackedFocusModal.Trigger asChild>
                           <button
                             type="button"
-                            className="bg-ui-bg-field-component hover:bg-ui-bg-field-component-hover shadow-borders-base txt-compact-small text-ui-fg-muted transition-fg focus-visible:shadow-borders-interactive-with-active flex flex-1 items-center gap-x-2 rounded-md px-2 py-1.5 outline-none"
+                            className="txt-compact-small flex flex-1 items-center gap-x-2 rounded-md bg-ui-bg-field-component px-2 py-1.5 text-ui-fg-muted shadow-borders-base outline-none transition-fg hover:bg-ui-bg-field-component-hover focus-visible:shadow-borders-interactive-with-active"
                           >
                             <MagnifyingGlass />
-                            {t(
-                              "priceLists.fields.customerAvailability.placeholder"
-                            )}
+                            {t('priceLists.fields.customerAvailability.placeholder')}
                           </button>
                         </StackedFocusModal.Trigger>
                         <StackedFocusModal.Trigger asChild>
-                          <Button variant="secondary">
-                            {t("actions.browse")}
-                          </Button>
+                          <Button variant="secondary">{t('actions.browse')}</Button>
                         </StackedFocusModal.Trigger>
                         <StackedFocusModal.Content>
                           <StackedFocusModal.Header />
@@ -293,9 +274,12 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
                             return (
                               <div
                                 key={field.cg_id}
-                                className="bg-ui-bg-field-component shadow-borders-base flex items-center justify-between gap-2 rounded-md px-2 py-0.5"
+                                className="flex items-center justify-between gap-2 rounded-md bg-ui-bg-field-component px-2 py-0.5 shadow-borders-base"
                               >
-                                <Text size="small" leading="compact">
+                                <Text
+                                  size="small"
+                                  leading="compact"
+                                >
                                   {field.name}
                                 </Text>
                                 <IconButton
@@ -307,7 +291,7 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
                                   <XMarkMini />
                                 </IconButton>
                               </div>
-                            )
+                            );
                           })}
                         </div>
                       </div>
@@ -316,10 +300,10 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
                 </Form.Control>
                 <Form.ErrorMessage />
               </Form.Item>
-            )
+            );
           }}
         />
       </div>
     </div>
-  )
-}
+  );
+};

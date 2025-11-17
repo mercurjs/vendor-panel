@@ -1,1 +1,1 @@
-export { InventoryItemListTable as Component } from "./inventory-list"
+export { InventoryItemListTable as Component } from './inventory-list';

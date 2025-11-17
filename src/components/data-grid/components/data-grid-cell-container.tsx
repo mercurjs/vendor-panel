@@ -1,11 +1,12 @@
-import { ErrorMessage } from "@hookform/error-message"
-import { ExclamationCircle } from "@medusajs/icons"
-import { Tooltip, clx } from "@medusajs/ui"
-import { PropsWithChildren } from "react"
-import { get } from "react-hook-form"
+import { PropsWithChildren } from 'react';
 
-import { DataGridCellContainerProps, DataGridErrorRenderProps } from "../types"
-import { DataGridRowErrorIndicator } from "./data-grid-row-error-indicator"
+import { ErrorMessage } from '@hookform/error-message';
+import { ExclamationCircle } from '@medusajs/icons';
+import { clx, Tooltip } from '@medusajs/ui';
+import { get } from 'react-hook-form';
+
+import { DataGridCellContainerProps, DataGridErrorRenderProps } from '../types';
+import { DataGridRowErrorIndicator } from './data-grid-row-error-indicator';
 
 export const DataGridCellContainer = ({
   isAnchor,
@@ -19,23 +20,22 @@ export const DataGridCellContainer = ({
   children,
   errors,
   rowErrors,
-  outerComponent,
+  outerComponent
 }: DataGridCellContainerProps & DataGridErrorRenderProps<any>) => {
-  const error = get(errors, field)
-  const hasError = !!error
+  const error = get(errors, field);
+  const hasError = !!error;
 
   return (
     <div className="group/container relative size-full">
       <div
         className={clx(
-          "bg-ui-bg-base group/cell relative flex size-full items-center gap-x-2 px-4 py-2.5 outline-none",
+          'group/cell relative flex size-full items-center gap-x-2 bg-ui-bg-base px-4 py-2.5 outline-none',
           {
-            "bg-ui-tag-red-bg text-ui-tag-red-text":
+            'bg-ui-tag-red-bg text-ui-tag-red-text':
               hasError && !isAnchor && !isSelected && !isDragSelected,
-            "ring-ui-bg-interactive ring-2 ring-inset": isAnchor,
-            "bg-ui-bg-highlight [&:has([data-field]:focus)]:bg-ui-bg-base":
-              isSelected || isAnchor,
-            "bg-ui-bg-subtle": isDragSelected && !isAnchor,
+            'ring-2 ring-inset ring-ui-bg-interactive': isAnchor,
+            'bg-ui-bg-highlight [&:has([data-field]:focus)]:bg-ui-bg-base': isSelected || isAnchor,
+            'bg-ui-bg-subtle': isDragSelected && !isAnchor
           }
         )}
         tabIndex={-1}
@@ -47,15 +47,21 @@ export const DataGridCellContainer = ({
           render={({ message }) => {
             return (
               <div className="flex items-center justify-center">
-                <Tooltip content={message} delayDuration={0}>
-                  <ExclamationCircle className="text-ui-tag-red-icon z-[3]" />
+                <Tooltip
+                  content={message}
+                  delayDuration={0}
+                >
+                  <ExclamationCircle className="z-[3] text-ui-tag-red-icon" />
                 </Tooltip>
               </div>
-            )
+            );
           }}
         />
         <div className="relative z-[1] flex size-full items-center justify-center">
-          <RenderChildren isAnchor={isAnchor} placeholder={placeholder}>
+          <RenderChildren
+            isAnchor={isAnchor}
+            placeholder={placeholder}
+          >
             {children}
           </RenderChildren>
         </div>
@@ -70,19 +76,17 @@ export const DataGridCellContainer = ({
       </div>
       {outerComponent}
     </div>
-  )
-}
+  );
+};
 
 const RenderChildren = ({
   isAnchor,
   placeholder,
-  children,
-}: PropsWithChildren<
-  Pick<DataGridCellContainerProps, "isAnchor" | "placeholder">
->) => {
+  children
+}: PropsWithChildren<Pick<DataGridCellContainerProps, 'isAnchor' | 'placeholder'>>) => {
   if (!isAnchor && placeholder) {
-    return placeholder
+    return placeholder;
   }
 
-  return children
-}
+  return children;
+};

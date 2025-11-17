@@ -1,1 +1,1 @@
-export * from "./tax-region-list-view"
+export * from './tax-region-list-view';

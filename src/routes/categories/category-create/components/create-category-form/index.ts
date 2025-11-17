@@ -1,1 +1,1 @@
-export * from "./create-category-form"
+export * from './create-category-form';

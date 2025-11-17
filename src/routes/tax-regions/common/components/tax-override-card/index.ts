@@ -1,1 +1,1 @@
-export * from "./tax-override-card"
+export * from './tax-override-card';

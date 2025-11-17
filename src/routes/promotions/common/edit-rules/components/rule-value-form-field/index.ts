@@ -1,1 +1,1 @@
-export * from "./rule-value-form-field"
+export * from './rule-value-form-field';

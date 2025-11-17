@@ -1,1 +1,1 @@
-export { CollectionCreate as Component } from "./collection-create"
+export { CollectionCreate as Component } from './collection-create';

@@ -1,1 +1,1 @@
-export * from "./display-id-cell"
+export * from './display-id-cell';

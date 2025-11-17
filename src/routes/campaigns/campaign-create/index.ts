@@ -1,1 +1,1 @@
-export { CampaignCreate as Component } from "./campaign-create"
+export { CampaignCreate as Component } from './campaign-create';

@@ -1,1 +1,1 @@
-export * from "./user-list-table"
+export * from './user-list-table';

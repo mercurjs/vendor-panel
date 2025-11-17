@@ -1,1 +1,1 @@
-export * from "./order-fulfillment-section"
+export * from './order-fulfillment-section';

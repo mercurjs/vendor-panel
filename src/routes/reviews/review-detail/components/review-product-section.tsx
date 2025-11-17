@@ -1,4 +1,4 @@
-import { Container, Heading } from "@medusajs/ui"
+import { Container, Heading } from '@medusajs/ui';
 
 export const ReviewProductSection = () => {
   return (
@@ -7,5 +7,5 @@ export const ReviewProductSection = () => {
         <Heading>Order</Heading>
       </div>
     </Container>
-  )
-}
+  );
+};

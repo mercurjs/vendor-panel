@@ -1,1 +1,1 @@
-export { ApiKeyManagementEdit as Component } from "./api-key-management-edit"
+export { ApiKeyManagementEdit as Component } from './api-key-management-edit';

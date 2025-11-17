@@ -1,1 +1,1 @@
-export * from "./product-create-general-section"
+export * from './product-create-general-section';

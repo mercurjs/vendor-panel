@@ -1,1 +1,1 @@
-export * from "./is-return-cell"
+export * from './is-return-cell';

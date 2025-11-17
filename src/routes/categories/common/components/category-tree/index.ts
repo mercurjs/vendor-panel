@@ -1,1 +1,1 @@
-export * from "./category-tree"
+export * from './category-tree';

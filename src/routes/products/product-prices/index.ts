@@ -1,1 +1,1 @@
-export { ProductPrices as Component } from "./product-prices"
+export { ProductPrices as Component } from './product-prices';

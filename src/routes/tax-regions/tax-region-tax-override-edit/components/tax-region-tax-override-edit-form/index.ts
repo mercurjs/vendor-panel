@@ -1,1 +1,1 @@
-export * from "./tax-region-tax-override-edit-form"
+export * from './tax-region-tax-override-edit-form';

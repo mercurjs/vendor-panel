@@ -1,1 +1,1 @@
-export * from "./create-service-zone-form"
+export * from './create-service-zone-form';

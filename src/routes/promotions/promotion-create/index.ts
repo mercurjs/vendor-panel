@@ -1,1 +1,1 @@
-export { PromotionCreate as Component } from "./promotion-create"
+export { PromotionCreate as Component } from './promotion-create';

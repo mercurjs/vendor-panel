@@ -1,7 +1,8 @@
-import i18next from "i18next"
-import { FieldPath, FieldValues, UseFormReturn } from "react-hook-form"
-import { z } from "zod"
-import { castNumber } from "./cast-number"
+import i18next from 'i18next';
+import { FieldPath, FieldValues, UseFormReturn } from 'react-hook-form';
+import { z } from 'zod';
+
+import { castNumber } from './cast-number';
 
 /**
  * Validates that an optional value is an integer.
@@ -10,29 +11,29 @@ export const optionalInt = z
   .union([z.string(), z.number()])
   .optional()
   .refine(
-    (value) => {
-      if (value === "" || value === undefined) {
-        return true
+    value => {
+      if (value === '' || value === undefined) {
+        return true;
       }
 
-      return Number.isInteger(castNumber(value))
+      return Number.isInteger(castNumber(value));
     },
     {
-      message: i18next.t("validation.mustBeInt"),
+      message: i18next.t('validation.mustBeInt')
     }
   )
   .refine(
-    (value) => {
-      if (value === "" || value === undefined) {
-        return true
+    value => {
+      if (value === '' || value === undefined) {
+        return true;
       }
 
-      return castNumber(value) >= 0
+      return castNumber(value) >= 0;
     },
     {
-      message: i18next.t("validation.mustBePositive"),
+      message: i18next.t('validation.mustBePositive')
     }
-  )
+  );
 
 /**
  * Validates that an optional value is an number.
@@ -41,17 +42,17 @@ export const optionalFloat = z
   .union([z.string(), z.number()])
   .optional()
   .refine(
-    (value) => {
-      if (value === "" || value === undefined) {
-        return true
+    value => {
+      if (value === '' || value === undefined) {
+        return true;
       }
 
-      return castNumber(value) >= 0
+      return castNumber(value) >= 0;
     },
     {
-      message: i18next.t("validation.mustBePositive"),
+      message: i18next.t('validation.mustBePositive')
     }
-  )
+  );
 
 /**
  * Schema for metadata form.
@@ -62,9 +63,9 @@ export const metadataFormSchema = z.array(
     value: z.unknown(),
     isInitial: z.boolean().optional(),
     isDeleted: z.boolean().optional(),
-    isIgnored: z.boolean().optional(),
+    isIgnored: z.boolean().optional()
   })
-)
+);
 
 /**
  * Validate subset of form fields
@@ -77,28 +78,28 @@ export function partialFormValidation<TForm extends FieldValues>(
   fields: FieldPath<any>[],
   schema: z.ZodSchema<any>
 ) {
-  form.clearErrors(fields as any)
+  form.clearErrors(fields as any);
 
   const values = fields.reduce(
     (acc, key) => {
-      acc[key] = form.getValues(key as any)
-      return acc
+      acc[key] = form.getValues(key as any);
+      return acc;
     },
     {} as Record<string, unknown>
-  )
+  );
 
-  const validationResult = schema.safeParse(values)
+  const validationResult = schema.safeParse(values);
 
   if (!validationResult.success) {
     validationResult.error.errors.forEach(({ path, message, code }) => {
-      form.setError(path.join(".") as any, {
+      form.setError(path.join('.') as any, {
         type: code,
-        message,
-      })
-    })
+        message
+      });
+    });
 
-    return false
+    return false;
   }
 
-  return true
+  return true;
 }

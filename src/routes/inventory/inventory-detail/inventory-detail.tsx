@@ -1,41 +1,38 @@
-import { useLoaderData, useParams } from "react-router-dom"
+import { useLoaderData, useParams } from 'react-router-dom';
 
-import { TwoColumnPageSkeleton } from "../../../components/common/skeleton"
-import { TwoColumnPage } from "../../../components/layout/pages"
-import { useInventoryItem } from "../../../hooks/api/inventory"
-import { InventoryItemAttributeSection } from "./components/inventory-item-attributes/attributes-section"
-import { InventoryItemGeneralSection } from "./components/inventory-item-general-section"
-import { InventoryItemLocationLevelsSection } from "./components/inventory-item-location-levels"
-import { InventoryItemReservationsSection } from "./components/inventory-item-reservations"
-import { InventoryItemVariantsSection } from "./components/inventory-item-variants/variants-section"
-import { inventoryItemLoader } from "./loader"
-
-import { useDashboardExtension } from "../../../extensions"
-import { INVENTORY_DETAIL_FIELDS } from "./constants"
+import { TwoColumnPageSkeleton } from '../../../components/common/skeleton';
+import { TwoColumnPage } from '../../../components/layout/pages';
+import { useDashboardExtension } from '../../../extensions';
+import { useInventoryItem } from '../../../hooks/api/inventory';
+import { InventoryItemAttributeSection } from './components/inventory-item-attributes/attributes-section';
+import { InventoryItemGeneralSection } from './components/inventory-item-general-section';
+import { InventoryItemLocationLevelsSection } from './components/inventory-item-location-levels';
+import { InventoryItemReservationsSection } from './components/inventory-item-reservations';
+import { InventoryItemVariantsSection } from './components/inventory-item-variants/variants-section';
+import { INVENTORY_DETAIL_FIELDS } from './constants';
+import { inventoryItemLoader } from './loader';
 
 export const InventoryDetail = () => {
-  const { id } = useParams()
+  const { id } = useParams();
 
-  const initialData = useLoaderData() as Awaited<
-    ReturnType<typeof inventoryItemLoader>
-  >
+  const initialData = useLoaderData() as Awaited<ReturnType<typeof inventoryItemLoader>>;
 
   const {
     inventory_item,
     isPending: isLoading,
     isError,
-    error,
+    error
   } = useInventoryItem(
     id!,
     {
-      fields: INVENTORY_DETAIL_FIELDS,
+      fields: INVENTORY_DETAIL_FIELDS
     },
     {
-      initialData,
+      initialData
     }
-  )
+  );
 
-  const { getWidgets } = useDashboardExtension()
+  const { getWidgets } = useDashboardExtension();
 
   if (isLoading || !inventory_item) {
     return (
@@ -45,20 +42,20 @@ export const InventoryDetail = () => {
         sidebarSections={2}
         showMetadata
       />
-    )
+    );
   }
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   return (
     <TwoColumnPage
       widgets={{
-        after: getWidgets("inventory_item.details.after"),
-        before: getWidgets("inventory_item.details.before"),
-        sideAfter: getWidgets("inventory_item.details.side.after"),
-        sideBefore: getWidgets("inventory_item.details.side.before"),
+        after: getWidgets('inventory_item.details.after'),
+        before: getWidgets('inventory_item.details.before'),
+        sideAfter: getWidgets('inventory_item.details.side.after'),
+        sideBefore: getWidgets('inventory_item.details.side.before')
       }}
       data={inventory_item}
     >
@@ -68,11 +65,9 @@ export const InventoryDetail = () => {
         <InventoryItemReservationsSection inventoryItem={inventory_item} />
       </TwoColumnPage.Main>
       <TwoColumnPage.Sidebar>
-        <InventoryItemVariantsSection
-          variants={(inventory_item as any).variants}
-        />
+        <InventoryItemVariantsSection variants={(inventory_item as any).variants} />
         <InventoryItemAttributeSection inventoryItem={inventory_item as any} />
       </TwoColumnPage.Sidebar>
     </TwoColumnPage>
-  )
-}
+  );
+};

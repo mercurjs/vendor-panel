@@ -1,1 +1,1 @@
-export * from "./product-media-view"
+export * from './product-media-view';

@@ -1,1 +1,1 @@
-export * from "./target-item"
+export * from './target-item';

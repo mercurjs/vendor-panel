@@ -1,1 +1,1 @@
-export * from "./product-create-details-organize-section"
+export * from './product-create-details-organize-section';

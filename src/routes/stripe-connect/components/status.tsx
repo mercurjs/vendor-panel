@@ -1,21 +1,21 @@
-import { StatusCell as StatusCell_ } from "../../../components/table/table-cells/common/status-cell"
+import { StatusCell as StatusCell_ } from '../../../components/table/table-cells/common/status-cell';
 
 type StatusCellProps = {
-  status: "pending" | "connected" | "not connected"
-}
+  status: 'pending' | 'connected' | 'not connected';
+};
 
 const getStatusColor: any = (status: string) => {
   switch (status) {
-    case "pending":
-      return "orange"
-    case "connected":
-      return "green"
-    case "not connected":
-      return "red"
+    case 'pending':
+      return 'orange';
+    case 'connected':
+      return 'green';
+    case 'not connected':
+      return 'red';
     default:
-      return "grey"
+      return 'grey';
   }
-}
+};
 
 export const Status = ({ status }: StatusCellProps) => {
   return (
@@ -24,5 +24,5 @@ export const Status = ({ status }: StatusCellProps) => {
         <StatusCell_ color={getStatusColor(status)}>{status}</StatusCell_>
       </span>
     </div>
-  )
-}
+  );
+};

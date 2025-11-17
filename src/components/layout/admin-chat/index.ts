@@ -1,1 +1,1 @@
-export * from "./AdminChat"
+export * from './AdminChat';

@@ -1,1 +1,1 @@
-export { CategoryProducts as Component } from "./category-products"
+export { CategoryProducts as Component } from './category-products';

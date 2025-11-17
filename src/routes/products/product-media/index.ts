@@ -1,1 +1,1 @@
-export { ProductMedia as Component } from "./product-media"
+export { ProductMedia as Component } from './product-media';

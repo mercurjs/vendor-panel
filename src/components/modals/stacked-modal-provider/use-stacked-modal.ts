@@ -1,14 +1,13 @@
-import { useContext } from "react"
-import { StackedModalContext } from "./stacked-modal-context"
+import { useContext } from 'react';
+
+import { StackedModalContext } from './stacked-modal-context';
 
 export const useStackedModal = () => {
-  const context = useContext(StackedModalContext)
+  const context = useContext(StackedModalContext);
 
   if (!context) {
-    throw new Error(
-      "useStackedModal must be used within a StackedModalProvider"
-    )
+    throw new Error('useStackedModal must be used within a StackedModalProvider');
   }
 
-  return context
-}
+  return context;
+};

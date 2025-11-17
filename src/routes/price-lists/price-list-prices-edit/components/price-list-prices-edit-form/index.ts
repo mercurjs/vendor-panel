@@ -1,1 +1,1 @@
-export * from "./price-list-prices-edit-form"
+export * from './price-list-prices-edit-form';

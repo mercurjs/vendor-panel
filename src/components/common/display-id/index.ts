@@ -1,1 +1,1 @@
-export * from "./display-id"
+export * from './display-id';

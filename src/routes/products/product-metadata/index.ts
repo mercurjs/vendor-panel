@@ -1,1 +1,1 @@
-export { ProductMetadata as Component } from "./product-metadata"
+export { ProductMetadata as Component } from './product-metadata';

@@ -1,9 +1,9 @@
-import { createContext } from "react"
+import { createContext } from 'react';
 
 type SearchContextValue = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  toggleSearch: () => void
-}
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  toggleSearch: () => void;
+};
 
-export const SearchContext = createContext<SearchContextValue | null>(null)
+export const SearchContext = createContext<SearchContextValue | null>(null);

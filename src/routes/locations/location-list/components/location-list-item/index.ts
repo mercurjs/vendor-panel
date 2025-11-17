@@ -1,1 +1,1 @@
-export * from "./location-list-item"
+export * from './location-list-item';

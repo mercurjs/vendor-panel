@@ -1,1 +1,1 @@
-export * from "./return-reason-list-table"
+export * from './return-reason-list-table';

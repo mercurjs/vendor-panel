@@ -1,1 +1,1 @@
-export * from "./product-create-inventory-kit-section"
+export * from './product-create-inventory-kit-section';

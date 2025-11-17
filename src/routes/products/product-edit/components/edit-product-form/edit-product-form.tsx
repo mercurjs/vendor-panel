@@ -1,78 +1,74 @@
-import { Button, Input, Text, Textarea, toast } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
-import * as zod from "zod"
+import { Button, Input, Text, Textarea, toast } from '@medusajs/ui';
+import { useTranslation } from 'react-i18next';
+import * as zod from 'zod';
 
-import { ExtendedAdminProduct } from "../../../../../types/products"
-import { Form } from "../../../../../components/common/form"
-import { SwitchBox } from "../../../../../components/common/switch-box"
-import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
-import { useExtendableForm } from "../../../../../extensions/forms/hooks"
-import { useUpdateProduct } from "../../../../../hooks/api/products"
-
-import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import {
-  FormExtensionZone,
-  useDashboardExtension,
-} from "../../../../../extensions"
+import { Form } from '../../../../../components/common/form';
+import { SwitchBox } from '../../../../../components/common/switch-box';
+import { RouteDrawer, useRouteModal } from '../../../../../components/modals';
+import { KeyboundForm } from '../../../../../components/utilities/keybound-form';
+import { FormExtensionZone, useDashboardExtension } from '../../../../../extensions';
+import { useExtendableForm } from '../../../../../extensions/forms/hooks';
+import { useUpdateProduct } from '../../../../../hooks/api/products';
+import { ExtendedAdminProduct } from '../../../../../types/products';
 
 type EditProductFormProps = {
-  product: ExtendedAdminProduct
-}
+  product: ExtendedAdminProduct;
+};
 
 const EditProductSchema = zod.object({
   title: zod.string().min(1),
   handle: zod.string().min(1),
   description: zod.string().optional(),
-  discountable: zod.boolean(),
-})
+  discountable: zod.boolean()
+});
 
 export const EditProductForm = ({ product }: EditProductFormProps) => {
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
 
-  const { getFormFields, getFormConfigs } = useDashboardExtension()
-  const fields = getFormFields("product", "edit")
-  const configs = getFormConfigs("product", "edit")
+  const { getFormFields, getFormConfigs } = useDashboardExtension();
+  const fields = getFormFields('product', 'edit');
+  const configs = getFormConfigs('product', 'edit');
 
   const form = useExtendableForm({
     defaultValues: {
       title: product.title,
-      handle: product.handle || "",
-      description: product.description || "",
-      discountable: product.discountable,
+      handle: product.handle || '',
+      description: product.description || '',
+      discountable: product.discountable
     },
     schema: EditProductSchema,
     configs: configs,
-    data: product,
-  })
+    data: product
+  });
 
-  const { mutateAsync, isPending } = useUpdateProduct(product.id)
+  const { mutateAsync, isPending } = useUpdateProduct(product.id);
 
-  const handleSubmit = form.handleSubmit(async (data) => {
-    const { description, discountable, handle, title } = data
+  const handleSubmit = form.handleSubmit(async data => {
+    const { description, discountable, handle, title } = data;
 
     await mutateAsync(
       {
         description,
         discountable,
         handle,
-        title,
+        title
       },
       {
         onSuccess: ({ product }) => {
           toast.success(
-            t("products.edit.successToast", {
-              title: product.title,
+            t('products.edit.successToast', {
+              title: product.title
             })
-          )
-          handleSuccess(`/products/${product.id}`)
+          );
+          handleSuccess(`/products/${product.id}`);
         },
-        onError: (e) => {
-          toast.error(e.message)
-        },
+        onError: e => {
+          toast.error(e.message);
+        }
       }
-    )
-  })
+    );
+  });
 
   return (
     <RouteDrawer.Form form={form}>
@@ -124,13 +120,13 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
                 render={({ field }) => {
                   return (
                     <Form.Item>
-                      <Form.Label>{t("fields.title")}</Form.Label>
+                      <Form.Label>{t('fields.title')}</Form.Label>
                       <Form.Control>
                         <Input {...field} />
                       </Form.Control>
                       <Form.ErrorMessage />
                     </Form.Item>
-                  )
+                  );
                 }}
               />
               {/* <Form.Field
@@ -156,7 +152,7 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
                 render={({ field }) => {
                   return (
                     <Form.Item>
-                      <Form.Label>{t("fields.handle")}</Form.Label>
+                      <Form.Label>{t('fields.handle')}</Form.Label>
                       <Form.Control>
                         <div className="relative">
                           <div className="absolute inset-y-0 left-0 z-10 flex w-8 items-center justify-center border-r">
@@ -169,12 +165,15 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
                               /
                             </Text>
                           </div>
-                          <Input {...field} className="pl-10" />
+                          <Input
+                            {...field}
+                            className="pl-10"
+                          />
                         </div>
                       </Form.Control>
                       <Form.ErrorMessage />
                     </Form.Item>
-                  )
+                  );
                 }}
               />
               {/* <Form.Field
@@ -200,40 +199,48 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
                 render={({ field }) => {
                   return (
                     <Form.Item>
-                      <Form.Label optional>
-                        {t("fields.description")}
-                      </Form.Label>
+                      <Form.Label optional>{t('fields.description')}</Form.Label>
                       <Form.Control>
                         <Textarea {...field} />
                       </Form.Control>
                       <Form.ErrorMessage />
                     </Form.Item>
-                  )
+                  );
                 }}
               />
             </div>
             <SwitchBox
               control={form.control}
               name="discountable"
-              label={t("fields.discountable")}
-              description={t("products.discountableHint")}
+              label={t('fields.discountable')}
+              description={t('products.discountableHint')}
             />
-            <FormExtensionZone fields={fields} form={form} />
+            <FormExtensionZone
+              fields={fields}
+              form={form}
+            />
           </div>
         </RouteDrawer.Body>
         <RouteDrawer.Footer>
           <div className="flex items-center justify-end gap-x-2">
             <RouteDrawer.Close asChild>
-              <Button size="small" variant="secondary">
-                {t("actions.cancel")}
+              <Button
+                size="small"
+                variant="secondary"
+              >
+                {t('actions.cancel')}
               </Button>
             </RouteDrawer.Close>
-            <Button size="small" type="submit" isLoading={isPending}>
-              {t("actions.save")}
+            <Button
+              size="small"
+              type="submit"
+              isLoading={isPending}
+            >
+              {t('actions.save')}
             </Button>
           </div>
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  )
-}
+  );
+};

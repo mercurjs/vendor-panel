@@ -1,14 +1,15 @@
-import { z } from "zod"
-import { i18n } from "../../../components/utilities/i18n/i18n"
-import { optionalFloat, optionalInt } from "../../../lib/validation"
-import { decorateVariantsWithDefaultValues } from "./utils"
+import { z } from 'zod';
+
+import { i18n } from '../../../components/utilities/i18n/i18n';
+import { optionalFloat, optionalInt } from '../../../lib/validation';
+import { decorateVariantsWithDefaultValues } from './utils';
 
 export const MediaSchema = z.object({
   id: z.string().optional(),
   url: z.string(),
   isThumbnail: z.boolean(),
-  file: z.any().nullable(), // File
-})
+  file: z.any().nullable() // File
+});
 
 const ProductCreateVariantSchema = z.object({
   should_create: z.boolean(),
@@ -36,24 +37,20 @@ const ProductCreateVariantSchema = z.object({
     .array(
       z.object({
         inventory_item_id: z.string(),
-        required_quantity: optionalInt,
+        required_quantity: optionalInt
       })
     )
-    .optional(),
-})
+    .optional()
+});
 
-export type ProductCreateVariantSchema = z.infer<
-  typeof ProductCreateVariantSchema
->
+export type ProductCreateVariantSchema = z.infer<typeof ProductCreateVariantSchema>;
 
 const ProductCreateOptionSchema = z.object({
   title: z.string(),
-  values: z.array(z.string()).min(1),
-})
+  values: z.array(z.string()).min(1)
+});
 
-export type ProductCreateOptionSchema = z.infer<
-  typeof ProductCreateOptionSchema
->
+export type ProductCreateOptionSchema = z.infer<typeof ProductCreateOptionSchema>;
 
 export const ProductCreateSchema = z
   .object({
@@ -71,7 +68,7 @@ export const ProductCreateSchema = z
       .array(
         z.object({
           id: z.string(),
-          name: z.string(),
+          name: z.string()
         })
       )
       .optional(),
@@ -86,18 +83,18 @@ export const ProductCreateSchema = z
     options: z.array(ProductCreateOptionSchema).min(1),
     enable_variants: z.boolean(),
     variants: z.array(ProductCreateVariantSchema).min(1),
-    media: z.array(MediaSchema).optional(),
+    media: z.array(MediaSchema).optional()
   })
   .superRefine((data, ctx) => {
-    if (data.variants.every((v) => !v.should_create)) {
+    if (data.variants.every(v => !v.should_create)) {
       return ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        path: ["variants"],
-        message: "invalid_length",
-      })
+        path: ['variants'],
+        message: 'invalid_length'
+      });
     }
 
-    const skus = new Set<string>()
+    const skus = new Set<string>();
 
     data.variants.forEach((v, index) => {
       if (v.sku) {
@@ -105,59 +102,57 @@ export const ProductCreateSchema = z
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: [`variants.${index}.sku`],
-            message: i18n.t("products.create.errors.uniqueSku"),
-          })
+            message: i18n.t('products.create.errors.uniqueSku')
+          });
         }
 
-        skus.add(v.sku)
+        skus.add(v.sku);
       }
-    })
-  })
+    });
+  });
 
 export const EditProductMediaSchema = z.object({
-  media: z.array(MediaSchema),
-})
+  media: z.array(MediaSchema)
+});
 
-export const PRODUCT_CREATE_FORM_DEFAULTS: Partial<
-  z.infer<typeof ProductCreateSchema>
-> = {
+export const PRODUCT_CREATE_FORM_DEFAULTS: Partial<z.infer<typeof ProductCreateSchema>> = {
   discountable: true,
   tags: [],
   sales_channels: [],
   options: [
     {
-      title: "Default option",
-      values: ["Default option value"],
-    },
+      title: 'Default option',
+      values: ['Default option value']
+    }
   ],
   variants: decorateVariantsWithDefaultValues([
     {
-      title: "Default variant",
+      title: 'Default variant',
       should_create: true,
       variant_rank: 0,
       options: {
-        "Default option": "Default option value",
+        'Default option': 'Default option value'
       },
-      inventory: [{ inventory_item_id: "", required_quantity: "" }],
-      is_default: true,
-    },
+      inventory: [{ inventory_item_id: '', required_quantity: '' }],
+      is_default: true
+    }
   ]),
   enable_variants: false,
   media: [],
   categories: [],
-  collection_id: "",
-  shipping_profile_id: "",
-  description: "",
-  handle: "",
-  height: "",
-  hs_code: "",
-  length: "",
-  material: "",
-  mid_code: "",
-  origin_country: "",
-  subtitle: "",
-  title: "",
-  type_id: "",
-  weight: "",
-  width: "",
-}
+  collection_id: '',
+  shipping_profile_id: '',
+  description: '',
+  handle: '',
+  height: '',
+  hs_code: '',
+  length: '',
+  material: '',
+  mid_code: '',
+  origin_country: '',
+  subtitle: '',
+  title: '',
+  type_id: '',
+  weight: '',
+  width: ''
+};

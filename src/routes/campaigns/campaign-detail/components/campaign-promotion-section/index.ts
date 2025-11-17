@@ -1,1 +1,1 @@
-export * from "./campaign-promotion-section"
+export * from './campaign-promotion-section';

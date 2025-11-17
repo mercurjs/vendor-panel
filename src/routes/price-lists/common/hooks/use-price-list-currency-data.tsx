@@ -1,52 +1,52 @@
-import { HttpTypes } from "@medusajs/types"
-import { useRegions } from "../../../../hooks/api/regions"
-import { useStore } from "../../../../hooks/api/store"
+import { HttpTypes } from '@medusajs/types';
+
+import { useRegions } from '../../../../hooks/api/regions';
+import { useStore } from '../../../../hooks/api/store';
 
 type UsePriceListCurrencyDataReturn =
   | {
-      isReady: false
-      currencies: undefined
-      regions: undefined
-      pricePreferences: undefined
+      isReady: false;
+      currencies: undefined;
+      regions: undefined;
+      pricePreferences: undefined;
     }
   | {
-      isReady: true
-      currencies: HttpTypes.AdminStoreCurrency[]
-      regions: HttpTypes.AdminRegion[]
-      pricePreferences: HttpTypes.AdminPricePreference[]
-    }
+      isReady: true;
+      currencies: HttpTypes.AdminStoreCurrency[];
+      regions: HttpTypes.AdminRegion[];
+      pricePreferences: HttpTypes.AdminPricePreference[];
+    };
 
 export const usePriceListCurrencyData = (): UsePriceListCurrencyDataReturn => {
   const {
     store,
     isPending: isStorePending,
     isError: isStoreError,
-    error: storeError,
+    error: storeError
   } = useStore({
-    fields: "+supported_currencies",
-  })
+    fields: '+supported_currencies'
+  });
 
-  const currencies = store?.supported_currencies
+  const currencies = store?.supported_currencies;
 
   const {
     regions,
     isPending: isRegionsPending,
     isError: isRegionsError,
-    error: regionsError,
+    error: regionsError
   } = useRegions({
-    fields: "id,name,currency_code",
-    limit: 999,
-  })
+    fields: 'id,name,currency_code',
+    limit: 999
+  });
 
-  const isReady =
-    !!currencies && !!regions && !isStorePending && !isRegionsPending
+  const isReady = !!currencies && !!regions && !isStorePending && !isRegionsPending;
 
   if (isRegionsError) {
-    throw regionsError
+    throw regionsError;
   }
 
   if (isStoreError) {
-    throw storeError
+    throw storeError;
   }
 
   if (!isReady) {
@@ -54,14 +54,14 @@ export const usePriceListCurrencyData = (): UsePriceListCurrencyDataReturn => {
       regions: undefined,
       currencies: undefined,
       pricePreferences: undefined,
-      isReady: false,
-    }
+      isReady: false
+    };
   }
 
   return {
     regions,
     currencies,
     pricePreferences: [],
-    isReady,
-  }
-}
+    isReady
+  };
+};

@@ -1,50 +1,51 @@
-import { XMarkMini } from "@medusajs/icons"
-import { Button, clx } from "@medusajs/ui"
-import { Children, PropsWithChildren, createContext, useContext } from "react"
-import { useTranslation } from "react-i18next"
+import { Children, createContext, PropsWithChildren, useContext } from 'react';
 
-type ChipGroupVariant = "base" | "component"
+import { XMarkMini } from '@medusajs/icons';
+import { Button, clx } from '@medusajs/ui';
+import { useTranslation } from 'react-i18next';
+
+type ChipGroupVariant = 'base' | 'component';
 
 type ChipGroupProps = PropsWithChildren<{
-  onClearAll?: () => void
-  onRemove?: (index: number) => void
-  variant?: ChipGroupVariant
-  className?: string
-}>
+  onClearAll?: () => void;
+  onRemove?: (index: number) => void;
+  variant?: ChipGroupVariant;
+  className?: string;
+}>;
 
 type GroupContextValue = {
-  onRemove?: (index: number) => void
-  variant: ChipGroupVariant
-}
+  onRemove?: (index: number) => void;
+  variant: ChipGroupVariant;
+};
 
-const GroupContext = createContext<GroupContextValue | null>(null)
+const GroupContext = createContext<GroupContextValue | null>(null);
 
 const useGroupContext = () => {
-  const context = useContext(GroupContext)
+  const context = useContext(GroupContext);
 
   if (!context) {
-    throw new Error("useGroupContext must be used within a ChipGroup component")
+    throw new Error('useGroupContext must be used within a ChipGroup component');
   }
 
-  return context
-}
+  return context;
+};
 
 const Group = ({
   onClearAll,
   onRemove,
-  variant = "component",
+  variant = 'component',
   className,
-  children,
+  children
 }: ChipGroupProps) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const showClearAll = !!onClearAll && Children.count(children) > 0
+  const showClearAll = !!onClearAll && Children.count(children) > 0;
 
   return (
     <GroupContext.Provider value={{ onRemove, variant }}>
       <ul
         role="application"
-        className={clx("flex flex-wrap items-center gap-2", className)}
+        className={clx('flex flex-wrap items-center gap-2', className)}
       >
         {children}
         {showClearAll && (
@@ -56,35 +57,35 @@ const Group = ({
               onClick={onClearAll}
               className="text-ui-fg-muted active:text-ui-fg-subtle"
             >
-              {t("actions.clearAll")}
+              {t('actions.clearAll')}
             </Button>
           </li>
         )}
       </ul>
     </GroupContext.Provider>
-  )
-}
+  );
+};
 
 type ChipProps = PropsWithChildren<{
-  index: number
-  className?: string
-}>
+  index: number;
+  className?: string;
+}>;
 
 const Chip = ({ index, className, children }: ChipProps) => {
-  const { onRemove, variant } = useGroupContext()
+  const { onRemove, variant } = useGroupContext();
 
   return (
     <li
       className={clx(
-        "bg-ui-bg-component shadow-borders-base flex items-stretch divide-x overflow-hidden rounded-md",
+        'flex items-stretch divide-x overflow-hidden rounded-md bg-ui-bg-component shadow-borders-base',
         {
-          "bg-ui-bg-component": variant === "component",
-          "bg-ui-bg-base-": variant === "base",
+          'bg-ui-bg-component': variant === 'component',
+          'bg-ui-bg-base-': variant === 'base'
         },
         className
       )}
     >
-      <span className="txt-compact-small-plus text-ui-fg-subtle flex items-center justify-center px-2 py-1">
+      <span className="txt-compact-small-plus flex items-center justify-center px-2 py-1 text-ui-fg-subtle">
         {children}
       </span>
       {!!onRemove && (
@@ -92,12 +93,11 @@ const Chip = ({ index, className, children }: ChipProps) => {
           onClick={() => onRemove(index)}
           type="button"
           className={clx(
-            "text-ui-fg-muted active:text-ui-fg-subtle transition-fg flex items-center justify-center p-1",
+            'flex items-center justify-center p-1 text-ui-fg-muted transition-fg active:text-ui-fg-subtle',
             {
-              "hover:bg-ui-bg-component-hover active:bg-ui-bg-component-pressed":
-                variant === "component",
-              "hover:bg-ui-bg-base-hover active:bg-ui-bg-base-pressed":
-                variant === "base",
+              'hover:bg-ui-bg-component-hover active:bg-ui-bg-component-pressed':
+                variant === 'component',
+              'hover:bg-ui-bg-base-hover active:bg-ui-bg-base-pressed': variant === 'base'
             }
           )}
         >
@@ -105,7 +105,7 @@ const Chip = ({ index, className, children }: ChipProps) => {
         </button>
       )}
     </li>
-  )
-}
+  );
+};
 
-export const ChipGroup = Object.assign(Group, { Chip })
+export const ChipGroup = Object.assign(Group, { Chip });

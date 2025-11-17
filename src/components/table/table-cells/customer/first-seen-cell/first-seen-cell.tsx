@@ -1,25 +1,26 @@
-import { useTranslation } from "react-i18next"
-import { DateCell } from "../../common/date-cell"
-import { PlaceholderCell } from "../../common/placeholder-cell"
+import { useTranslation } from 'react-i18next';
+
+import { DateCell } from '../../common/date-cell';
+import { PlaceholderCell } from '../../common/placeholder-cell';
 
 type FirstSeenCellProps = {
-  createdAt?: Date | string | null
-}
+  createdAt?: Date | string | null;
+};
 
 export const FirstSeenCell = ({ createdAt }: FirstSeenCellProps) => {
   if (!createdAt) {
-    return <PlaceholderCell />
+    return <PlaceholderCell />;
   }
 
-  return <DateCell date={createdAt} />
-}
+  return <DateCell date={createdAt} />;
+};
 
 export const FirstSeenHeader = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <div className="flex h-full w-full items-center">
-      <span className="truncate">{t("fields.createdAt")}</span>
+      <span className="truncate">{t('fields.createdAt')}</span>
     </div>
-  )
-}
+  );
+};

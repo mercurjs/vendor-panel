@@ -1,1 +1,1 @@
-export * from "./percentage-input"
+export * from './percentage-input';

@@ -1,1 +1,1 @@
-export * from "./region-cell"
+export * from './region-cell';

@@ -1,1 +1,1 @@
-export * from "./product-organization-section"
+export * from './product-organization-section';

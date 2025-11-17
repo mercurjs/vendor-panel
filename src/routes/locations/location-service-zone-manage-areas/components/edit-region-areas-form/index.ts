@@ -1,1 +1,1 @@
-export * from "./edit-service-zone-areas-form"
+export * from './edit-service-zone-areas-form';

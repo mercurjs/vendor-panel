@@ -1,1 +1,1 @@
-export * from "./edit-category-products-form"
+export * from './edit-category-products-form';

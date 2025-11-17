@@ -1,1 +1,1 @@
-export * from "./tax-region-table"
+export * from './tax-region-table';

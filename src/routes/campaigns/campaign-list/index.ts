@@ -1,1 +1,1 @@
-export { CampaignList as Component } from "./campaign-list"
+export { CampaignList as Component } from './campaign-list';

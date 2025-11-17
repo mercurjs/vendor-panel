@@ -1,1 +1,1 @@
-export * from "./price-type-cell"
+export * from './price-type-cell';

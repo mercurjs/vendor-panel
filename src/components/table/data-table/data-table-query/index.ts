@@ -1,1 +1,1 @@
-export * from "./data-table-query"
+export * from './data-table-query';

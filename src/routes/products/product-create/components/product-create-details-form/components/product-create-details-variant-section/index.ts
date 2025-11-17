@@ -1,1 +1,1 @@
-export * from "./product-create-details-variant-section"
+export * from './product-create-details-variant-section';

@@ -1,1 +1,1 @@
-export { RegionMetadata as Component } from "./region-metadata.tsx"
+export { RegionMetadata as Component } from './region-metadata.tsx';

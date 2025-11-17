@@ -1,1 +1,1 @@
-export * from "./tax-override-table"
+export * from './tax-override-table';

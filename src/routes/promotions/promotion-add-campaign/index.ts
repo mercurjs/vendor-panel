@@ -1,1 +1,1 @@
-export { PromotionAddCampaign as Component } from "./promotion-add-campaign"
+export { PromotionAddCampaign as Component } from './promotion-add-campaign';

@@ -1,1 +1,1 @@
-export * from "./create-shipping-profile-form"
+export * from './create-shipping-profile-form';

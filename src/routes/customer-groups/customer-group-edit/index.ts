@@ -1,1 +1,1 @@
-export { CustomerGroupEdit as Component } from "./customer-group-edit"
+export { CustomerGroupEdit as Component } from './customer-group-edit';

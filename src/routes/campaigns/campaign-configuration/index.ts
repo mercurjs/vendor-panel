@@ -1,1 +1,1 @@
-export { CampaignConfiguration as Component } from "./campaign-configuration"
+export { CampaignConfiguration as Component } from './campaign-configuration';

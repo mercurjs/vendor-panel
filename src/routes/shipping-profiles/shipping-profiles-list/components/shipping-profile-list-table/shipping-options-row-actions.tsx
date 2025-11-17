@@ -1,50 +1,50 @@
-import { Trash } from "@medusajs/icons"
-import { AdminShippingProfileResponse } from "@medusajs/types"
-import { toast, usePrompt } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
+import { Trash } from '@medusajs/icons';
+import { AdminShippingProfileResponse } from '@medusajs/types';
+import { toast, usePrompt } from '@medusajs/ui';
+import { useTranslation } from 'react-i18next';
 
-import { ActionMenu } from "../../../../../components/common/action-menu"
-import { useDeleteShippingProfile } from "../../../../../hooks/api/shipping-profiles"
+import { ActionMenu } from '../../../../../components/common/action-menu';
+import { useDeleteShippingProfile } from '../../../../../hooks/api/shipping-profiles';
 
 export const ShippingOptionsRowActions = ({
-  profile,
+  profile
 }: {
-  profile: AdminShippingProfileResponse["shipping_profile"]
+  profile: AdminShippingProfileResponse['shipping_profile'];
 }) => {
-  const { t } = useTranslation()
-  const prompt = usePrompt()
+  const { t } = useTranslation();
+  const prompt = usePrompt();
 
-  const { mutateAsync } = useDeleteShippingProfile(profile.id)
+  const { mutateAsync } = useDeleteShippingProfile(profile.id);
 
   const handleDelete = async () => {
     const res = await prompt({
-      title: t("shippingProfile.delete.title"),
-      description: t("shippingProfile.delete.description", {
-        name: profile.name,
+      title: t('shippingProfile.delete.title'),
+      description: t('shippingProfile.delete.description', {
+        name: profile.name
       }),
       verificationText: profile.name,
-      verificationInstruction: t("general.typeToConfirm"),
-      confirmText: t("actions.delete"),
-      cancelText: t("actions.cancel"),
-    })
+      verificationInstruction: t('general.typeToConfirm'),
+      confirmText: t('actions.delete'),
+      cancelText: t('actions.cancel')
+    });
 
     if (!res) {
-      return
+      return;
     }
 
     await mutateAsync(undefined, {
       onSuccess: () => {
         toast.success(
-          t("shippingProfile.delete.successToast", {
-            name: profile.name,
+          t('shippingProfile.delete.successToast', {
+            name: profile.name
           })
-        )
+        );
       },
-      onError: (error) => {
-        toast.error(error.message)
-      },
-    })
-  }
+      onError: error => {
+        toast.error(error.message);
+      }
+    });
+  };
 
   return (
     <ActionMenu
@@ -53,12 +53,12 @@ export const ShippingOptionsRowActions = ({
           actions: [
             {
               icon: <Trash />,
-              label: t("actions.delete"),
-              onClick: handleDelete,
-            },
-          ],
-        },
+              label: t('actions.delete'),
+              onClick: handleDelete
+            }
+          ]
+        }
       ]}
     />
-  )
-}
+  );
+};

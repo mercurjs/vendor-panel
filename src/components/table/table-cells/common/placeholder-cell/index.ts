@@ -1,1 +1,1 @@
-export * from "./placeholder-cell"
+export * from './placeholder-cell';

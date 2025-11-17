@@ -1,1 +1,1 @@
-export * from "./route-drawer"
+export * from './route-drawer';

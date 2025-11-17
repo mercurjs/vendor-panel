@@ -1,1 +1,1 @@
-export * from "./collection-list-table"
+export * from './collection-list-table';

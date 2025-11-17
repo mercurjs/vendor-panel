@@ -1,1 +1,1 @@
-export * from "./data-table-root"
+export * from './data-table-root';

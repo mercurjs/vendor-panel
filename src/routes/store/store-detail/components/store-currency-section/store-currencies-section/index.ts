@@ -1,1 +1,1 @@
-export * from "./store-currency-section"
+export * from './store-currency-section';

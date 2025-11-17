@@ -1,50 +1,51 @@
-import { createColumnHelper } from "@tanstack/react-table"
-import { useMemo } from "react"
-import { useTranslation } from "react-i18next"
-import { DateCell } from "../../../../components/table/table-cells/common/date-cell"
-import { StatusCell } from "../../../../components/table/table-cells/request/status-cell"
-import { RequestsActions } from "./requests-actions"
+import { useMemo } from 'react';
 
-const columnHelper = createColumnHelper<any>()
+import { createColumnHelper } from '@tanstack/react-table';
+import { useTranslation } from 'react-i18next';
+
+import { DateCell } from '../../../../components/table/table-cells/common/date-cell';
+import { StatusCell } from '../../../../components/table/table-cells/request/status-cell';
+import { RequestsActions } from './requests-actions';
+
+const columnHelper = createColumnHelper<any>();
 
 export const useRequestsReviewsTableColumns = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return useMemo(
     () => [
-      columnHelper.accessor("data.review_id", {
-        header: "Review",
-        cell: ({ getValue }) => getValue(),
+      columnHelper.accessor('data.review_id', {
+        header: 'Review',
+        cell: ({ getValue }) => getValue()
       }),
-      columnHelper.accessor("data.reason", {
-        header: "Reason",
+      columnHelper.accessor('data.reason', {
+        header: 'Reason',
         cell: ({ row }) => {
           const reason =
-            row.original?.data.reason?.split("comment: ")[0] ||
-            row.original.data.reason
+            row.original?.data.reason?.split('comment: ')[0] || row.original.data.reason;
 
-          return <p className="truncate max-w-[360px]">{reason}</p>
-        },
+          return <p className="max-w-[360px] truncate">{reason}</p>;
+        }
       }),
-      columnHelper.accessor("created_at", {
-        header: "Date",
-        cell: ({ getValue }) => <DateCell date={getValue()} />,
+      columnHelper.accessor('created_at', {
+        header: 'Date',
+        cell: ({ getValue }) => <DateCell date={getValue()} />
       }),
-      columnHelper.accessor("status", {
-        header: "Status",
-        cell: ({ getValue }) => <StatusCell status={getValue()} />,
+      columnHelper.accessor('status', {
+        header: 'Status',
+        cell: ({ getValue }) => <StatusCell status={getValue()} />
       }),
       columnHelper.display({
-        id: "actions",
+        id: 'actions',
         cell: ({ row }) => {
-          const request = row.original
+          const request = row.original;
 
-          if (request.status !== "pending") return null
+          if (request.status !== 'pending') return null;
 
-          return <RequestsActions request={request} />
-        },
-      }),
+          return <RequestsActions request={request} />;
+        }
+      })
     ],
     [t]
-  )
-}
+  );
+};

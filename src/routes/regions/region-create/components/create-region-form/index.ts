@@ -1,1 +1,1 @@
-export * from "./create-region-form"
+export * from './create-region-form';

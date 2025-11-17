@@ -1,23 +1,21 @@
-import { HttpTypes } from "@medusajs/types"
-import { UIMatch } from "react-router-dom"
-import { useSalesChannel } from "../../../hooks/api/sales-channels"
+import { HttpTypes } from '@medusajs/types';
+import { UIMatch } from 'react-router-dom';
 
-type SalesChannelDetailBreadcrumbProps =
-  UIMatch<HttpTypes.AdminSalesChannelResponse>
+import { useSalesChannel } from '../../../hooks/api/sales-channels';
 
-export const SalesChannelDetailBreadcrumb = (
-  props: SalesChannelDetailBreadcrumbProps
-) => {
-  const { id } = props.params || {}
+type SalesChannelDetailBreadcrumbProps = UIMatch<HttpTypes.AdminSalesChannelResponse>;
+
+export const SalesChannelDetailBreadcrumb = (props: SalesChannelDetailBreadcrumbProps) => {
+  const { id } = props.params || {};
 
   const { sales_channel } = useSalesChannel(id!, {
     initialData: props.data,
-    enabled: Boolean(id),
-  })
+    enabled: Boolean(id)
+  });
 
   if (!sales_channel) {
-    return null
+    return null;
   }
 
-  return <span>{sales_channel.name}</span>
-}
+  return <span>{sales_channel.name}</span>;
+};

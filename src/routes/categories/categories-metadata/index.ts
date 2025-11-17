@@ -1,1 +1,1 @@
-export { CategoriesMetadata as Component } from "./categories-metadata"
+export { CategoriesMetadata as Component } from './categories-metadata';

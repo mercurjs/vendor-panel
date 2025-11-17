@@ -1,1 +1,1 @@
-export * from "./order-allocate-items-form"
+export * from './order-allocate-items-form';

@@ -1,9 +1,8 @@
-import { createContext } from "react"
+import { createContext } from 'react';
 
 type ProductMediaViewContextValue = {
-  goToGallery: () => void
-  goToEdit: () => void
-}
+  goToGallery: () => void;
+  goToEdit: () => void;
+};
 
-export const ProductMediaViewContext =
-  createContext<ProductMediaViewContextValue | null>(null)
+export const ProductMediaViewContext = createContext<ProductMediaViewContextValue | null>(null);

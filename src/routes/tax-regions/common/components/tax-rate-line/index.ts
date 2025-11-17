@@ -1,1 +1,1 @@
-export * from "./tax-rate-line"
+export * from './tax-rate-line';

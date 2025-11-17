@@ -1,77 +1,77 @@
-import { PencilSquare, Trash } from "@medusajs/icons"
-import type { HttpTypes } from "@medusajs/types"
-import {
-  Button,
-  Container,
-  Heading,
-  Text,
-  toast,
-  usePrompt,
-} from "@medusajs/ui"
-import { keepPreviousData } from "@tanstack/react-query"
-import { createColumnHelper } from "@tanstack/react-table"
-import { useMemo } from "react"
-import { useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
+import { useMemo } from 'react';
 
-import { ActionMenu } from "../../../../../components/common/action-menu"
-import { _DataTable } from "../../../../../components/table/data-table"
-import { useDeleteRegion, useRegions } from "../../../../../hooks/api/regions"
-import { useRegionTableColumns } from "../../../../../hooks/table/columns/use-region-table-columns"
-import { useRegionTableFilters } from "../../../../../hooks/table/filters/use-region-table-filters"
-import { useRegionTableQuery } from "../../../../../hooks/table/query/use-region-table-query"
-import { useDataTable } from "../../../../../hooks/use-data-table"
+import { PencilSquare, Trash } from '@medusajs/icons';
+import type { HttpTypes } from '@medusajs/types';
+import { Button, Container, Heading, Text, toast, usePrompt } from '@medusajs/ui';
+import { keepPreviousData } from '@tanstack/react-query';
+import { createColumnHelper } from '@tanstack/react-table';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
-const PAGE_SIZE = 20
+import { ActionMenu } from '../../../../../components/common/action-menu';
+import { _DataTable } from '../../../../../components/table/data-table';
+import { useDeleteRegion, useRegions } from '../../../../../hooks/api/regions';
+import { useRegionTableColumns } from '../../../../../hooks/table/columns/use-region-table-columns';
+import { useRegionTableFilters } from '../../../../../hooks/table/filters/use-region-table-filters';
+import { useRegionTableQuery } from '../../../../../hooks/table/query/use-region-table-query';
+import { useDataTable } from '../../../../../hooks/use-data-table';
+
+const PAGE_SIZE = 20;
 
 export const RegionListTable = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const { searchParams, raw } = useRegionTableQuery({ pageSize: PAGE_SIZE })
+  const { searchParams, raw } = useRegionTableQuery({ pageSize: PAGE_SIZE });
   const {
     regions,
     count,
     isPending: isLoading,
     isError,
-    error,
+    error
   } = useRegions(
     {
       ...searchParams,
-      fields: "*payment_providers",
+      fields: '*payment_providers'
     },
     {
-      placeholderData: keepPreviousData,
+      placeholderData: keepPreviousData
     }
-  )
+  );
 
-  const filters = useRegionTableFilters()
-  const columns = useColumns()
+  const filters = useRegionTableFilters();
+  const columns = useColumns();
 
   const { table } = useDataTable({
     data: (regions ?? []) as HttpTypes.AdminRegion[],
     columns,
     count,
     enablePagination: true,
-    getRowId: (row) => row.id,
-    pageSize: PAGE_SIZE,
-  })
+    getRowId: row => row.id,
+    pageSize: PAGE_SIZE
+  });
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   return (
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
         <div>
-          <Heading>{t("regions.domain")}</Heading>
-          <Text className="text-ui-fg-subtle" size="small">
-            {t("regions.subtitle")}
+          <Heading>{t('regions.domain')}</Heading>
+          <Text
+            className="text-ui-fg-subtle"
+            size="small"
+          >
+            {t('regions.subtitle')}
           </Text>
         </div>
         <Link to="/settings/regions/create">
-          <Button size="small" variant="secondary">
-            {t("actions.create")}
+          <Button
+            size="small"
+            variant="secondary"
+          >
+            {t('actions.create')}
           </Button>
         </Link>
       </div>
@@ -84,53 +84,53 @@ export const RegionListTable = () => {
         isLoading={isLoading}
         filters={filters}
         orderBy={[
-          { key: "name", label: t("fields.name") },
-          { key: "created_at", label: t("fields.createdAt") },
-          { key: "updated_at", label: t("fields.updatedAt") },
+          { key: 'name', label: t('fields.name') },
+          { key: 'created_at', label: t('fields.createdAt') },
+          { key: 'updated_at', label: t('fields.updatedAt') }
         ]}
-        navigateTo={(row) => `${row.original.id}`}
+        navigateTo={row => `${row.original.id}`}
         pagination
         search
         queryObject={raw}
         noRecords={{
-          message: t("regions.list.noRecordsMessage"),
+          message: t('regions.list.noRecordsMessage')
         }}
       />
     </Container>
-  )
-}
+  );
+};
 
 const RegionActions = ({ region }: { region: HttpTypes.AdminRegion }) => {
-  const { t } = useTranslation()
-  const prompt = usePrompt()
+  const { t } = useTranslation();
+  const prompt = usePrompt();
 
-  const { mutateAsync } = useDeleteRegion(region.id)
+  const { mutateAsync } = useDeleteRegion(region.id);
 
   const handleDelete = async () => {
     const res = await prompt({
-      title: t("general.areYouSure"),
-      description: t("regions.deleteRegionWarning", {
-        name: region.name,
+      title: t('general.areYouSure'),
+      description: t('regions.deleteRegionWarning', {
+        name: region.name
       }),
       verificationText: region.name,
-      verificationInstruction: t("general.typeToConfirm"),
-      confirmText: t("actions.delete"),
-      cancelText: t("actions.cancel"),
-    })
+      verificationInstruction: t('general.typeToConfirm'),
+      confirmText: t('actions.delete'),
+      cancelText: t('actions.cancel')
+    });
 
     if (!res) {
-      return
+      return;
     }
 
     await mutateAsync(undefined, {
       onSuccess: () => {
-        toast.success(t("regions.toast.delete"))
+        toast.success(t('regions.toast.delete'));
       },
-      onError: (e) => {
-        toast.error(e.message)
-      },
-    })
-  }
+      onError: e => {
+        toast.error(e.message);
+      }
+    });
+  };
 
   return (
     <ActionMenu
@@ -138,41 +138,41 @@ const RegionActions = ({ region }: { region: HttpTypes.AdminRegion }) => {
         {
           actions: [
             {
-              label: t("actions.edit"),
+              label: t('actions.edit'),
               to: `/settings/regions/${region.id}/edit`,
-              icon: <PencilSquare />,
-            },
-          ],
+              icon: <PencilSquare />
+            }
+          ]
         },
         {
           actions: [
             {
-              label: t("actions.delete"),
+              label: t('actions.delete'),
               onClick: handleDelete,
-              icon: <Trash />,
-            },
-          ],
-        },
+              icon: <Trash />
+            }
+          ]
+        }
       ]}
     />
-  )
-}
+  );
+};
 
-const columnHelper = createColumnHelper<HttpTypes.AdminRegion>()
+const columnHelper = createColumnHelper<HttpTypes.AdminRegion>();
 
 const useColumns = () => {
-  const base = useRegionTableColumns()
+  const base = useRegionTableColumns();
 
   return useMemo(
     () => [
       ...base,
       columnHelper.display({
-        id: "actions",
+        id: 'actions',
         cell: ({ row }) => {
-          return <RegionActions region={row.original} />
-        },
-      }),
+          return <RegionActions region={row.original} />;
+        }
+      })
     ],
     [base]
-  )
-}
+  );
+};

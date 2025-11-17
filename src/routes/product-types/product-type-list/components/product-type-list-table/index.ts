@@ -1,1 +1,1 @@
-export * from "./product-type-list-table"
+export * from './product-type-list-table';

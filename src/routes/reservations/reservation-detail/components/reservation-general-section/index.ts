@@ -1,1 +1,1 @@
-export * from "./reservation-general-section"
+export * from './reservation-general-section';

@@ -22,20 +22,21 @@ for <a href="https://github.com/mercurjs/mercur">Mercur</a> - Open Source Market
 
 ## Vendor Panel for Mercur
 
-The Vendor Panel is a pivotal component of the MercurJS ecosystem, designed to provide vendors with an intuitive interface to oversee their marketplace activities. 
+The Vendor Panel is a pivotal component of the MercurJS ecosystem, designed to provide vendors with an intuitive interface to oversee their marketplace activities.
 
 - Product Management: Add, edit, and organize products with ease.
 - Order Tracking: Monitor order statuses and manage fulfillment processes.
 - Store Customization: Update vendor store details
 - Review Handling: Engage with customer feedback to improve service quality.
-- Analytics Dashboard: Gain insights into sales performance and customer behavior. 
+- Analytics Dashboard: Gain insights into sales performance and customer behavior.
 
 ### Vendor Panel - Product Management View
+
 ![Vendor Store - Frontend View](https://cdn.prod.website-files.com/6790aeffc4b432ccaf1b56e5/68304fb2466a73f093aa5965_Adding%20Products%20_%20Mercur.png)
 
 ### Vendor Store - Frontend View
-![Vendor Store - Frontend View](https://cdn.prod.website-files.com/6790aeffc4b432ccaf1b56e5/68304b8674abb6fff86a2dbf_Cart%20and%20Vendor%20Page%20_%20Mercur%20B2C%20Storefront.png)
 
+![Vendor Store - Frontend View](https://cdn.prod.website-files.com/6790aeffc4b432ccaf1b56e5/68304b8674abb6fff86a2dbf_Cart%20and%20Vendor%20Page%20_%20Mercur%20B2C%20Storefront.png)
 
 # Part of Mercur
 
@@ -44,7 +45,6 @@ The Vendor Panel is a pivotal component of the MercurJS ecosystem, designed to p
 Mercur is a platform to start, customize, manage, and scale your marketplace for every business model with a modern technology stack.
 
 ![Mercur](https://cdn.prod.website-files.com/6790aeffc4b432ccaf1b56e5/67a1020f202572832c954ead_6b96703adfe74613f85133f83a19b1f0_Fleek%20Tilt%20-%20Readme.png)
-
 
 # Quickstart
 

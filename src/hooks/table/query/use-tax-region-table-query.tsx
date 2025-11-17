@@ -1,20 +1,14 @@
-import { useQueryParams } from "../../use-query-params"
+import { useQueryParams } from '../../use-query-params';
 
 type UseTaxRegionTableQueryProps = {
-  prefix?: string
-  pageSize?: number
-}
+  prefix?: string;
+  pageSize?: number;
+};
 
-export const useTaxRegionTableQuery = ({
-  prefix,
-  pageSize = 20,
-}: UseTaxRegionTableQueryProps) => {
-  const queryObject = useQueryParams(
-    ["offset", "q", "order", "created_at", "updated_at"],
-    prefix
-  )
+export const useTaxRegionTableQuery = ({ prefix, pageSize = 20 }: UseTaxRegionTableQueryProps) => {
+  const queryObject = useQueryParams(['offset', 'q', 'order', 'created_at', 'updated_at'], prefix);
 
-  const { offset, q, order, created_at, updated_at } = queryObject
+  const { offset, q, order, created_at, updated_at } = queryObject;
 
   const searchParams = {
     limit: pageSize,
@@ -22,11 +16,11 @@ export const useTaxRegionTableQuery = ({
     order,
     created_at: created_at ? JSON.parse(created_at) : undefined,
     updated_at: updated_at ? JSON.parse(updated_at) : undefined,
-    q,
-  }
+    q
+  };
 
   return {
     searchParams,
-    raw: queryObject,
-  }
-}
+    raw: queryObject
+  };
+};

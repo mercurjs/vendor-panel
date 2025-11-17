@@ -1,1 +1,1 @@
-export { ReturnReasonCreate as Component } from "./return-reason-create"
+export { ReturnReasonCreate as Component } from './return-reason-create';

@@ -1,12 +1,10 @@
-import routeModule from "virtual:medusa/routes"
-import {
-  createRouteMap,
-  getRouteExtensions,
-} from "../../extensions/routes/utils"
+import routeModule from 'virtual:medusa/routes';
 
-const routes = getRouteExtensions(routeModule, "settings")
+import { createRouteMap, getRouteExtensions } from '../../extensions/routes/utils';
+
+const routes = getRouteExtensions(routeModule, 'settings');
 
 /**
  * Settings Route extensions.
  */
-export const SettingsExtensions = createRouteMap(routes, "/settings")
+export const SettingsExtensions = createRouteMap(routes, '/settings');

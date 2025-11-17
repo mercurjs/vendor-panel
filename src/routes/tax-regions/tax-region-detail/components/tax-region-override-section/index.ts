@@ -1,1 +1,1 @@
-export * from "./tax-region-override-section"
+export * from './tax-region-override-section';

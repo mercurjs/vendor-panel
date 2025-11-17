@@ -1,49 +1,50 @@
-import { useTranslation } from "react-i18next"
-import { formatProvider } from "../../../../../lib/format-provider"
-import { PlaceholderCell } from "../../common/placeholder-cell"
-import { HttpTypes } from "@medusajs/types"
+import { HttpTypes } from '@medusajs/types';
+import { useTranslation } from 'react-i18next';
+
+import { formatProvider } from '../../../../../lib/format-provider';
+import { PlaceholderCell } from '../../common/placeholder-cell';
 
 type FulfillmentProvidersCellProps = {
-  fulfillmentProviders?: HttpTypes.AdminFulfillmentProvider[] | null
-}
+  fulfillmentProviders?: HttpTypes.AdminFulfillmentProvider[] | null;
+};
 
 export const FulfillmentProvidersCell = ({
-  fulfillmentProviders,
+  fulfillmentProviders
 }: FulfillmentProvidersCellProps) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   if (!fulfillmentProviders || fulfillmentProviders.length === 0) {
-    return <PlaceholderCell />
+    return <PlaceholderCell />;
   }
 
   const displayValue = fulfillmentProviders
     .slice(0, 2)
-    .map((p) => formatProvider(p.id))
-    .join(", ")
+    .map(p => formatProvider(p.id))
+    .join(', ');
 
-  const additionalProviders = fulfillmentProviders.slice(2).length
+  const additionalProviders = fulfillmentProviders.slice(2).length;
 
   const text = `${displayValue}${
     additionalProviders > 0
-      ? ` ${t("general.plusCountMore", {
-          count: additionalProviders,
+      ? ` ${t('general.plusCountMore', {
+          count: additionalProviders
         })}`
-      : ""
-  }`
+      : ''
+  }`;
 
   return (
     <div className="flex size-full items-center overflow-hidden">
       <span className="truncate">{text}</span>
     </div>
-  )
-}
+  );
+};
 
 export const FulfillmentProvidersHeader = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <div className="flex size-full items-center overflow-hidden">
-      <span className="truncate">{t("fields.fulfillmentProviders")}</span>
+      <span className="truncate">{t('fields.fulfillmentProviders')}</span>
     </div>
-  )
-}
+  );
+};

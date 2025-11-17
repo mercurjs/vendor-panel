@@ -1,1 +1,1 @@
-export { CampaignEdit as Component } from "./campaign-edit"
+export { CampaignEdit as Component } from './campaign-edit';

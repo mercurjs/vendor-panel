@@ -1,18 +1,17 @@
-import { useParams } from "react-router-dom"
-import { MetadataForm } from "../../../components/forms/metadata-form/metadata-form"
-import { useProduct, useUpdateProduct } from "../../../hooks/api"
+import { useParams } from 'react-router-dom';
+
+import { MetadataForm } from '../../../components/forms/metadata-form/metadata-form';
+import { useProduct, useUpdateProduct } from '../../../hooks/api';
 
 export const ProductMetadata = () => {
-  const { id } = useParams()
+  const { id } = useParams();
 
-  const { product, isPending, isError, error } = useProduct(id!)
+  const { product, isPending, isError, error } = useProduct(id!);
 
-  const { mutateAsync, isPending: isMutating } = useUpdateProduct(
-    product?.id || id!
-  )
+  const { mutateAsync, isPending: isMutating } = useUpdateProduct(product?.id || id!);
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   return (
@@ -22,5 +21,5 @@ export const ProductMetadata = () => {
       isPending={isPending}
       isMutating={isMutating}
     />
-  )
-}
+  );
+};

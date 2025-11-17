@@ -1,54 +1,53 @@
-import { PropsWithChildren, useEffect, useState } from "react"
-import { ThemeContext, ThemeOption, ThemeValue } from "./theme-context"
+import { PropsWithChildren, useEffect, useState } from 'react';
 
-const THEME_KEY = "medusa_admin_theme"
+import { ThemeContext, ThemeOption, ThemeValue } from './theme-context';
+
+const THEME_KEY = 'medusa_admin_theme';
 
 function getDefaultValue(): ThemeOption {
-  const persisted = localStorage?.getItem(THEME_KEY) as ThemeOption
+  const persisted = localStorage?.getItem(THEME_KEY) as ThemeOption;
 
   if (persisted) {
-    return persisted
+    return persisted;
   }
 
-  return "system"
+  return 'system';
 }
 
 function getThemeValue(selected: ThemeOption): ThemeValue {
-  if (selected === "system") {
+  if (selected === 'system') {
     if (window !== undefined) {
-      return window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light"
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
 
     // Default to light theme if we can't detect the system preference
-    return "light"
+    return 'light';
   }
 
-  return selected
+  return selected;
 }
 
 export const ThemeProvider = ({ children }: PropsWithChildren) => {
-  const [state, setState] = useState<ThemeOption>(getDefaultValue())
-  const [value, setValue] = useState<ThemeValue>(getThemeValue(state))
+  const [state, setState] = useState<ThemeOption>(getDefaultValue());
+  const [value, setValue] = useState<ThemeValue>(getThemeValue(state));
 
   const setTheme = (theme: ThemeOption) => {
-    localStorage.setItem(THEME_KEY, theme)
+    localStorage.setItem(THEME_KEY, theme);
 
-    const themeValue = getThemeValue(theme)
+    const themeValue = getThemeValue(theme);
 
-    setState(theme)
-    setValue(themeValue)
-  }
+    setState(theme);
+    setValue(themeValue);
+  };
 
   useEffect(() => {
-    const html = document.querySelector("html")
+    const html = document.querySelector('html');
     if (html) {
       /**
        * Temporarily disable transitions to prevent
        * the theme change from flashing.
        */
-      const css = document.createElement("style")
+      const css = document.createElement('style');
       css.appendChild(
         document.createTextNode(
           `* {
@@ -59,26 +58,24 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
             transition: none !important;
           }`
         )
-      )
-      document.head.appendChild(css)
+      );
+      document.head.appendChild(css);
 
-      html.classList.remove(value === "light" ? "dark" : "light")
-      html.classList.add(value)
+      html.classList.remove(value === 'light' ? 'dark' : 'light');
+      html.classList.add(value);
       // Ensures that native elements respect the theme, e.g. the scrollbar.
-      html.style.colorScheme = value
+      html.style.colorScheme = value;
 
       /**
        * Re-enable transitions after the theme has been set,
        * and force the browser to repaint.
        */
-      window.getComputedStyle(css).opacity
-      document.head.removeChild(css)
+      window.getComputedStyle(css).opacity;
+      document.head.removeChild(css);
     }
-  }, [value])
+  }, [value]);
 
   return (
-    <ThemeContext.Provider value={{ theme: state, setTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  )
-}
+    <ThemeContext.Provider value={{ theme: state, setTheme }}>{children}</ThemeContext.Provider>
+  );
+};

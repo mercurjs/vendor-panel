@@ -1,1 +1,1 @@
-export * from "./filter-group"
+export * from './filter-group';

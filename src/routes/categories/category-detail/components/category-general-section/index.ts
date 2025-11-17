@@ -1,1 +1,1 @@
-export * from "./category-general-section"
+export * from './category-general-section';

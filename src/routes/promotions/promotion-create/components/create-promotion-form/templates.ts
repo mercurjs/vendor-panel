@@ -1,8 +1,4 @@
-const commonHiddenFields = [
-  "type",
-  "application_method.type",
-  "application_method.allocation",
-]
+const commonHiddenFields = ['type', 'application_method.type', 'application_method.allocation'];
 
 export const templates = [
   // {
@@ -38,21 +34,21 @@ export const templates = [
   //   },
   // },
   {
-    id: "percentage_off_product",
-    type: "standard",
-    title: "Percentage off product",
-    description: "Discounts a percentage off selected products",
+    id: 'percentage_off_product',
+    type: 'standard',
+    title: 'Percentage off product',
+    description: 'Discounts a percentage off selected products',
     hiddenFields: [...commonHiddenFields],
     defaults: {
-      is_automatic: "false",
-      type: "standard",
+      is_automatic: 'false',
+      type: 'standard',
       application_method: {
-        allocation: "each",
-        target_type: "items",
-        type: "percentage",
-      },
-    },
-  },
+        allocation: 'each',
+        target_type: 'items',
+        type: 'percentage'
+      }
+    }
+  }
   // {
   //   id: "percentage_off_order",
   //   type: "standard",
@@ -86,4 +82,4 @@ export const templates = [
   //     },
   //   },
   // },
-]
+];

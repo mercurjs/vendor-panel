@@ -1,1 +1,1 @@
-export { ProductAttributes as Component } from "./product-attributes"
+export { ProductAttributes as Component } from './product-attributes';

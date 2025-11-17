@@ -1,1 +1,1 @@
-export * from "./workflow-execution-history-section"
+export * from './workflow-execution-history-section';

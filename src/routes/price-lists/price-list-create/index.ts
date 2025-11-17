@@ -1,1 +1,1 @@
-export { PriceListCreate as Component } from "./price-list-create"
+export { PriceListCreate as Component } from './price-list-create';

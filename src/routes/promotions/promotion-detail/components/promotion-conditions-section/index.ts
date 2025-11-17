@@ -1,1 +1,1 @@
-export * from "./promotion-conditions-section"
+export * from './promotion-conditions-section';

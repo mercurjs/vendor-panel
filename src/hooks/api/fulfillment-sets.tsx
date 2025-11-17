@@ -1,60 +1,55 @@
-import { FetchError } from "@medusajs/js-sdk"
-import { HttpTypes } from "@medusajs/types"
+import { FetchError } from '@medusajs/js-sdk';
+import { HttpTypes } from '@medusajs/types';
 import {
   QueryKey,
-  UseMutationOptions,
-  UseQueryOptions,
   useMutation,
+  UseMutationOptions,
   useQuery,
-} from "@tanstack/react-query"
-import { fetchQuery, sdk } from "../../lib/client"
-import { queryClient } from "../../lib/query-client"
-import { queryKeysFactory } from "../../lib/query-key-factory"
-import { shippingOptionsQueryKeys } from "./shipping-options"
-import { stockLocationsQueryKeys } from "./stock-locations"
+  UseQueryOptions
+} from '@tanstack/react-query';
 
-const FULFILLMENT_SETS_QUERY_KEY = "fulfillment_sets" as const
-export const fulfillmentSetsQueryKeys = queryKeysFactory(
-  FULFILLMENT_SETS_QUERY_KEY
-)
+import { fetchQuery, sdk } from '../../lib/client';
+import { queryClient } from '../../lib/query-client';
+import { queryKeysFactory } from '../../lib/query-key-factory';
+import { shippingOptionsQueryKeys } from './shipping-options';
+import { stockLocationsQueryKeys } from './stock-locations';
+
+const FULFILLMENT_SETS_QUERY_KEY = 'fulfillment_sets' as const;
+export const fulfillmentSetsQueryKeys = queryKeysFactory(FULFILLMENT_SETS_QUERY_KEY);
 
 export const useDeleteFulfillmentSet = (
   id: string,
   options?: Omit<
-    UseMutationOptions<
-      HttpTypes.AdminFulfillmentSetDeleteResponse,
-      FetchError,
-      void
-    >,
-    "mutationFn"
+    UseMutationOptions<HttpTypes.AdminFulfillmentSetDeleteResponse, FetchError, void>,
+    'mutationFn'
   >
 ) => {
   return useMutation({
     mutationFn: () =>
       fetchQuery(`/vendor/fulfillment-sets/${id}`, {
-        method: "DELETE",
+        method: 'DELETE'
       }),
     onSuccess: async (data, variables, context) => {
       await queryClient.invalidateQueries({
-        queryKey: fulfillmentSetsQueryKeys.detail(id),
-      })
+        queryKey: fulfillmentSetsQueryKeys.detail(id)
+      });
       await queryClient.invalidateQueries({
-        queryKey: fulfillmentSetsQueryKeys.lists(),
-      })
+        queryKey: fulfillmentSetsQueryKeys.lists()
+      });
 
       // We need to invalidate all related entities. We invalidate using `all` keys to ensure that all relevant entities are invalidated.
       await queryClient.invalidateQueries({
-        queryKey: stockLocationsQueryKeys.all,
-      })
+        queryKey: stockLocationsQueryKeys.all
+      });
       await queryClient.invalidateQueries({
-        queryKey: shippingOptionsQueryKeys.all,
-      })
+        queryKey: shippingOptionsQueryKeys.all
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
-    ...options,
-  })
-}
+    ...options
+  });
+};
 
 export const useFulfillmentSetServiceZone = (
   fulfillmentSetId: string,
@@ -67,22 +62,18 @@ export const useFulfillmentSetServiceZone = (
       HttpTypes.AdminServiceZoneResponse,
       QueryKey
     >,
-    "queryKey" | "queryFn"
+    'queryKey' | 'queryFn'
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: () =>
-      sdk.admin.fulfillmentSet.retrieveServiceZone(
-        fulfillmentSetId,
-        serviceZoneId,
-        query
-      ),
+      sdk.admin.fulfillmentSet.retrieveServiceZone(fulfillmentSetId, serviceZoneId, query),
     queryKey: fulfillmentSetsQueryKeys.detail(fulfillmentSetId, query),
-    ...options,
-  })
+    ...options
+  });
 
-  return { ...data, ...rest }
-}
+  return { ...data, ...rest };
+};
 
 export const useCreateFulfillmentSetServiceZone = (
   fulfillmentSetId: string,
@@ -93,28 +84,28 @@ export const useCreateFulfillmentSetServiceZone = (
       HttpTypes.AdminCreateFulfillmentSetServiceZone,
       QueryKey
     >,
-    "mutationFn"
+    'mutationFn'
   >
 ) => {
   return useMutation({
-    mutationFn: (payload) =>
+    mutationFn: payload =>
       fetchQuery(`/vendor/fulfillment-sets/${fulfillmentSetId}/service-zones`, {
-        method: "POST",
-        body: payload,
+        method: 'POST',
+        body: payload
       }),
     onSuccess: async (data, variables, context) => {
       await queryClient.invalidateQueries({
-        queryKey: fulfillmentSetsQueryKeys.lists(),
-      })
+        queryKey: fulfillmentSetsQueryKeys.lists()
+      });
       await queryClient.invalidateQueries({
-        queryKey: stockLocationsQueryKeys.all,
-      })
+        queryKey: stockLocationsQueryKeys.all
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
-    ...options,
-  })
-}
+    ...options
+  });
+};
 
 export const useUpdateFulfillmentSetServiceZone = (
   fulfillmentSetId: string,
@@ -126,60 +117,55 @@ export const useUpdateFulfillmentSetServiceZone = (
       HttpTypes.AdminUpdateFulfillmentSetServiceZone,
       QueryKey
     >,
-    "mutationFn"
+    'mutationFn'
   >
 ) => {
   return useMutation({
-    mutationFn: (payload) =>
-      fetchQuery(
-        `/vendor/fulfillment-sets/${fulfillmentSetId}/service-zones/${serviceZoneId}`,
-        { method: "POST", body: payload }
-      ),
+    mutationFn: payload =>
+      fetchQuery(`/vendor/fulfillment-sets/${fulfillmentSetId}/service-zones/${serviceZoneId}`, {
+        method: 'POST',
+        body: payload
+      }),
     onSuccess: async (data, variables, context) => {
       await queryClient.invalidateQueries({
-        queryKey: fulfillmentSetsQueryKeys.lists(),
-      })
+        queryKey: fulfillmentSetsQueryKeys.lists()
+      });
       await queryClient.invalidateQueries({
-        queryKey: stockLocationsQueryKeys.all,
-      })
+        queryKey: stockLocationsQueryKeys.all
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
-    ...options,
-  })
-}
+    ...options
+  });
+};
 
 export const useDeleteFulfillmentServiceZone = (
   fulfillmentSetId: string,
   serviceZoneId: string,
   options?: Omit<
-    UseMutationOptions<
-      HttpTypes.AdminServiceZoneDeleteResponse,
-      FetchError,
-      void
-    >,
-    "mutationFn"
+    UseMutationOptions<HttpTypes.AdminServiceZoneDeleteResponse, FetchError, void>,
+    'mutationFn'
   >
 ) => {
   return useMutation({
     mutationFn: () =>
-      fetchQuery(
-        `/vendor/fulfillment-sets/${fulfillmentSetId}/service-zones/${serviceZoneId}`,
-        { method: "DELETE" }
-      ),
+      fetchQuery(`/vendor/fulfillment-sets/${fulfillmentSetId}/service-zones/${serviceZoneId}`, {
+        method: 'DELETE'
+      }),
     onSuccess: async (data, variables, context) => {
       await queryClient.invalidateQueries({
-        queryKey: fulfillmentSetsQueryKeys.lists(),
-      })
+        queryKey: fulfillmentSetsQueryKeys.lists()
+      });
       await queryClient.invalidateQueries({
-        queryKey: shippingOptionsQueryKeys.lists(),
-      })
+        queryKey: shippingOptionsQueryKeys.lists()
+      });
       await queryClient.invalidateQueries({
-        queryKey: stockLocationsQueryKeys.all,
-      })
+        queryKey: stockLocationsQueryKeys.all
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
-    ...options,
-  })
-}
+    ...options
+  });
+};

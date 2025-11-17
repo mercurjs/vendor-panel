@@ -1,1 +1,1 @@
-export * from "./sortable-tree"
+export * from './sortable-tree';

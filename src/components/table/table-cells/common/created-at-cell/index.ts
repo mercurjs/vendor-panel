@@ -1,1 +1,1 @@
-export * from "./created-at-cell"
+export * from './created-at-cell';

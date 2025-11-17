@@ -1,69 +1,68 @@
-import { AnimatePresence } from "motion/react"
-import { Suspense, useEffect, useRef, useState } from "react"
-import { useTranslation } from "react-i18next"
-import { Await, useParams } from "react-router-dom"
+import { Suspense, useEffect, useRef, useState } from 'react';
 
-import { ColumnDef } from "@tanstack/react-table"
-import { ProgressBar } from "../../../components/common/progress-bar"
-import { Skeleton } from "../../../components/common/skeleton"
-import { DataGridSkeleton } from "../../../components/data-grid/components"
-import { RouteFocusModal } from "../../../components/modals"
-import { ProductStockForm } from "./components/product-stock-form"
-import { useProduct, useStockLocations } from "../../../hooks/api"
+import { ColumnDef } from '@tanstack/react-table';
+import { AnimatePresence } from 'motion/react';
+import { useTranslation } from 'react-i18next';
+import { Await, useParams } from 'react-router-dom';
+
+import { ProgressBar } from '../../../components/common/progress-bar';
+import { Skeleton } from '../../../components/common/skeleton';
+import { DataGridSkeleton } from '../../../components/data-grid/components';
+import { RouteFocusModal } from '../../../components/modals';
+import { useProduct, useStockLocations } from '../../../hooks/api';
+import { ProductStockForm } from './components/product-stock-form';
 
 export const ProductStock = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const { id } = useParams()
+  const { id } = useParams();
 
-  const { product, isLoading: isProductLoading } = useProduct(id!)
-  const { stock_locations, isLoading: isStockLoading } = useStockLocations()
+  const { product, isLoading: isProductLoading } = useProduct(id!);
+  const { stock_locations, isLoading: isStockLoading } = useStockLocations();
 
-  const allVariants = product?.variants?.map((variant) => ({
+  const allVariants = product?.variants?.map(variant => ({
     ...variant,
-    inventory_items: variant.inventory_items?.map((item) => ({
+    inventory_items: variant.inventory_items?.map(item => ({
       ...item,
-      inventory: item.inventory,
-    })),
-  }))
+      inventory: item.inventory
+    }))
+  }));
 
-  const [isLoading, setIsLoading] = useState(false)
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>()
+  const [isLoading, setIsLoading] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
     timeoutRef.current = setTimeout(() => {
-      setIsLoading(true)
-    }, 200)
+      setIsLoading(true);
+    }, 200);
 
     return () => {
       if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
+        clearTimeout(timeoutRef.current);
       }
-    }
-  }, [])
+    };
+  }, []);
 
   const onLoaded = () => {
     if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
+      clearTimeout(timeoutRef.current);
     }
-    setIsLoading(false)
-  }
+    setIsLoading(false);
+  };
 
   return (
     <div>
       <div className="fixed inset-x-0 top-0 z-50 h-1">
         <AnimatePresence>
-          {isLoading || isProductLoading || isStockLoading ? (
-            <ProgressBar duration={5} />
-          ) : null}
+          {isLoading || isProductLoading || isStockLoading ? <ProgressBar duration={5} /> : null}
         </AnimatePresence>
       </div>
       <RouteFocusModal>
         <RouteFocusModal.Title asChild>
-          <span className="sr-only">{t("products.stock.heading")}</span>
+          <span className="sr-only">{t('products.stock.heading')}</span>
         </RouteFocusModal.Title>
         <RouteFocusModal.Description asChild>
-          <span className="sr-only">{t("products.stock.description")}</span>
+          <span className="sr-only">{t('products.stock.description')}</span>
         </RouteFocusModal.Description>
         <Suspense fallback={<ProductStockFallback />}>
           <Await resolve={{ allVariants, locations: stock_locations }}>
@@ -74,14 +73,14 @@ export const ProductStock = () => {
                   locations={stock_locations || []}
                   onLoaded={onLoaded}
                 />
-              )
+              );
             }}
           </Await>
         </Suspense>
       </RouteFocusModal>
     </div>
-  )
-}
+  );
+};
 
 const ProductStockFallback = () => {
   return (
@@ -91,15 +90,13 @@ const ProductStockFallback = () => {
           <Skeleton className="h-7 w-7" />
         </div>
         <div className="flex-1 overflow-auto">
-          <DataGridSkeleton
-            columns={Array.from({ length: 10 }) as ColumnDef<any>[]}
-          />
+          <DataGridSkeleton columns={Array.from({ length: 10 }) as ColumnDef<any>[]} />
         </div>
-        <div className="bg-ui-bg-base flex items-center justify-end gap-x-2 p-4">
+        <div className="flex items-center justify-end gap-x-2 bg-ui-bg-base p-4">
           <Skeleton className="h-7 w-[59px]" />
           <Skeleton className="h-7 w-[46px]" />
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

@@ -1,110 +1,110 @@
-import { useMemo, useState } from "react"
-import { useTranslation } from "react-i18next"
-import {
-  Component,
-  ExclamationCircleSolid,
-  TriangleDownMini,
-} from "@medusajs/icons"
-import { UseFormReturn, useWatch } from "react-hook-form"
-import { Input, Text, clx } from "@medusajs/ui"
-import * as zod from "zod"
+import { useMemo, useState } from 'react';
 
-import { Thumbnail } from "../../../../../components/common/thumbnail"
-import { getFulfillableQuantity } from "../../../../../lib/order-item"
-import { Form } from "../../../../../components/common/form"
-import { AllocateItemsSchema } from "./constants"
-import { ExtendedAdminOrderLineItemWithInventory, ExtendedAdminProductVariantInventory } from "../../../../../types/order"
+import { Component, ExclamationCircleSolid, TriangleDownMini } from '@medusajs/icons';
+import { clx, Input, Text } from '@medusajs/ui';
+import { UseFormReturn, useWatch } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import * as zod from 'zod';
+
+import { Form } from '../../../../../components/common/form';
+import { Thumbnail } from '../../../../../components/common/thumbnail';
+import { getFulfillableQuantity } from '../../../../../lib/order-item';
+import {
+  ExtendedAdminOrderLineItemWithInventory,
+  ExtendedAdminProductVariantInventory
+} from '../../../../../types/order';
+import { AllocateItemsSchema } from './constants';
 
 type OrderEditItemProps = {
-  item: ExtendedAdminOrderLineItemWithInventory
-  locationId?: string
-  form: UseFormReturn<zod.infer<typeof AllocateItemsSchema>>
+  item: ExtendedAdminOrderLineItemWithInventory;
+  locationId?: string;
+  form: UseFormReturn<zod.infer<typeof AllocateItemsSchema>>;
   onQuantityChange: (
     inventoryItem: ExtendedAdminProductVariantInventory,
     lineItem: ExtendedAdminOrderLineItemWithInventory,
     hasInventoryKit: boolean,
     value: number | null,
     isRoot?: boolean
-  ) => void
-}
+  ) => void;
+};
 export function OrderAllocateItemsItem({
   item,
   form,
   locationId,
-  onQuantityChange,
+  onQuantityChange
 }: OrderEditItemProps) {
-  const { t } = useTranslation()
-  const variant = item.variant
-  const inventory = item.variant?.inventory || []
+  const { t } = useTranslation();
+  const variant = item.variant;
+  const inventory = item.variant?.inventory || [];
 
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   const quantityField = useWatch({
     control: form.control,
-    name: "quantity",
-  })
+    name: 'quantity'
+  });
 
-  const hasInventoryKit =
-    !!variant?.inventory_items && variant.inventory_items.length > 1
+  const hasInventoryKit = !!variant?.inventory_items && variant.inventory_items.length > 1;
 
   const { availableQuantity, inStockQuantity } = useMemo(() => {
     if (!variant || !locationId) {
-      return {}
+      return {};
     }
 
     const locationInventory = inventory[0]?.location_levels?.find(
-      (inv) => inv.location_id === locationId
-    )
+      inv => inv.location_id === locationId
+    );
 
     if (!locationInventory) {
-      return {}
+      return {};
     }
 
     return {
       availableQuantity: locationInventory.available_quantity,
-      inStockQuantity: locationInventory.stocked_quantity,
-    }
-  }, [variant, locationId])
+      inStockQuantity: locationInventory.stocked_quantity
+    };
+  }, [variant, locationId]);
 
   const hasQuantityError =
     !hasInventoryKit &&
     availableQuantity &&
     item.variant?.inventory?.[0]?.id &&
     quantityField[`${item.id}-${item.variant.inventory[0].id}`] &&
-    Number(quantityField[`${item.id}-${item.variant.inventory[0].id}`]) >
-      availableQuantity
+    Number(quantityField[`${item.id}-${item.variant.inventory[0].id}`]) > availableQuantity;
 
-  const minValue = 0
+  const minValue = 0;
   const maxValue = Math.min(
     getFulfillableQuantity(item) ?? 0,
     availableQuantity || Number.MAX_SAFE_INTEGER
-  )
-  
+  );
+
   return (
-    <div className="bg-ui-bg-subtle shadow-elevation-card-rest my-2 min-w-[720px] divide-y divide-dashed rounded-xl">
+    <div className="my-2 min-w-[720px] divide-y divide-dashed rounded-xl bg-ui-bg-subtle shadow-elevation-card-rest">
       <div className="flex items-center gap-x-3 p-3 text-sm">
         <div className="flex flex-1 items-center">
           <div className="flex items-center gap-x-3">
-            {hasQuantityError && (
-              <ExclamationCircleSolid className="text-ui-fg-error" />
-            )}
+            {hasQuantityError && <ExclamationCircleSolid className="text-ui-fg-error" />}
             <Thumbnail src={item.thumbnail} />
             <div className="flex flex-col">
               <div className="flex flex-row">
-                <Text className="txt-small flex" as="span" weight="plus">
+                <Text
+                  className="txt-small flex"
+                  as="span"
+                  weight="plus"
+                >
                   {item.product_title}
                 </Text>
                 {item.variant_sku && (
-                  <span className="text-ui-fg-subtle">
-                    {" "}
-                    ({item.variant_sku})
-                  </span>
+                  <span className="text-ui-fg-subtle"> ({item.variant_sku})</span>
                 )}
                 {hasInventoryKit && (
-                  <Component className="text-ui-fg-muted ml-2 overflow-visible pt-[2px]" />
+                  <Component className="ml-2 overflow-visible pt-[2px] text-ui-fg-muted" />
                 )}
               </div>
-              <Text as="div" className="text-ui-fg-subtle txt-small">
+              <Text
+                as="div"
+                className="txt-small text-ui-fg-subtle"
+              >
                 {item.title}
               </Text>
             </div>
@@ -113,34 +113,25 @@ export function OrderAllocateItemsItem({
 
         <div
           className={clx(
-            "flex flex-1 items-center gap-x-3",
-            hasInventoryKit ? "justify-end" : "justify-between"
+            'flex flex-1 items-center gap-x-3',
+            hasInventoryKit ? 'justify-end' : 'justify-between'
           )}
         >
           {!hasInventoryKit && (
             <>
               <div className="flex items-center gap-3">
-                <div className="bg-ui-border-strong block h-[12px] w-[1px]" />
+                <div className="block h-[12px] w-[1px] bg-ui-border-strong" />
 
                 <div className="txt-small flex flex-col">
-                  <span className="text-ui-fg-subtle font-medium">
-                    {t("labels.available")}
-                  </span>
+                  <span className="font-medium text-ui-fg-subtle">{t('labels.available')}</span>
                   <span className="text-ui-fg-muted">
-                    {availableQuantity || "-"}
+                    {availableQuantity || '-'}
                     {availableQuantity &&
                       !hasInventoryKit &&
                       item.variant?.inventory?.[0]?.id &&
-                      quantityField[
-                        `${item.id}-${item.variant.inventory[0].id}`
-                      ] && (
-                        <span className="text-ui-fg-error txt-small ml-1">
-                          -
-                          {
-                            quantityField[
-                              `${item.id}-${item.variant.inventory[0].id}`
-                            ]
-                          }
+                      quantityField[`${item.id}-${item.variant.inventory[0].id}`] && (
+                        <span className="txt-small ml-1 text-ui-fg-error">
+                          -{quantityField[`${item.id}-${item.variant.inventory[0].id}`]}
                         </span>
                       )}
                   </span>
@@ -148,69 +139,56 @@ export function OrderAllocateItemsItem({
               </div>
 
               <div className="flex items-center gap-3">
-                <div className="bg-ui-border-strong block h-[12px] w-[1px]" />
+                <div className="block h-[12px] w-[1px] bg-ui-border-strong" />
 
                 <div className="txt-small flex flex-col">
-                  <span className="text-ui-fg-subtle font-medium">
-                    {t("labels.inStock")}
-                  </span>
-                  <span className="text-ui-fg-muted">
-                    {inStockQuantity || "-"}
-                  </span>
+                  <span className="font-medium text-ui-fg-subtle">{t('labels.inStock')}</span>
+                  <span className="text-ui-fg-muted">{inStockQuantity || '-'}</span>
                 </div>
               </div>
             </>
           )}
 
           <div className="flex items-center gap-3">
-            <div className="bg-ui-border-strong block h-[12px] w-[1px]" />
+            <div className="block h-[12px] w-[1px] bg-ui-border-strong" />
 
-            <div className="text-ui-fg-subtle txt-small mr-2 flex flex-row items-center gap-2">
+            <div className="txt-small mr-2 flex flex-row items-center gap-2 text-ui-fg-subtle">
               <Form.Field
                 control={form.control}
                 name={
                   hasInventoryKit && item.variant?.inventory?.[0]?.id
-                    ? (`quantity.${item.id}-`)
-                    : (`quantity.${item.id}-${item.variant?.inventory?.[0].id}`) as `quantity.${string}`
+                    ? `quantity.${item.id}-`
+                    : (`quantity.${item.id}-${item.variant?.inventory?.[0].id}` as `quantity.${string}`)
                 }
                 rules={{
                   required: !hasInventoryKit,
                   min: !hasInventoryKit ? minValue : undefined,
-                  max: maxValue > 0 ? maxValue : undefined,
+                  max: maxValue > 0 ? maxValue : undefined
                 }}
                 render={({ field }) => {
                   return (
                     <Form.Item>
                       <Form.Control>
                         <Input
-                          className="bg-ui-bg-base txt-small w-[46px] rounded-lg text-right [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                          className="txt-small w-[46px] rounded-lg bg-ui-bg-base text-right [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                           type="number"
                           {...field}
                           disabled={!locationId}
-                          onChange={(e) => {
-                            const val =
-                              e.target.value === ""
-                                ? null
-                                : Number(e.target.value)
+                          onChange={e => {
+                            const val = e.target.value === '' ? null : Number(e.target.value);
 
-                            const firstInventory = item.variant?.inventory?.[0]
+                            const firstInventory = item.variant?.inventory?.[0];
                             if (firstInventory) {
-                              onQuantityChange(
-                                firstInventory,
-                                item,
-                                hasInventoryKit,
-                                val,
-                                true
-                              )
+                              onQuantityChange(firstInventory, item, hasInventoryKit, val, true);
                             }
                           }}
                         />
                       </Form.Control>
                     </Form.Item>
-                  )
+                  );
                 }}
-              />{" "}
-              / {item.quantity} {t("fields.qty")}
+              />{' '}
+              / {item.quantity} {t('fields.qty')}
             </div>
           </div>
         </div>
@@ -219,16 +197,16 @@ export function OrderAllocateItemsItem({
       {hasInventoryKit && (
         <div className="px-4 py-2">
           <div
-            onClick={() => setIsOpen((o) => !o)}
+            onClick={() => setIsOpen(o => !o)}
             className="flex items-center gap-x-2"
           >
             <TriangleDownMini
               style={{ transform: `rotate(${isOpen ? -90 : 0}deg)` }}
-              className="text-ui-fg-muted -mt-[1px]"
+              className="-mt-[1px] text-ui-fg-muted"
             />
-            <span className="txt-small text-ui-fg-muted cursor-pointer">
-              {t("orders.allocateItems.consistsOf", {
-                num: inventory.length,
+            <span className="txt-small cursor-pointer text-ui-fg-muted">
+              {t('orders.allocateItems.consistsOf', {
+                num: inventory.length
               })}
             </span>
           </div>
@@ -237,26 +215,27 @@ export function OrderAllocateItemsItem({
 
       {isOpen &&
         variant?.inventory?.map((i, ind) => {
-          const location = i.location_levels?.find(
-            (l) => l.location_id === locationId
-          )
+          const location = i.location_levels?.find(l => l.location_id === locationId);
 
           const hasQuantityError =
             !!quantityField[`${item.id}-${i.id}`] &&
             location &&
-            Number(quantityField[`${item.id}-${i.id}`]) > location.available_quantity
+            Number(quantityField[`${item.id}-${i.id}`]) > location.available_quantity;
 
           return (
-            <div key={i.id} className="txt-small flex items-center gap-x-3 p-4">
+            <div
+              key={i.id}
+              className="txt-small flex items-center gap-x-3 p-4"
+            >
               <div className="flex flex-1 flex-row items-center gap-3">
-                {hasQuantityError && (
-                  <ExclamationCircleSolid className="text-ui-fg-error" />
-                )}
+                {hasQuantityError && <ExclamationCircleSolid className="text-ui-fg-error" />}
                 <div className="flex flex-col">
-                  <span className="text-ui-fg-subtle">{i?.title ?? i.sku ?? `Inventory Item ${ind + 1}`}</span>
+                  <span className="text-ui-fg-subtle">
+                    {i?.title ?? i.sku ?? `Inventory Item ${ind + 1}`}
+                  </span>
                   <span className="text-ui-fg-muted">
-                    {t("orders.allocateItems.requires", {
-                      num: variant?.inventory_items?.[ind]?.required_quantity || 0,
+                    {t('orders.allocateItems.requires', {
+                      num: variant?.inventory_items?.[ind]?.required_quantity || 0
                     })}
                   </span>
                 </div>
@@ -264,87 +243,70 @@ export function OrderAllocateItemsItem({
 
               <div className="flex flex-1 flex-row justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="bg-ui-border-strong block h-[12px] w-[1px]" />
+                  <div className="block h-[12px] w-[1px] bg-ui-border-strong" />
 
                   <div className="txt-small flex flex-col">
-                    <span className="text-ui-fg-subtle font-medium">
-                      {t("labels.available")}
-                    </span>
+                    <span className="font-medium text-ui-fg-subtle">{t('labels.available')}</span>
                     <span className="text-ui-fg-muted">
-                      {location?.available_quantity || "-"}
-                      {location?.available_quantity &&
-                        quantityField[`${item.id}-${i.id}`] && (
-                          <span className="text-ui-fg-error txt-small ml-1">
-                            -{quantityField[`${item.id}-${i.id}`]}
-                          </span>
-                        )}
+                      {location?.available_quantity || '-'}
+                      {location?.available_quantity && quantityField[`${item.id}-${i.id}`] && (
+                        <span className="txt-small ml-1 text-ui-fg-error">
+                          -{quantityField[`${item.id}-${i.id}`]}
+                        </span>
+                      )}
                     </span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="bg-ui-border-strong block h-[12px] w-[1px]" />
+                  <div className="block h-[12px] w-[1px] bg-ui-border-strong" />
 
                   <div className="txt-small flex flex-col">
-                    <span className="text-ui-fg-subtle font-medium">
-                      {t("labels.inStock")}
-                    </span>
-                    <span className="text-ui-fg-muted">
-                      {location?.stocked_quantity || "-"}
-                    </span>
+                    <span className="font-medium text-ui-fg-subtle">{t('labels.inStock')}</span>
+                    <span className="text-ui-fg-muted">{location?.stocked_quantity || '-'}</span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="bg-ui-border-strong block h-[12px] w-[1px]" />
+                  <div className="block h-[12px] w-[1px] bg-ui-border-strong" />
 
-                  <div className="text-ui-fg-subtle txt-small mr-1 flex flex-row items-center gap-2">
+                  <div className="txt-small mr-1 flex flex-row items-center gap-2 text-ui-fg-subtle">
                     <Form.Field
                       control={form.control}
                       name={`quantity.${item.id}-${i.id}` as `quantity.${string}`}
                       rules={{
                         required: true,
                         min: 0,
-                        max: location?.available_quantity,
+                        max: location?.available_quantity
                       }}
                       render={({ field }) => {
                         return (
                           <Form.Item>
                             <Form.Control>
                               <Input
-                                className="bg-ui-bg-base txt-small w-[46px] rounded-lg text-right [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                className="txt-small w-[46px] rounded-lg bg-ui-bg-base text-right [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                                 type="number"
                                 {...field}
                                 disabled={!locationId}
-                                onChange={(e) => {
-                                  const val =
-                                    e.target.value === ""
-                                      ? null
-                                      : Number(e.target.value)
+                                onChange={e => {
+                                  const val = e.target.value === '' ? null : Number(e.target.value);
 
-                                  onQuantityChange(
-                                    i,
-                                    item,
-                                    hasInventoryKit,
-                                    val
-                                  )
+                                  onQuantityChange(i, item, hasInventoryKit, val);
                                 }}
                               />
                             </Form.Control>
                           </Form.Item>
-                        )
+                        );
                       }}
                     />
-                    /{" "}
-                    {item.quantity *
-                      (variant.inventory_items?.[ind]?.required_quantity ?? 0)}{" "}
-                    {t("fields.qty")}
+                    / {item.quantity * (variant.inventory_items?.[ind]?.required_quantity ?? 0)}{' '}
+                    {t('fields.qty')}
                   </div>
                 </div>
               </div>
             </div>
-          )
+          );
         })}
     </div>
-  )
+  );
 }

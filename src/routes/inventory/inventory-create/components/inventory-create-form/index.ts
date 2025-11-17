@@ -1,1 +1,1 @@
-export * from "./inventory-create-form.tsx"
+export * from './inventory-create-form.tsx';

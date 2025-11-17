@@ -1,155 +1,147 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Button, Input, Textarea, toast } from "@medusajs/ui"
-import { useFieldArray, useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import * as zod from "zod"
+import { useCallback } from 'react';
 
-import { Form } from "../../../../../components/common/form"
-import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
-import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import { useUpdateUser } from "../../../../../hooks/api/users"
-import { TeamMemberProps } from "../../../../../types/user"
-import { MediaSchema } from "../../../../products/product-create/constants"
-import {
-  FileType,
-  FileUpload,
-} from "../../../../../components/common/file-upload"
-import { useCallback } from "react"
-import { uploadFilesQuery } from "../../../../../lib/client"
-import { HttpTypes } from "@medusajs/types"
+import { zodResolver } from '@hookform/resolvers/zod';
+import { HttpTypes } from '@medusajs/types';
+import { Button, Input, Textarea, toast } from '@medusajs/ui';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import * as zod from 'zod';
+
+import { FileType, FileUpload } from '../../../../../components/common/file-upload';
+import { Form } from '../../../../../components/common/form';
+import { RouteDrawer, useRouteModal } from '../../../../../components/modals';
+import { KeyboundForm } from '../../../../../components/utilities/keybound-form';
+import { useUpdateUser } from '../../../../../hooks/api/users';
+import { uploadFilesQuery } from '../../../../../lib/client';
+import { TeamMemberProps } from '../../../../../types/user';
+import { MediaSchema } from '../../../../products/product-create/constants';
 
 type EditProfileProps = {
-  user: TeamMemberProps
-}
+  user: TeamMemberProps;
+};
 
 const EditProfileSchema = zod.object({
   name: zod.string().optional(),
   media: zod.array(MediaSchema).optional(),
   phone: zod.string().optional(),
-  bio: zod.string().optional(),
-})
+  bio: zod.string().optional()
+});
 
 const SUPPORTED_FORMATS = [
-  "image/jpeg",
-  "image/png",
-  "image/gif",
-  "image/webp",
-  "image/heic",
-  "image/svg+xml",
-]
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'image/webp',
+  'image/heic',
+  'image/svg+xml'
+];
 
-const SUPPORTED_FORMATS_FILE_EXTENSIONS = [
-  ".jpeg",
-  ".png",
-  ".gif",
-  ".webp",
-  ".heic",
-  ".svg",
-]
+const SUPPORTED_FORMATS_FILE_EXTENSIONS = ['.jpeg', '.png', '.gif', '.webp', '.heic', '.svg'];
 
 export const EditProfileForm = ({ user }: EditProfileProps) => {
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
 
   const form = useForm<zod.infer<typeof EditProfileSchema>>({
     defaultValues: {
-      name: user.name ?? "",
-      phone: user.phone ?? "",
-      bio: user.bio ?? "",
-      media: [],
+      name: user.name ?? '',
+      phone: user.phone ?? '',
+      bio: user.bio ?? '',
+      media: []
     },
-    resolver: zodResolver(EditProfileSchema),
-  })
+    resolver: zodResolver(EditProfileSchema)
+  });
 
   const { fields } = useFieldArray({
-    name: "media",
+    name: 'media',
     control: form.control,
-    keyName: "field_id",
-  })
+    keyName: 'field_id'
+  });
 
-  const { mutateAsync, isPending } = useUpdateUser(user.id!)
+  const { mutateAsync, isPending } = useUpdateUser(user.id!);
 
-  const handleSubmit = form.handleSubmit(async (values) => {
+  const handleSubmit = form.handleSubmit(async values => {
     let uploadedMedia: (HttpTypes.AdminFile & {
-      isThumbnail: boolean
-    })[] = []
+      isThumbnail: boolean;
+    })[] = [];
     try {
       if (values.media?.length) {
-        const fileReqs = []
+        const fileReqs = [];
         fileReqs.push(
           uploadFilesQuery(values.media).then((r: any) =>
             r.files.map((f: any) => ({
               ...f,
-              isThumbnail: false,
+              isThumbnail: false
             }))
           )
-        )
+        );
 
-        uploadedMedia = (await Promise.all(fileReqs)).flat()
+        uploadedMedia = (await Promise.all(fileReqs)).flat();
       }
     } catch (error) {
       if (error instanceof Error) {
-        toast.error(error.message)
+        toast.error(error.message);
       }
     }
 
     await mutateAsync(
       {
         name: values.name,
-        photo: uploadedMedia[0]?.url || user.photo || "",
+        photo: uploadedMedia[0]?.url || user.photo || '',
         phone: values.phone,
-        bio: values.bio,
+        bio: values.bio
       },
       {
-        onError: (error) => {
-          toast.error(error.message)
-          return
-        },
+        onError: error => {
+          toast.error(error.message);
+          return;
+        }
       }
-    )
+    );
 
-    toast.success(t("profile.toast.edit"))
-    handleSuccess()
-  })
+    toast.success(t('profile.toast.edit'));
+    handleSuccess();
+  });
 
   const hasInvalidFiles = useCallback(
     (fileList: FileType[]) => {
-      const invalidFile = fileList.find(
-        (f) => !SUPPORTED_FORMATS.includes(f.file.type)
-      )
+      const invalidFile = fileList.find(f => !SUPPORTED_FORMATS.includes(f.file.type));
 
       if (invalidFile) {
-        form.setError("media", {
-          type: "invalid_file",
-          message: t("products.media.invalidFileType", {
+        form.setError('media', {
+          type: 'invalid_file',
+          message: t('products.media.invalidFileType', {
             name: invalidFile.file.name,
-            types: SUPPORTED_FORMATS_FILE_EXTENSIONS.join(", "),
-          }),
-        })
+            types: SUPPORTED_FORMATS_FILE_EXTENSIONS.join(', ')
+          })
+        });
 
-        return true
+        return true;
       }
 
-      return false
+      return false;
     },
     [form, t]
-  )
+  );
 
   const onUploaded = useCallback(
     (files: FileType[]) => {
-      form.clearErrors("media")
+      form.clearErrors('media');
       if (hasInvalidFiles(files)) {
-        return
+        return;
       }
 
-      form.setValue("media", [{ ...files[0], isThumbnail: false }])
+      form.setValue('media', [{ ...files[0], isThumbnail: false }]);
     },
     [form, hasInvalidFiles]
-  )
+  );
 
   return (
     <RouteDrawer.Form form={form}>
-      <KeyboundForm onSubmit={handleSubmit} className="flex flex-1 flex-col">
+      <KeyboundForm
+        onSubmit={handleSubmit}
+        className="flex flex-1 flex-col"
+      >
         <RouteDrawer.Body>
           <div className="flex flex-col gap-y-8">
             <Form.Field
@@ -164,10 +156,10 @@ export const EditProfileForm = ({ user }: EditProfileProps) => {
                       </div>
                       <Form.Control>
                         <FileUpload
-                          uploadedImage={fields[0]?.url || user.photo || ""}
+                          uploadedImage={fields[0]?.url || user.photo || ''}
                           multiple={false}
-                          label={t("products.media.uploadImagesLabel")}
-                          hint={t("products.media.uploadImagesHint")}
+                          label={t('products.media.uploadImagesLabel')}
+                          hint={t('products.media.uploadImagesHint')}
                           hasError={!!form.formState.errors.media}
                           formats={SUPPORTED_FORMATS}
                           onUploaded={onUploaded}
@@ -176,7 +168,7 @@ export const EditProfileForm = ({ user }: EditProfileProps) => {
                       <Form.ErrorMessage />
                     </div>
                   </Form.Item>
-                )
+                );
               }}
             />
             <Form.Field
@@ -223,16 +215,23 @@ export const EditProfileForm = ({ user }: EditProfileProps) => {
         <RouteDrawer.Footer>
           <div className="flex items-center gap-x-2">
             <RouteDrawer.Close asChild>
-              <Button size="small" variant="secondary">
-                {t("actions.cancel")}
+              <Button
+                size="small"
+                variant="secondary"
+              >
+                {t('actions.cancel')}
               </Button>
             </RouteDrawer.Close>
-            <Button size="small" type="submit" isLoading={isPending}>
-              {t("actions.save")}
+            <Button
+              size="small"
+              type="submit"
+              isLoading={isPending}
+            >
+              {t('actions.save')}
             </Button>
           </div>
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  )
-}
+  );
+};

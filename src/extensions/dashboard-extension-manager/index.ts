@@ -1,1 +1,1 @@
-export * from "./dashboard-extension-manager"
+export * from './dashboard-extension-manager';

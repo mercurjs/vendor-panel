@@ -1,1 +1,1 @@
-export const reservationListExpand = "line_item"
+export const reservationListExpand = 'line_item';

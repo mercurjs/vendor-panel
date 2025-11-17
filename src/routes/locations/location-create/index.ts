@@ -1,1 +1,1 @@
-export { LocationCreate as Component } from "./location-create"
+export { LocationCreate as Component } from './location-create';

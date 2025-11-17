@@ -1,40 +1,39 @@
-import imagesConverter from "./images-conventer"
-import { HttpTypes } from "@medusajs/types"
-import { ExtendedAdminProduct } from "../types/products"
+import { HttpTypes } from '@medusajs/types';
 
-function formatProductImages(
-  images?: HttpTypes.AdminProductImage[] | null
-) {
+import { ExtendedAdminProduct } from '../types/products';
+import imagesConverter from './images-conventer';
+
+function formatProductImages(images?: HttpTypes.AdminProductImage[] | null) {
   if (!images) {
-    return []
+    return [];
   }
 
-  return images.map((image) => ({
+  return images.map(image => ({
     ...image,
-    url: imagesConverter(image.url || ""),
-  }))
+    url: imagesConverter(image.url || '')
+  }));
 }
 
 function formatSingleProduct(product: ExtendedAdminProduct) {
   return {
     ...product,
-    thumbnail: imagesConverter(product.thumbnail || ""),
-    images: formatProductImages(product.images),
-  }
+    thumbnail: imagesConverter(product.thumbnail || ''),
+    images: formatProductImages(product.images)
+  };
 }
 
 function productsImagesFormatter(
   products?: ExtendedAdminProduct[] | ExtendedAdminProduct
 ): ExtendedAdminProduct[] | ExtendedAdminProduct | null {
   if (!products) {
-    return null
+    return null;
   }
 
   if (Array.isArray(products)) {
-    return products.map(formatSingleProduct)
+    return products.map(formatSingleProduct);
   }
 
-  return formatSingleProduct(products)
+  return formatSingleProduct(products);
 }
 
-export default productsImagesFormatter
+export default productsImagesFormatter;

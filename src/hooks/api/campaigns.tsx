@@ -1,19 +1,20 @@
-import { FetchError } from "@medusajs/js-sdk"
-import { AdminPromotion, HttpTypes, LinkMethodRequest } from "@medusajs/types"
+import { FetchError } from '@medusajs/js-sdk';
+import { AdminPromotion, HttpTypes, LinkMethodRequest } from '@medusajs/types';
 import {
   QueryKey,
-  UseMutationOptions,
-  UseQueryOptions,
   useMutation,
+  UseMutationOptions,
   useQuery,
-} from "@tanstack/react-query"
-import { fetchQuery, sdk } from "../../lib/client"
-import { queryClient } from "../../lib/query-client"
-import { queryKeysFactory } from "../../lib/query-key-factory"
-import { promotionsQueryKeys } from "./promotions"
+  UseQueryOptions
+} from '@tanstack/react-query';
 
-const REGIONS_QUERY_KEY = "campaigns" as const
-export const campaignsQueryKeys = queryKeysFactory(REGIONS_QUERY_KEY)
+import { fetchQuery, sdk } from '../../lib/client';
+import { queryClient } from '../../lib/query-client';
+import { queryKeysFactory } from '../../lib/query-key-factory';
+import { promotionsQueryKeys } from './promotions';
+
+const REGIONS_QUERY_KEY = 'campaigns' as const;
+export const campaignsQueryKeys = queryKeysFactory(REGIONS_QUERY_KEY);
 
 export const useCampaign = (
   id: string,
@@ -25,21 +26,21 @@ export const useCampaign = (
       HttpTypes.AdminCampaignResponse & { promotions?: AdminPromotion[] },
       QueryKey
     >,
-    "queryFn" | "queryKey"
+    'queryFn' | 'queryKey'
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryKey: campaignsQueryKeys.detail(id),
     queryFn: async () =>
       fetchQuery(`/vendor/campaigns/${id}`, {
-        method: "GET",
-        query: query as { [key: string]: string | number },
+        method: 'GET',
+        query: query as { [key: string]: string | number }
       }),
-    ...options,
-  })
+    ...options
+  });
 
-  return { ...data, ...rest }
-}
+  return { ...data, ...rest };
+};
 
 export const useCampaigns = (
   query?: HttpTypes.AdminGetCampaignsParams,
@@ -50,21 +51,21 @@ export const useCampaigns = (
       HttpTypes.AdminCampaignListResponse,
       QueryKey
     >,
-    "queryFn" | "queryKey"
+    'queryFn' | 'queryKey'
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: () =>
-      fetchQuery("/vendor/campaigns", {
-        method: "GET",
-        query: query as { [key: string]: string | number },
+      fetchQuery('/vendor/campaigns', {
+        method: 'GET',
+        query: query as { [key: string]: string | number }
       }),
     queryKey: campaignsQueryKeys.list(query),
-    ...options,
-  })
+    ...options
+  });
 
-  return { ...data, ...rest }
-}
+  return { ...data, ...rest };
+};
 
 export const useCreateCampaign = (
   options?: UseMutationOptions<
@@ -74,20 +75,20 @@ export const useCreateCampaign = (
   >
 ) => {
   return useMutation({
-    mutationFn: (payload) =>
-      fetchQuery("/vendor/campaigns", {
-        method: "POST",
-        body: payload,
+    mutationFn: payload =>
+      fetchQuery('/vendor/campaigns', {
+        method: 'POST',
+        body: payload
       }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: campaignsQueryKeys.lists(),
-      })
-      options?.onSuccess?.(data, variables, context)
+        queryKey: campaignsQueryKeys.lists()
+      });
+      options?.onSuccess?.(data, variables, context);
     },
-    ...options,
-  })
-}
+    ...options
+  });
+};
 
 export const useUpdateCampaign = (
   id: string,
@@ -98,77 +99,69 @@ export const useUpdateCampaign = (
   >
 ) => {
   return useMutation({
-    mutationFn: (payload) =>
+    mutationFn: payload =>
       fetchQuery(`/vendor/campaigns/${id}`, {
-        method: "POST",
-        body: payload,
+        method: 'POST',
+        body: payload
       }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: campaignsQueryKeys.lists(),
-      })
+        queryKey: campaignsQueryKeys.lists()
+      });
       queryClient.invalidateQueries({
-        queryKey: campaignsQueryKeys.details(),
-      })
+        queryKey: campaignsQueryKeys.details()
+      });
       queryClient.invalidateQueries({
-        queryKey: promotionsQueryKeys.lists(),
-      })
+        queryKey: promotionsQueryKeys.lists()
+      });
       queryClient.invalidateQueries({
-        queryKey: promotionsQueryKeys.details(),
-      })
+        queryKey: promotionsQueryKeys.details()
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
-    ...options,
-  })
-}
+    ...options
+  });
+};
 
 export const useDeleteCampaign = (
   id: string,
-  options?: UseMutationOptions<
-    HttpTypes.DeleteResponse<"campaign">,
-    FetchError,
-    void
-  >
+  options?: UseMutationOptions<HttpTypes.DeleteResponse<'campaign'>, FetchError, void>
 ) => {
   return useMutation({
     mutationFn: () =>
       fetchQuery(`/vendor/campaigns/${id}`, {
-        method: "DELETE",
+        method: 'DELETE'
       }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: campaignsQueryKeys.lists(),
-      })
+        queryKey: campaignsQueryKeys.lists()
+      });
       queryClient.invalidateQueries({
-        queryKey: campaignsQueryKeys.details(),
-      })
+        queryKey: campaignsQueryKeys.details()
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
-    ...options,
-  })
-}
+    ...options
+  });
+};
 
 export const useAddOrRemoveCampaignPromotions = (
   id: string,
-  options?: UseMutationOptions<
-    HttpTypes.AdminCampaignResponse,
-    FetchError,
-    LinkMethodRequest
-  >
+  options?: UseMutationOptions<HttpTypes.AdminCampaignResponse, FetchError, LinkMethodRequest>
 ) => {
   return useMutation({
-    mutationFn: (payload) => sdk.admin.campaign.batchPromotions(id, payload),
+    mutationFn: payload => sdk.admin.campaign.batchPromotions(id, payload),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: campaignsQueryKeys.details(),
-      })
+        queryKey: campaignsQueryKeys.details()
+      });
       queryClient.invalidateQueries({
-        queryKey: promotionsQueryKeys.lists(),
-      })
-      options?.onSuccess?.(data, variables, context)
+        queryKey: promotionsQueryKeys.lists()
+      });
+      options?.onSuccess?.(data, variables, context);
     },
-    ...options,
-  })
-}
+    ...options
+  });
+};

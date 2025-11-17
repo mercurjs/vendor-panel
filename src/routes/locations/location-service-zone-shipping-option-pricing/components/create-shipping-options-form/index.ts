@@ -1,1 +1,1 @@
-export * from "./edit-shipping-options-pricing-form.tsx"
+export * from './edit-shipping-options-pricing-form.tsx';

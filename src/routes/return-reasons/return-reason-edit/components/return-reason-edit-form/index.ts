@@ -1,1 +1,1 @@
-export * from "./return-reason-edit-form"
+export * from './return-reason-edit-form';

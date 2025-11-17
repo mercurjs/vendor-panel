@@ -1,5 +1,5 @@
-const baseConfig = require("shared-configs/presets/nextjs/.prettierrc.js")
+const baseConfig = require('shared-configs/presets/nextjs/.prettierrc.js');
 
 module.exports = {
-  ...baseConfig,
-}
+  ...baseConfig
+};

@@ -1,1 +1,1 @@
-export * from "./data-table-order-by"
+export * from './data-table-order-by';

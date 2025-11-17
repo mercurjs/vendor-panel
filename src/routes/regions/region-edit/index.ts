@@ -1,1 +1,1 @@
-export { RegionEdit as Component } from "./region-edit"
+export { RegionEdit as Component } from './region-edit';

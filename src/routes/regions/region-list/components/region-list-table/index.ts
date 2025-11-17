@@ -1,1 +1,1 @@
-export * from "./region-list-table"
+export * from './region-list-table';

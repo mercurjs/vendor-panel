@@ -1,1 +1,1 @@
-export * from "./create-customer-group-form"
+export * from './create-customer-group-form';

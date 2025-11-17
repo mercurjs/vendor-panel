@@ -1,1 +1,1 @@
-export * from "./category-combobox"
+export * from './category-combobox';

@@ -1,1 +1,1 @@
-export * from "./localized-table-pagination"
+export * from './localized-table-pagination';

@@ -1,1 +1,1 @@
-export { ProductTypeCreate as Component } from "./product-type-create"
+export { ProductTypeCreate as Component } from './product-type-create';

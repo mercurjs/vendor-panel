@@ -1,16 +1,17 @@
-import { Heading } from "@medusajs/ui"
-import { RouteDrawer } from "../../../components/modals"
-import { useMe } from "../../../hooks/api"
-import { EditStoreCompanyForm } from "./components/edit-store-company-form"
+import { Heading } from '@medusajs/ui';
+
+import { RouteDrawer } from '../../../components/modals';
+import { useMe } from '../../../hooks/api';
+import { EditStoreCompanyForm } from './components/edit-store-company-form';
 
 export const StoreEditCompany = () => {
-  const { seller, isPending: isLoading, isError, error } = useMe()
+  const { seller, isPending: isLoading, isError, error } = useMe();
 
   if (isError) {
-    throw error
+    throw error;
   }
 
-  const ready = !!seller && !isLoading
+  const ready = !!seller && !isLoading;
   return (
     <RouteDrawer>
       <RouteDrawer.Header>
@@ -18,5 +19,5 @@ export const StoreEditCompany = () => {
       </RouteDrawer.Header>
       {ready && <EditStoreCompanyForm seller={seller} />}
     </RouteDrawer>
-  )
-}
+  );
+};

@@ -4,27 +4,27 @@
 
 @layer base {
   @font-face {
-    font-family: "Inter";
+    font-family: 'Inter';
     font-weight: 400;
-    src: url("./assets/fonts/Inter-Regular.ttf") format("truetype");
+    src: url('./assets/fonts/Inter-Regular.ttf') format('truetype');
   }
 
   @font-face {
-    font-family: "Inter";
+    font-family: 'Inter';
     font-weight: 500;
-    src: url("./assets/fonts/Inter-Medium.ttf") format("truetype");
+    src: url('./assets/fonts/Inter-Medium.ttf') format('truetype');
   }
 
   @font-face {
-    font-family: "Roboto Mono";
+    font-family: 'Roboto Mono';
     font-weight: 400;
-    src: url("./assets/fonts/RobotoMono-Regular.ttf") format("truetype");
+    src: url('./assets/fonts/RobotoMono-Regular.ttf') format('truetype');
   }
 
   @font-face {
-    font-family: "Roboto Mono";
+    font-family: 'Roboto Mono';
     font-weight: 500;
-    src: url("./assets/fonts/RobotoMono-Medium.ttf") format("truetype");
+    src: url('./assets/fonts/RobotoMono-Medium.ttf') format('truetype');
   }
 
   :root {

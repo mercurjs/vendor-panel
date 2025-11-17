@@ -1,1 +1,1 @@
-export * from "./geo-zone-form"
+export * from './geo-zone-form';

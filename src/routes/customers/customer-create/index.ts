@@ -1,1 +1,1 @@
-export { CustomerCreate as Component } from "./customer-create"
+export { CustomerCreate as Component } from './customer-create';

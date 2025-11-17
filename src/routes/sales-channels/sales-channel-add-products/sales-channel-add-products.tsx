@@ -1,19 +1,15 @@
-import { useParams } from "react-router-dom"
-import { RouteFocusModal } from "../../../components/modals"
-import { useSalesChannel } from "../../../hooks/api/sales-channels"
-import { AddProductsToSalesChannelForm } from "./components"
+import { useParams } from 'react-router-dom';
+
+import { RouteFocusModal } from '../../../components/modals';
+import { useSalesChannel } from '../../../hooks/api/sales-channels';
+import { AddProductsToSalesChannelForm } from './components';
 
 export const SalesChannelAddProducts = () => {
-  const { id } = useParams()
-  const {
-    sales_channel,
-    isPending: isLoading,
-    isError,
-    error,
-  } = useSalesChannel(id!)
+  const { id } = useParams();
+  const { sales_channel, isPending: isLoading, isError, error } = useSalesChannel(id!);
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   return (
@@ -22,5 +18,5 @@ export const SalesChannelAddProducts = () => {
         <AddProductsToSalesChannelForm salesChannel={sales_channel} />
       )}
     </RouteFocusModal>
-  )
-}
+  );
+};

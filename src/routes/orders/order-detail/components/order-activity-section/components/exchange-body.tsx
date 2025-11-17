@@ -1,66 +1,64 @@
-import { Button, Text, usePrompt } from "@medusajs/ui"
-import { AdminExchange, AdminReturn } from "@medusajs/types"
-import { useTranslation } from "react-i18next"
-import { useCancelExchange } from "../../../../../../hooks/api/exchanges"
+import { AdminExchange, AdminReturn } from '@medusajs/types';
+import { Button, Text, usePrompt } from '@medusajs/ui';
+import { useTranslation } from 'react-i18next';
+
+import { useCancelExchange } from '../../../../../../hooks/api/exchanges';
 
 type ExchangeBodyProps = {
-  exchange: AdminExchange
-  exchangeReturn?: AdminReturn
-}
+  exchange: AdminExchange;
+  exchangeReturn?: AdminReturn;
+};
 
-export const ExchangeBody = ({
-  exchange,
-  exchangeReturn,
-}: ExchangeBodyProps) => {
-  const prompt = usePrompt()
-  const { t } = useTranslation()
+export const ExchangeBody = ({ exchange, exchangeReturn }: ExchangeBodyProps) => {
+  const prompt = usePrompt();
+  const { t } = useTranslation();
 
-  const isCanceled = !!exchange.canceled_at
+  const isCanceled = !!exchange.canceled_at;
 
-  const { mutateAsync: cancelExchange } = useCancelExchange(
-    exchange.id,
-    exchange.order_id
-  )
+  const { mutateAsync: cancelExchange } = useCancelExchange(exchange.id, exchange.order_id);
 
   const onCancel = async () => {
     const res = await prompt({
-      title: t("orders.exchanges.cancel.title"),
-      description: t("orders.exchanges.cancel.description"),
-      confirmText: t("actions.confirm"),
-      cancelText: t("actions.cancel"),
-    })
+      title: t('orders.exchanges.cancel.title'),
+      description: t('orders.exchanges.cancel.description'),
+      confirmText: t('actions.confirm'),
+      cancelText: t('actions.cancel')
+    });
 
     if (!res) {
-      return
+      return;
     }
 
-    await cancelExchange()
-  }
+    await cancelExchange();
+  };
 
   const outboundItems = (exchange.additional_items || []).reduce(
     (acc, item) => (acc + item.quantity) as number,
     0
-  )
+  );
 
-  const inboundItems = (exchangeReturn?.items || []).reduce(
-    (acc, item) => acc + item.quantity,
-    0
-  )
+  const inboundItems = (exchangeReturn?.items || []).reduce((acc, item) => acc + item.quantity, 0);
 
   return (
     <div>
       {outboundItems > 0 && (
-        <Text size="small" className="text-ui-fg-subtle">
-          {t("orders.activity.events.exchange.itemsInbound", {
-            count: outboundItems,
+        <Text
+          size="small"
+          className="text-ui-fg-subtle"
+        >
+          {t('orders.activity.events.exchange.itemsInbound', {
+            count: outboundItems
           })}
         </Text>
       )}
 
       {inboundItems > 0 && (
-        <Text size="small" className="text-ui-fg-subtle">
-          {t("orders.activity.events.exchange.itemsOutbound", {
-            count: inboundItems,
+        <Text
+          size="small"
+          className="text-ui-fg-subtle"
+        >
+          {t('orders.activity.events.exchange.itemsOutbound', {
+            count: inboundItems
           })}
         </Text>
       )}
@@ -68,14 +66,13 @@ export const ExchangeBody = ({
       {!isCanceled && (
         <Button
           onClick={onCancel}
-          className="text-ui-fg-subtle h-auto px-0 leading-none hover:bg-transparent"
+          className="h-auto px-0 leading-none text-ui-fg-subtle hover:bg-transparent"
           variant="transparent"
           size="small"
         >
-          {t("actions.cancel")}
+          {t('actions.cancel')}
         </Button>
       )}
     </div>
-  )
-}
-
+  );
+};

@@ -1,41 +1,41 @@
-import { PencilSquare, Trash } from "@medusajs/icons"
-import { toast, usePrompt } from "@medusajs/ui"
+import { PencilSquare, Trash } from '@medusajs/icons';
+import { HttpTypes } from '@medusajs/types';
+import { toast, usePrompt } from '@medusajs/ui';
+import { useTranslation } from 'react-i18next';
 
-import { HttpTypes } from "@medusajs/types"
-import { useTranslation } from "react-i18next"
-import { ActionMenu } from "../../../../../components/common/action-menu"
-import { useDeleteReservationItem } from "../../../../../hooks/api/reservations"
+import { ActionMenu } from '../../../../../components/common/action-menu';
+import { useDeleteReservationItem } from '../../../../../hooks/api/reservations';
 
 export const ReservationActions = ({
-  reservation,
+  reservation
 }: {
-  reservation: HttpTypes.AdminReservation
+  reservation: HttpTypes.AdminReservation;
 }) => {
-  const { t } = useTranslation()
-  const prompt = usePrompt()
-  const { mutateAsync } = useDeleteReservationItem(reservation.id)
+  const { t } = useTranslation();
+  const prompt = usePrompt();
+  const { mutateAsync } = useDeleteReservationItem(reservation.id);
 
   const handleDelete = async () => {
     const res = await prompt({
-      title: t("general.areYouSure"),
-      description: t("inventory.deleteWarning"),
-      confirmText: t("actions.delete"),
-      cancelText: t("actions.cancel"),
-    })
+      title: t('general.areYouSure'),
+      description: t('inventory.deleteWarning'),
+      confirmText: t('actions.delete'),
+      cancelText: t('actions.cancel')
+    });
 
     if (!res) {
-      return
+      return;
     }
 
     await mutateAsync(undefined, {
       onSuccess: () => {
-        toast.success(t("inventory.reservation.deleteSuccessToast"))
+        toast.success(t('inventory.reservation.deleteSuccessToast'));
       },
-      onError: (e) => {
-        toast.error(e.message)
-      },
-    })
-  }
+      onError: e => {
+        toast.error(e.message);
+      }
+    });
+  };
 
   return (
     <ActionMenu
@@ -44,21 +44,21 @@ export const ReservationActions = ({
           actions: [
             {
               icon: <PencilSquare />,
-              label: t("actions.edit"),
-              to: `/reservations/${reservation.id}/edit`,
-            },
-          ],
+              label: t('actions.edit'),
+              to: `/reservations/${reservation.id}/edit`
+            }
+          ]
         },
         {
           actions: [
             {
               icon: <Trash />,
-              label: t("actions.delete"),
-              onClick: handleDelete,
-            },
-          ],
-        },
+              label: t('actions.delete'),
+              onClick: handleDelete
+            }
+          ]
+        }
       ]}
     />
-  )
-}
+  );
+};

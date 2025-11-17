@@ -1,80 +1,79 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Alert, Button, Heading, Input, Text, toast } from "@medusajs/ui"
-import { useForm } from "react-hook-form"
-import { Trans, useTranslation } from "react-i18next"
-import { Link, useNavigate, useSearchParams } from "react-router-dom"
-import * as z from "zod"
+import { useState } from 'react';
 
-import { useState } from "react"
-import { decodeToken } from "react-jwt"
-import { Form } from "../../components/common/form"
-import { LogoBox } from "../../components/common/logo-box"
-import { i18n } from "../../components/utilities/i18n"
-import {
-  useResetPasswordForEmailPass,
-  useUpdateProviderForEmailPass,
-} from "../../hooks/api/auth"
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Alert, Button, Heading, Input, Text, toast } from '@medusajs/ui';
+import { useForm } from 'react-hook-form';
+import { Trans, useTranslation } from 'react-i18next';
+import { decodeToken } from 'react-jwt';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import * as z from 'zod';
+
+import { Form } from '../../components/common/form';
+import { LogoBox } from '../../components/common/logo-box';
+import { i18n } from '../../components/utilities/i18n';
+import { useResetPasswordForEmailPass, useUpdateProviderForEmailPass } from '../../hooks/api/auth';
 
 const ResetPasswordInstructionsSchema = z.object({
-  email: z.string().email(),
-})
+  email: z.string().email()
+});
 
 const ResetPasswordSchema = z
   .object({
     password: z.string().min(1),
-    repeat_password: z.string().min(1),
+    repeat_password: z.string().min(1)
   })
   .superRefine(({ password, repeat_password }, ctx) => {
     if (password !== repeat_password) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: i18n.t("resetPassword.passwordMismatch"),
-        path: ["repeat_password"],
-      })
+        message: i18n.t('resetPassword.passwordMismatch'),
+        path: ['repeat_password']
+      });
     }
-  })
+  });
 
 const ResetPasswordTokenSchema = z.object({
   entity_id: z.string(),
   provider: z.string(),
   exp: z.number(),
-  iat: z.number(),
-})
+  iat: z.number()
+});
 
 type DecodedResetPasswordToken = {
-  entity_id: string // -> email in here
-  provider: string
-  exp: string
-  iat: string
-}
+  entity_id: string; // -> email in here
+  provider: string;
+  exp: string;
+  iat: string;
+};
 
-const validateDecodedResetPasswordToken = (
-  decoded: any
-): decoded is DecodedResetPasswordToken => {
-  return ResetPasswordTokenSchema.safeParse(decoded).success
-}
+const validateDecodedResetPasswordToken = (decoded: any): decoded is DecodedResetPasswordToken => {
+  return ResetPasswordTokenSchema.safeParse(decoded).success;
+};
 
 const InvalidResetToken = () => {
-  const { t } = useTranslation()
-  const navigate = useNavigate()
+  const { t } = useTranslation();
+  const navigate = useNavigate();
 
   return (
-    <div className="bg-ui-bg-base flex min-h-dvh w-dvw items-center justify-center">
+    <div className="flex min-h-dvh w-dvw items-center justify-center bg-ui-bg-base">
       <div className="m-4 flex w-full max-w-[300px] flex-col items-center">
         <LogoBox className="mb-4" />
         <div className="mb-6 flex flex-col items-center">
-          <Heading>{t("resetPassword.invalidLinkTitle")}</Heading>
-          <Text size="small" className="text-ui-fg-subtle text-center">
-            {t("resetPassword.invalidLinkHint")}
+          <Heading>{t('resetPassword.invalidLinkTitle')}</Heading>
+          <Text
+            size="small"
+            className="text-center text-ui-fg-subtle"
+          >
+            {t('resetPassword.invalidLinkHint')}
           </Text>
         </div>
         <div className="flex w-full flex-col gap-y-3">
           <Button
-            onClick={() => navigate("/reset-password", { replace: true })}
+            onClick={() => navigate('/reset-password', { replace: true })}
             className="w-full"
             type="submit"
           >
-            {t("resetPassword.goToResetPassword")}
+            {t('resetPassword.goToResetPassword')}
           </Button>
         </div>
         <span className="txt-small my-6">
@@ -84,72 +83,72 @@ const InvalidResetToken = () => {
               <Link
                 key="login-link"
                 to="/login"
-                className="text-ui-fg-interactive transition-fg hover:text-ui-fg-interactive-hover focus-visible:text-ui-fg-interactive-hover outline-none"
-              />,
+                className="text-ui-fg-interactive outline-none transition-fg hover:text-ui-fg-interactive-hover focus-visible:text-ui-fg-interactive-hover"
+              />
             ]}
           />
         </span>
       </div>
     </div>
-  )
-}
+  );
+};
 
 const ChooseNewPassword = ({ token }: { token: string }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const [showAlert, setShowAlert] = useState(false)
+  const [showAlert, setShowAlert] = useState(false);
 
-  const invite: DecodedResetPasswordToken | null = token
-    ? decodeToken(token)
-    : null
+  const invite: DecodedResetPasswordToken | null = token ? decodeToken(token) : null;
 
-  const isValidResetPasswordToken =
-    invite && validateDecodedResetPasswordToken(invite)
+  const isValidResetPasswordToken = invite && validateDecodedResetPasswordToken(invite);
 
   const form = useForm<z.infer<typeof ResetPasswordSchema>>({
     resolver: zodResolver(ResetPasswordSchema),
     defaultValues: {
-      password: "",
-      repeat_password: "",
-    },
-  })
+      password: '',
+      repeat_password: ''
+    }
+  });
 
-  const { mutateAsync, isPending } = useUpdateProviderForEmailPass(token)
+  const { mutateAsync, isPending } = useUpdateProviderForEmailPass(token);
 
   const handleSubmit = form.handleSubmit(async ({ password }) => {
     if (!invite) {
-      return
+      return;
     }
 
     await mutateAsync(
       {
-        password,
+        password
       },
       {
         onSuccess: () => {
-          form.setValue("password", "")
-          form.setValue("repeat_password", "")
-          setShowAlert(true)
+          form.setValue('password', '');
+          form.setValue('repeat_password', '');
+          setShowAlert(true);
         },
-        onError: (error) => {
-          toast.error(error.message)
-        },
+        onError: error => {
+          toast.error(error.message);
+        }
       }
-    )
-  })
+    );
+  });
 
   if (!isValidResetPasswordToken) {
-    return <InvalidResetToken />
+    return <InvalidResetToken />;
   }
 
   return (
-    <div className="bg-ui-bg-subtle flex min-h-dvh w-dvw items-center justify-center">
+    <div className="flex min-h-dvh w-dvw items-center justify-center bg-ui-bg-subtle">
       <div className="m-4 flex w-full max-w-[280px] flex-col items-center">
         <LogoBox className="mb-4" />
         <div className="mb-6 flex flex-col items-center">
-          <Heading>{t("resetPassword.resetPassword")}</Heading>
-          <Text size="small" className="text-ui-fg-subtle text-center">
-            {t("resetPassword.newPasswordHint")}
+          <Heading>{t('resetPassword.resetPassword')}</Heading>
+          <Text
+            size="small"
+            className="text-center text-ui-fg-subtle"
+          >
+            {t('resetPassword.newPasswordHint')}
           </Text>
         </div>
         <div className="flex w-full flex-col gap-y-3">
@@ -159,7 +158,11 @@ const ChooseNewPassword = ({ token }: { token: string }) => {
               className="flex w-full flex-col gap-y-6"
             >
               <div className="flex flex-col gap-y-4">
-                <Input type="email" disabled value={invite?.entity_id} />
+                <Input
+                  type="email"
+                  disabled
+                  value={invite?.entity_id}
+                />
                 <Form.Field
                   control={form.control}
                   name="password"
@@ -171,12 +174,12 @@ const ChooseNewPassword = ({ token }: { token: string }) => {
                             autoComplete="new-password"
                             type="password"
                             {...field}
-                            placeholder={t("resetPassword.newPassword")}
+                            placeholder={t('resetPassword.newPassword')}
                           />
                         </Form.Control>
                         <Form.ErrorMessage />
                       </Form.Item>
-                    )
+                    );
                   }}
                 />
                 <Form.Field
@@ -190,28 +193,35 @@ const ChooseNewPassword = ({ token }: { token: string }) => {
                             autoComplete="off"
                             type="password"
                             {...field}
-                            placeholder={t("resetPassword.repeatNewPassword")}
+                            placeholder={t('resetPassword.repeatNewPassword')}
                           />
                         </Form.Control>
                         <Form.ErrorMessage />
                       </Form.Item>
-                    )
+                    );
                   }}
                 />
               </div>
               {showAlert && (
-                <Alert dismissible variant="success">
+                <Alert
+                  dismissible
+                  variant="success"
+                >
                   <div className="flex flex-col">
-                    <span className="text-ui-fg-base mb-1">
-                      {t("resetPassword.successfulResetTitle")}
+                    <span className="mb-1 text-ui-fg-base">
+                      {t('resetPassword.successfulResetTitle')}
                     </span>
-                    <span>{t("resetPassword.successfulReset")}</span>
+                    <span>{t('resetPassword.successfulReset')}</span>
                   </div>
                 </Alert>
               )}
               {!showAlert && (
-                <Button className="w-full" type="submit" isLoading={isPending}>
-                  {t("resetPassword.resetPassword")}
+                <Button
+                  className="w-full"
+                  type="submit"
+                  isLoading={isPending}
+                >
+                  {t('resetPassword.resetPassword')}
                 </Button>
               )}
             </form>
@@ -224,61 +234,64 @@ const ChooseNewPassword = ({ token }: { token: string }) => {
               <Link
                 key="login-link"
                 to="/login"
-                className="text-ui-fg-base transition-fg hover:text-ui-fg-base-hover focus-visible:text-ui-fg-base-hover outline-none"
-              />,
+                className="hover:text-ui-fg-base-hover focus-visible:text-ui-fg-base-hover text-ui-fg-base outline-none transition-fg"
+              />
             ]}
           />
         </span>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export const ResetPassword = () => {
-  const { t } = useTranslation()
-  const [searchParams] = useSearchParams()
-  const [showAlert, setShowAlert] = useState(false)
+  const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
+  const [showAlert, setShowAlert] = useState(false);
 
-  const token = searchParams.get("token")
+  const token = searchParams.get('token');
 
   const form = useForm<z.infer<typeof ResetPasswordInstructionsSchema>>({
     resolver: zodResolver(ResetPasswordInstructionsSchema),
     defaultValues: {
-      email: "",
-    },
-  })
+      email: ''
+    }
+  });
 
-  const { mutateAsync, isPending } = useResetPasswordForEmailPass()
+  const { mutateAsync, isPending } = useResetPasswordForEmailPass();
 
   const handleSubmit = form.handleSubmit(async ({ email }) => {
     await mutateAsync(
       {
-        email,
+        email
       },
       {
         onSuccess: () => {
-          form.setValue("email", "")
-          setShowAlert(true)
+          form.setValue('email', '');
+          setShowAlert(true);
         },
-        onError: (error) => {
-          toast.error(error.message)
-        },
+        onError: error => {
+          toast.error(error.message);
+        }
       }
-    )
-  })
+    );
+  });
 
   if (token) {
-    return <ChooseNewPassword token={token} />
+    return <ChooseNewPassword token={token} />;
   }
 
   return (
-    <div className="bg-ui-bg-base flex min-h-dvh w-dvw items-center justify-center">
+    <div className="flex min-h-dvh w-dvw items-center justify-center bg-ui-bg-base">
       <div className="m-4 flex w-full max-w-[300px] flex-col items-center">
         <LogoBox className="mb-4" />
         <div className="mb-4 flex flex-col items-center">
-          <Heading>{t("resetPassword.resetPassword")}</Heading>
-          <Text size="small" className="text-ui-fg-subtle text-center">
-            {t("resetPassword.hint")}
+          <Heading>{t('resetPassword.resetPassword')}</Heading>
+          <Text
+            size="small"
+            className="text-center text-ui-fg-subtle"
+          >
+            {t('resetPassword.hint')}
           </Text>
         </div>
         <div className="flex w-full flex-col gap-y-3">
@@ -298,27 +311,34 @@ export const ResetPassword = () => {
                           <Input
                             autoComplete="email"
                             {...field}
-                            placeholder={t("fields.email")}
+                            placeholder={t('fields.email')}
                           />
                         </Form.Control>
                         <Form.ErrorMessage />
                       </Form.Item>
-                    )
+                    );
                   }}
                 />
               </div>
               {showAlert && (
-                <Alert dismissible variant="success">
+                <Alert
+                  dismissible
+                  variant="success"
+                >
                   <div className="flex flex-col">
-                    <span className="text-ui-fg-base mb-1">
-                      {t("resetPassword.successfulRequestTitle")}
+                    <span className="mb-1 text-ui-fg-base">
+                      {t('resetPassword.successfulRequestTitle')}
                     </span>
-                    <span>{t("resetPassword.successfulRequest")}</span>
+                    <span>{t('resetPassword.successfulRequest')}</span>
                   </div>
                 </Alert>
               )}
-              <Button className="w-full" type="submit" isLoading={isPending}>
-                {t("resetPassword.sendResetInstructions")}
+              <Button
+                className="w-full"
+                type="submit"
+                isLoading={isPending}
+              >
+                {t('resetPassword.sendResetInstructions')}
               </Button>
             </form>
           </Form>
@@ -330,12 +350,12 @@ export const ResetPassword = () => {
               <Link
                 key="login-link"
                 to="/login"
-                className="text-ui-fg-base transition-fg hover:text-ui-fg-base-hover focus-visible:text-ui-fg-base-hover outline-none"
-              />,
+                className="hover:text-ui-fg-base-hover focus-visible:text-ui-fg-base-hover text-ui-fg-base outline-none transition-fg"
+              />
             ]}
           />
         </span>
       </div>
     </div>
-  )
-}
+  );
+};

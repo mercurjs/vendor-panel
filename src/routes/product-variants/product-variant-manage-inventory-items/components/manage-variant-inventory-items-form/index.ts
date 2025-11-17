@@ -1,1 +1,1 @@
-export * from "./manage-variant-inventory-items-form"
+export * from './manage-variant-inventory-items-form';

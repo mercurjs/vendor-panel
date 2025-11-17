@@ -1,1 +1,1 @@
-export { CustomerGroupMetadata as Component } from "./customer-metadata"
+export { CustomerGroupMetadata as Component } from './customer-metadata';

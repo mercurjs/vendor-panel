@@ -1,19 +1,19 @@
-import { HttpTypes } from "@medusajs/types"
+import { FetchError } from '@medusajs/js-sdk';
+import { HttpTypes } from '@medusajs/types';
 import {
   QueryKey,
-  UseMutationOptions,
-  UseQueryOptions,
   useMutation,
+  UseMutationOptions,
   useQuery,
-} from "@tanstack/react-query"
+  UseQueryOptions
+} from '@tanstack/react-query';
 
-import { FetchError } from "@medusajs/js-sdk"
-import { sdk } from "../../lib/client"
-import { queryClient } from "../../lib/query-client"
-import { queryKeysFactory } from "../../lib/query-key-factory"
+import { sdk } from '../../lib/client';
+import { queryClient } from '../../lib/query-client';
+import { queryKeysFactory } from '../../lib/query-key-factory';
 
-const RETURN_REASONS_QUERY_KEY = "return_reasons" as const
-export const returnReasonsQueryKeys = queryKeysFactory(RETURN_REASONS_QUERY_KEY)
+const RETURN_REASONS_QUERY_KEY = 'return_reasons' as const;
+export const returnReasonsQueryKeys = queryKeysFactory(RETURN_REASONS_QUERY_KEY);
 
 export const useReturnReasons = (
   query?: HttpTypes.AdminReturnReasonListParams,
@@ -24,17 +24,17 @@ export const useReturnReasons = (
       HttpTypes.AdminReturnReasonListResponse,
       QueryKey
     >,
-    "queryFn" | "queryKey"
+    'queryFn' | 'queryKey'
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: () => sdk.admin.returnReason.list(query),
     queryKey: returnReasonsQueryKeys.list(query),
-    ...options,
-  })
+    ...options
+  });
 
-  return { ...data, ...rest }
-}
+  return { ...data, ...rest };
+};
 
 export const useReturnReason = (
   id: string,
@@ -46,17 +46,17 @@ export const useReturnReason = (
       HttpTypes.AdminReturnReasonResponse,
       QueryKey
     >,
-    "queryFn" | "queryKey"
+    'queryFn' | 'queryKey'
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: () => sdk.admin.returnReason.retrieve(id, query),
     queryKey: returnReasonsQueryKeys.detail(id),
-    ...options,
-  })
+    ...options
+  });
 
-  return { ...data, ...rest }
-}
+  return { ...data, ...rest };
+};
 
 export const useCreateReturnReason = (
   query?: HttpTypes.AdminReturnReasonParams,
@@ -67,17 +67,17 @@ export const useCreateReturnReason = (
   >
 ) => {
   return useMutation({
-    mutationFn: async (data) => sdk.admin.returnReason.create(data, query),
+    mutationFn: async data => sdk.admin.returnReason.create(data, query),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: returnReasonsQueryKeys.lists(),
-      })
+        queryKey: returnReasonsQueryKeys.lists()
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
-    ...options,
-  })
-}
+    ...options
+  });
+};
 export const useUpdateReturnReason = (
   id: string,
   query?: HttpTypes.AdminReturnReasonParams,
@@ -88,45 +88,41 @@ export const useUpdateReturnReason = (
   >
 ) => {
   return useMutation({
-    mutationFn: async (data) => sdk.admin.returnReason.update(id, data, query),
+    mutationFn: async data => sdk.admin.returnReason.update(id, data, query),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: returnReasonsQueryKeys.lists(),
-      })
+        queryKey: returnReasonsQueryKeys.lists()
+      });
       queryClient.invalidateQueries({
-        queryKey: returnReasonsQueryKeys.detail(data.return_reason.id, query),
-      })
+        queryKey: returnReasonsQueryKeys.detail(data.return_reason.id, query)
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
-    ...options,
-  })
-}
+    ...options
+  });
+};
 
 export const useDeleteReturnReason = (
   id: string,
-  options?: UseMutationOptions<
-    HttpTypes.AdminReturnReasonDeleteResponse,
-    FetchError,
-    void
-  >
+  options?: UseMutationOptions<HttpTypes.AdminReturnReasonDeleteResponse, FetchError, void>
 ) => {
   return useMutation({
     mutationFn: () => sdk.admin.returnReason.delete(id),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: returnReasonsQueryKeys.lists(),
-      })
+        queryKey: returnReasonsQueryKeys.lists()
+      });
       queryClient.invalidateQueries({
-        queryKey: returnReasonsQueryKeys.detail(id),
-      })
+        queryKey: returnReasonsQueryKeys.detail(id)
+      });
 
       queryClient.invalidateQueries({
-        queryKey: returnReasonsQueryKeys.details(),
-      })
+        queryKey: returnReasonsQueryKeys.details()
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
-    ...options,
-  })
-}
+    ...options
+  });
+};

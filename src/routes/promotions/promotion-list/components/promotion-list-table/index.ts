@@ -1,1 +1,1 @@
-export * from "./promotion-list-table"
+export * from './promotion-list-table';

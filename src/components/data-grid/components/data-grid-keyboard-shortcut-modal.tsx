@@ -1,208 +1,210 @@
-import { XMark } from "@medusajs/icons"
-import {
-  Button,
-  clx,
-  Heading,
-  IconButton,
-  Input,
-  Kbd,
-  Text,
-} from "@medusajs/ui"
-import { Dialog as RadixDialog } from "radix-ui"
-import { useMemo, useState } from "react"
-import { useTranslation } from "react-i18next"
+import { useMemo, useState } from 'react';
+
+import { XMark } from '@medusajs/icons';
+import { Button, clx, Heading, IconButton, Input, Kbd, Text } from '@medusajs/ui';
+import { Dialog as RadixDialog } from 'radix-ui';
+import { useTranslation } from 'react-i18next';
 
 const useDataGridShortcuts = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const shortcuts = useMemo(
     () => [
       {
-        label: t("dataGrid.shortcuts.commands.undo"),
+        label: t('dataGrid.shortcuts.commands.undo'),
         keys: {
-          Mac: ["⌘", "Z"],
-          Windows: ["Ctrl", "Z"],
-        },
+          Mac: ['⌘', 'Z'],
+          Windows: ['Ctrl', 'Z']
+        }
       },
       {
-        label: t("dataGrid.shortcuts.commands.redo"),
+        label: t('dataGrid.shortcuts.commands.redo'),
         keys: {
-          Mac: ["⇧", "⌘", "Z"],
-          Windows: ["Shift", "Ctrl", "Z"],
-        },
+          Mac: ['⇧', '⌘', 'Z'],
+          Windows: ['Shift', 'Ctrl', 'Z']
+        }
       },
       {
-        label: t("dataGrid.shortcuts.commands.copy"),
+        label: t('dataGrid.shortcuts.commands.copy'),
         keys: {
-          Mac: ["⌘", "C"],
-          Windows: ["Ctrl", "C"],
-        },
+          Mac: ['⌘', 'C'],
+          Windows: ['Ctrl', 'C']
+        }
       },
       {
-        label: t("dataGrid.shortcuts.commands.paste"),
+        label: t('dataGrid.shortcuts.commands.paste'),
         keys: {
-          Mac: ["⌘", "V"],
-          Windows: ["Ctrl", "V"],
-        },
+          Mac: ['⌘', 'V'],
+          Windows: ['Ctrl', 'V']
+        }
       },
       {
-        label: t("dataGrid.shortcuts.commands.edit"),
+        label: t('dataGrid.shortcuts.commands.edit'),
         keys: {
-          Mac: ["↵"],
-          Windows: ["Enter"],
-        },
+          Mac: ['↵'],
+          Windows: ['Enter']
+        }
       },
       {
-        label: t("dataGrid.shortcuts.commands.delete"),
+        label: t('dataGrid.shortcuts.commands.delete'),
         keys: {
-          Mac: ["⌫"],
-          Windows: ["Backspace"],
-        },
+          Mac: ['⌫'],
+          Windows: ['Backspace']
+        }
       },
       {
-        label: t("dataGrid.shortcuts.commands.clear"),
+        label: t('dataGrid.shortcuts.commands.clear'),
         keys: {
-          Mac: ["Space"],
-          Windows: ["Space"],
-        },
+          Mac: ['Space'],
+          Windows: ['Space']
+        }
       },
       {
-        label: t("dataGrid.shortcuts.commands.moveUp"),
+        label: t('dataGrid.shortcuts.commands.moveUp'),
         keys: {
-          Mac: ["↑"],
-          Windows: ["↑"],
-        },
+          Mac: ['↑'],
+          Windows: ['↑']
+        }
       },
       {
-        label: t("dataGrid.shortcuts.commands.moveDown"),
+        label: t('dataGrid.shortcuts.commands.moveDown'),
         keys: {
-          Mac: ["↓"],
-          Windows: ["↓"],
-        },
+          Mac: ['↓'],
+          Windows: ['↓']
+        }
       },
       {
-        label: t("dataGrid.shortcuts.commands.moveLeft"),
+        label: t('dataGrid.shortcuts.commands.moveLeft'),
         keys: {
-          Mac: ["←"],
-          Windows: ["←"],
-        },
+          Mac: ['←'],
+          Windows: ['←']
+        }
       },
       {
-        label: t("dataGrid.shortcuts.commands.moveRight"),
+        label: t('dataGrid.shortcuts.commands.moveRight'),
         keys: {
-          Mac: ["→"],
-          Windows: ["→"],
-        },
+          Mac: ['→'],
+          Windows: ['→']
+        }
       },
       {
-        label: t("dataGrid.shortcuts.commands.moveTop"),
+        label: t('dataGrid.shortcuts.commands.moveTop'),
         keys: {
-          Mac: ["⌘", "↑"],
-          Windows: ["Ctrl", "↑"],
-        },
+          Mac: ['⌘', '↑'],
+          Windows: ['Ctrl', '↑']
+        }
       },
       {
-        label: t("dataGrid.shortcuts.commands.moveBottom"),
+        label: t('dataGrid.shortcuts.commands.moveBottom'),
         keys: {
-          Mac: ["⌘", "↓"],
-          Windows: ["Ctrl", "↓"],
-        },
+          Mac: ['⌘', '↓'],
+          Windows: ['Ctrl', '↓']
+        }
       },
       {
-        label: t("dataGrid.shortcuts.commands.selectDown"),
+        label: t('dataGrid.shortcuts.commands.selectDown'),
         keys: {
-          Mac: ["⇧", "↓"],
-          Windows: ["Shift", "↓"],
-        },
+          Mac: ['⇧', '↓'],
+          Windows: ['Shift', '↓']
+        }
       },
       {
-        label: t("dataGrid.shortcuts.commands.selectUp"),
+        label: t('dataGrid.shortcuts.commands.selectUp'),
         keys: {
-          Mac: ["⇧", "↑"],
-          Windows: ["Shift", "↑"],
-        },
+          Mac: ['⇧', '↑'],
+          Windows: ['Shift', '↑']
+        }
       },
       {
-        label: t("dataGrid.shortcuts.commands.selectColumnDown"),
+        label: t('dataGrid.shortcuts.commands.selectColumnDown'),
         keys: {
-          Mac: ["⇧", "⌘", "↓"],
-          Windows: ["Shift", "Ctrl", "↓"],
-        },
+          Mac: ['⇧', '⌘', '↓'],
+          Windows: ['Shift', 'Ctrl', '↓']
+        }
       },
       {
-        label: t("dataGrid.shortcuts.commands.selectColumnUp"),
+        label: t('dataGrid.shortcuts.commands.selectColumnUp'),
         keys: {
-          Mac: ["⇧", "⌘", "↑"],
-          Windows: ["Shift", "Ctrl", "↑"],
-        },
+          Mac: ['⇧', '⌘', '↑'],
+          Windows: ['Shift', 'Ctrl', '↑']
+        }
       },
       {
-        label: t("dataGrid.shortcuts.commands.focusToolbar"),
+        label: t('dataGrid.shortcuts.commands.focusToolbar'),
         keys: {
-          Mac: ["⌃", "⌥", ","],
-          Windows: ["Ctrl", "Alt", ","],
-        },
+          Mac: ['⌃', '⌥', ','],
+          Windows: ['Ctrl', 'Alt', ',']
+        }
       },
       {
-        label: t("dataGrid.shortcuts.commands.focusCancel"),
+        label: t('dataGrid.shortcuts.commands.focusCancel'),
         keys: {
-          Mac: ["⌃", "⌥", "."],
-          Windows: ["Ctrl", "Alt", "."],
-        },
-      },
+          Mac: ['⌃', '⌥', '.'],
+          Windows: ['Ctrl', 'Alt', '.']
+        }
+      }
     ],
     [t]
-  )
+  );
 
-  return shortcuts
-}
+  return shortcuts;
+};
 
 type DataGridKeyboardShortcutModalProps = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+};
 
 export const DataGridKeyboardShortcutModal = ({
   open,
-  onOpenChange,
+  onOpenChange
 }: DataGridKeyboardShortcutModalProps) => {
-  const { t } = useTranslation()
-  const [searchValue, onSearchValueChange] = useState("")
-  const shortcuts = useDataGridShortcuts()
+  const { t } = useTranslation();
+  const [searchValue, onSearchValueChange] = useState('');
+  const shortcuts = useDataGridShortcuts();
 
   const searchResults = useMemo(() => {
-    return shortcuts.filter((shortcut) =>
+    return shortcuts.filter(shortcut =>
       shortcut.label.toLowerCase().includes(searchValue.toLowerCase())
-    )
-  }, [searchValue, shortcuts])
+    );
+  }, [searchValue, shortcuts]);
 
   return (
-    <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
+    <RadixDialog.Root
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       <RadixDialog.Trigger asChild>
-        <Button size="small" variant="secondary">
-          {t("dataGrid.shortcuts.label")}
+        <Button
+          size="small"
+          variant="secondary"
+        >
+          {t('dataGrid.shortcuts.label')}
         </Button>
       </RadixDialog.Trigger>
       <RadixDialog.Portal>
         <RadixDialog.Overlay
           className={clx(
-            "bg-ui-bg-overlay fixed inset-0",
-            "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+            'fixed inset-0 bg-ui-bg-overlay',
+            'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0'
           )}
         />
-        <RadixDialog.Content className="bg-ui-bg-subtle shadow-elevation-modal fixed left-[50%] top-[50%] flex h-full max-h-[612px] w-full max-w-[560px] translate-x-[-50%] translate-y-[-50%] flex-col divide-y overflow-hidden rounded-lg outline-none">
+        <RadixDialog.Content className="fixed left-[50%] top-[50%] flex h-full max-h-[612px] w-full max-w-[560px] translate-x-[-50%] translate-y-[-50%] flex-col divide-y overflow-hidden rounded-lg bg-ui-bg-subtle shadow-elevation-modal outline-none">
           <div className="flex flex-col gap-y-3 px-6 py-4">
             <div className="flex items-center justify-between">
               <div>
                 <RadixDialog.Title asChild>
-                  <Heading>{t("app.menus.user.shortcuts")}</Heading>
+                  <Heading>{t('app.menus.user.shortcuts')}</Heading>
                 </RadixDialog.Title>
                 <RadixDialog.Description className="sr-only"></RadixDialog.Description>
               </div>
               <div className="flex items-center gap-x-2">
                 <Kbd>esc</Kbd>
                 <RadixDialog.Close asChild>
-                  <IconButton variant="transparent" size="small">
+                  <IconButton
+                    variant="transparent"
+                    size="small"
+                  >
                     <XMark />
                   </IconButton>
                 </RadixDialog.Close>
@@ -213,7 +215,7 @@ export const DataGridKeyboardShortcutModal = ({
                 type="search"
                 value={searchValue}
                 autoFocus
-                onChange={(e) => onSearchValueChange(e.target.value)}
+                onChange={e => onSearchValueChange(e.target.value)}
               />
             </div>
           </div>
@@ -222,24 +224,27 @@ export const DataGridKeyboardShortcutModal = ({
               return (
                 <div
                   key={index}
-                  className="text-ui-fg-subtle flex items-center justify-between px-6 py-3"
+                  className="flex items-center justify-between px-6 py-3 text-ui-fg-subtle"
                 >
                   <Text size="small">{shortcut.label}</Text>
                   <div className="flex items-center gap-x-1">
                     {shortcut.keys.Mac?.map((key, index) => {
                       return (
-                        <div className="flex items-center gap-x-1" key={index}>
+                        <div
+                          className="flex items-center gap-x-1"
+                          key={index}
+                        >
                           <Kbd>{key}</Kbd>
                         </div>
-                      )
+                      );
                     })}
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
         </RadixDialog.Content>
       </RadixDialog.Portal>
     </RadixDialog.Root>
-  )
-}
+  );
+};

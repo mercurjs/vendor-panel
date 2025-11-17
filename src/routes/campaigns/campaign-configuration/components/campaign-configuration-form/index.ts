@@ -1,1 +1,1 @@
-export * from "./campaign-configuration-form"
+export * from './campaign-configuration-form';

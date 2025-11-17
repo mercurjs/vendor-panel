@@ -1,1 +1,1 @@
-export * from "./metadata-form"
+export * from './metadata-form';

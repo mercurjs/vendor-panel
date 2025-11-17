@@ -1,1 +1,1 @@
-export * from "./generic-forward-ref"
+export * from './generic-forward-ref';

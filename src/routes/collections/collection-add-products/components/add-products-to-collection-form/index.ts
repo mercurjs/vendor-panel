@@ -1,1 +1,1 @@
-export * from "./add-products-to-collection-form"
+export * from './add-products-to-collection-form';

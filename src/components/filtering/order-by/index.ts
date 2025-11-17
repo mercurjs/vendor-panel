@@ -1,1 +1,1 @@
-export * from "./order-by"
+export * from './order-by';

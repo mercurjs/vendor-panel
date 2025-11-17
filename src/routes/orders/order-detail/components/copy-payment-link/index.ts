@@ -1,1 +1,1 @@
-export * from "./copy-payment-link"
+export * from './copy-payment-link';

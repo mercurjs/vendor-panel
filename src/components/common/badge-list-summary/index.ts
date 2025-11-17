@@ -1,1 +1,1 @@
-export * from "./badge-list-summary"
+export * from './badge-list-summary';

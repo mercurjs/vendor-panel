@@ -1,48 +1,47 @@
-import { HttpTypes } from "@medusajs/types"
-import { Button } from "@medusajs/ui"
-import { Table } from "@tanstack/react-table"
-import { ReactNode, useMemo } from "react"
-import { useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
-import {
-  NoRecords,
-  NoResults,
-} from "../../../../../components/common/empty-table-content"
-import { TableFooterSkeleton } from "../../../../../components/common/skeleton"
-import { LocalizedTablePagination } from "../../../../../components/localization/localized-table-pagination"
-import { DataTableOrderBy } from "../../../../../components/table/data-table/data-table-order-by"
-import { TaxRegionCard } from "../tax-region-card"
+import { ReactNode, useMemo } from 'react';
+
+import { HttpTypes } from '@medusajs/types';
+import { Button } from '@medusajs/ui';
+import { Table } from '@tanstack/react-table';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+
+import { NoRecords, NoResults } from '../../../../../components/common/empty-table-content';
+import { TableFooterSkeleton } from '../../../../../components/common/skeleton';
+import { LocalizedTablePagination } from '../../../../../components/localization/localized-table-pagination';
+import { DataTableOrderBy } from '../../../../../components/table/data-table/data-table-order-by';
+import { TaxRegionCard } from '../tax-region-card';
 
 type TaxRegionTableProps = {
-  variant?: "country" | "province"
-  isPending: boolean
-  queryObject: Record<string, any>
-  count?: number
-  table: Table<HttpTypes.AdminTaxRegion>
-  action: { label: string; to: string }
-  prefix?: string
-  children?: ReactNode
-}
+  variant?: 'country' | 'province';
+  isPending: boolean;
+  queryObject: Record<string, any>;
+  count?: number;
+  table: Table<HttpTypes.AdminTaxRegion>;
+  action: { label: string; to: string };
+  prefix?: string;
+  children?: ReactNode;
+};
 
 export const TaxRegionTable = ({
-  variant = "country",
+  variant = 'country',
   isPending,
   action,
   count = 0,
   table,
   queryObject,
   prefix,
-  children,
+  children
 }: TaxRegionTableProps) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const orderByKeys = useMemo(
     () => [
-      { key: "updated_at", label: t("fields.updatedAt") },
-      { key: "created_at", label: t("fields.createdAt") },
+      { key: 'updated_at', label: t('fields.updatedAt') },
+      { key: 'created_at', label: t('fields.createdAt') }
     ],
     [t]
-  )
+  );
 
   if (isPending) {
     return (
@@ -51,21 +50,20 @@ export const TaxRegionTable = ({
           return (
             <div
               key={index}
-              className="bg-ui-bg-field-component h-[52px] w-full animate-pulse"
+              className="h-[52px] w-full animate-pulse bg-ui-bg-field-component"
             />
-          )
+          );
         })}
         <TableFooterSkeleton layout="fit" />
       </div>
-    )
+    );
   }
 
-  const noQuery =
-    Object.values(queryObject).filter((v) => Boolean(v)).length === 0
-  const noResults = !isPending && count === 0 && !noQuery
-  const noRecords = !isPending && count === 0 && noQuery
+  const noQuery = Object.values(queryObject).filter(v => Boolean(v)).length === 0;
+  const noResults = !isPending && count === 0 && !noQuery;
+  const noRecords = !isPending && count === 0 && noQuery;
 
-  const { pageIndex, pageSize } = table.getState().pagination
+  const { pageIndex, pageSize } = table.getState().pagination;
 
   return (
     <div className="flex flex-col divide-y">
@@ -85,7 +83,10 @@ export const TaxRegionTable = ({
             </div>
           )}
           <Link to={action.to}>
-            <Button size="small" variant="secondary">
+            <Button
+              size="small"
+              variant="secondary"
+            >
               {action.label}
             </Button>
           </Link>
@@ -95,7 +96,7 @@ export const TaxRegionTable = ({
       {noRecords && <NoRecords />}
       {!noRecords && !noResults
         ? !isPending
-          ? table.getRowModel().rows.map((row) => {
+          ? table.getRowModel().rows.map(row => {
               return (
                 <TaxRegionCard
                   variant={variant}
@@ -104,15 +105,15 @@ export const TaxRegionTable = ({
                   role="row"
                   aria-rowindex={row.index}
                 />
-              )
+              );
             })
           : Array.from({ length: 3 }).map((_, index) => {
               return (
                 <div
                   key={index}
-                  className="bg-ui-bg-field-component h-[60px] w-full animate-pulse"
+                  className="h-[60px] w-full animate-pulse bg-ui-bg-field-component"
                 />
-              )
+              );
             })
         : null}
       {!noRecords && (
@@ -129,5 +130,5 @@ export const TaxRegionTable = ({
         />
       )}
     </div>
-  )
-}
+  );
+};

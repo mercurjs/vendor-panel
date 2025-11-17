@@ -1,1 +1,1 @@
-export * from "./edit-fulfillment-providers-form"
+export * from './edit-fulfillment-providers-form';

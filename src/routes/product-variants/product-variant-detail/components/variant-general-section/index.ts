@@ -1,1 +1,1 @@
-export * from "./variant-general-section"
+export * from './variant-general-section';

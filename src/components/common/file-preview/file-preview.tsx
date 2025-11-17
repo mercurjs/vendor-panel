@@ -1,6 +1,7 @@
-import { ArrowDownTray, Spinner } from "@medusajs/icons"
-import { IconButton, Text } from "@medusajs/ui"
-import { ActionGroup, ActionMenu } from "../action-menu"
+import { ArrowDownTray, Spinner } from '@medusajs/icons';
+import { IconButton, Text } from '@medusajs/ui';
+
+import { ActionGroup, ActionMenu } from '../action-menu';
 
 export const FilePreview = ({
   filename,
@@ -8,17 +9,17 @@ export const FilePreview = ({
   loading,
   activity,
   actions,
-  hideThumbnail,
+  hideThumbnail
 }: {
-  filename: string
-  url?: string
-  loading?: boolean
-  activity?: string
-  actions?: ActionGroup[]
-  hideThumbnail?: boolean
+  filename: string;
+  url?: string;
+  loading?: boolean;
+  activity?: string;
+  actions?: ActionGroup[];
+  hideThumbnail?: boolean;
 }) => {
   return (
-    <div className="shadow-elevation-card-rest bg-ui-bg-component transition-fg rounded-md px-3 py-2">
+    <div className="rounded-md bg-ui-bg-component px-3 py-2 shadow-elevation-card-rest transition-fg">
       <div className="flex flex-row items-center justify-between gap-2">
         <div className="flex flex-row items-center gap-3">
           {!hideThumbnail && <FileThumbnail />}
@@ -26,7 +27,7 @@ export const FilePreview = ({
             <Text
               size="small"
               leading="compact"
-              className="truncate max-w-[260px]"
+              className="max-w-[260px] truncate"
             >
               {filename}
             </Text>
@@ -46,16 +47,22 @@ export const FilePreview = ({
         {loading && <Spinner className="animate-spin" />}
         {!loading && actions && <ActionMenu groups={actions} />}
         {!loading && url && (
-          <IconButton variant="transparent" asChild>
-            <a href={url} download={filename ?? `${Date.now()}`}>
+          <IconButton
+            variant="transparent"
+            asChild
+          >
+            <a
+              href={url}
+              download={filename ?? `${Date.now()}`}
+            >
               <ArrowDownTray />
             </a>
           </IconButton>
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
 const FileThumbnail = () => {
   return (
@@ -89,7 +96,10 @@ const FileThumbnail = () => {
           gradientUnits="userSpaceOnUse"
         >
           <stop stop-color="#F4F4F5" />
-          <stop offset="1" stop-color="#E4E4E7" />
+          <stop
+            offset="1"
+            stop-color="#E4E4E7"
+          />
         </linearGradient>
         <linearGradient
           id="paint1_linear_6594_388107"
@@ -100,7 +110,10 @@ const FileThumbnail = () => {
           gradientUnits="userSpaceOnUse"
         >
           <stop stop-color="#E4E4E7" />
-          <stop offset="1" stop-color="#D4D4D8" />
+          <stop
+            offset="1"
+            stop-color="#D4D4D8"
+          />
         </linearGradient>
         <linearGradient
           id="paint2_linear_6594_388107"
@@ -111,7 +124,10 @@ const FileThumbnail = () => {
           gradientUnits="userSpaceOnUse"
         >
           <stop stop-color="#52525B" />
-          <stop offset="1" stop-color="#A1A1AA" />
+          <stop
+            offset="1"
+            stop-color="#A1A1AA"
+          />
         </linearGradient>
         <linearGradient
           id="paint3_linear_6594_388107"
@@ -122,9 +138,12 @@ const FileThumbnail = () => {
           gradientUnits="userSpaceOnUse"
         >
           <stop stop-color="#18181B" />
-          <stop offset="1" stop-color="#52525B" />
+          <stop
+            offset="1"
+            stop-color="#52525B"
+          />
         </linearGradient>
       </defs>
     </svg>
-  )
-}
+  );
+};

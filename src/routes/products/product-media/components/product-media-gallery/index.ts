@@ -1,1 +1,1 @@
-export * from "./product-media-gallery"
+export * from './product-media-gallery';

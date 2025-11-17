@@ -1,1 +1,1 @@
-export * from "./tax-region-create-form"
+export * from './tax-region-create-form';

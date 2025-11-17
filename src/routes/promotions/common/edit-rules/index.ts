@@ -1,1 +1,1 @@
-export { EditRules as Component } from "./edit-rules"
+export { EditRules as Component } from './edit-rules';

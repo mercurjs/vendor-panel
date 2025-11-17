@@ -1,1 +1,1 @@
-export * from "./campaign-spend"
+export * from './campaign-spend';

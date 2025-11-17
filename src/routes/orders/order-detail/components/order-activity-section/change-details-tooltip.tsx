@@ -1,30 +1,31 @@
-import { Popover, Text } from "@medusajs/ui"
-import { ReactNode, useState } from "react"
-import { useTranslation } from "react-i18next"
+import { ReactNode, useState } from 'react';
+
+import { Popover, Text } from '@medusajs/ui';
+import { useTranslation } from 'react-i18next';
 
 type ChangeDetailsTooltipProps = {
-  previous: ReactNode
-  next: ReactNode
-  title: string
-}
+  previous: ReactNode;
+  next: ReactNode;
+  title: string;
+};
 
 function ChangeDetailsTooltip(props: ChangeDetailsTooltipProps) {
-  const { t } = useTranslation()
-  const [open, setOpen] = useState(false)
-  const previous = props.previous
-  const next = props.next
-  const title = props.title
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const previous = props.previous;
+  const next = props.next;
+  const title = props.title;
 
   const handleMouseEnter = () => {
-    setOpen(true)
-  }
+    setOpen(true);
+  };
 
   const handleMouseLeave = () => {
-    setOpen(false)
-  }
+    setOpen(false);
+  };
 
   if (!previous && !next) {
-    return null
+    return null;
   }
 
   return (
@@ -35,7 +36,11 @@ function ChangeDetailsTooltip(props: ChangeDetailsTooltipProps) {
         autoFocus={false}
         className="focus-visible:outline-none"
       >
-        <Text size="small" leading="compact" weight="plus">
+        <Text
+          size="small"
+          leading="compact"
+          weight="plus"
+        >
           {title}
         </Text>
       </Popover.Trigger>
@@ -43,14 +48,12 @@ function ChangeDetailsTooltip(props: ChangeDetailsTooltipProps) {
       <Popover.Content
         align="center"
         side="top"
-        className="bg-ui-bg-component max-w-[200px] p-0 focus-visible:outline-none"
+        className="max-w-[200px] bg-ui-bg-component p-0 focus-visible:outline-none"
       >
         <div className="flex flex-col">
           {!!previous && (
             <div className="p-3">
-              <div className="txt-compact-small-plus mb-1">
-                {t("labels.from")}
-              </div>
+              <div className="txt-compact-small-plus mb-1">{t('labels.from')}</div>
 
               <p className="txt-compact-small text-ui-fg-subtle">{previous}</p>
             </div>
@@ -58,9 +61,7 @@ function ChangeDetailsTooltip(props: ChangeDetailsTooltipProps) {
 
           {!!next && (
             <div className="border-t-2 border-dotted p-3">
-              <div className="txt-compact-small-plus mb-1">
-                {t("labels.to")}
-              </div>
+              <div className="txt-compact-small-plus mb-1">{t('labels.to')}</div>
 
               <p className="txt-compact-small text-ui-fg-subtle">{next}</p>
             </div>
@@ -68,7 +69,7 @@ function ChangeDetailsTooltip(props: ChangeDetailsTooltipProps) {
         </div>
       </Popover.Content>
     </Popover>
-  )
+  );
 }
 
-export default ChangeDetailsTooltip
+export default ChangeDetailsTooltip;

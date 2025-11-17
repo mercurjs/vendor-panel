@@ -1,1 +1,1 @@
-export * from "./reservation-list-table"
+export * from './reservation-list-table';

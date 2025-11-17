@@ -1,1 +1,1 @@
-export { SalesChannelCreate as Component } from "./sales-channel-create"
+export { SalesChannelCreate as Component } from './sales-channel-create';

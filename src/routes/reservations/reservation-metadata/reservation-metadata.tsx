@@ -1,20 +1,17 @@
-import { useParams } from "react-router-dom"
+import { useParams } from 'react-router-dom';
 
-import {
-  useReservationItem,
-  useUpdateReservationItem,
-} from "../../../hooks/api"
-import { MetadataForm } from "../../../components/forms/metadata-form"
-import { RouteDrawer } from "../../../components/modals"
+import { MetadataForm } from '../../../components/forms/metadata-form';
+import { RouteDrawer } from '../../../components/modals';
+import { useReservationItem, useUpdateReservationItem } from '../../../hooks/api';
 
 export const ReservationMetadata = () => {
-  const { id } = useParams()
+  const { id } = useParams();
 
-  const { reservation, isPending, isError, error } = useReservationItem(id!)
-  const { mutateAsync, isPending: isMutating } = useUpdateReservationItem(id!)
+  const { reservation, isPending, isError, error } = useReservationItem(id!);
+  const { mutateAsync, isPending: isMutating } = useUpdateReservationItem(id!);
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   return (
@@ -26,5 +23,5 @@ export const ReservationMetadata = () => {
         metadata={reservation?.metadata}
       />
     </RouteDrawer>
-  )
-}
+  );
+};

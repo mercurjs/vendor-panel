@@ -1,1 +1,1 @@
-export * from "./inventory-stock-form"
+export * from './inventory-stock-form';

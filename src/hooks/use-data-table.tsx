@@ -1,34 +1,35 @@
+import { useEffect, useMemo, useState } from 'react';
+
 import {
   ColumnDef,
+  getCoreRowModel,
+  getExpandedRowModel,
+  getPaginationRowModel,
   OnChangeFn,
   PaginationState,
   Row,
   RowSelectionState,
-  getCoreRowModel,
-  getExpandedRowModel,
-  getPaginationRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
-import { useEffect, useMemo, useState } from "react"
-import { useSearchParams } from "react-router-dom"
+  useReactTable
+} from '@tanstack/react-table';
+import { useSearchParams } from 'react-router-dom';
 
 type UseDataTableProps<TData> = {
-  data?: TData[]
-  columns: ColumnDef<TData, any>[]
-  count?: number
-  pageSize?: number
-  enableRowSelection?: boolean | ((row: Row<TData>) => boolean)
+  data?: TData[];
+  columns: ColumnDef<TData, any>[];
+  count?: number;
+  pageSize?: number;
+  enableRowSelection?: boolean | ((row: Row<TData>) => boolean);
   rowSelection?: {
-    state: RowSelectionState
-    updater: OnChangeFn<RowSelectionState>
-  }
-  enablePagination?: boolean
-  enableExpandableRows?: boolean
-  getRowId?: (original: TData, index: number) => string
-  getSubRows?: (original: TData) => TData[]
-  meta?: Record<string, unknown>
-  prefix?: string
-}
+    state: RowSelectionState;
+    updater: OnChangeFn<RowSelectionState>;
+  };
+  enablePagination?: boolean;
+  enableExpandableRows?: boolean;
+  getRowId?: (original: TData, index: number) => string;
+  getSubRows?: (original: TData) => TData[];
+  meta?: Record<string, unknown>;
+  prefix?: string;
+};
 
 export const useDataTable = <TData,>({
   data = [],
@@ -42,72 +43,70 @@ export const useDataTable = <TData,>({
   getSubRows,
   getRowId,
   meta,
-  prefix,
+  prefix
 }: UseDataTableProps<TData>) => {
-  const [searchParams, setSearchParams] = useSearchParams()
-  const offsetKey = `${prefix ? `${prefix}_` : ""}offset`
-  const offset = searchParams.get(offsetKey)
+  const [searchParams, setSearchParams] = useSearchParams();
+  const offsetKey = `${prefix ? `${prefix}_` : ''}offset`;
+  const offset = searchParams.get(offsetKey);
 
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: offset ? Math.ceil(Number(offset) / _pageSize) : 0,
-    pageSize: _pageSize,
-  })
+    pageSize: _pageSize
+  });
   const pagination = useMemo(
     () => ({
       pageIndex,
-      pageSize,
+      pageSize
     }),
     [pageIndex, pageSize]
-  )
-  const [localRowSelection, setLocalRowSelection] = useState({})
-  const rowSelection = _rowSelection?.state ?? localRowSelection
-  const setRowSelection = _rowSelection?.updater ?? setLocalRowSelection
+  );
+  const [localRowSelection, setLocalRowSelection] = useState({});
+  const rowSelection = _rowSelection?.state ?? localRowSelection;
+  const setRowSelection = _rowSelection?.updater ?? setLocalRowSelection;
 
   useEffect(() => {
     if (!enablePagination) {
-      return
+      return;
     }
 
-    const index = offset ? Math.ceil(Number(offset) / _pageSize) : 0
+    const index = offset ? Math.ceil(Number(offset) / _pageSize) : 0;
 
     if (index === pageIndex) {
-      return
+      return;
     }
 
-    setPagination((prev) => ({
+    setPagination(prev => ({
       ...prev,
-      pageIndex: index,
-    }))
-  }, [offset, enablePagination, _pageSize, pageIndex])
+      pageIndex: index
+    }));
+  }, [offset, enablePagination, _pageSize, pageIndex]);
 
-  const onPaginationChange = (
-    updater: (old: PaginationState) => PaginationState
-  ) => {
-    const state = updater(pagination)
-    const { pageIndex, pageSize } = state
+  const onPaginationChange = (updater: (old: PaginationState) => PaginationState) => {
+    const state = updater(pagination);
+    const { pageIndex, pageSize } = state;
 
-    setSearchParams((prev) => {
+    setSearchParams(prev => {
       if (!pageIndex) {
-        prev.delete(offsetKey)
-        return prev
+        prev.delete(offsetKey);
+        return prev;
       }
 
-      const newSearch = new URLSearchParams(prev)
-      newSearch.set(offsetKey, String(pageIndex * pageSize))
+      const newSearch = new URLSearchParams(prev);
+      newSearch.set(offsetKey, String(pageIndex * pageSize));
 
-      return newSearch
-    })
+      return newSearch;
+    });
 
-    setPagination(state)
-    return state
-  }
+    setPagination(state);
+    return state;
+  };
 
   const table = useReactTable({
     data,
     columns,
     state: {
       rowSelection: rowSelection, // We always pass a selection state to the table even if it's not enabled
-      pagination: enablePagination ? pagination : undefined,
+      pagination: enablePagination ? pagination : undefined
     },
     pageCount: Math.ceil((count ?? 0) / pageSize),
     enableRowSelection,
@@ -118,15 +117,11 @@ export const useDataTable = <TData,>({
       ? (onPaginationChange as OnChangeFn<PaginationState>)
       : undefined,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: enablePagination
-      ? getPaginationRowModel()
-      : undefined,
-    getExpandedRowModel: enableExpandableRows
-      ? getExpandedRowModel()
-      : undefined,
+    getPaginationRowModel: enablePagination ? getPaginationRowModel() : undefined,
+    getExpandedRowModel: enableExpandableRows ? getExpandedRowModel() : undefined,
     manualPagination: enablePagination ? true : undefined,
-    meta,
-  })
+    meta
+  });
 
-  return { table }
-}
+  return { table };
+};

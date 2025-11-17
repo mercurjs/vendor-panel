@@ -1,1 +1,1 @@
-export * from "./product-create-inventory-kit-form"
+export * from './product-create-inventory-kit-form';

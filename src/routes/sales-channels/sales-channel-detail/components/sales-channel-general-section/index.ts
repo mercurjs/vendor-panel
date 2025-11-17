@@ -1,1 +1,1 @@
-export * from "./sales-channel-general-section"
+export * from './sales-channel-general-section';

@@ -1,99 +1,95 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Button, Heading, Input, Prompt, Text, toast } from "@medusajs/ui"
-import { useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import * as zod from "zod"
+import { Fragment, useState } from 'react';
 
-import { Eye, EyeSlash } from "@medusajs/icons"
-import { AdminApiKeyResponse } from "@medusajs/types"
-import { Fragment, useState } from "react"
-import { Form } from "../../../../../components/common/form"
-import {
-  RouteFocusModal,
-  useRouteModal,
-} from "../../../../../components/modals"
-import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import { useCreateApiKey } from "../../../../../hooks/api/api-keys"
-import { ApiKeyType } from "../../../common/constants"
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Eye, EyeSlash } from '@medusajs/icons';
+import { AdminApiKeyResponse } from '@medusajs/types';
+import { Button, Heading, Input, Prompt, Text, toast } from '@medusajs/ui';
+import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import * as zod from 'zod';
+
+import { Form } from '../../../../../components/common/form';
+import { RouteFocusModal, useRouteModal } from '../../../../../components/modals';
+import { KeyboundForm } from '../../../../../components/utilities/keybound-form';
+import { useCreateApiKey } from '../../../../../hooks/api/api-keys';
+import { ApiKeyType } from '../../../common/constants';
 
 const ApiKeyCreateSchema = zod.object({
-  title: zod.string().min(1),
-})
+  title: zod.string().min(1)
+});
 
 type ApiKeyCreateFormProps = {
-  keyType: ApiKeyType
-}
+  keyType: ApiKeyType;
+};
 
 function getRedactedKey(key?: string) {
   if (!key) {
-    return ""
+    return '';
   }
 
   // Replace all characters except the first four and last two with bullets
-  const firstThree = key.slice(0, 4)
-  const lastTwo = key.slice(-2)
+  const firstThree = key.slice(0, 4);
+  const lastTwo = key.slice(-2);
 
-  return `${firstThree}${"•".repeat(key.length - 6)}${lastTwo}`
+  return `${firstThree}${'•'.repeat(key.length - 6)}${lastTwo}`;
 }
 
 export const ApiKeyCreateForm = ({ keyType }: ApiKeyCreateFormProps) => {
-  const [createdKey, setCreatedKey] = useState<
-    AdminApiKeyResponse["api_key"] | null
-  >(null)
-  const [showRedactedKey, setShowRedactedKey] = useState(true)
+  const [createdKey, setCreatedKey] = useState<AdminApiKeyResponse['api_key'] | null>(null);
+  const [showRedactedKey, setShowRedactedKey] = useState(true);
 
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
 
   const form = useForm<zod.infer<typeof ApiKeyCreateSchema>>({
     defaultValues: {
-      title: "",
+      title: ''
     },
-    resolver: zodResolver(ApiKeyCreateSchema),
-  })
+    resolver: zodResolver(ApiKeyCreateSchema)
+  });
 
-  const { mutateAsync, isPending } = useCreateApiKey()
+  const { mutateAsync, isPending } = useCreateApiKey();
 
-  const handleSubmit = form.handleSubmit(async (values) => {
+  const handleSubmit = form.handleSubmit(async values => {
     await mutateAsync(
       // @ts-ignore
       { title: values.title },
       {
         onSuccess: ({ api_key }) => {
-          toast.success(t("apiKeyManagement.create.successToast"))
+          toast.success(t('apiKeyManagement.create.successToast'));
 
           switch (keyType) {
             case ApiKeyType.PUBLISHABLE:
-              handleSuccess(`/settings/publishable-api-keys/${api_key.id}`)
-              break
+              handleSuccess(`/settings/publishable-api-keys/${api_key.id}`);
+              break;
             case ApiKeyType.SECRET:
-              setCreatedKey(api_key)
-              break
+              setCreatedKey(api_key);
+              break;
           }
         },
-        onError: (err) => {
-          toast.error(err.message)
-        },
+        onError: err => {
+          toast.error(err.message);
+        }
       }
-    )
-  })
+    );
+  });
 
   const handleCopyToken = () => {
     if (!createdKey) {
-      toast.error(t("apiKeyManagement.create.copySecretTokenFailure"))
+      toast.error(t('apiKeyManagement.create.copySecretTokenFailure'));
     }
 
-    navigator.clipboard.writeText(createdKey?.token ?? "")
-    toast.success(t("apiKeyManagement.create.copySecretTokenSuccess"))
-  }
+    navigator.clipboard.writeText(createdKey?.token ?? '');
+    toast.success(t('apiKeyManagement.create.copySecretTokenSuccess'));
+  };
 
   const handleGoToSecretKey = () => {
     if (!createdKey) {
-      return
+      return;
     }
 
-    handleSuccess(`/settings/secret-api-keys/${createdKey.id}`)
-  }
+    handleSuccess(`/settings/secret-api-keys/${createdKey.id}`);
+  };
 
   return (
     <Fragment>
@@ -110,15 +106,18 @@ export const ApiKeyCreateForm = ({ keyType }: ApiKeyCreateFormProps) => {
                   <RouteFocusModal.Title asChild>
                     <Heading>
                       {keyType === ApiKeyType.PUBLISHABLE
-                        ? t("apiKeyManagement.create.createPublishableHeader")
-                        : t("apiKeyManagement.create.createSecretHeader")}
+                        ? t('apiKeyManagement.create.createPublishableHeader')
+                        : t('apiKeyManagement.create.createSecretHeader')}
                     </Heading>
                   </RouteFocusModal.Title>
                   <RouteFocusModal.Description asChild>
-                    <Text size="small" className="text-ui-fg-subtle">
+                    <Text
+                      size="small"
+                      className="text-ui-fg-subtle"
+                    >
                       {keyType === ApiKeyType.PUBLISHABLE
-                        ? t("apiKeyManagement.create.createPublishableHint")
-                        : t("apiKeyManagement.create.createSecretHint")}
+                        ? t('apiKeyManagement.create.createPublishableHint')
+                        : t('apiKeyManagement.create.createSecretHint')}
                     </Text>
                   </RouteFocusModal.Description>
                 </div>
@@ -129,13 +128,13 @@ export const ApiKeyCreateForm = ({ keyType }: ApiKeyCreateFormProps) => {
                     render={({ field }) => {
                       return (
                         <Form.Item>
-                          <Form.Label>{t("fields.title")}</Form.Label>
+                          <Form.Label>{t('fields.title')}</Form.Label>
                           <Form.Control>
                             <Input {...field} />
                           </Form.Control>
                           <Form.ErrorMessage />
                         </Form.Item>
-                      )
+                      );
                     }}
                   />
                 </div>
@@ -145,38 +144,47 @@ export const ApiKeyCreateForm = ({ keyType }: ApiKeyCreateFormProps) => {
           <RouteFocusModal.Footer>
             <div className="flex items-center justify-end gap-x-2">
               <RouteFocusModal.Close asChild>
-                <Button size="small" variant="secondary">
-                  {t("actions.cancel")}
+                <Button
+                  size="small"
+                  variant="secondary"
+                >
+                  {t('actions.cancel')}
                 </Button>
               </RouteFocusModal.Close>
-              <Button size="small" type="submit" isLoading={isPending}>
-                {t("actions.save")}
+              <Button
+                size="small"
+                type="submit"
+                isLoading={isPending}
+              >
+                {t('actions.save')}
               </Button>
             </div>
           </RouteFocusModal.Footer>
         </KeyboundForm>
       </RouteFocusModal.Form>
-      <Prompt variant="confirmation" open={!!createdKey}>
+      <Prompt
+        variant="confirmation"
+        open={!!createdKey}
+      >
         <Prompt.Content className="w-fit max-w-[42.5%]">
           <Prompt.Header>
-            <Prompt.Title>
-              {t("apiKeyManagement.create.secretKeyCreatedHeader")}
-            </Prompt.Title>
+            <Prompt.Title>{t('apiKeyManagement.create.secretKeyCreatedHeader')}</Prompt.Title>
             <Prompt.Description>
-              {t("apiKeyManagement.create.secretKeyCreatedHint")}
+              {t('apiKeyManagement.create.secretKeyCreatedHint')}
             </Prompt.Description>
           </Prompt.Header>
           <div className="flex flex-col gap-y-3 px-6 py-4">
-            <div className="shadow-borders-base bg-ui-bg-component grid h-8 grid-cols-[1fr_32px] items-center overflow-hidden rounded-md">
+            <div className="grid h-8 grid-cols-[1fr_32px] items-center overflow-hidden rounded-md bg-ui-bg-component shadow-borders-base">
               <div className="flex items-center px-2">
-                <Text family="mono" size="small">
-                  {showRedactedKey
-                    ? getRedactedKey(createdKey?.token)
-                    : createdKey?.token}
+                <Text
+                  family="mono"
+                  size="small"
+                >
+                  {showRedactedKey ? getRedactedKey(createdKey?.token) : createdKey?.token}
                 </Text>
               </div>
               <button
-                className="transition-fg hover:bg-ui-bg-base-hover active:bg-ui-bg-base-pressed text-ui-fg-muted active:text-ui-fg-subtle flex size-8 appearance-none items-center justify-center border-l"
+                className="flex size-8 appearance-none items-center justify-center border-l text-ui-fg-muted transition-fg hover:bg-ui-bg-base-hover active:bg-ui-bg-base-pressed active:text-ui-fg-subtle"
                 type="button"
                 onClick={() => setShowRedactedKey(!showRedactedKey)}
               >
@@ -190,16 +198,14 @@ export const ApiKeyCreateForm = ({ keyType }: ApiKeyCreateFormProps) => {
               className="w-full"
               onClick={handleCopyToken}
             >
-              {t("apiKeyManagement.actions.copy")}
+              {t('apiKeyManagement.actions.copy')}
             </Button>
           </div>
           <Prompt.Footer className="border-t py-4">
-            <Prompt.Action onClick={handleGoToSecretKey}>
-              {t("actions.continue")}
-            </Prompt.Action>
+            <Prompt.Action onClick={handleGoToSecretKey}>{t('actions.continue')}</Prompt.Action>
           </Prompt.Footer>
         </Prompt.Content>
       </Prompt>
     </Fragment>
-  )
-}
+  );
+};

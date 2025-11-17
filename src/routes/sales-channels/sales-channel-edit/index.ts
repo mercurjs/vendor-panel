@@ -1,1 +1,1 @@
-export { SalesChannelEdit as Component } from "./sales-channel-edit"
+export { SalesChannelEdit as Component } from './sales-channel-edit';

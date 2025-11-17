@@ -1,1 +1,1 @@
-export * from "./form-extension-zone"
+export * from './form-extension-zone';

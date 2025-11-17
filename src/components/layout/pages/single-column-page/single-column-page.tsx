@@ -1,7 +1,8 @@
-import { Outlet } from "react-router-dom"
-import { JsonViewSection } from "../../../common/json-view-section"
-import { MetadataSection } from "../../../common/metadata-section"
-import { PageProps } from "../types"
+import { Outlet } from 'react-router-dom';
+
+import { JsonViewSection } from '../../../common/json-view-section';
+import { MetadataSection } from '../../../common/metadata-section';
+import { PageProps } from '../types';
 
 export const SingleColumnPage = <TData,>({
   children,
@@ -21,43 +22,53 @@ export const SingleColumnPage = <TData,>({
   /**
    * Whether to show metadata view of the data. Defaults to false.
    */
-  showMetadata,
+  showMetadata
 }: PageProps<TData>) => {
-  const { before, after } = widgets
-  const widgetProps = { data }
+  const { before, after } = widgets;
+  const widgetProps = { data };
 
   if (showJSON && !data) {
-    if (process.env.NODE_ENV === "development") {
+    if (process.env.NODE_ENV === 'development') {
       console.warn(
-        "`showJSON` is true but no data is provided. To display JSON, provide data prop."
-      )
+        '`showJSON` is true but no data is provided. To display JSON, provide data prop.'
+      );
     }
 
-    showJSON = false
+    showJSON = false;
   }
 
   if (showMetadata && !data) {
-    if (process.env.NODE_ENV === "development") {
+    if (process.env.NODE_ENV === 'development') {
       console.warn(
-        "`showMetadata` is true but no data is provided. To display metadata, provide data prop."
-      )
+        '`showMetadata` is true but no data is provided. To display metadata, provide data prop.'
+      );
     }
 
-    showMetadata = false
+    showMetadata = false;
   }
 
   return (
     <div className="flex flex-col gap-y-3">
       {before.map((Component, i) => {
-        return <Component {...widgetProps} key={i} />
+        return (
+          <Component
+            {...widgetProps}
+            key={i}
+          />
+        );
       })}
       {children}
       {after.map((Component, i) => {
-        return <Component {...widgetProps} key={i} />
+        return (
+          <Component
+            {...widgetProps}
+            key={i}
+          />
+        );
       })}
       {showMetadata && <MetadataSection data={data!} />}
       {showJSON && <JsonViewSection data={data!} />}
       {hasOutlet && <Outlet />}
     </div>
-  )
-}
+  );
+};

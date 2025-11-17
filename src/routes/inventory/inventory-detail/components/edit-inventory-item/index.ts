@@ -1,1 +1,1 @@
-export { InventoryItemEdit as Component } from "./edit-item-drawer"
+export { InventoryItemEdit as Component } from './edit-item-drawer';

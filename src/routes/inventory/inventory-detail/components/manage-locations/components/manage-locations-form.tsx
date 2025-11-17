@@ -1,69 +1,63 @@
-import * as zod from "zod"
+import { useMemo } from 'react';
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { AdminInventoryItem, AdminStockLocation } from "@medusajs/types"
-import { Button, Text, toast } from "@medusajs/ui"
-import { useFieldArray, useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { z } from "zod"
-import { RouteDrawer, useRouteModal } from "../../../../../../components/modals"
-import { useBatchInventoryItemLocationLevels } from "../../../../../../hooks/api/inventory"
+import { zodResolver } from '@hookform/resolvers/zod';
+import { AdminInventoryItem, AdminStockLocation } from '@medusajs/types';
+import { Button, Text, toast } from '@medusajs/ui';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import * as zod from 'zod';
+import { z } from 'zod';
 
-import { useMemo } from "react"
-import { KeyboundForm } from "../../../../../../components/utilities/keybound-form"
-import { LocationItem } from "./location-item"
+import { RouteDrawer, useRouteModal } from '../../../../../../components/modals';
+import { KeyboundForm } from '../../../../../../components/utilities/keybound-form';
+import { useBatchInventoryItemLocationLevels } from '../../../../../../hooks/api/inventory';
+import { LocationItem } from './location-item';
 
 type EditInventoryItemAttributeFormProps = {
-  item: AdminInventoryItem
-  locations: AdminStockLocation[]
-}
+  item: AdminInventoryItem;
+  locations: AdminStockLocation[];
+};
 
 const EditInventoryItemAttributesSchema = z.object({
   locations: z.array(
     z.object({
       id: z.string(),
       location_id: z.string().optional(),
-      selected: z.boolean(),
+      selected: z.boolean()
     })
-  ),
-})
+  )
+});
 
-const getDefaultValues = (
-  allLocations: AdminStockLocation[],
-  existingLevels: Set<string>
-) => {
+const getDefaultValues = (allLocations: AdminStockLocation[], existingLevels: Set<string>) => {
   return {
-    locations: allLocations.map((location) => ({
+    locations: allLocations.map(location => ({
       ...location,
       location_id: location.id,
-      selected: existingLevels.has(location.id),
-    })),
-  }
-}
+      selected: existingLevels.has(location.id)
+    }))
+  };
+};
 
-export const ManageLocationsForm = ({
-  item,
-  locations,
-}: EditInventoryItemAttributeFormProps) => {
+export const ManageLocationsForm = ({ item, locations }: EditInventoryItemAttributeFormProps) => {
   const existingLocationLevels = useMemo(
-    () => new Set(item.location_levels?.map((l) => l.location_id) ?? []),
+    () => new Set(item.location_levels?.map(l => l.location_id) ?? []),
     [item.location_levels]
-  )
+  );
 
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
 
   const form = useForm<zod.infer<typeof EditInventoryItemAttributesSchema>>({
     defaultValues: getDefaultValues(locations, existingLocationLevels),
-    resolver: zodResolver(EditInventoryItemAttributesSchema),
-  })
+    resolver: zodResolver(EditInventoryItemAttributesSchema)
+  });
 
   const { fields: locationFields, update: updateField } = useFieldArray({
     control: form.control,
-    name: "locations",
-  })
+    name: 'locations'
+  });
 
-  const { mutateAsync } = useBatchInventoryItemLocationLevels(item.id)
+  const { mutateAsync } = useBatchInventoryItemLocationLevels(item.id);
 
   const handleSubmit = form.handleSubmit(async ({ locations }) => {
     // Changes in selected locations
@@ -71,52 +65,50 @@ export const ManageLocationsForm = ({
     const [selectedLocations, unselectedLocations] = locations.reduce(
       (acc, location) => {
         if (!location.location_id) {
-          return acc
+          return acc;
         }
 
         // If the location is not changed do nothing
         if (
-          (!location.selected &&
-            !existingLocationLevels.has(location.location_id)) ||
-          (location.selected &&
-            existingLocationLevels.has(location.location_id))
+          (!location.selected && !existingLocationLevels.has(location.location_id)) ||
+          (location.selected && existingLocationLevels.has(location.location_id))
         ) {
-          return acc
+          return acc;
         }
 
         if (location.selected) {
-          acc[0].push(location.location_id)
+          acc[0].push(location.location_id);
         } else {
-          acc[1].push(location.location_id)
+          acc[1].push(location.location_id);
         }
-        return acc
+        return acc;
       },
       [[], []] as [string[], string[]]
-    )
+    );
 
     if (selectedLocations.length === 0 && unselectedLocations.length === 0) {
-      return handleSuccess()
+      return handleSuccess();
     }
 
     await mutateAsync(
       {
         create: selectedLocations.length
-          ? selectedLocations.map((item) => ({ location_id: item }))
+          ? selectedLocations.map(item => ({ location_id: item }))
           : undefined,
         // update: [],
-        delete: unselectedLocations,
+        delete: unselectedLocations
       },
       {
         onSuccess: () => {
-          toast.success(t("inventory.toast.updateLocations"))
-          handleSuccess()
+          toast.success(t('inventory.toast.updateLocations'));
+          handleSuccess();
         },
-        onError: (e) => {
-          toast.error(e.message)
-        },
+        onError: e => {
+          toast.error(e.message);
+        }
       }
-    )
-  })
+    );
+  });
 
   return (
     <RouteDrawer.Form form={form}>
@@ -125,39 +117,65 @@ export const ManageLocationsForm = ({
         className="flex flex-1 flex-col overflow-hidden"
       >
         <RouteDrawer.Body className="flex flex-1 flex-col gap-y-4 overflow-auto">
-          <div className="text-ui-fg-subtle shadow-elevation-card-rest grid grid-rows-2 divide-y rounded-lg border">
+          <div className="grid grid-rows-2 divide-y rounded-lg border text-ui-fg-subtle shadow-elevation-card-rest">
             <div className="grid grid-cols-2 divide-x">
-              <Text className="px-2 py-1.5" size="small" leading="compact">
-                {t("fields.title")}
+              <Text
+                className="px-2 py-1.5"
+                size="small"
+                leading="compact"
+              >
+                {t('fields.title')}
               </Text>
-              <Text className="px-2 py-1.5" size="small" leading="compact">
-                {item.title ?? "-"}
+              <Text
+                className="px-2 py-1.5"
+                size="small"
+                leading="compact"
+              >
+                {item.title ?? '-'}
               </Text>
             </div>
             <div className="grid grid-cols-2 divide-x">
-              <Text className="px-2 py-1.5" size="small" leading="compact">
-                {t("fields.sku")}
+              <Text
+                className="px-2 py-1.5"
+                size="small"
+                leading="compact"
+              >
+                {t('fields.sku')}
               </Text>
-              <Text className="px-2 py-1.5" size="small" leading="compact">
+              <Text
+                className="px-2 py-1.5"
+                size="small"
+                leading="compact"
+              >
                 {item.sku}
               </Text>
             </div>
           </div>
           <div className="flex flex-col">
-            <Text size="small" weight="plus" leading="compact">
-              {t("locations.domain")}
+            <Text
+              size="small"
+              weight="plus"
+              leading="compact"
+            >
+              {t('locations.domain')}
             </Text>
-            <div className="text-ui-fg-subtle flex w-full justify-between">
-              <Text size="small" leading="compact">
-                {t("locations.selectLocations")}
+            <div className="flex w-full justify-between text-ui-fg-subtle">
+              <Text
+                size="small"
+                leading="compact"
+              >
+                {t('locations.selectLocations')}
               </Text>
-              <Text size="small" leading="compact">
-                {"("}
-                {t("general.countOfTotalSelected", {
-                  count: locationFields.filter((l) => l.selected).length,
-                  total: locations.length,
+              <Text
+                size="small"
+                leading="compact"
+              >
+                {'('}
+                {t('general.countOfTotalSelected', {
+                  count: locationFields.filter(l => l.selected).length,
+                  total: locations.length
                 })}
-                {")"}
+                {')'}
               </Text>
             </div>
           </div>
@@ -169,27 +187,34 @@ export const ManageLocationsForm = ({
                 onSelect={() =>
                   updateField(idx, {
                     ...location,
-                    selected: !location.selected,
+                    selected: !location.selected
                   })
                 }
                 key={location.id}
               />
-            )
+            );
           })}
         </RouteDrawer.Body>
         <RouteDrawer.Footer>
           <div className="flex items-center justify-end gap-x-2">
             <RouteDrawer.Close asChild>
-              <Button variant="secondary" size="small">
-                {t("actions.cancel")}
+              <Button
+                variant="secondary"
+                size="small"
+              >
+                {t('actions.cancel')}
               </Button>
             </RouteDrawer.Close>
-            <Button type="submit" size="small" isLoading={false}>
-              {t("actions.save")}
+            <Button
+              type="submit"
+              size="small"
+              isLoading={false}
+            >
+              {t('actions.save')}
             </Button>
           </div>
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  )
-}
+  );
+};

@@ -1,1 +1,1 @@
-export type FormFieldType = "text" | "number" | "boolean" | "unsupported"
+export type FormFieldType = 'text' | 'number' | 'boolean' | 'unsupported';

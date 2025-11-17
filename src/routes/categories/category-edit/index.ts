@@ -1,1 +1,1 @@
-export { CategoryEdit as Component } from "./category-edit"
+export { CategoryEdit as Component } from './category-edit';

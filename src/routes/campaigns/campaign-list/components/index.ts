@@ -1,1 +1,1 @@
-export * from "./campaign-list-table"
+export * from './campaign-list-table';

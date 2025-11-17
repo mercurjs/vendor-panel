@@ -1,1 +1,1 @@
-export { LocationEdit as Component } from "./location-edit"
+export { LocationEdit as Component } from './location-edit';

@@ -1,22 +1,21 @@
-import { HttpTypes } from "@medusajs/types"
-import { Container, Heading, StatusBadge, Text } from "@medusajs/ui"
+import { HttpTypes } from '@medusajs/types';
+import { Container, Heading, StatusBadge, Text } from '@medusajs/ui';
+import { useTranslation } from 'react-i18next';
 
-import { useTranslation } from "react-i18next"
-
-import { getStylizedAmount } from "../../../../../lib/money-amount-helpers"
-import { getOrderPaymentStatus } from "../../../../../lib/order-helpers"
-import { ExtendedAdminOrder } from "../../../../../types/order"
+import { getStylizedAmount } from '../../../../../lib/money-amount-helpers';
+import { getOrderPaymentStatus } from '../../../../../lib/order-helpers';
+import { ExtendedAdminOrder } from '../../../../../types/order';
 
 type OrderPaymentSectionProps = {
-  order: ExtendedAdminOrder
-}
+  order: ExtendedAdminOrder;
+};
 
 export const getPaymentsFromOrder = (order: HttpTypes.AdminOrder | ExtendedAdminOrder) => {
   return order.payment_collections
     ?.map((collection: HttpTypes.AdminPaymentCollection) => collection.payments)
     .flat(1)
-    .filter(Boolean) as HttpTypes.AdminPayment[]
-}
+    .filter(Boolean) as HttpTypes.AdminPayment[];
+};
 
 export const OrderPaymentSection = ({ order }: OrderPaymentSectionProps) => {
   return (
@@ -24,43 +23,53 @@ export const OrderPaymentSection = ({ order }: OrderPaymentSectionProps) => {
       <Header order={order} />
       <Total order={order} />
     </Container>
-  )
-}
+  );
+};
 
 const Header = ({ order }: { order: ExtendedAdminOrder }) => {
-  const { t } = useTranslation()
-  const { label, color } = getOrderPaymentStatus(t, order.payment_status)
+  const { t } = useTranslation();
+  const { label, color } = getOrderPaymentStatus(t, order.payment_status);
 
   return (
     <div className="flex items-center justify-between px-6 py-4">
-      <Heading level="h2">{t("orders.payment.title")}</Heading>
+      <Heading level="h2">{t('orders.payment.title')}</Heading>
 
-      <StatusBadge color={color} className="text-nowrap">
+      <StatusBadge
+        color={color}
+        className="text-nowrap"
+      >
         {label}
       </StatusBadge>
     </div>
-  )
-}
+  );
+};
 
 const Total = ({ order }: { order: ExtendedAdminOrder }) => {
-  const { t } = useTranslation()
-  
+  const { t } = useTranslation();
+
   if (!order.split_order_payment) {
-    return null
+    return null;
   }
-  
+
   const totalPending =
-    order.split_order_payment.authorized_amount -
-    order.split_order_payment.captured_amount
+    order.split_order_payment.authorized_amount - order.split_order_payment.captured_amount;
 
   return (
     <div>
       <div className="flex items-center justify-between px-6 py-4">
-        <Text size="small" weight="plus" leading="compact">
-          {t("orders.payment.totalPaidByCustomer")}
+        <Text
+          size="small"
+          weight="plus"
+          leading="compact"
+        >
+          {t('orders.payment.totalPaidByCustomer')}
         </Text>
 
-        <Text size="small" weight="plus" leading="compact">
+        <Text
+          size="small"
+          weight="plus"
+          leading="compact"
+        >
           {getStylizedAmount(
             order.split_order_payment.captured_amount,
             order.split_order_payment.currency_code
@@ -68,14 +77,22 @@ const Total = ({ order }: { order: ExtendedAdminOrder }) => {
         </Text>
       </div>
 
-      {(order.split_order_payment.status === "refunded" ||
-        order.split_order_payment.status === "partially_refunded") && (
+      {(order.split_order_payment.status === 'refunded' ||
+        order.split_order_payment.status === 'partially_refunded') && (
         <div className="flex items-center justify-between px-6 py-4">
-          <Text size="small" weight="plus" leading="compact">
+          <Text
+            size="small"
+            weight="plus"
+            leading="compact"
+          >
             Refunded
           </Text>
 
-          <Text size="small" weight="plus" leading="compact">
+          <Text
+            size="small"
+            weight="plus"
+            leading="compact"
+          >
             {getStylizedAmount(
               order.split_order_payment.refunded_amount,
               order.split_order_payment.currency_code
@@ -84,20 +101,25 @@ const Total = ({ order }: { order: ExtendedAdminOrder }) => {
         </div>
       )}
 
-      {order.status !== "canceled" && totalPending > 0 && (
+      {order.status !== 'canceled' && totalPending > 0 && (
         <div className="flex items-center justify-between px-6 py-4">
-          <Text size="small" weight="plus" leading="compact">
+          <Text
+            size="small"
+            weight="plus"
+            leading="compact"
+          >
             Total pending
           </Text>
 
-          <Text size="small" weight="plus" leading="compact">
-            {getStylizedAmount(
-              totalPending,
-              order.split_order_payment.currency_code
-            )}
+          <Text
+            size="small"
+            weight="plus"
+            leading="compact"
+          >
+            {getStylizedAmount(totalPending, order.split_order_payment.currency_code)}
           </Text>
         </div>
       )}
     </div>
-  )
-}
+  );
+};

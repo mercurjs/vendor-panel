@@ -1,1 +1,1 @@
-export * from "./profile-general-section"
+export * from './profile-general-section';

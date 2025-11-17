@@ -1,1 +1,1 @@
-export { ProfileEdit as Component } from "./profile-edit"
+export { ProfileEdit as Component } from './profile-edit';

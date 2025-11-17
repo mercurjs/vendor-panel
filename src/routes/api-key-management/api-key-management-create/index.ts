@@ -1,1 +1,1 @@
-export { ApiKeyManagementCreate as Component } from "./api-key-management-create"
+export { ApiKeyManagementCreate as Component } from './api-key-management-create';

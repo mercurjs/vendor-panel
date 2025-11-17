@@ -1,4 +1,4 @@
-import React from "react"
+import React from 'react';
 
 /**
  * A form that can only be submitted when using the meta or control key.
@@ -8,26 +8,23 @@ export const KeyboundForm = React.forwardRef<
   React.FormHTMLAttributes<HTMLFormElement>
 >(({ onSubmit, onKeyDown, ...rest }, ref) => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    onSubmit?.(event)
-  }
+    event.preventDefault();
+    onSubmit?.(event);
+  };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLFormElement>) => {
-    if (event.key === "Enter") {
-      if (
-        event.target instanceof HTMLTextAreaElement &&
-        !(event.metaKey || event.ctrlKey)
-      ) {
-        return
+    if (event.key === 'Enter') {
+      if (event.target instanceof HTMLTextAreaElement && !(event.metaKey || event.ctrlKey)) {
+        return;
       }
 
-      event.preventDefault()
+      event.preventDefault();
 
       if (event.metaKey || event.ctrlKey) {
-        handleSubmit(event)
+        handleSubmit(event);
       }
     }
-  }
+  };
 
   return (
     <form
@@ -36,7 +33,7 @@ export const KeyboundForm = React.forwardRef<
       onKeyDown={onKeyDown ?? handleKeyDown}
       ref={ref}
     />
-  )
-})
+  );
+});
 
-KeyboundForm.displayName = "KeyboundForm"
+KeyboundForm.displayName = 'KeyboundForm';

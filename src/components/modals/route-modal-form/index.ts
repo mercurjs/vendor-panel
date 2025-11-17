@@ -1,1 +1,1 @@
-export * from "./route-modal-form"
+export * from './route-modal-form';

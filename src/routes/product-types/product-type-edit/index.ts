@@ -1,1 +1,1 @@
-export { ProductTypeEdit as Component } from "./product-type-edit"
+export { ProductTypeEdit as Component } from './product-type-edit';

@@ -1,1 +1,1 @@
-export * from "./variant-cell"
+export * from './variant-cell';

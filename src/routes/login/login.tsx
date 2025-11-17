@@ -1,94 +1,95 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Alert, Button, Heading, Hint, Input, Text } from "@medusajs/ui"
-import { useForm } from "react-hook-form"
-import { Trans, useTranslation } from "react-i18next"
-import { Link, useNavigate, useSearchParams } from "react-router-dom"
-import * as z from "zod"
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Alert, Button, Heading, Hint, Input, Text } from '@medusajs/ui';
+import { useForm } from 'react-hook-form';
+import { Trans, useTranslation } from 'react-i18next';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import * as z from 'zod';
 
-import { Form } from "../../components/common/form"
-import AvatarBox from "../../components/common/logo-box/avatar-box"
-import { useDashboardExtension } from "../../extensions"
-import { useSignInWithEmailPass } from "../../hooks/api"
-import { isFetchError } from "../../lib/is-fetch-error"
+import { Form } from '../../components/common/form';
+import AvatarBox from '../../components/common/logo-box/avatar-box';
+import { useDashboardExtension } from '../../extensions';
+import { useSignInWithEmailPass } from '../../hooks/api';
+import { isFetchError } from '../../lib/is-fetch-error';
 
 const LoginSchema = z.object({
   email: z.string().email(),
-  password: z.string(),
-})
+  password: z.string()
+});
 
 export const Login = () => {
-  const { t } = useTranslation()
-  const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  const reason = searchParams.get("reason") || ""
+  const reason = searchParams.get('reason') || '';
 
-  const { getWidgets } = useDashboardExtension()
+  const { getWidgets } = useDashboardExtension();
 
-  const from = "/dashboard"
+  const from = '/dashboard';
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
-      email: "",
-      password: "",
-    },
-  })
+      email: '',
+      password: ''
+    }
+  });
 
-  const { mutateAsync, isPending } = useSignInWithEmailPass()
+  const { mutateAsync, isPending } = useSignInWithEmailPass();
 
   const handleSubmit = form.handleSubmit(async ({ email, password }) => {
     await mutateAsync(
       {
         email,
-        password,
+        password
       },
       {
-        onError: (error) => {
+        onError: error => {
           if (isFetchError(error)) {
             if (error.status === 401) {
-              form.setError("email", {
-                type: "manual",
-                message: error.message,
-              })
+              form.setError('email', {
+                type: 'manual',
+                message: error.message
+              });
 
-              return
+              return;
             }
           }
 
-          form.setError("root.serverError", {
-            type: "manual",
-            message: error.message,
-          })
+          form.setError('root.serverError', {
+            type: 'manual',
+            message: error.message
+          });
         },
         onSuccess: () => {
           setTimeout(() => {
-            navigate(from, { replace: true })
-          }, 1000)
-        },
+            navigate(from, { replace: true });
+          }, 1000);
+        }
       }
-    )
-  })
+    );
+  });
 
-  const serverError =
-    form.formState.errors?.root?.serverError?.message || reason
+  const serverError = form.formState.errors?.root?.serverError?.message || reason;
   const validationError =
-    form.formState.errors.email?.message ||
-    form.formState.errors.password?.message
+    form.formState.errors.email?.message || form.formState.errors.password?.message;
 
   return (
-    <div className="bg-ui-bg-subtle flex min-h-dvh w-dvw items-center justify-center">
+    <div className="flex min-h-dvh w-dvw items-center justify-center bg-ui-bg-subtle">
       <div className="m-4 flex w-full max-w-[280px] flex-col items-center">
         <AvatarBox />
         <div className="mb-4 flex flex-col items-center">
-          <Heading>{t("login.title")}</Heading>
-          <Text size="small" className="text-ui-fg-subtle text-center">
-            {t("login.hint")}
+          <Heading>{t('login.title')}</Heading>
+          <Text
+            size="small"
+            className="text-center text-ui-fg-subtle"
+          >
+            {t('login.hint')}
           </Text>
         </div>
         <div className="flex w-full flex-col gap-y-3">
-          {getWidgets("login.before").map((Component, i) => {
-            return <Component key={i} />
+          {getWidgets('login.before').map((Component, i) => {
+            return <Component key={i} />;
           })}
           <Form {...form}>
             <form
@@ -107,11 +108,11 @@ export const Login = () => {
                             autoComplete="email"
                             {...field}
                             className="bg-ui-bg-field-component"
-                            placeholder={t("fields.email")}
+                            placeholder={t('fields.email')}
                           />
                         </Form.Control>
                       </Form.Item>
-                    )
+                    );
                   }}
                 />
                 <Form.Field
@@ -127,65 +128,72 @@ export const Login = () => {
                             autoComplete="current-password"
                             {...field}
                             className="bg-ui-bg-field-component"
-                            placeholder={t("fields.password")}
+                            placeholder={t('fields.password')}
                           />
                         </Form.Control>
                       </Form.Item>
-                    )
+                    );
                   }}
                 />
               </div>
               {validationError && (
                 <div className="text-center">
-                  <Hint className="inline-flex" variant={"error"}>
+                  <Hint
+                    className="inline-flex"
+                    variant={'error'}
+                  >
                     {validationError}
                   </Hint>
                 </div>
               )}
               {serverError && (
                 <Alert
-                  className="bg-ui-bg-base items-center p-2"
+                  className="items-center bg-ui-bg-base p-2"
                   dismissible
                   variant="error"
                 >
                   {serverError}
                 </Alert>
               )}
-              <Button className="w-full" type="submit" isLoading={isPending}>
+              <Button
+                className="w-full"
+                type="submit"
+                isLoading={isPending}
+              >
                 Sign In
               </Button>
             </form>
           </Form>
-          {getWidgets("login.after").map((Component, i) => {
-            return <Component key={i} />
+          {getWidgets('login.after').map((Component, i) => {
+            return <Component key={i} />;
           })}
         </div>
-        <span className="text-ui-fg-muted txt-small my-6">
+        <span className="txt-small my-6 text-ui-fg-muted">
           <Trans
             i18nKey="login.forgotPassword"
             components={[
               <Link
                 key="reset-password-link"
                 to="/reset-password"
-                className="text-ui-fg-interactive transition-fg hover:text-ui-fg-interactive-hover focus-visible:text-ui-fg-interactive-hover font-medium outline-none"
-              />,
+                className="font-medium text-ui-fg-interactive outline-none transition-fg hover:text-ui-fg-interactive-hover focus-visible:text-ui-fg-interactive-hover"
+              />
             ]}
           />
         </span>
-        {__DISABLE_SELLERS_REGISTRATION__ === "false" && (
-          <span className="text-ui-fg-muted txt-small">
+        {__DISABLE_SELLERS_REGISTRATION__ === 'false' && (
+          <span className="txt-small text-ui-fg-muted">
             <Trans
               i18nKey="login.notSellerYet"
               components={[
                 <Link
                   to="/register"
-                  className="text-ui-fg-interactive transition-fg hover:text-ui-fg-interactive-hover focus-visible:text-ui-fg-interactive-hover font-medium outline-none"
-                />,
+                  className="font-medium text-ui-fg-interactive outline-none transition-fg hover:text-ui-fg-interactive-hover focus-visible:text-ui-fg-interactive-hover"
+                />
               ]}
             />
           </span>
         )}
       </div>
     </div>
-  )
-}
+  );
+};

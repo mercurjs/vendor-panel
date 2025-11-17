@@ -1,20 +1,20 @@
+import { FetchError } from '@medusajs/js-sdk';
+import { HttpTypes } from '@medusajs/types';
 import {
   MutationOptions,
   QueryKey,
-  UseQueryOptions,
   useMutation,
   useQuery,
-} from "@tanstack/react-query"
+  UseQueryOptions
+} from '@tanstack/react-query';
 
-import { FetchError } from "@medusajs/js-sdk"
-import { HttpTypes } from "@medusajs/types"
-import { fetchQuery, sdk } from "../../lib/client"
-import { queryClient } from "../../lib/query-client"
-import { queryKeysFactory } from "../../lib/query-key-factory"
-import { pricePreferencesQueryKeys } from "./price-preferences"
+import { fetchQuery, sdk } from '../../lib/client';
+import { queryClient } from '../../lib/query-client';
+import { queryKeysFactory } from '../../lib/query-key-factory';
+import { pricePreferencesQueryKeys } from './price-preferences';
 
-const STORE_QUERY_KEY = "store" as const
-export const storeQueryKeys = queryKeysFactory(STORE_QUERY_KEY)
+const STORE_QUERY_KEY = 'store' as const;
+export const storeQueryKeys = queryKeysFactory(STORE_QUERY_KEY);
 
 /**
  * Workaround to keep the V1 version of retrieving the store.
@@ -22,18 +22,18 @@ export const storeQueryKeys = queryKeysFactory(STORE_QUERY_KEY)
 export async function retrieveActiveStore(
   query?: HttpTypes.AdminStoreParams
 ): Promise<HttpTypes.AdminStoreResponse> {
-  const response = await fetchQuery("/vendor/stores", {
-    method: "GET",
-    query: query as { [key: string]: string | number },
-  })
+  const response = await fetchQuery('/vendor/stores', {
+    method: 'GET',
+    query: query as { [key: string]: string | number }
+  });
 
-  const activeStore = response.stores?.[0]
+  const activeStore = response.stores?.[0];
 
   if (!activeStore) {
-    throw new FetchError("No active store found", "Not Found", 404)
+    throw new FetchError('No active store found', 'Not Found', 404);
   }
 
-  return { store: activeStore }
+  return { store: activeStore };
 }
 
 export const useStore = (
@@ -45,56 +45,52 @@ export const useStore = (
       HttpTypes.AdminStoreResponse,
       QueryKey
     >,
-    "queryFn" | "queryKey"
+    'queryFn' | 'queryKey'
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: () => retrieveActiveStore(query),
     queryKey: storeQueryKeys.details(),
-    ...options,
-  })
+    ...options
+  });
 
   return {
     ...data,
-    ...rest,
-  }
-}
+    ...rest
+  };
+};
 
 export const useUpdateStore = (
   id: string,
-  options?: MutationOptions<
-    HttpTypes.AdminStoreResponse,
-    FetchError,
-    HttpTypes.AdminUpdateStore
-  >
+  options?: MutationOptions<HttpTypes.AdminStoreResponse, FetchError, HttpTypes.AdminUpdateStore>
 ) => {
   return useMutation({
-    mutationFn: (payload) => sdk.admin.store.update(id, payload),
+    mutationFn: payload => sdk.admin.store.update(id, payload),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: pricePreferencesQueryKeys.list(),
-      })
+        queryKey: pricePreferencesQueryKeys.list()
+      });
       queryClient.invalidateQueries({
-        queryKey: pricePreferencesQueryKeys.details(),
-      })
+        queryKey: pricePreferencesQueryKeys.details()
+      });
       queryClient.invalidateQueries({
-        queryKey: storeQueryKeys.details(),
-      })
+        queryKey: storeQueryKeys.details()
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
-    ...options,
-  })
-}
+    ...options
+  });
+};
 
 export const useConfiguration = () => {
   const { data, ...rest } = useQuery({
     queryFn: async () =>
-      await fetchQuery("/vendor/configuration", {
-        method: "GET",
+      await fetchQuery('/vendor/configuration', {
+        method: 'GET'
       }),
-    queryKey: ["configuration"],
-  })
+    queryKey: ['configuration']
+  });
 
-  return { ...data, ...rest }
-}
+  return { ...data, ...rest };
+};

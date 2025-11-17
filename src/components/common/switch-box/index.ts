@@ -1,1 +1,1 @@
-export * from "./switch-box"
+export * from './switch-box';

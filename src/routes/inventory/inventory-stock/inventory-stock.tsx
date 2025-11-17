@@ -1,55 +1,51 @@
-import { useTranslation } from "react-i18next"
-import { useSearchParams } from "react-router-dom"
-import { RouteFocusModal } from "../../../components/modals"
-import { useInventoryItems, useStockLocations } from "../../../hooks/api"
-import { INVENTORY_ITEM_IDS_KEY } from "../common/constants"
-import { InventoryStockForm } from "./components/inventory-stock-form"
+import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
+
+import { RouteFocusModal } from '../../../components/modals';
+import { useInventoryItems, useStockLocations } from '../../../hooks/api';
+import { INVENTORY_ITEM_IDS_KEY } from '../common/constants';
+import { InventoryStockForm } from './components/inventory-stock-form';
 
 export const InventoryStock = () => {
-  const { t } = useTranslation()
-  const [searchParams] = useSearchParams()
-  const inventoryItemIds =
-    searchParams.get(INVENTORY_ITEM_IDS_KEY)?.split(",") || undefined
+  const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
+  const inventoryItemIds = searchParams.get(INVENTORY_ITEM_IDS_KEY)?.split(',') || undefined;
 
   const { inventory_items, isPending, isError, error } = useInventoryItems(
-    { fields: "id,sku,title,*stock_locations,*location_levels" },
+    { fields: 'id,sku,title,*stock_locations,*location_levels' },
     undefined,
     {
-      id: inventoryItemIds!,
+      id: inventoryItemIds!
     }
-  )
+  );
 
   const {
     stock_locations,
     isPending: isPendingStockLocations,
     isError: isErrorStockLocations,
-    error: errorStockLocations,
+    error: errorStockLocations
   } = useStockLocations({
     limit: 9999,
-    fields: "id,name",
-  })
+    fields: 'id,name'
+  });
 
-  const ready =
-    !isPending &&
-    !!inventory_items &&
-    !isPendingStockLocations &&
-    !!stock_locations
+  const ready = !isPending && !!inventory_items && !isPendingStockLocations && !!stock_locations;
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   if (isErrorStockLocations) {
-    throw errorStockLocations
+    throw errorStockLocations;
   }
 
   return (
     <RouteFocusModal>
       <RouteFocusModal.Title asChild>
-        <span className="sr-only">{t("inventory.stock.title")}</span>
+        <span className="sr-only">{t('inventory.stock.title')}</span>
       </RouteFocusModal.Title>
       <RouteFocusModal.Description asChild>
-        <span className="sr-only">{t("inventory.stock.description")}</span>
+        <span className="sr-only">{t('inventory.stock.description')}</span>
       </RouteFocusModal.Description>
       {ready && (
         <InventoryStockForm
@@ -58,5 +54,5 @@ export const InventoryStock = () => {
         />
       )}
     </RouteFocusModal>
-  )
-}
+  );
+};

@@ -1,1 +1,1 @@
-export * from "./product-create-sales-channel-drawer"
+export * from './product-create-sales-channel-drawer';

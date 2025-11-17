@@ -1,20 +1,19 @@
-import { SalesChannelListTable } from "./components/sales-channel-list-table"
-
-import { SingleColumnPage } from "../../../components/layout/pages"
-import { useDashboardExtension } from "../../../extensions"
+import { SingleColumnPage } from '../../../components/layout/pages';
+import { useDashboardExtension } from '../../../extensions';
+import { SalesChannelListTable } from './components/sales-channel-list-table';
 
 export const SalesChannelList = () => {
-  const { getWidgets } = useDashboardExtension()
+  const { getWidgets } = useDashboardExtension();
 
   return (
     <SingleColumnPage
       widgets={{
-        before: getWidgets("sales_channel.list.before"),
-        after: getWidgets("sales_channel.list.after"),
+        before: getWidgets('sales_channel.list.before'),
+        after: getWidgets('sales_channel.list.after')
       }}
       hasOutlet
     >
       <SalesChannelListTable />
     </SingleColumnPage>
-  )
-}
+  );
+};

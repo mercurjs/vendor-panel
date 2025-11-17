@@ -1,1 +1,1 @@
-export { RegionCreate as Component } from "./region-create"
+export { RegionCreate as Component } from './region-create';

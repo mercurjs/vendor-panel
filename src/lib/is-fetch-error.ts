@@ -1,5 +1,5 @@
-import { FetchError } from "@medusajs/js-sdk"
+import { FetchError } from '@medusajs/js-sdk';
 
 export const isFetchError = (error: any): error is FetchError => {
-  return error instanceof FetchError
-}
+  return error instanceof FetchError;
+};

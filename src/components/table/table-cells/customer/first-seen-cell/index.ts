@@ -1,1 +1,1 @@
-export * from "./first-seen-cell"
+export * from './first-seen-cell';

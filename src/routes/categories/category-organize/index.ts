@@ -1,1 +1,1 @@
-export { CategoryOrganize as Component } from "./category-organize"
+export { CategoryOrganize as Component } from './category-organize';

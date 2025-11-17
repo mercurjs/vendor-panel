@@ -1,82 +1,90 @@
-import { ExclamationCircle, MagnifyingGlass, PlusMini } from "@medusajs/icons"
-import { Button, Text, clx } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
+import { ExclamationCircle, MagnifyingGlass, PlusMini } from '@medusajs/icons';
+import { Button, clx, Text } from '@medusajs/ui';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 export type NoResultsProps = {
-  title?: string
-  message?: string
-  className?: string
-}
+  title?: string;
+  message?: string;
+  className?: string;
+};
 
 export const NoResults = ({ title, message, className }: NoResultsProps) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
-    <div
-      className={clx(
-        "flex h-[400px] w-full items-center justify-center",
-        className
-      )}
-    >
+    <div className={clx('flex h-[400px] w-full items-center justify-center', className)}>
       <div className="flex flex-col items-center gap-y-2">
         <MagnifyingGlass />
-        <Text size="small" leading="compact" weight="plus">
-          {title ?? t("general.noResultsTitle")}
+        <Text
+          size="small"
+          leading="compact"
+          weight="plus"
+        >
+          {title ?? t('general.noResultsTitle')}
         </Text>
-        <Text size="small" className="text-ui-fg-subtle">
-          {message ?? t("general.noResultsMessage")}
+        <Text
+          size="small"
+          className="text-ui-fg-subtle"
+        >
+          {message ?? t('general.noResultsMessage')}
         </Text>
       </div>
     </div>
-  )
-}
+  );
+};
 
 type ActionProps = {
   action?: {
-    to: string
-    label: string
-  }
-}
+    to: string;
+    label: string;
+  };
+};
 
 type NoRecordsProps = {
-  title?: string
-  message?: string
-  className?: string
-  buttonVariant?: string
-} & ActionProps
+  title?: string;
+  message?: string;
+  className?: string;
+  buttonVariant?: string;
+} & ActionProps;
 
 const DefaultButton = ({ action }: ActionProps) =>
   action && (
     <Link to={action.to}>
-      <Button variant="secondary" size="small">
+      <Button
+        variant="secondary"
+        size="small"
+      >
         {action.label}
       </Button>
     </Link>
-  )
+  );
 
 const TransparentIconLeftButton = ({ action }: ActionProps) =>
   action && (
     <Link to={action.to}>
-      <Button variant="transparent" className="text-ui-fg-interactive">
+      <Button
+        variant="transparent"
+        className="text-ui-fg-interactive"
+      >
         <PlusMini /> {action.label}
       </Button>
     </Link>
-  )
+  );
 
 export const NoRecords = ({
   title,
   message,
   action,
   className,
-  buttonVariant = "default",
+  buttonVariant = 'default'
 }: NoRecordsProps) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <div
       className={clx(
-        "flex h-[400px] w-full flex-col items-center justify-center gap-y-4",
+        'flex h-[400px] w-full flex-col items-center justify-center gap-y-4',
         className
       )}
     >
@@ -84,20 +92,25 @@ export const NoRecords = ({
         <ExclamationCircle className="text-ui-fg-subtle" />
 
         <div className="flex flex-col items-center gap-y-1">
-          <Text size="small" leading="compact" weight="plus">
-            {title ?? t("general.noRecordsTitle")}
+          <Text
+            size="small"
+            leading="compact"
+            weight="plus"
+          >
+            {title ?? t('general.noRecordsTitle')}
           </Text>
 
-          <Text size="small" className="text-ui-fg-muted">
-            {message ?? t("general.noRecordsMessage")}
+          <Text
+            size="small"
+            className="text-ui-fg-muted"
+          >
+            {message ?? t('general.noRecordsMessage')}
           </Text>
         </div>
       </div>
 
-      {buttonVariant === "default" && <DefaultButton action={action} />}
-      {buttonVariant === "transparentIconLeft" && (
-        <TransparentIconLeftButton action={action} />
-      )}
+      {buttonVariant === 'default' && <DefaultButton action={action} />}
+      {buttonVariant === 'transparentIconLeft' && <TransparentIconLeftButton action={action} />}
     </div>
-  )
-}
+  );
+};

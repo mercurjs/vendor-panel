@@ -1,43 +1,45 @@
-import { Heading } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
+import { Heading } from '@medusajs/ui';
+import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 
-import { useParams } from "react-router-dom"
-import { RouteDrawer } from "../../../../../components/modals"
-import { useInventoryItem } from "../../../../../hooks/api/inventory"
-import { useStockLocations } from "../../../../../hooks/api/stock-locations"
-import { ManageLocationsForm } from "./components/manage-locations-form"
-import { INVENTORY_DETAIL_FIELDS } from "../../constants"
+import { RouteDrawer } from '../../../../../components/modals';
+import { useInventoryItem } from '../../../../../hooks/api/inventory';
+import { useStockLocations } from '../../../../../hooks/api/stock-locations';
+import { INVENTORY_DETAIL_FIELDS } from '../../constants';
+import { ManageLocationsForm } from './components/manage-locations-form';
 
 export const ManageLocationsDrawer = () => {
-  const { id } = useParams()
-  const { t } = useTranslation()
+  const { id } = useParams();
+  const { t } = useTranslation();
 
   const {
     inventory_item: inventoryItem,
     isPending: isLoading,
     isError,
-    error,
+    error
   } = useInventoryItem(id!, {
-    fields: INVENTORY_DETAIL_FIELDS,
-  })
+    fields: INVENTORY_DETAIL_FIELDS
+  });
 
-  const { stock_locations, isLoading: loadingLocations } = useStockLocations()
+  const { stock_locations, isLoading: loadingLocations } = useStockLocations();
 
-  const ready =
-    !isLoading && !loadingLocations && inventoryItem && stock_locations
+  const ready = !isLoading && !loadingLocations && inventoryItem && stock_locations;
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   return (
     <RouteDrawer>
       <RouteDrawer.Header>
-        <Heading>{t("inventory.manageLocations")}</Heading>
+        <Heading>{t('inventory.manageLocations')}</Heading>
       </RouteDrawer.Header>
       {ready && (
-        <ManageLocationsForm item={inventoryItem} locations={stock_locations} />
+        <ManageLocationsForm
+          item={inventoryItem}
+          locations={stock_locations}
+        />
       )}
     </RouteDrawer>
-  )
-}
+  );
+};

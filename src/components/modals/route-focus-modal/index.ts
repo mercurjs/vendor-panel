@@ -1,1 +1,1 @@
-export * from "./route-focus-modal"
+export * from './route-focus-modal';

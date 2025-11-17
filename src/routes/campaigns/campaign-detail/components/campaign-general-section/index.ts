@@ -1,1 +1,1 @@
-export * from "./campaign-general-section"
+export * from './campaign-general-section';

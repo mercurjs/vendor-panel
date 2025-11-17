@@ -1,1 +1,1 @@
-export * from "./data-table-search"
+export * from './data-table-search';

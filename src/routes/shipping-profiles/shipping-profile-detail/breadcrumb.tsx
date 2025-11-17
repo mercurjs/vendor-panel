@@ -1,27 +1,21 @@
-import { HttpTypes } from "@medusajs/types"
-import { UIMatch } from "react-router-dom"
-import { useShippingProfile } from "../../../hooks/api/shipping-profiles"
+import { HttpTypes } from '@medusajs/types';
+import { UIMatch } from 'react-router-dom';
 
-type ShippingProfileDetailBreadcrumbProps =
-  UIMatch<HttpTypes.AdminShippingProfileResponse>
+import { useShippingProfile } from '../../../hooks/api/shipping-profiles';
 
-export const ShippingProfileDetailBreadcrumb = (
-  props: ShippingProfileDetailBreadcrumbProps
-) => {
-  const { shipping_profile_id } = props.params || {}
+type ShippingProfileDetailBreadcrumbProps = UIMatch<HttpTypes.AdminShippingProfileResponse>;
 
-  const { shipping_profile } = useShippingProfile(
-    shipping_profile_id!,
-    undefined,
-    {
-      initialData: props.data,
-      enabled: Boolean(shipping_profile_id),
-    }
-  )
+export const ShippingProfileDetailBreadcrumb = (props: ShippingProfileDetailBreadcrumbProps) => {
+  const { shipping_profile_id } = props.params || {};
+
+  const { shipping_profile } = useShippingProfile(shipping_profile_id!, undefined, {
+    initialData: props.data,
+    enabled: Boolean(shipping_profile_id)
+  });
 
   if (!shipping_profile) {
-    return null
+    return null;
   }
 
-  return <span>{shipping_profile.name}</span>
-}
+  return <span>{shipping_profile.name}</span>;
+};

@@ -1,1 +1,1 @@
-export { EditReservationForm as Component } from "./edit-reservation-form"
+export { EditReservationForm as Component } from './edit-reservation-form';

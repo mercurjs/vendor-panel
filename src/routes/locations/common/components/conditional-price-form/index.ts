@@ -1,1 +1,1 @@
-export * from "./conditional-price-form"
+export * from './conditional-price-form';

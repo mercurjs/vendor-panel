@@ -1,1 +1,1 @@
-export * from "./api-key-sales-channels-form"
+export * from './api-key-sales-channels-form';

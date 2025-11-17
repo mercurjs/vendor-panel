@@ -1,1 +1,1 @@
-export { ProductOrganization as Component } from "./product-organization"
+export { ProductOrganization as Component } from './product-organization';

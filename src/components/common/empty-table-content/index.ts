@@ -1,1 +1,1 @@
-export * from "./empty-table-content"
+export * from './empty-table-content';

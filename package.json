@@ -94,6 +94,7 @@
     "autoprefixer": "^10.4.17",
     "postcss": "^8.4.33",
     "prettier": "^3.1.1",
+    "shared-configs": "git+ssh://git@github.com/rigby-sh/shared-configs.git#main",
     "tailwindcss": "^3.4.1",
     "tsup": "^8.0.2",
     "typescript": "5.2.2",

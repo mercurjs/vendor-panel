@@ -11,10 +11,9 @@ import {
   usePromotionUpdateRules,
   useUpdatePromotion,
 } from "../../../../../../hooks/api/promotions"
-import { ExtendedPromotionRule } from "../../../../../../types/promotion"
 import { RuleTypeValues } from "../../edit-rules"
 import { EditRulesForm } from "../edit-rules-form"
-import { getRuleValue } from "./utils"
+import { EditRulesType } from "../edit-rules-form/form-schema"
 
 type EditPromotionFormProps = {
   promotion: HttpTypes.AdminPromotion
@@ -45,7 +44,7 @@ export const EditRulesWrapper = ({
   const handleSubmit = (
     rulesToRemove?: { id: string; disguised?: boolean; attribute: string }[]
   ) => {
-    return async function (data: { rules: ExtendedPromotionRule[] }) {
+    return async function (data: EditRulesType) {
       const applicationMethodData: Record<string, string | number | null> = {}
       const { rules: allRules = [] } = data
       const disguisedRules = allRules.filter((rule) => rule.disguised)
@@ -53,10 +52,12 @@ export const EditRulesWrapper = ({
         rulesToRemove?.filter((r) => r.disguised) || []
 
       for (const rule of disguisedRules) {
-        const ruleValue = getRuleValue(rule)
-        applicationMethodData[rule.attribute!] = Array.isArray(ruleValue)
-          ? ruleValue[0]?.value || null
-          : ruleValue
+        const value = Array.isArray(rule.values)
+          ? rule.values[0] || null
+          : rule.values || null
+
+        applicationMethodData[rule.attribute!] =
+          rule.field_type === "number" && value ? Number(value) : value
       }
 
       for (const rule of disguisedRulesToRemove) {
@@ -66,48 +67,52 @@ export const EditRulesWrapper = ({
       const rulesData = allRules.filter((rule) => !rule.disguised)
 
       const rulesToCreate: CreatePromotionRuleDTO[] = []
-      const rulesToUpdate: ExtendedPromotionRule[] = []
+      const rulesToUpdate: EditRulesType["rules"] = []
 
       for (const rule of rulesData) {
         if ("id" in rule && typeof rule.id === "string") {
           rulesToUpdate.push(rule)
         } else {
-          rulesToCreate.push({
+          const createRule: CreatePromotionRuleDTO = {
             attribute: rule.attribute!,
-            operator: rule.operator!,
-            values: rule.values as unknown as string | string[],
-          })
+            operator: rule.operator as PromotionRuleOperatorValues,
+            values: rule.values,
+          }
+          rulesToCreate.push(createRule)
         }
       }
 
       if (Object.keys(applicationMethodData).length) {
         await updatePromotion({
           application_method: applicationMethodData,
-        } as any)
+        })
       }
 
       if (rulesToCreate.length > 0) {
         const rulesToUpdateIds = rulesToUpdate
           .map((r) => r.id)
-          .filter(Boolean) as string[]
+          .filter((id): id is string => Boolean(id))
         if (rulesToUpdateIds.length > 0) {
           await removePromotionRules({
             rules: rulesToUpdateIds,
-          } as any)
+          })
         }
 
         if (rulesToRemove?.length) {
+          const removeIds = rulesToRemove
+            .map((r) => r.id)
+            .filter((id): id is string => Boolean(id))
           await removePromotionRules({
-            rules: rulesToRemove.map((r) => r.id).filter(Boolean) as string[],
-          } as any)
+            rules: removeIds,
+          })
         }
 
         const allRulesToAdd = [
           ...rulesToCreate,
           ...rulesToUpdate.map((rule) => ({
             attribute: rule.attribute!,
-            operator: rule.operator!,
-            values: rule.values as unknown as string | string[],
+            operator: rule.operator as PromotionRuleOperatorValues,
+            values: rule.values,
           })),
         ]
         await addPromotionRules({
@@ -115,19 +120,23 @@ export const EditRulesWrapper = ({
         })
       } else {
         if (rulesToRemove?.length) {
+          const removeIds = rulesToRemove
+            .map((r) => r.id)
+            .filter((id): id is string => Boolean(id))
           await removePromotionRules({
-            rules: rulesToRemove.map((r) => r.id).filter(Boolean) as string[],
-          } as any)
+            rules: removeIds,
+          })
         }
 
         if (rulesToUpdate.length) {
+          const updateRules = rulesToUpdate.map((rule) => ({
+            id: rule.id!,
+            attribute: rule.attribute,
+            operator: rule.operator as PromotionRuleOperatorValues,
+            values: rule.values,
+          }))
           await updatePromotionRules({
-            rules: rulesToUpdate.map((rule) => ({
-              id: rule.id,
-              attribute: rule.attribute,
-              operator: rule.operator as PromotionRuleOperatorValues,
-              values: rule.values as unknown as string | string[],
-            })),
+            rules: updateRules,
           })
         }
       }

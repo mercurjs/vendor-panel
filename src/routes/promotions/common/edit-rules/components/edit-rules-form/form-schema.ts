@@ -13,7 +13,6 @@ export const EditRules = z.object({
         .string()
         .min(1, { message: i18n.t("promotions.form.required") }),
       values: z.union([
-        z.number().min(1, { message: i18n.t("promotions.form.required") }),
         z.string().min(1, { message: i18n.t("promotions.form.required") }),
         z
           .array(z.string())

@@ -1,61 +1,61 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { HttpTypes } from '@medusajs/types';
-import { Button, Input, Text } from '@medusajs/ui';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import * as zod from 'zod';
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Button, Input, Text } from "@medusajs/ui"
+import { useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import * as zod from "zod"
 
-import { Form } from '../../../../../components/common/form';
-import { RouteDrawer, useRouteModal } from '../../../../../components/modals';
-import { KeyboundForm } from '../../../../../components/utilities/keybound-form';
-import { useUpdateRequest } from '../../../../../hooks/api';
+import { HttpTypes } from "@medusajs/types"
+import { Form } from "../../../../../components/common/form"
+import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
+import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
+import { useUpdateRequest } from "../../../../../hooks/api"
 
 type EditCollectionFormProps = {
-  collection: HttpTypes.AdminCollection;
-  requestId: string;
-};
+  collection: HttpTypes.AdminCollection
+  requestId: string
+}
 
 const EditCollectionSchema = zod.object({
   title: zod.string().min(1),
-  handle: zod.string().min(1)
-});
+  handle: zod.string().min(1),
+})
 
-export const EditCollectionForm = ({ collection, requestId }: EditCollectionFormProps) => {
-  const { t } = useTranslation();
-  const { handleSuccess } = useRouteModal();
+export const EditCollectionForm = ({
+  collection,
+  requestId,
+}: EditCollectionFormProps) => {
+  const { t } = useTranslation()
+  const { handleSuccess } = useRouteModal()
 
   const form = useForm<zod.infer<typeof EditCollectionSchema>>({
     defaultValues: {
       title: collection.title,
-      handle: collection.handle
+      handle: collection.handle,
     },
-    resolver: zodResolver(EditCollectionSchema)
-  });
+    resolver: zodResolver(EditCollectionSchema),
+  })
 
-  const { mutateAsync, isPending } = useUpdateRequest(requestId);
+  const { mutateAsync, isPending } = useUpdateRequest(requestId)
 
-  const handleSubmit = form.handleSubmit(async data => {
+  const handleSubmit = form.handleSubmit(async (data) => {
     await mutateAsync(
       {
         request: {
-          type: 'product_collection',
-          data: { title: data.title, handle: data.handle }
-        }
+          type: "product_collection",
+          data: { title: data.title, handle: data.handle },
+        },
       },
       {
         onSuccess: () => {
-          handleSuccess();
-        }
+          handleSuccess()
+        },
       }
-    );
-  });
+    )
+  })
 
   return (
     <RouteDrawer.Form form={form}>
-      <KeyboundForm
-        onSubmit={handleSubmit}
-        className="flex flex-1 flex-col"
-      >
+      <KeyboundForm onSubmit={handleSubmit} className="flex flex-1 flex-col">
         <RouteDrawer.Body>
           <div className="flex flex-col gap-y-4">
             <Form.Field
@@ -64,13 +64,13 @@ export const EditCollectionForm = ({ collection, requestId }: EditCollectionForm
               render={({ field }) => {
                 return (
                   <Form.Item>
-                    <Form.Label>{t('fields.title')}</Form.Label>
+                    <Form.Label>{t("fields.title")}</Form.Label>
                     <Form.Control>
                       <Input {...field} />
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                );
+                )
               }}
             />
             <Form.Field
@@ -79,8 +79,8 @@ export const EditCollectionForm = ({ collection, requestId }: EditCollectionForm
               render={({ field }) => {
                 return (
                   <Form.Item>
-                    <Form.Label tooltip={t('collections.handleTooltip')}>
-                      {t('fields.handle')}
+                    <Form.Label tooltip={t("collections.handleTooltip")}>
+                      {t("fields.handle")}
                     </Form.Label>
                     <Form.Control>
                       <div className="relative">
@@ -94,15 +94,12 @@ export const EditCollectionForm = ({ collection, requestId }: EditCollectionForm
                             /
                           </Text>
                         </div>
-                        <Input
-                          {...field}
-                          className="pl-10"
-                        />
+                        <Input {...field} className="pl-10" />
                       </div>
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                );
+                )
               }}
             />
           </div>
@@ -110,23 +107,16 @@ export const EditCollectionForm = ({ collection, requestId }: EditCollectionForm
         <RouteDrawer.Footer>
           <div className="flex items-center gap-x-2">
             <RouteDrawer.Close asChild>
-              <Button
-                size="small"
-                variant="secondary"
-              >
-                {t('actions.cancel')}
+              <Button size="small" variant="secondary">
+                {t("actions.cancel")}
               </Button>
             </RouteDrawer.Close>
-            <Button
-              size="small"
-              type="submit"
-              isLoading={isPending}
-            >
-              {t('actions.save')}
+            <Button size="small" type="submit" isLoading={isPending}>
+              {t("actions.save")}
             </Button>
           </div>
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  );
-};
+  )
+}

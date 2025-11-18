@@ -1,1 +1,1 @@
-export { ReviewReply as Component } from './review-reply';
+export { ReviewReply as Component } from "./review-reply"

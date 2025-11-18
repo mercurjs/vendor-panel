@@ -1,1 +1,1 @@
-export * from './stars-cell';
+export * from "./stars-cell"

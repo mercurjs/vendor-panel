@@ -1,20 +1,19 @@
-import { FetchError } from '@medusajs/js-sdk';
-import { HttpTypes } from '@medusajs/types';
+import { HttpTypes } from "@medusajs/types"
 import {
   QueryKey,
   useMutation,
   UseMutationOptions,
   useQuery,
-  UseQueryOptions
-} from '@tanstack/react-query';
+  UseQueryOptions,
+} from "@tanstack/react-query"
+import { sdk } from "../../lib/client"
+import { queryClient } from "../../lib/query-client"
+import { queryKeysFactory } from "../../lib/query-key-factory"
+import { ordersQueryKeys } from "./orders"
+import { FetchError } from "@medusajs/js-sdk"
 
-import { sdk } from '../../lib/client';
-import { queryClient } from '../../lib/query-client';
-import { queryKeysFactory } from '../../lib/query-key-factory';
-import { ordersQueryKeys } from './orders';
-
-const PAYMENT_QUERY_KEY = 'payment' as const;
-export const paymentQueryKeys = queryKeysFactory(PAYMENT_QUERY_KEY);
+const PAYMENT_QUERY_KEY = "payment" as const
+export const paymentQueryKeys = queryKeysFactory(PAYMENT_QUERY_KEY)
 
 export const usePaymentProviders = (
   query?: HttpTypes.AdminGetPaymentProvidersParams,
@@ -25,17 +24,17 @@ export const usePaymentProviders = (
       HttpTypes.AdminPaymentProviderListResponse,
       QueryKey
     >,
-    'queryKey' | 'queryFn'
+    "queryKey" | "queryFn"
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: async () => sdk.admin.payment.listPaymentProviders(query),
     queryKey: [],
-    ...options
-  });
+    ...options,
+  })
 
-  return { ...data, ...rest };
-};
+  return { ...data, ...rest }
+}
 
 export const usePayment = (
   id: string,
@@ -47,17 +46,17 @@ export const usePayment = (
       HttpTypes.AdminPaymentResponse,
       QueryKey
     >,
-    'queryKey' | 'queryFn'
+    "queryKey" | "queryFn"
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: () => sdk.admin.payment.retrieve(id, query),
     queryKey: paymentQueryKeys.detail(id),
-    ...options
-  });
+    ...options,
+  })
 
-  return { ...data, ...rest };
-};
+  return { ...data, ...rest }
+}
 
 export const useCapturePayment = (
   orderId: string,
@@ -69,21 +68,21 @@ export const useCapturePayment = (
   >
 ) => {
   return useMutation({
-    mutationFn: payload => sdk.admin.payment.capture(paymentId, payload),
+    mutationFn: (payload) => sdk.admin.payment.capture(paymentId, payload),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useRefundPayment = (
   orderId: string,
@@ -95,18 +94,18 @@ export const useRefundPayment = (
   >
 ) => {
   return useMutation({
-    mutationFn: payload => sdk.admin.payment.refund(paymentId, payload),
+    mutationFn: (payload) => sdk.admin.payment.refund(paymentId, payload),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}

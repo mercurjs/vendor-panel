@@ -1,28 +1,27 @@
-import { ReactNode } from 'react';
+import { Switch } from "@medusajs/ui"
+import { ReactNode } from "react"
+import { ControllerProps, FieldPath, FieldValues } from "react-hook-form"
 
-import { Switch } from '@medusajs/ui';
-import { ControllerProps, FieldPath, FieldValues } from 'react-hook-form';
-
-import { Form } from '../../common/form';
+import { Form } from "../../common/form"
 
 interface HeadlessControllerProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
-> extends Omit<ControllerProps<TFieldValues, TName>, 'render'> {}
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> extends Omit<ControllerProps<TFieldValues, TName>, "render"> {}
 
 interface SwitchBoxProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > extends HeadlessControllerProps<TFieldValues, TName> {
-  label: string;
-  description: string;
-  optional?: boolean;
-  tooltip?: ReactNode;
+  label: string
+  description: string
+  optional?: boolean
+  tooltip?: ReactNode
   /**
    * Callback for performing additional actions when the checked state changes.
    * This does not intercept the form control, it is only used for injecting side-effects.
    */
-  onCheckedChange?: (checked: boolean) => void;
+  onCheckedChange?: (checked: boolean) => void
 }
 
 /**
@@ -33,7 +32,7 @@ interface SwitchBoxProps<
  */
 export const SwitchBox = <
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   label,
   description,
@@ -48,22 +47,19 @@ export const SwitchBox = <
       render={({ field: { value, onChange, ...field } }) => {
         return (
           <Form.Item>
-            <div className="flex items-start gap-x-3 rounded-lg bg-ui-bg-component p-3 shadow-elevation-card-rest">
+            <div className="bg-ui-bg-component shadow-elevation-card-rest flex items-start gap-x-3 rounded-lg p-3">
               <Form.Control>
                 <Switch
                   {...field}
                   checked={value}
-                  onCheckedChange={e => {
-                    onCheckedChange?.(e);
-                    onChange(e);
+                  onCheckedChange={(e) => {
+                    onCheckedChange?.(e)
+                    onChange(e)
                   }}
                 />
               </Form.Control>
               <div>
-                <Form.Label
-                  optional={optional}
-                  tooltip={tooltip}
-                >
+                <Form.Label optional={optional} tooltip={tooltip}>
                   {label}
                 </Form.Label>
                 <Form.Hint>{description}</Form.Hint>
@@ -71,8 +67,8 @@ export const SwitchBox = <
             </div>
             <Form.ErrorMessage />
           </Form.Item>
-        );
+        )
       }}
     />
-  );
-};
+  )
+}

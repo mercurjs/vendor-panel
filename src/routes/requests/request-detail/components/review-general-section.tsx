@@ -1,3 +1,3 @@
 export const ReviewGeneralSection = () => {
-  return <div>review-general-section</div>;
-};
+  return <div>review-general-section</div>
+}

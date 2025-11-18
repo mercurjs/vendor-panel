@@ -1,6 +1,5 @@
-import { HttpTypes } from '@medusajs/types';
-
-import { StaticCountry } from '../../../../../lib/data/countries';
+import { StaticCountry } from "../../../../../lib/data/countries"
+import { HttpTypes } from "@medusajs/types"
 
 /**
  * Converts API region countries to static countries for use with useCountries hook.
@@ -9,18 +8,14 @@ import { StaticCountry } from '../../../../../lib/data/countries';
 export const convertToStaticCountries = (
   apiCountries: HttpTypes.AdminRegionCountry[] | undefined
 ): StaticCountry[] => {
-  if (!apiCountries) return [];
-
+  if (!apiCountries) return []
+  
   return apiCountries
     .filter((c): c is Required<HttpTypes.AdminRegionCountry> => {
       const requiredFields: (keyof HttpTypes.AdminRegionCountry)[] = [
-        'iso_2',
-        'iso_3',
-        'num_code',
-        'name',
-        'display_name'
-      ];
-      return requiredFields.every(field => !!c[field]);
+        'iso_2', 'iso_3', 'num_code', 'name', 'display_name'
+      ]
+      return requiredFields.every(field => !!c[field])
     })
-    .map(({ id, ...country }) => country as StaticCountry);
-};
+    .map(({ id, ...country }) => country as StaticCountry)
+}

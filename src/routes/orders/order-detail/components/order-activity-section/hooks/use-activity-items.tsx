@@ -1,98 +1,90 @@
-import { ReactNode, useMemo } from 'react';
-
+import { useMemo } from "react"
+import { useTranslation } from "react-i18next"
+import { AdminClaim, AdminExchange, AdminReturn } from "@medusajs/types"
+import { Text } from "@medusajs/ui"
+import { ReactNode } from "react"
+import { By } from "../../../../../../components/common/user-link"
 import {
-  AdminClaim,
-  AdminExchange,
-  AdminOrderAddress,
-  AdminReturn,
-  AdminStockLocationAddress
-} from '@medusajs/types';
-import { Text } from '@medusajs/ui';
-import { useTranslation } from 'react-i18next';
-
-import { By } from '../../../../../../components/common/user-link';
-import { useOrderChanges, useOrderLineItems } from '../../../../../../hooks/api';
-import { getFormattedAddress } from '../../../../../../lib/addresses';
-import { getStylizedAmount } from '../../../../../../lib/money-amount-helpers';
-import {
-  ExtendedAdminOrder,
-  ExtendedAdminOrderChange,
-  ExtendedAdminOrderLineItemWithInventory
-} from '../../../../../../types/order';
-import ChangeDetailsTooltip from '../change-details-tooltip';
-import {
-  ClaimBody,
-  ExchangeBody,
-  FulfillmentCreatedBody,
-  OrderEditBody,
-  ReturnBody,
-  TransferOrderRequestBody
-} from '../components';
-import { getMissingLineItemIds } from '../utils';
+  useOrderChanges,
+  useOrderLineItems,
+} from "../../../../../../hooks/api"
+import { ExtendedAdminOrderLineItemWithInventory } from "../../../../../../types/order"
+import { ExtendedAdminOrder, ExtendedAdminOrderChange } from "../../../../../../types/order"
+import { getStylizedAmount } from "../../../../../../lib/money-amount-helpers"
+import { getFormattedAddress } from "../../../../../../lib/addresses"
+import { AdminOrderAddress, AdminStockLocationAddress } from "@medusajs/types"
+import ChangeDetailsTooltip from "../change-details-tooltip"
+import { FulfillmentCreatedBody } from "../components"
+import { ReturnBody } from "../components"
+import { ClaimBody } from "../components"
+import { ExchangeBody } from "../components"
+import { OrderEditBody } from "../components"
+import { TransferOrderRequestBody } from "../components"
+import { getMissingLineItemIds } from "../utils"
 
 /**
  * Order Changes that are not related to RMA flows
  */
-const NON_RMA_CHANGE_TYPES = ['transfer', 'update_order'];
+const NON_RMA_CHANGE_TYPES = ["transfer", "update_order"]
 
 export type Activity = {
-  title: string | ReactNode;
-  timestamp: string | Date | null;
-  children?: ReactNode;
-  itemsToSend?: AdminClaim['additional_items'] | AdminExchange['additional_items'];
-  itemsToReturn?: AdminReturn['items'];
-  itemsMap?: Map<string, ExtendedAdminOrderLineItemWithInventory>;
-};
+  title: string | ReactNode
+  timestamp: string | Date | null
+  children?: ReactNode
+  itemsToSend?: AdminClaim["additional_items"] | AdminExchange["additional_items"]
+  itemsToReturn?: AdminReturn["items"]
+  itemsMap?: Map<string, ExtendedAdminOrderLineItemWithInventory>
+}
 
 export const useActivityItems = (order: ExtendedAdminOrder): Activity[] => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
-  const { order_changes: orderChanges = [] } = useOrderChanges(order.id);
+  const { order_changes: orderChanges = [] } = useOrderChanges(order.id)
 
   const rmaChanges = orderChanges.filter(
-    oc => oc.change_type && !NON_RMA_CHANGE_TYPES.includes(oc.change_type)
-  );
+    (oc) => oc.change_type && !NON_RMA_CHANGE_TYPES.includes(oc.change_type)
+  )
 
-  const missingLineItemIds = getMissingLineItemIds(order, rmaChanges);
+  const missingLineItemIds = getMissingLineItemIds(order, rmaChanges)
   const { order_items: removedLineItems = [] } = useOrderLineItems(
     order.id,
     {
-      fields: '+quantity',
-      item_id: missingLineItemIds.join(',')
+      fields: "+quantity",
+      item_id: missingLineItemIds.join(","),
     },
     {
-      enabled: !!rmaChanges.length
+      enabled: !!rmaChanges.length,
     }
-  );
+  )
 
   const itemsMap = useMemo(() => {
     const _itemsMap = new Map<string, ExtendedAdminOrderLineItemWithInventory>(
-      order?.items?.map(i => [i.id, i])
-    );
+      order?.items?.map((i) => [i.id, i])
+    )
 
     // Add removed line items to the map
     // These items won't have the extended inventory fields, but that's okay
     // since they're not used for removed/historical items
     for (const id of missingLineItemIds) {
-      const orderItem = removedLineItems.find(i => i.item.id === id);
+      const orderItem = removedLineItems.find((i) => i.item.id === id)
 
       if (orderItem && orderItem.item) {
         // Spread the item and override the variant to be undefined
         // since removed items don't need variant inventory information
         const lineItem: ExtendedAdminOrderLineItemWithInventory = {
           ...orderItem.item,
-          variant: undefined // Removed items don't need variant details
-        };
-        _itemsMap.set(id, lineItem);
+          variant: undefined, // Removed items don't need variant details
+        }
+        _itemsMap.set(id, lineItem)
       }
     }
 
-    return _itemsMap;
-  }, [order.items, removedLineItems, missingLineItemIds]);
+    return _itemsMap
+  }, [order.items, removedLineItems, missingLineItemIds])
 
-  const returns: AdminReturn[] = [];
-  const claims: AdminClaim[] = [];
-  const exchanges: AdminExchange[] = [];
+  const returns: AdminReturn[] = []
+  const claims: AdminClaim[] = []
+  const exchanges: AdminExchange[] = []
 
   // const { returns = [] } = useReturns({
   //   order_id: order.id,
@@ -109,8 +101,9 @@ export const useActivityItems = (order: ExtendedAdminOrder): Activity[] => {
   //   fields: '*additional_items',
   // });
 
-  const notes: any[] = [];
-  const isLoading = false;
+
+  const notes: any[] = []
+  const isLoading = false
   // const { notes, isLoading, isError, error } = useNotes(
   //   {
   //     resource_id: order.id,
@@ -126,15 +119,16 @@ export const useActivityItems = (order: ExtendedAdminOrder): Activity[] => {
   //   throw error
   // }
 
+
   // TODO: uncomment and fix payment related logic when backend returns data about payment cancel/capture/refund dates
-  const payments = order.split_order_payment;
+  const payments = order.split_order_payment
 
   return useMemo(() => {
     if (isLoading) {
-      return [];
+      return []
     }
 
-    const items: Activity[] = [];
+    const items: Activity[] = []
 
     // if (payment) {
     //   const amount = payment.authorized_amount
@@ -191,128 +185,109 @@ export const useActivityItems = (order: ExtendedAdminOrder): Activity[] => {
 
     for (const fulfillment of order.fulfillments || []) {
       items.push({
-        title: t('orders.activity.events.fulfillment.created'),
+        title: t("orders.activity.events.fulfillment.created"),
         timestamp: fulfillment.created_at,
-        children: <FulfillmentCreatedBody fulfillment={fulfillment as any} />
-      });
+        children: <FulfillmentCreatedBody fulfillment={fulfillment as any} />,
+      })
 
       if (fulfillment.delivered_at) {
         items.push({
-          title: t('orders.activity.events.fulfillment.delivered'),
+          title: t("orders.activity.events.fulfillment.delivered"),
           timestamp: fulfillment.delivered_at,
-          children: <FulfillmentCreatedBody fulfillment={fulfillment as any} />
-        });
+          children: <FulfillmentCreatedBody fulfillment={fulfillment as any} />,
+        })
       }
 
       if (fulfillment.shipped_at) {
         items.push({
-          title: t('orders.activity.events.fulfillment.shipped'),
+          title: t("orders.activity.events.fulfillment.shipped"),
           timestamp: fulfillment.shipped_at,
           children: (
-            <FulfillmentCreatedBody
-              fulfillment={fulfillment as any}
-              isShipment
-            />
-          )
-        });
+            <FulfillmentCreatedBody fulfillment={fulfillment as any} isShipment />
+          ),
+        })
       }
 
       if (fulfillment.canceled_at) {
         items.push({
-          title: t('orders.activity.events.fulfillment.canceled'),
-          timestamp: fulfillment.canceled_at
-        });
+          title: t("orders.activity.events.fulfillment.canceled"),
+          timestamp: fulfillment.canceled_at,
+        })
       }
     }
 
-    const returnMap = new Map<string, AdminReturn>();
+    const returnMap = new Map<string, AdminReturn>()
 
     for (const ret of returns) {
-      returnMap.set(ret.id, ret);
+      returnMap.set(ret.id, ret)
 
       if (ret.claim_id || ret.exchange_id) {
-        continue;
+        continue
       }
 
       // Always display created action
       items.push({
-        title: t('orders.activity.events.return.created', {
-          returnId: ret.id.slice(-7)
+        title: t("orders.activity.events.return.created", {
+          returnId: ret.id.slice(-7),
         }),
         timestamp: ret.created_at,
         itemsToReturn: ret?.items,
         itemsMap,
-        children: (
-          <ReturnBody
-            orderReturn={ret}
-            isCreated={!ret.canceled_at}
-          />
-        )
-      });
+        children: <ReturnBody orderReturn={ret} isCreated={!ret.canceled_at} />,
+      })
 
       if (ret.canceled_at) {
         items.push({
-          title: t('orders.activity.events.return.canceled', {
-            returnId: ret.id.slice(-7)
+          title: t("orders.activity.events.return.canceled", {
+            returnId: ret.id.slice(-7),
           }),
-          timestamp: ret.canceled_at
-        });
+          timestamp: ret.canceled_at,
+        })
       }
 
-      if (ret.status === 'received' || ret.status === 'partially_received') {
+      if (ret.status === "received" || ret.status === "partially_received") {
         items.push({
-          title: t('orders.activity.events.return.received', {
-            returnId: ret.id.slice(-7)
+          title: t("orders.activity.events.return.received", {
+            returnId: ret.id.slice(-7),
           }),
           timestamp: ret.received_at,
           itemsToReturn: ret?.items,
           itemsMap,
-          children: (
-            <ReturnBody
-              orderReturn={ret}
-              isCreated={false}
-              isReceived
-            />
-          )
-        });
+          children: <ReturnBody orderReturn={ret} isCreated={false} isReceived />,
+        })
       }
     }
 
     for (const claim of claims) {
-      const claimReturn = returnMap.get(claim.return_id!);
+      const claimReturn = returnMap.get(claim.return_id!)
 
       items.push({
         title: t(
           claim.canceled_at
-            ? 'orders.activity.events.claim.canceled'
-            : 'orders.activity.events.claim.created',
+            ? "orders.activity.events.claim.canceled"
+            : "orders.activity.events.claim.created",
           {
-            claimId: claim.id.slice(-7)
+            claimId: claim.id.slice(-7),
           }
         ),
         timestamp: claim.canceled_at || claim.created_at,
         itemsToSend: claim.additional_items,
         itemsToReturn: claimReturn?.items,
         itemsMap,
-        children: (
-          <ClaimBody
-            claim={claim}
-            claimReturn={claimReturn}
-          />
-        )
-      });
+        children: <ClaimBody claim={claim} claimReturn={claimReturn} />,
+      })
     }
 
     for (const exchange of exchanges) {
-      const exchangeReturn = returnMap.get(exchange.return_id!);
+      const exchangeReturn = returnMap.get(exchange.return_id!)
 
       items.push({
         title: t(
           exchange.canceled_at
-            ? 'orders.activity.events.exchange.canceled'
-            : 'orders.activity.events.exchange.created',
+            ? "orders.activity.events.exchange.canceled"
+            : "orders.activity.events.exchange.created",
           {
-            exchangeId: exchange.id.slice(-7)
+            exchangeId: exchange.id.slice(-7),
           }
         ),
         timestamp: exchange.canceled_at || exchange.created_at,
@@ -320,145 +295,128 @@ export const useActivityItems = (order: ExtendedAdminOrder): Activity[] => {
         itemsToReturn: exchangeReturn?.items,
         itemsMap,
         children: (
-          <ExchangeBody
-            exchange={exchange}
-            exchangeReturn={exchangeReturn}
-          />
-        )
-      });
+          <ExchangeBody exchange={exchange} exchangeReturn={exchangeReturn} />
+        ),
+      })
     }
 
-    for (const edit of orderChanges.filter(oc => oc.change_type === 'edit')) {
-      const isConfirmed = edit.status === 'confirmed';
-      const isPending = edit.status === 'pending';
+    for (const edit of orderChanges.filter((oc) => oc.change_type === "edit")) {
+      const isConfirmed = edit.status === "confirmed"
+      const isPending = edit.status === "pending"
 
       if (isPending) {
-        continue;
+        continue
       }
 
-      const translationKey = `orders.activity.events.edit.${edit.status}` as const;
+      const translationKey = `orders.activity.events.edit.${edit.status}` as const
       items.push({
         title: t(translationKey as any, {
-          editId: edit.id.slice(-7)
+          editId: edit.id.slice(-7),
         }),
         timestamp:
-          edit.status === 'requested'
+          edit.status === "requested"
             ? edit.requested_at
-            : edit.status === 'confirmed'
+            : edit.status === "confirmed"
               ? edit.confirmed_at
-              : edit.status === 'declined'
+              : edit.status === "declined"
                 ? edit.declined_at
-                : edit.status === 'canceled'
+                : edit.status === "canceled"
                   ? edit.canceled_at
                   : edit.created_at,
-        children: isConfirmed ? <OrderEditBody edit={edit} /> : null
-      });
+        children: isConfirmed ? <OrderEditBody edit={edit} /> : null,
+      })
     }
 
-    for (const transfer of orderChanges.filter(oc => oc.change_type === 'transfer')) {
+    for (const transfer of orderChanges.filter(
+      (oc) => oc.change_type === "transfer"
+    )) {
       if (transfer.requested_at) {
         items.push({
           title: t(`orders.activity.events.transfer.requested`, {
-            transferId: transfer.id.slice(-7)
+            transferId: transfer.id.slice(-7),
           }),
           timestamp: transfer.requested_at,
-          children: <TransferOrderRequestBody transfer={transfer} />
-        });
+          children: <TransferOrderRequestBody transfer={transfer} />,
+        })
       }
 
       if (transfer.confirmed_at) {
         items.push({
           title: t(`orders.activity.events.transfer.confirmed`, {
-            transferId: transfer.id.slice(-7)
+            transferId: transfer.id.slice(-7),
           }),
-          timestamp: transfer.confirmed_at
-        });
+          timestamp: transfer.confirmed_at,
+        })
       }
       if (transfer.declined_at) {
         items.push({
           title: t(`orders.activity.events.transfer.declined`, {
-            transferId: transfer.id.slice(-7)
+            transferId: transfer.id.slice(-7),
           }),
-          timestamp: transfer.declined_at
-        });
+          timestamp: transfer.declined_at,
+        })
       }
     }
 
     for (const update of (orderChanges as ExtendedAdminOrderChange[]).filter(
-      oc => oc.change_type === 'edit'
+      (oc) => oc.change_type === "edit"
     )) {
-      const updateType = update.actions[0]?.details?.type;
+      const updateType = update.actions[0]?.details?.type
 
-      if (updateType === 'shipping_address') {
-        const oldAddress = update?.actions[0]?.details?.old as
-          | AdminOrderAddress
-          | AdminStockLocationAddress
-          | null
-          | undefined;
-        const newAddress = update?.actions[0]?.details?.new as
-          | AdminOrderAddress
-          | AdminStockLocationAddress
-          | null
-          | undefined;
-
+      if (updateType === "shipping_address") {
+        const oldAddress = update?.actions[0]?.details?.old as AdminOrderAddress | AdminStockLocationAddress | null | undefined
+        const newAddress = update?.actions[0]?.details?.new as AdminOrderAddress | AdminStockLocationAddress | null | undefined
+        
         items.push({
           title: (
             <ChangeDetailsTooltip
               title={t(`orders.activity.events.update_order.shipping_address`)}
               previous={getFormattedAddress({
-                address: oldAddress
-              }).join(', ')}
+                address: oldAddress,
+              }).join(", ")}
               next={getFormattedAddress({
-                address: newAddress
-              }).join(', ')}
+                address: newAddress,
+              }).join(", ")}
             />
           ),
           timestamp: update.created_at,
           children: update.created_by ? (
-            <div className="mt-2 flex gap-x-2 text-sm text-ui-fg-subtle">
-              {t('fields.by')} <By id={update.created_by} />
+            <div className="text-ui-fg-subtle mt-2 flex gap-x-2 text-sm">
+              {t("fields.by")} <By id={update.created_by} />
             </div>
-          ) : null
-        });
+          ) : null,
+        })
       }
 
-      if (updateType === 'billing_address') {
-        const oldAddress = update?.actions[0]?.details?.old as
-          | AdminOrderAddress
-          | AdminStockLocationAddress
-          | null
-          | undefined;
-        const newAddress = update?.actions[0]?.details?.new as
-          | AdminOrderAddress
-          | AdminStockLocationAddress
-          | null
-          | undefined;
-
+      if (updateType === "billing_address") {
+        const oldAddress = update?.actions[0]?.details?.old as AdminOrderAddress | AdminStockLocationAddress | null | undefined
+        const newAddress = update?.actions[0]?.details?.new as AdminOrderAddress | AdminStockLocationAddress | null | undefined
+        
         items.push({
           title: (
             <ChangeDetailsTooltip
               title={t(`orders.activity.events.update_order.billing_address`)}
               previous={getFormattedAddress({
-                address: oldAddress
-              }).join(', ')}
+                address: oldAddress,
+              }).join(", ")}
               next={getFormattedAddress({
-                address: newAddress
-              }).join(', ')}
+                address: newAddress,
+              }).join(", ")}
             />
           ),
           timestamp: update.created_at,
           children: update.created_by ? (
-            <div className="mt-2 flex gap-x-2 text-sm text-ui-fg-subtle">
-              {t('fields.by')} <By id={update.created_by} />
+            <div className="text-ui-fg-subtle mt-2 flex gap-x-2 text-sm">
+              {t("fields.by")} <By id={update.created_by} />
             </div>
-          ) : null
-        });
+          ) : null,
+        })
       }
 
-      if (updateType === 'email') {
-        const oldEmail = update.actions[0]?.details?.old;
-        const newEmail = update.actions[0]?.details?.new;
-
+      if (updateType === "email") {
+        const oldEmail = update.actions[0]?.details?.old
+        const newEmail = update.actions[0]?.details?.new
+        
         items.push({
           title: (
             <ChangeDetailsTooltip
@@ -469,11 +427,11 @@ export const useActivityItems = (order: ExtendedAdminOrder): Activity[] => {
           ),
           timestamp: update.created_at,
           children: update.created_by ? (
-            <div className="mt-2 flex gap-x-2 text-sm text-ui-fg-subtle">
-              {t('fields.by')} <By id={update.created_by} />
+            <div className="text-ui-fg-subtle mt-2 flex gap-x-2 text-sm">
+              {t("fields.by")} <By id={update.created_by} />
             </div>
-          ) : null
-        });
+          ) : null,
+        })
       }
     }
 
@@ -487,28 +445,35 @@ export const useActivityItems = (order: ExtendedAdminOrder): Activity[] => {
 
     if (order.canceled_at) {
       items.push({
-        title: t('orders.activity.events.canceled.title'),
-        timestamp: order.canceled_at
-      });
+        title: t("orders.activity.events.canceled.title"),
+        timestamp: order.canceled_at,
+      })
     }
 
     const sortedActivities = items.sort((a, b) => {
-      return new Date(b.timestamp!).getTime() - new Date(a.timestamp!).getTime();
-    });
+      return new Date(b.timestamp!).getTime() - new Date(a.timestamp!).getTime()
+    })
 
     const createdAt = {
-      title: t('orders.activity.events.placed.title'),
+      title: t("orders.activity.events.placed.title"),
       timestamp: order.created_at,
       children: (
-        <Text
-          size="small"
-          className="text-ui-fg-subtle"
-        >
+        <Text size="small" className="text-ui-fg-subtle">
           {getStylizedAmount(order.total, order.currency_code)}
         </Text>
-      )
-    };
+      ),
+    }
 
-    return [...sortedActivities, createdAt];
-  }, [order, payments, returns, exchanges, orderChanges, notes, isLoading, itemsMap]);
-};
+    return [...sortedActivities, createdAt]
+  }, [
+    order,
+    payments,
+    returns,
+    exchanges,
+    orderChanges,
+    notes,
+    isLoading,
+    itemsMap,
+  ])
+}
+

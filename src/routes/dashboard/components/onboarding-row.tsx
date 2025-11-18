@@ -1,26 +1,29 @@
-import { Check } from '@medusajs/icons';
-import { Button, clx, Heading } from '@medusajs/ui';
-import { Link } from 'react-router-dom';
+import { Check } from "@medusajs/icons"
+import { Button, clx, Heading } from "@medusajs/ui"
+import { Link } from "react-router-dom"
 
 export const OnboardingRow = ({
   label,
   state,
   link,
-  buttonLabel
+  buttonLabel,
 }: {
-  label: string;
-  state: boolean;
-  link: string;
-  buttonLabel: string;
+  label: string
+  state: boolean
+  link: string
+  buttonLabel: string
 }) => {
   return (
     <div className="flex justify-between py-2">
       <div className="flex items-center gap-3">
         <div
-          className={clx('flex h-6 w-6 items-center justify-center rounded-full border', {
-            'border-dashed': !state,
-            'border-current': state
-          })}
+          className={clx(
+            "border w-6 h-6 rounded-full flex items-center justify-center",
+            {
+              "border-dashed ": !state,
+              "border-current": state,
+            }
+          )}
         >
           {state && <Check />}
         </div>
@@ -30,5 +33,5 @@ export const OnboardingRow = ({
         <Button className="min-w-20">{buttonLabel}</Button>
       </Link>
     </div>
-  );
-};
+  )
+}

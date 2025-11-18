@@ -1,1 +1,1 @@
-export * from './TalkjsProvider';
+export * from "./TalkjsProvider"

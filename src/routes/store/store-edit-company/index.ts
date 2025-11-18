@@ -1,1 +1,1 @@
-export { StoreEditCompany as Component } from './store-edit-comapny';
+export { StoreEditCompany as Component } from "./store-edit-comapny"

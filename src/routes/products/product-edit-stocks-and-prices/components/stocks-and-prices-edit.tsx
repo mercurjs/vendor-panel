@@ -1,115 +1,136 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { HttpTypes } from '@medusajs/types';
-import { Button, toast } from '@medusajs/ui';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-
-import { RouteFocusModal } from '../../../../components/modals';
-import { KeyboundForm } from '../../../../components/utilities/keybound-form';
-import { useBatchInventoryItemsLocationLevels } from '../../../../hooks/api/inventory.tsx';
-import { useUpdateProductVariantsBatch } from '../../../../hooks/api/products.tsx';
-import { castNumber } from '../../../../lib/cast-number';
-import { InventoryItemWithLevels } from '../../../../types/inventory';
-import { UpdateVariantStocksSchema, UpdateVariantStocksSchemaType } from '../schema';
-import { StocksAndPricesEditForm } from './stocks-and-prices-edit-form.tsx';
+import { zodResolver } from "@hookform/resolvers/zod"
+import { HttpTypes } from "@medusajs/types"
+import { useTranslation } from "react-i18next"
+import { Button, toast } from "@medusajs/ui"
+import { castNumber } from "../../../../lib/cast-number"
+import { RouteFocusModal } from "../../../../components/modals"
+import { KeyboundForm } from "../../../../components/utilities/keybound-form"
+import { useForm } from "react-hook-form"
+import { StocksAndPricesEditForm } from "./stocks-and-prices-edit-form.tsx"
+import { useUpdateProductVariantsBatch } from "../../../../hooks/api/products.tsx"
+import { useBatchInventoryItemsLocationLevels } from "../../../../hooks/api/inventory.tsx"
+import { InventoryItemWithLevels } from "../../../../types/inventory"
+import {
+  UpdateVariantStocksSchemaType,
+  UpdateVariantStocksSchema,
+} from "../schema"
 
 type StocksAndPricesEditProps = {
-  product: any;
-  inventoryItems: InventoryItemWithLevels[];
-  stockLocations: HttpTypes.AdminStockLocation[];
-  productId: string;
-  isRefreshing?: boolean;
-  onRefresh?: () => Promise<void>;
-};
+  product: any
+  inventoryItems: InventoryItemWithLevels[]
+  stockLocations: HttpTypes.AdminStockLocation[]
+  productId: string
+  isRefreshing?: boolean
+  onRefresh?: () => Promise<void>
+}
 
 const createFormValues = (
   product: any,
   stockLocations: HttpTypes.AdminStockLocation[],
   inventoryItems: InventoryItemWithLevels[]
 ) => {
-  if (!product?.variants) return { variants: [] };
+  if (!product?.variants) return { variants: [] }
 
-  const data = product.variants.reduce((acc: any[], variant: HttpTypes.AdminProductVariant) => {
-    const prices =
-      variant.prices?.reduce((acc: Record<string, number>, price) => {
-        acc[price.currency_code] = price.amount;
-        return acc;
-      }, {}) || {};
+  const data = product.variants.reduce(
+    (acc: any[], variant: HttpTypes.AdminProductVariant) => {
+      const prices =
+        variant.prices?.reduce((acc: Record<string, number>, price) => {
+          acc[price.currency_code] = price.amount
+          return acc
+        }, {}) || {}
 
-    const locations =
-      stockLocations?.map(location => {
-        const value = inventoryItems
-          ?.find(item => item.inventory_item_id === variant.inventory_items?.[0]?.inventory_item_id)
-          ?.location_levels?.find(level => level.location_id === location.id);
+      const locations =
+        stockLocations?.map((location) => {
+          const value = inventoryItems
+            ?.find(
+              (item) =>
+                item.inventory_item_id ===
+                variant.inventory_items?.[0]?.inventory_item_id
+            )
+            ?.location_levels?.find(
+              (level) => level.location_id === location.id
+            )
 
-        return {
-          id: location.id,
-          level_id: value?.id,
-          quantity: typeof value?.stocked_quantity === 'number' ? value.stocked_quantity : null,
-          checked: !!value,
-          disabledToggle: false
-        };
-      }) || [];
+          return {
+            id: location.id,
+            level_id: value?.id,
+            quantity:
+              typeof value?.stocked_quantity === "number"
+                ? value.stocked_quantity
+                : null,
+            checked: !!value,
+            disabledToggle: false,
+          }
+        }) || []
 
-    const data = {
-      id: variant.id,
-      title: variant.title,
-      inventory_item_id: variant.inventory_items?.[0]?.inventory_item_id,
-      prices,
-      locations
-    };
-    acc.push(data);
-    return acc;
-  }, []);
-  return { variants: data };
-};
-const getPricesPayload = (variants: UpdateVariantStocksSchemaType['variants']) => {
+      const data = {
+        id: variant.id,
+        title: variant.title,
+        inventory_item_id: variant.inventory_items?.[0]?.inventory_item_id,
+        prices,
+        locations,
+      }
+      acc.push(data)
+      return acc
+    },
+    []
+  )
+  return { variants: data }
+}
+const getPricesPayload = (
+  variants: UpdateVariantStocksSchemaType["variants"]
+) => {
   return variants
-    .filter(variant => Object.keys(variant.prices || {}).length)
-    .map(variant => {
+    .filter((variant) => Object.keys(variant.prices || {}).length)
+    .map((variant) => {
       const prices = Object.entries(variant.prices || {})
-        .filter(([_, amount]) => amount !== null && amount !== undefined && amount !== '')
+        .filter(
+          ([_, amount]) =>
+            amount !== null && amount !== undefined && amount !== ""
+        )
         .map(([currency_code, amount]) => ({
           currency_code,
-          amount: typeof amount === 'string' ? parseFloat(amount) : amount
-        }));
+          amount: typeof amount === "string" ? parseFloat(amount) : amount,
+        }))
 
       return {
         id: variant.id,
-        prices
-      };
-    });
-};
+        prices,
+      }
+    })
+}
 
-const getInventoryLocationLevelsPayload = (variants: UpdateVariantStocksSchemaType['variants']) => {
+const getInventoryLocationLevelsPayload = (
+  variants: UpdateVariantStocksSchemaType["variants"]
+) => {
   const payload: HttpTypes.AdminBatchInventoryItemsLocationLevels = {
     create: [],
     update: [],
     delete: [],
-    force: true
-  };
+    force: true,
+  }
 
-  variants.forEach(variant => {
+  variants.forEach((variant) => {
     variant.locations?.forEach(({ checked, level_id, quantity, id }) => {
       if (!level_id && checked) {
         payload.create.push({
           inventory_item_id: variant.inventory_item_id as string,
           location_id: id,
-          stocked_quantity: quantity ? castNumber(quantity) : 0
-        });
+          stocked_quantity: quantity ? castNumber(quantity) : 0,
+        })
       } else if (level_id && !checked) {
-        payload.delete.push(level_id);
+        payload.delete.push(level_id)
       } else if (level_id && checked) {
         payload.update.push({
           inventory_item_id: variant.inventory_item_id as string,
           location_id: id,
-          stocked_quantity: quantity ? castNumber(quantity) : 0
-        });
+          stocked_quantity: quantity ? castNumber(quantity) : 0,
+        })
       }
-    });
-  });
-  return payload;
-};
+    })
+  })
+  return payload
+}
 
 export const StocksAndPricesEdit = ({
   product,
@@ -117,54 +138,54 @@ export const StocksAndPricesEdit = ({
   stockLocations,
   productId,
   isRefreshing,
-  onRefresh
+  onRefresh,
 }: StocksAndPricesEditProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   const form = useForm<UpdateVariantStocksSchemaType>({
     defaultValues: createFormValues(product, stockLocations, inventoryItems),
-    resolver: zodResolver(UpdateVariantStocksSchema, {})
-  });
+    resolver: zodResolver(UpdateVariantStocksSchema, {}),
+  })
 
-  const updateVariantsBatch = useUpdateProductVariantsBatch(productId);
-  const updateInventoryLocationLevels = useBatchInventoryItemsLocationLevels();
+  const updateVariantsBatch = useUpdateProductVariantsBatch(productId)
+  const updateInventoryLocationLevels = useBatchInventoryItemsLocationLevels()
 
-  const handleSave = form.handleSubmit(async data => {
+  const handleSave = form.handleSubmit(async (data) => {
     try {
-      const pricesPayload = getPricesPayload(data.variants);
-      const inventoryPayload = getInventoryLocationLevelsPayload(data.variants);
+      const pricesPayload = getPricesPayload(data.variants)
+      const inventoryPayload = getInventoryLocationLevelsPayload(data.variants)
 
       const promises = [
         updateVariantsBatch.mutateAsync(pricesPayload),
-        updateInventoryLocationLevels.mutateAsync(inventoryPayload)
-      ];
+        updateInventoryLocationLevels.mutateAsync(inventoryPayload),
+      ]
 
-      await Promise.all(promises);
+      await Promise.all(promises)
 
-      toast.success(t('products.variants.editStocksAndPrices.successToast'));
+      toast.success(t("products.variants.editStocksAndPrices.successToast"))
 
-      await onRefresh?.();
+      await onRefresh?.()
     } catch (error) {
       if (error instanceof Error) {
-        toast.error(error.message);
+        toast.error(error.message)
       }
     }
-  });
+  })
 
-  const isLoading = updateVariantsBatch.isPending || updateInventoryLocationLevels.isPending;
+  const isLoading =
+    updateVariantsBatch.isPending || updateInventoryLocationLevels.isPending
 
   return (
     <RouteFocusModal.Form form={form}>
-      <KeyboundForm
-        onSubmit={handleSave}
-        className="flex size-full flex-col"
-      >
+      <KeyboundForm onSubmit={handleSave} className="flex size-full flex-col">
         <RouteFocusModal.Header>
           <RouteFocusModal.Title asChild>
-            <span className="sr-only">{t('products.variants.editStocksAndPrices.header')}</span>
+            <span className="sr-only">
+              {t("products.variants.editStocksAndPrices.header")}
+            </span>
           </RouteFocusModal.Title>
           <RouteFocusModal.Description asChild>
             <span className="sr-only">
-              {t('products.variants.editStocksAndPrices.description')}
+              {t("products.variants.editStocksAndPrices.description")}
             </span>
           </RouteFocusModal.Description>
         </RouteFocusModal.Header>
@@ -181,11 +202,8 @@ export const StocksAndPricesEdit = ({
         <RouteFocusModal.Footer>
           <div className="flex w-full items-center justify-end gap-x-2">
             <RouteFocusModal.Close asChild>
-              <Button
-                variant="secondary"
-                size="small"
-              >
-                {t('actions.cancel')}
+              <Button variant="secondary" size="small">
+                {t("actions.cancel")}
               </Button>
             </RouteFocusModal.Close>
             <Button
@@ -194,11 +212,11 @@ export const StocksAndPricesEdit = ({
               size="small"
               isLoading={isLoading}
             >
-              {t('actions.save')}
+              {t("actions.save")}
             </Button>
           </div>
         </RouteFocusModal.Footer>
       </KeyboundForm>
     </RouteFocusModal.Form>
-  );
-};
+  )
+}

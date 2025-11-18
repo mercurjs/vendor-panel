@@ -1,32 +1,34 @@
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next"
 
-import { ExtendedAdminProductVariant } from '../../../../../types/products';
-import { PlaceholderCell } from '../../common/placeholder-cell';
+import { PlaceholderCell } from "../../common/placeholder-cell"
+import { ExtendedAdminProductVariant } from "../../../../../types/products"
 
 type VariantCellProps = {
-  variants?: ExtendedAdminProductVariant[] | null;
-};
+  variants?: ExtendedAdminProductVariant[] | null
+}
 
 export const VariantCell = ({ variants }: VariantCellProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   if (!variants || !variants.length) {
-    return <PlaceholderCell />;
+    return <PlaceholderCell />
   }
 
   return (
     <div className="flex h-full w-full items-center overflow-hidden">
-      <span className="truncate">{t('products.variantCount', { count: variants.length })}</span>
+      <span className="truncate">
+        {t("products.variantCount", { count: variants.length })}
+      </span>
     </div>
-  );
-};
+  )
+}
 
 export const VariantHeader = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   return (
     <div className="flex h-full w-full items-center">
-      <span>{t('fields.variants')}</span>
+      <span>{t("fields.variants")}</span>
     </div>
-  );
-};
+  )
+}

@@ -1,124 +1,132 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Button, clx } from "@medusajs/ui"
+import { Popover as RadixPopover } from "radix-ui"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useSearchParams } from "react-router-dom"
 
-import { Button, clx } from '@medusajs/ui';
-import { Popover as RadixPopover } from 'radix-ui';
-import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
-
-import { DataTableFilterContext, useDataTableFilterContext } from './context';
-import { DateFilter } from './date-filter';
-import { NumberFilter } from './number-filter';
-import { SelectFilter } from './select-filter';
-import { StringFilter } from './string-filter';
+import { useTranslation } from "react-i18next"
+import { DataTableFilterContext, useDataTableFilterContext } from "./context"
+import { DateFilter } from "./date-filter"
+import { NumberFilter } from "./number-filter"
+import { SelectFilter } from "./select-filter"
+import { StringFilter } from "./string-filter"
 
 type Option = {
-  label: string;
-  value: unknown;
-};
+  label: string
+  value: unknown
+}
 
 export type Filter = {
-  key: string;
-  label: string;
+  key: string
+  label: string
 } & (
   | {
-      type: 'select';
-      options: Option[];
-      multiple?: boolean;
-      searchable?: boolean;
+      type: "select"
+      options: Option[]
+      multiple?: boolean
+      searchable?: boolean
     }
   | {
-      type: 'date';
-      options?: never;
+      type: "date"
+      options?: never
     }
   | {
-      type: 'string';
-      options?: never;
+      type: "string"
+      options?: never
     }
   | {
-      type: 'number';
-      options?: never;
+      type: "number"
+      options?: never
     }
-);
+)
 
 type DataTableFilterProps = {
-  filters: Filter[];
-  readonly?: boolean;
-  prefix?: string;
-};
+  filters: Filter[]
+  readonly?: boolean
+  prefix?: string
+}
 
-export const DataTableFilter = ({ filters, readonly, prefix }: DataTableFilterProps) => {
-  const { t } = useTranslation();
-  const [searchParams] = useSearchParams();
-  const [open, setOpen] = useState(false);
+export const DataTableFilter = ({
+  filters,
+  readonly,
+  prefix,
+}: DataTableFilterProps) => {
+  const { t } = useTranslation()
+  const [searchParams] = useSearchParams()
+  const [open, setOpen] = useState(false)
 
   const [activeFilters, setActiveFilters] = useState(
     getInitialFilters({ searchParams, filters, prefix })
-  );
+  )
 
-  const availableFilters = filters.filter(f => !activeFilters.find(af => af.key === f.key));
+  const availableFilters = filters.filter(
+    (f) => !activeFilters.find((af) => af.key === f.key)
+  )
 
   /**
    * If there are any filters in the URL that are not in the active filters,
    * add them to the active filters. This ensures that we display the filters
    * if a user navigates to a page with filters in the URL.
    */
-  const initialMount = useRef(true);
+  const initialMount = useRef(true)
 
   useEffect(() => {
     if (initialMount.current) {
-      const params = new URLSearchParams(searchParams);
+      const params = new URLSearchParams(searchParams)
 
-      filters.forEach(filter => {
-        const key = prefix ? `${prefix}_${filter.key}` : filter.key;
-        const value = params.get(key);
-        if (value && !activeFilters.find(af => af.key === filter.key)) {
-          if (filter.type === 'select') {
-            setActiveFilters(prev => [
+      filters.forEach((filter) => {
+        const key = prefix ? `${prefix}_${filter.key}` : filter.key
+        const value = params.get(key)
+        if (value && !activeFilters.find((af) => af.key === filter.key)) {
+          if (filter.type === "select") {
+            setActiveFilters((prev) => [
               ...prev,
               {
                 ...filter,
                 multiple: filter.multiple,
                 options: filter.options,
-                openOnMount: false
-              }
-            ]);
+                openOnMount: false,
+              },
+            ])
           } else {
-            setActiveFilters(prev => [...prev, { ...filter, openOnMount: false }]);
+            setActiveFilters((prev) => [
+              ...prev,
+              { ...filter, openOnMount: false },
+            ])
           }
         }
-      });
+      })
     }
 
-    initialMount.current = false;
-  }, [activeFilters, filters, prefix, searchParams]);
+    initialMount.current = false
+  }, [activeFilters, filters, prefix, searchParams])
 
   const addFilter = (filter: Filter) => {
-    setOpen(false);
-    setActiveFilters(prev => [...prev, { ...filter, openOnMount: true }]);
-  };
+    setOpen(false)
+    setActiveFilters((prev) => [...prev, { ...filter, openOnMount: true }])
+  }
 
   const removeFilter = useCallback((key: string) => {
-    setActiveFilters(prev => prev.filter(f => f.key !== key));
-  }, []);
+    setActiveFilters((prev) => prev.filter((f) => f.key !== key))
+  }, [])
 
   const removeAllFilters = useCallback(() => {
-    setActiveFilters([]);
-  }, []);
+    setActiveFilters([])
+  }, [])
 
   return (
     <DataTableFilterContext.Provider
       value={useMemo(
         () => ({
           removeFilter,
-          removeAllFilters
+          removeAllFilters,
         }),
         [removeAllFilters, removeFilter]
       )}
     >
       <div className="max-w-2/3 flex flex-wrap items-center gap-2">
-        {activeFilters.map(filter => {
+        {activeFilters.map((filter) => {
           switch (filter.type) {
-            case 'select':
+            case "select":
               return (
                 <SelectFilter
                   key={filter.key}
@@ -130,8 +138,8 @@ export const DataTableFilter = ({ filters, readonly, prefix }: DataTableFilterPr
                   searchable={filter.searchable}
                   openOnMount={filter.openOnMount}
                 />
-              );
-            case 'date':
+              )
+            case "date":
               return (
                 <DateFilter
                   key={filter.key}
@@ -140,8 +148,8 @@ export const DataTableFilter = ({ filters, readonly, prefix }: DataTableFilterPr
                   readonly={readonly}
                   openOnMount={filter.openOnMount}
                 />
-              );
-            case 'string':
+              )
+            case "string":
               return (
                 <StringFilter
                   key={filter.key}
@@ -150,8 +158,8 @@ export const DataTableFilter = ({ filters, readonly, prefix }: DataTableFilterPr
                   readonly={readonly}
                   openOnMount={filter.openOnMount}
                 />
-              );
-            case 'number':
+              )
+            case "number":
               return (
                 <NumberFilter
                   key={filter.key}
@@ -160,140 +168,129 @@ export const DataTableFilter = ({ filters, readonly, prefix }: DataTableFilterPr
                   readonly={readonly}
                   openOnMount={filter.openOnMount}
                 />
-              );
+              )
             default:
-              break;
+              break
           }
         })}
         {!readonly && availableFilters.length > 0 && (
-          <RadixPopover.Root
-            modal
-            open={open}
-            onOpenChange={setOpen}
-          >
-            <RadixPopover.Trigger
-              asChild
-              id="filters_menu_trigger"
-            >
-              <Button
-                size="small"
-                variant="secondary"
-              >
-                {t('filters.addFilter')}
+          <RadixPopover.Root modal open={open} onOpenChange={setOpen}>
+            <RadixPopover.Trigger asChild id="filters_menu_trigger">
+              <Button size="small" variant="secondary">
+                {t("filters.addFilter")}
               </Button>
             </RadixPopover.Trigger>
             <RadixPopover.Portal>
               <RadixPopover.Content
                 className={clx(
-                  'z-[1] h-full max-h-[200px] w-[300px] overflow-auto rounded-lg bg-ui-bg-base p-1 text-ui-fg-base shadow-elevation-flyout outline-none'
+                  "bg-ui-bg-base text-ui-fg-base shadow-elevation-flyout z-[1] h-full max-h-[200px] w-[300px] overflow-auto rounded-lg p-1 outline-none"
                 )}
                 data-name="filters_menu_content"
                 align="start"
                 sideOffset={8}
                 collisionPadding={8}
-                onCloseAutoFocus={e => {
-                  const hasOpenFilter = activeFilters.find(filter => filter.openOnMount);
+                onCloseAutoFocus={(e) => {
+                  const hasOpenFilter = activeFilters.find(
+                    (filter) => filter.openOnMount
+                  )
 
                   if (hasOpenFilter) {
-                    e.preventDefault();
+                    e.preventDefault()
                   }
                 }}
               >
-                {availableFilters.map(filter => {
+                {availableFilters.map((filter) => {
                   return (
                     <div
-                      className="txt-compact-small relative flex cursor-pointer select-none items-center rounded-md bg-ui-bg-base px-2 py-1.5 text-ui-fg-base outline-none transition-colors hover:bg-ui-bg-base-hover focus-visible:bg-ui-bg-base-pressed data-[disabled]:pointer-events-none data-[disabled]:text-ui-fg-disabled"
+                      className="bg-ui-bg-base hover:bg-ui-bg-base-hover focus-visible:bg-ui-bg-base-pressed text-ui-fg-base data-[disabled]:text-ui-fg-disabled txt-compact-small relative flex cursor-pointer select-none items-center rounded-md px-2 py-1.5 outline-none transition-colors data-[disabled]:pointer-events-none"
                       role="menuitem"
                       key={filter.key}
                       onClick={() => {
-                        addFilter(filter);
+                        addFilter(filter)
                       }}
                     >
                       {filter.label}
                     </div>
-                  );
+                  )
                 })}
               </RadixPopover.Content>
             </RadixPopover.Portal>
           </RadixPopover.Root>
         )}
         {!readonly && activeFilters.length > 0 && (
-          <ClearAllFilters
-            filters={filters}
-            prefix={prefix}
-          />
+          <ClearAllFilters filters={filters} prefix={prefix} />
         )}
       </div>
     </DataTableFilterContext.Provider>
-  );
-};
+  )
+}
 
 type ClearAllFiltersProps = {
-  filters: Filter[];
-  prefix?: string;
-};
+  filters: Filter[]
+  prefix?: string
+}
 
 const ClearAllFilters = ({ filters, prefix }: ClearAllFiltersProps) => {
-  const { removeAllFilters } = useDataTableFilterContext();
-  const [_, setSearchParams] = useSearchParams();
+  const { removeAllFilters } = useDataTableFilterContext()
+  const [_, setSearchParams] = useSearchParams()
 
   const handleRemoveAll = () => {
-    setSearchParams(prev => {
-      const newValues = new URLSearchParams(prev);
+    setSearchParams((prev) => {
+      const newValues = new URLSearchParams(prev)
 
-      filters.forEach(filter => {
-        newValues.delete(prefix ? `${prefix}_${filter.key}` : filter.key);
-      });
+      filters.forEach((filter) => {
+        newValues.delete(prefix ? `${prefix}_${filter.key}` : filter.key)
+      })
 
-      return newValues;
-    });
+      return newValues
+    })
 
-    removeAllFilters();
-  };
+    removeAllFilters()
+  }
 
   return (
     <button
       type="button"
       onClick={handleRemoveAll}
       className={clx(
-        'txt-compact-small-plus rounded-md px-2 py-1 text-ui-fg-muted transition-fg',
-        'hover:text-ui-fg-subtle',
-        'focus-visible:shadow-borders-focus'
+        "text-ui-fg-muted transition-fg txt-compact-small-plus rounded-md px-2 py-1",
+        "hover:text-ui-fg-subtle",
+        "focus-visible:shadow-borders-focus"
       )}
     >
       Clear all
     </button>
-  );
-};
+  )
+}
 
 const getInitialFilters = ({
   searchParams,
   filters,
-  prefix
+  prefix,
 }: {
-  searchParams: URLSearchParams;
-  filters: Filter[];
-  prefix?: string;
+  searchParams: URLSearchParams
+  filters: Filter[]
+  prefix?: string
 }) => {
-  const params = new URLSearchParams(searchParams);
-  const activeFilters: (Filter & { openOnMount: boolean })[] = [];
+  const params = new URLSearchParams(searchParams)
+  const activeFilters: (Filter & { openOnMount: boolean })[] = []
 
-  filters.forEach(filter => {
-    const key = prefix ? `${prefix}_${filter.key}` : filter.key;
-    const value = params.get(key);
+  filters.forEach((filter) => {
+    const key = prefix ? `${prefix}_${filter.key}` : filter.key
+    const value = params.get(key)
     if (value) {
-      if (filter.type === 'select') {
+      if (filter.type === "select") {
         activeFilters.push({
           ...filter,
           multiple: filter.multiple,
           options: filter.options,
-          openOnMount: false
-        });
+          openOnMount: false,
+        })
       } else {
-        activeFilters.push({ ...filter, openOnMount: false });
+        activeFilters.push({ ...filter, openOnMount: false })
       }
     }
-  });
+  })
 
-  return activeFilters;
-};
+  return activeFilters
+}

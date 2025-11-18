@@ -1,22 +1,22 @@
-import { LoaderFunctionArgs } from 'react-router-dom';
+import { LoaderFunctionArgs } from "react-router-dom"
 
-import { ordersQueryKeys } from '../../../hooks/api/orders';
-import { fetchQuery } from '../../../lib/client';
-import { queryClient } from '../../../lib/query-client';
-import { DEFAULT_FIELDS } from './constants';
+import { ordersQueryKeys } from "../../../hooks/api/orders"
+import { fetchQuery } from "../../../lib/client"
+import { queryClient } from "../../../lib/query-client"
+import { DEFAULT_FIELDS } from "./constants"
 
 const orderDetailQuery = (id: string) => ({
   queryKey: ordersQueryKeys.detail(id),
   queryFn: async () =>
     fetchQuery(`/vendor/orders/${id}`, {
-      method: 'GET',
-      query: { fields: DEFAULT_FIELDS }
-    })
-});
+      method: "GET",
+      query: { fields: DEFAULT_FIELDS },
+    }),
+})
 
 export const orderLoader = async ({ params }: LoaderFunctionArgs) => {
-  const id = params.id;
-  const query = orderDetailQuery(id!);
+  const id = params.id
+  const query = orderDetailQuery(id!)
 
-  return queryClient.ensureQueryData(query);
-};
+  return queryClient.ensureQueryData(query)
+}

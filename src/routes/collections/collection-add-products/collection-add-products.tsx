@@ -1,15 +1,15 @@
-import { useParams } from 'react-router-dom';
+import { useParams } from "react-router-dom"
 
-import { RouteFocusModal } from '../../../components/modals';
-import { useCollection } from '../../../hooks/api/collections';
-import { AddProductsToCollectionForm } from './components/add-products-to-collection-form';
+import { RouteFocusModal } from "../../../components/modals"
+import { useCollection } from "../../../hooks/api/collections"
+import { AddProductsToCollectionForm } from "./components/add-products-to-collection-form"
 
 export const CollectionAddProducts = () => {
-  const { id } = useParams();
-  const { product_collection, isLoading, isError, error } = useCollection(id!);
+  const { id } = useParams()
+  const { product_collection, isLoading, isError, error } = useCollection(id!)
 
   if (isError) {
-    throw error;
+    throw error
   }
 
   return (
@@ -18,5 +18,5 @@ export const CollectionAddProducts = () => {
         <AddProductsToCollectionForm collection={product_collection} />
       )}
     </RouteFocusModal>
-  );
-};
+  )
+}

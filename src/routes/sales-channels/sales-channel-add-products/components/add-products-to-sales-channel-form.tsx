@@ -1,118 +1,122 @@
-import { useMemo, useState } from 'react';
-
-import { zodResolver } from '@hookform/resolvers/zod';
-import { SalesChannelDTO } from '@medusajs/types';
-import { Button, Checkbox, Hint, toast, Tooltip } from '@medusajs/ui';
-import { keepPreviousData } from '@tanstack/react-query';
-import { createColumnHelper, OnChangeFn, RowSelectionState } from '@tanstack/react-table';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import * as zod from 'zod';
-
-import { RouteFocusModal, useRouteModal } from '../../../../components/modals';
-import { _DataTable } from '../../../../components/table/data-table';
-import { KeyboundForm } from '../../../../components/utilities/keybound-form';
-import { useProducts } from '../../../../hooks/api/products';
-import { useSalesChannelAddProducts } from '../../../../hooks/api/sales-channels';
-import { useProductTableColumns } from '../../../../hooks/table/columns/use-product-table-columns';
-import { useProductTableFilters } from '../../../../hooks/table/filters/use-product-table-filters';
-import { useProductTableQuery } from '../../../../hooks/table/query/use-product-table-query';
-import { useDataTable } from '../../../../hooks/use-data-table';
-import { ExtendedAdminProduct } from '../../../../types/products';
+import { zodResolver } from "@hookform/resolvers/zod"
+import { SalesChannelDTO } from "@medusajs/types"
+import { Button, Checkbox, Hint, Tooltip, toast } from "@medusajs/ui"
+import { keepPreviousData } from "@tanstack/react-query"
+import {
+  OnChangeFn,
+  RowSelectionState,
+  createColumnHelper,
+} from "@tanstack/react-table"
+import { useMemo, useState } from "react"
+import { useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import * as zod from "zod"
+import { RouteFocusModal, useRouteModal } from "../../../../components/modals"
+import { _DataTable } from "../../../../components/table/data-table"
+import { KeyboundForm } from "../../../../components/utilities/keybound-form"
+import { useProducts } from "../../../../hooks/api/products"
+import { useSalesChannelAddProducts } from "../../../../hooks/api/sales-channels"
+import { useProductTableColumns } from "../../../../hooks/table/columns/use-product-table-columns"
+import { useProductTableFilters } from "../../../../hooks/table/filters/use-product-table-filters"
+import { useProductTableQuery } from "../../../../hooks/table/query/use-product-table-query"
+import { useDataTable } from "../../../../hooks/use-data-table"
+import { ExtendedAdminProduct } from "../../../../types/products"
 
 type AddProductsToSalesChannelFormProps = {
-  salesChannel: SalesChannelDTO;
-};
+  salesChannel: SalesChannelDTO
+}
 
 const AddProductsToSalesChannelSchema = zod.object({
-  product_ids: zod.array(zod.string()).min(1)
-});
+  product_ids: zod.array(zod.string()).min(1),
+})
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 50
 
 export const AddProductsToSalesChannelForm = ({
-  salesChannel
+  salesChannel,
 }: AddProductsToSalesChannelFormProps) => {
-  const { t } = useTranslation();
-  const { handleSuccess } = useRouteModal();
+  const { t } = useTranslation()
+  const { handleSuccess } = useRouteModal()
 
   const form = useForm<zod.infer<typeof AddProductsToSalesChannelSchema>>({
     defaultValues: {
-      product_ids: []
+      product_ids: [],
     },
-    resolver: zodResolver(AddProductsToSalesChannelSchema)
-  });
+    resolver: zodResolver(AddProductsToSalesChannelSchema),
+  })
 
-  const { setValue } = form;
+  const { setValue } = form
 
-  const { mutateAsync, isPending } = useSalesChannelAddProducts(salesChannel.id);
+  const { mutateAsync, isPending } = useSalesChannelAddProducts(salesChannel.id)
 
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
-  const updater: OnChangeFn<RowSelectionState> = fn => {
-    const state = typeof fn === 'function' ? fn(rowSelection) : fn;
+  const updater: OnChangeFn<RowSelectionState> = (fn) => {
+    const state = typeof fn === "function" ? fn(rowSelection) : fn
 
-    const ids = Object.keys(state);
+    const ids = Object.keys(state)
 
-    setValue('product_ids', ids, {
+    setValue("product_ids", ids, {
       shouldDirty: true,
-      shouldTouch: true
-    });
+      shouldTouch: true,
+    })
 
-    setRowSelection(state);
-  };
+    setRowSelection(state)
+  }
 
-  const { searchParams, raw } = useProductTableQuery({ pageSize: PAGE_SIZE });
+  const { searchParams, raw } = useProductTableQuery({ pageSize: PAGE_SIZE })
   const {
     products,
     count,
     isPending: isLoading,
     isError,
-    error
+    error,
   } = useProducts(
     {
-      fields: '*variants,*sales_channels',
-      ...searchParams
+      fields: "*variants,*sales_channels",
+      ...searchParams,
     },
     {
-      placeholderData: keepPreviousData
+      placeholderData: keepPreviousData,
     }
-  );
+  )
 
-  const columns = useColumns();
-  const filters = useProductTableFilters(['sales_channel_id']);
+  const columns = useColumns()
+  const filters = useProductTableFilters(["sales_channel_id"])
 
   const { table } = useDataTable({
     data: products ?? [],
     columns,
-    enableRowSelection: row => {
-      return !row.original.sales_channels?.map(sc => sc.id).includes(salesChannel.id);
+    enableRowSelection: (row) => {
+      return !row.original.sales_channels
+        ?.map((sc) => sc.id)
+        .includes(salesChannel.id)
     },
     enablePagination: true,
-    getRowId: row => row.id,
+    getRowId: (row) => row.id,
     pageSize: PAGE_SIZE,
     count,
     rowSelection: {
       state: rowSelection,
-      updater
+      updater,
     },
     meta: {
-      salesChannelId: salesChannel.id
-    }
-  });
+      salesChannelId: salesChannel.id,
+    },
+  })
 
-  const handleSubmit = form.handleSubmit(async values => {
+  const handleSubmit = form.handleSubmit(async (values) => {
     await mutateAsync(values.product_ids, {
       onSuccess: () => {
-        toast.success(t('salesChannels.toast.update'));
-        handleSuccess();
+        toast.success(t("salesChannels.toast.update"))
+        handleSuccess()
       },
-      onError: error => toast.error(error.message)
-    });
-  });
+      onError: (error) => toast.error(error.message),
+    })
+  })
 
   if (isError) {
-    throw error;
+    throw error
   }
 
   return (
@@ -124,7 +128,9 @@ export const AddProductsToSalesChannelForm = ({
         <RouteFocusModal.Header>
           <div className="flex items-center justify-end gap-x-2">
             {form.formState.errors.product_ids && (
-              <Hint variant="error">{form.formState.errors.product_ids.message}</Hint>
+              <Hint variant="error">
+                {form.formState.errors.product_ids.message}
+              </Hint>
             )}
           </div>
         </RouteFocusModal.Header>
@@ -137,102 +143,99 @@ export const AddProductsToSalesChannelForm = ({
             isLoading={isLoading}
             filters={filters}
             orderBy={[
-              { key: 'title', label: t('fields.title') },
-              { key: 'status', label: t('fields.status') },
-              { key: 'created_at', label: t('fields.createdAt') },
-              { key: 'updated_at', label: t('fields.updatedAt') }
+              { key: "title", label: t("fields.title") },
+              { key: "status", label: t("fields.status") },
+              { key: "created_at", label: t("fields.createdAt") },
+              { key: "updated_at", label: t("fields.updatedAt") },
             ]}
             queryObject={raw}
             layout="fill"
             pagination
             search="autofocus"
             noRecords={{
-              message: t('salesChannels.products.add.list.noRecordsMessage')
+              message: t("salesChannels.products.add.list.noRecordsMessage"),
             }}
           />
         </RouteFocusModal.Body>
         <RouteFocusModal.Footer>
           <div className="flex items-center justify-end gap-x-2">
             <RouteFocusModal.Close asChild>
-              <Button
-                size="small"
-                variant="secondary"
-              >
-                {t('actions.cancel')}
+              <Button size="small" variant="secondary">
+                {t("actions.cancel")}
               </Button>
             </RouteFocusModal.Close>
-            <Button
-              size="small"
-              type="submit"
-              isLoading={isPending}
-            >
-              {t('actions.save')}
+            <Button size="small" type="submit" isLoading={isPending}>
+              {t("actions.save")}
             </Button>
           </div>
         </RouteFocusModal.Footer>
       </KeyboundForm>
     </RouteFocusModal.Form>
-  );
-};
+  )
+}
 
-const columnHelper = createColumnHelper<ExtendedAdminProduct>();
+const columnHelper = createColumnHelper<ExtendedAdminProduct>()
 
 const useColumns = () => {
-  const base = useProductTableColumns();
-  const { t } = useTranslation();
+  const base = useProductTableColumns()
+  const { t } = useTranslation()
 
   return useMemo(
     () => [
       columnHelper.display({
-        id: 'select',
+        id: "select",
         header: ({ table }) => {
           return (
             <Checkbox
               checked={
                 table.getIsSomePageRowsSelected()
-                  ? 'indeterminate'
+                  ? "indeterminate"
                   : table.getIsAllPageRowsSelected()
               }
-              onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
+              onCheckedChange={(value) =>
+                table.toggleAllPageRowsSelected(!!value)
+              }
             />
-          );
+          )
         },
         cell: ({ row, table }) => {
           const { salesChannelId } = table.options.meta as {
-            salesChannelId: string;
-          };
+            salesChannelId: string
+          }
 
-          const isAdded = row.original.sales_channels?.map(sc => sc.id).includes(salesChannelId);
+          const isAdded = row.original.sales_channels
+            ?.map((sc) => sc.id)
+            .includes(salesChannelId)
 
-          const isSelected = row.getIsSelected() || isAdded;
+          const isSelected = row.getIsSelected() || isAdded
 
           const Component = (
             <Checkbox
               checked={isSelected}
               disabled={isAdded}
-              onCheckedChange={value => row.toggleSelected(!!value)}
-              onClick={e => {
-                e.stopPropagation();
+              onCheckedChange={(value) => row.toggleSelected(!!value)}
+              onClick={(e) => {
+                e.stopPropagation()
               }}
             />
-          );
+          )
 
           if (isAdded) {
             return (
               <Tooltip
-                content={t('salesChannels.productAlreadyAdded')}
+                content={t("salesChannels.productAlreadyAdded")}
                 side="right"
               >
                 {Component}
               </Tooltip>
-            );
+            )
           }
 
-          return Component;
-        }
+          return Component
+        },
       }),
-      ...base
+      ...base,
     ],
     [t, base]
-  );
-};
+  )
+}

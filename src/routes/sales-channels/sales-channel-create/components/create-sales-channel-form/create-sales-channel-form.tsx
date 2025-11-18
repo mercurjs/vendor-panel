@@ -1,50 +1,61 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Heading, Input, Switch, Text, Textarea, toast } from '@medusajs/ui';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import * as zod from 'zod';
+import { zodResolver } from "@hookform/resolvers/zod"
+import {
+  Button,
+  Heading,
+  Input,
+  Switch,
+  Text,
+  Textarea,
+  toast,
+} from "@medusajs/ui"
+import { useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import * as zod from "zod"
 
-import { Form } from '../../../../../components/common/form';
-import { RouteFocusModal, useRouteModal } from '../../../../../components/modals';
-import { KeyboundForm } from '../../../../../components/utilities/keybound-form';
-import { useCreateSalesChannel } from '../../../../../hooks/api/sales-channels';
+import { Form } from "../../../../../components/common/form"
+import {
+  RouteFocusModal,
+  useRouteModal,
+} from "../../../../../components/modals"
+import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
+import { useCreateSalesChannel } from "../../../../../hooks/api/sales-channels"
 
 const CreateSalesChannelSchema = zod.object({
   name: zod.string().min(1),
   description: zod.string().min(1),
-  enabled: zod.boolean()
-});
+  enabled: zod.boolean(),
+})
 
 export const CreateSalesChannelForm = () => {
-  const { t } = useTranslation();
-  const { handleSuccess } = useRouteModal();
+  const { t } = useTranslation()
+  const { handleSuccess } = useRouteModal()
 
   const form = useForm<zod.infer<typeof CreateSalesChannelSchema>>({
     defaultValues: {
-      name: '',
-      description: '',
-      enabled: true
+      name: "",
+      description: "",
+      enabled: true,
     },
-    resolver: zodResolver(CreateSalesChannelSchema)
-  });
-  const { mutateAsync, isPending } = useCreateSalesChannel();
+    resolver: zodResolver(CreateSalesChannelSchema),
+  })
+  const { mutateAsync, isPending } = useCreateSalesChannel()
 
-  const handleSubmit = form.handleSubmit(async values => {
+  const handleSubmit = form.handleSubmit(async (values) => {
     await mutateAsync(
       {
         name: values.name,
         description: values.description,
-        is_disabled: !values.enabled
+        is_disabled: !values.enabled,
       },
       {
         onSuccess: ({ sales_channel }) => {
-          toast.success(t('salesChannels.toast.create'));
-          handleSuccess(`../${sales_channel.id}`);
+          toast.success(t("salesChannels.toast.create"))
+          handleSuccess(`../${sales_channel.id}`)
         },
-        onError: error => toast.error(error.message)
+        onError: (error) => toast.error(error.message),
       }
-    );
-  });
+    )
+  })
 
   return (
     <RouteFocusModal.Form form={form}>
@@ -57,12 +68,11 @@ export const CreateSalesChannelForm = () => {
           <div className="flex flex-1 flex-col items-center overflow-y-auto">
             <div className="flex w-full max-w-[720px] flex-col gap-y-8 px-2 py-16">
               <div>
-                <Heading className="capitalize">{t('salesChannels.createSalesChannel')}</Heading>
-                <Text
-                  size="small"
-                  className="text-ui-fg-subtle"
-                >
-                  {t('salesChannels.createSalesChannelHint')}
+                <Heading className="capitalize">
+                  {t("salesChannels.createSalesChannel")}
+                </Heading>
+                <Text size="small" className="text-ui-fg-subtle">
+                  {t("salesChannels.createSalesChannelHint")}
                 </Text>
               </div>
               <div className="flex flex-col gap-y-4">
@@ -73,16 +83,13 @@ export const CreateSalesChannelForm = () => {
                     render={({ field }) => {
                       return (
                         <Form.Item>
-                          <Form.Label>{t('fields.name')}</Form.Label>
+                          <Form.Label>{t("fields.name")}</Form.Label>
                           <Form.Control>
-                            <Input
-                              size="small"
-                              {...field}
-                            />
+                            <Input size="small" {...field} />
                           </Form.Control>
                           <Form.ErrorMessage />
                         </Form.Item>
-                      );
+                      )
                     }}
                   />
                 </div>
@@ -92,13 +99,13 @@ export const CreateSalesChannelForm = () => {
                   render={({ field }) => {
                     return (
                       <Form.Item>
-                        <Form.Label>{t('fields.description')}</Form.Label>
+                        <Form.Label>{t("fields.description")}</Form.Label>
                         <Form.Control>
                           <Textarea {...field} />
                         </Form.Control>
                         <Form.ErrorMessage />
                       </Form.Item>
-                    );
+                    )
                   }}
                 />
               </div>
@@ -109,7 +116,7 @@ export const CreateSalesChannelForm = () => {
                   return (
                     <Form.Item>
                       <div className="flex items-center justify-between">
-                        <Form.Label>{t('general.enabled')}</Form.Label>
+                        <Form.Label>{t("general.enabled")}</Form.Label>
                         <Form.Control>
                           <Switch
                             {...field}
@@ -118,10 +125,10 @@ export const CreateSalesChannelForm = () => {
                           />
                         </Form.Control>
                       </div>
-                      <Form.Hint>{t('salesChannels.enabledHint')}</Form.Hint>
+                      <Form.Hint>{t("salesChannels.enabledHint")}</Form.Hint>
                       <Form.ErrorMessage />
                     </Form.Item>
-                  );
+                  )
                 }}
               />
             </div>
@@ -130,23 +137,16 @@ export const CreateSalesChannelForm = () => {
         <RouteFocusModal.Footer>
           <div className="flex items-center justify-end gap-x-2">
             <RouteFocusModal.Close asChild>
-              <Button
-                size="small"
-                variant="secondary"
-              >
-                {t('actions.cancel')}
+              <Button size="small" variant="secondary">
+                {t("actions.cancel")}
               </Button>
             </RouteFocusModal.Close>
-            <Button
-              size="small"
-              type="submit"
-              isLoading={isPending}
-            >
-              {t('actions.save')}
+            <Button size="small" type="submit" isLoading={isPending}>
+              {t("actions.save")}
             </Button>
           </div>
         </RouteFocusModal.Footer>
       </KeyboundForm>
     </RouteFocusModal.Form>
-  );
-};
+  )
+}

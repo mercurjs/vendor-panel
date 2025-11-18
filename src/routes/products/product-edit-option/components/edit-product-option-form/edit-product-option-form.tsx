@@ -1,46 +1,51 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { HttpTypes } from '@medusajs/types';
-import { Button, Input } from '@medusajs/ui';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { z } from 'zod';
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Button, Input } from "@medusajs/ui"
+import { HttpTypes } from "@medusajs/types"
+import { useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { z } from "zod"
 
-import { Form } from '../../../../../components/common/form';
-import { ChipInput } from '../../../../../components/inputs/chip-input';
-import { RouteDrawer, useRouteModal } from '../../../../../components/modals';
-import { KeyboundForm } from '../../../../../components/utilities/keybound-form';
-import { useUpdateProductOption } from '../../../../../hooks/api/products';
+import { Form } from "../../../../../components/common/form"
+import { ChipInput } from "../../../../../components/inputs/chip-input"
+import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
+import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
+import { useUpdateProductOption } from "../../../../../hooks/api/products"
 
 type EditProductOptionFormProps = {
-  option: HttpTypes.AdminProductOption;
-};
+  option: HttpTypes.AdminProductOption
+}
 
 const CreateProductOptionSchema = z.object({
   title: z.string().min(1),
-  values: z.array(z.string()).optional()
-});
+  values: z.array(z.string()).optional(),
+})
 
-export const CreateProductOptionForm = ({ option }: EditProductOptionFormProps) => {
-  const { t } = useTranslation();
-  const { handleSuccess } = useRouteModal();
+export const CreateProductOptionForm = ({
+  option,
+}: EditProductOptionFormProps) => {
+  const { t } = useTranslation()
+  const { handleSuccess } = useRouteModal()
 
   const form = useForm<z.infer<typeof CreateProductOptionSchema>>({
     defaultValues: {
       title: option.title,
-      values: option?.values?.map(v => v.value)
+      values: option?.values?.map((v) => v.value),
     },
-    resolver: zodResolver(CreateProductOptionSchema)
-  });
+    resolver: zodResolver(CreateProductOptionSchema),
+  })
 
-  const { mutateAsync, isPending } = useUpdateProductOption(option.product_id!, option.id);
+  const { mutateAsync, isPending } = useUpdateProductOption(
+    option.product_id!,
+    option.id
+  )
 
-  const handleSubmit = form.handleSubmit(async values => {
+  const handleSubmit = form.handleSubmit(async (values) => {
     mutateAsync(values, {
       onSuccess: () => {
-        handleSuccess();
-      }
-    });
-  });
+        handleSuccess()
+      },
+    })
+  })
 
   return (
     <RouteDrawer.Form form={form}>
@@ -55,16 +60,20 @@ export const CreateProductOptionForm = ({ option }: EditProductOptionFormProps) 
             render={({ field }) => {
               return (
                 <Form.Item>
-                  <Form.Label>{t('products.fields.options.optionTitle')}</Form.Label>
+                  <Form.Label>
+                    {t("products.fields.options.optionTitle")}
+                  </Form.Label>
                   <Form.Control>
                     <Input
                       {...field}
-                      placeholder={t('products.fields.options.optionTitlePlaceholder')}
+                      placeholder={t(
+                        "products.fields.options.optionTitlePlaceholder"
+                      )}
                     />
                   </Form.Control>
                   <Form.ErrorMessage />
                 </Form.Item>
-              );
+              )
             }}
           />
           <Form.Field
@@ -73,39 +82,36 @@ export const CreateProductOptionForm = ({ option }: EditProductOptionFormProps) 
             render={({ field: { ...field } }) => {
               return (
                 <Form.Item>
-                  <Form.Label>{t('products.fields.options.variations')}</Form.Label>
+                  <Form.Label>
+                    {t("products.fields.options.variations")}
+                  </Form.Label>
                   <Form.Control>
                     <ChipInput
                       {...field}
-                      placeholder={t('products.fields.options.variantionsPlaceholder')}
+                      placeholder={t(
+                        "products.fields.options.variantionsPlaceholder"
+                      )}
                     />
                   </Form.Control>
                   <Form.ErrorMessage />
                 </Form.Item>
-              );
+              )
             }}
           />
         </RouteDrawer.Body>
         <RouteDrawer.Footer>
           <div className="flex items-center justify-end gap-x-2">
             <RouteDrawer.Close asChild>
-              <Button
-                variant="secondary"
-                size="small"
-              >
-                {t('actions.cancel')}
+              <Button variant="secondary" size="small">
+                {t("actions.cancel")}
               </Button>
             </RouteDrawer.Close>
-            <Button
-              type="submit"
-              size="small"
-              isLoading={isPending}
-            >
-              {t('actions.save')}
+            <Button type="submit" size="small" isLoading={isPending}>
+              {t("actions.save")}
             </Button>
           </div>
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  );
-};
+  )
+}

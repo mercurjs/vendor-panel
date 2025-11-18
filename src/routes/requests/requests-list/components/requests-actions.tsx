@@ -1,24 +1,24 @@
-import { PencilSquare } from '@medusajs/icons';
-import { useTranslation } from 'react-i18next';
+import { PencilSquare } from "@medusajs/icons"
 
-import { ActionMenu } from '../../../../components/common/action-menu';
+import { ActionMenu } from "../../../../components/common/action-menu"
+import { useTranslation } from "react-i18next"
 
 const getRequestType = (type: string) => {
   switch (type) {
-    case 'product_category':
-      return 'categories';
-    case 'product_collection':
-      return 'collections';
-    case 'review_remove':
-      return 'reviews';
+    case "product_category":
+      return "categories"
+    case "product_collection":
+      return "collections"
+    case "review_remove":
+      return "reviews"
     default:
-      return '';
+      return ""
   }
-};
+}
 export const RequestsActions = ({ request }: { request: any }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
-  const type = getRequestType(request.type);
+  const type = getRequestType(request.type)
 
   return (
     <ActionMenu
@@ -26,13 +26,13 @@ export const RequestsActions = ({ request }: { request: any }) => {
         {
           actions: [
             {
-              label: t('actions.edit'),
+              label: t("actions.edit"),
               to: `/requests/${type}/${request.id}/edit`,
-              icon: <PencilSquare />
-            }
-          ]
-        }
+              icon: <PencilSquare />,
+            },
+          ],
+        },
       ]}
     />
-  );
-};
+  )
+}

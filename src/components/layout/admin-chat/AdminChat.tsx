@@ -1,47 +1,45 @@
-import { useCallback, useState } from 'react';
-
-import { ChatBubble } from '@medusajs/icons';
-import { Drawer, Heading, IconButton } from '@medusajs/ui';
-import { Chatbox } from '@talkjs/react';
-import Talk from 'talkjs';
-
-import { useMe } from '../../../hooks/api';
+import { ChatBubble } from "@medusajs/icons"
+import { Drawer, Heading, IconButton } from "@medusajs/ui"
+import { Chatbox } from "@talkjs/react"
+import { useCallback, useState } from "react"
+import { useMe } from "../../../hooks/api"
+import Talk from "talkjs"
 
 export const AdminChat = () => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
-  const { seller, isPending } = useMe();
+  const { seller, isPending } = useMe()
 
-  if (isPending) return <div className="flex h-screen items-center justify-center" />;
+  if (isPending)
+    return <div className="flex justify-center items-center h-screen" />
 
   const handleOnOpen = (shouldOpen: boolean) => {
     if (shouldOpen) {
-      setOpen(true);
+      setOpen(true)
     } else {
-      setOpen(false);
+      setOpen(false)
     }
-  };
+  }
 
   const syncConversation = useCallback((session: any) => {
-    const conversation = session.getOrCreateConversation(`admin-vendor-${seller?.id}`);
+    const conversation = session.getOrCreateConversation(
+      `admin-vendor-${seller?.id}`
+    )
 
     const other = new Talk.User({
-      id: 'admin',
-      name: 'Admin',
-      welcomeMessage: 'Hey, how can I help?'
-    });
+      id: "admin",
+      name: "Admin",
+      welcomeMessage: "Hey, how can I help?",
+    })
 
-    conversation.setParticipant(other);
-    conversation.setParticipant(session.me);
+    conversation.setParticipant(other)
+    conversation.setParticipant(session.me)
 
-    return conversation;
-  }, []);
+    return conversation
+  }, [])
 
   return (
-    <Drawer
-      open={open}
-      onOpenChange={handleOnOpen}
-    >
+    <Drawer open={open} onOpenChange={handleOnOpen}>
       <Drawer.Trigger asChild>
         <IconButton
           variant="transparent"
@@ -59,10 +57,10 @@ export const AdminChat = () => {
         <Drawer.Body className="overflow-y-auto px-4">
           <Chatbox
             syncConversation={syncConversation}
-            style={{ width: '100%', height: '100%' }}
+            style={{ width: "100%", height: "100%" }}
           />
         </Drawer.Body>
       </Drawer.Content>
     </Drawer>
-  );
-};
+  )
+}

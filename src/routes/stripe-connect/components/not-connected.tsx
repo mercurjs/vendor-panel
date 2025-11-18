@@ -1,24 +1,17 @@
-import { ExclamationCircle } from '@medusajs/icons';
-import { Button, Heading, Text } from '@medusajs/ui';
-
-import { useCreateStripeAccount } from '../../../hooks/api';
+import { ExclamationCircle } from "@medusajs/icons"
+import { Button, Heading, Text } from "@medusajs/ui"
+import { useCreateStripeAccount } from "../../../hooks/api"
 
 export const NotConnected = () => {
-  const { mutateAsync, isPending } = useCreateStripeAccount();
+  const { mutateAsync, isPending } = useCreateStripeAccount()
 
   return (
-    <div className="my-32 flex flex-col items-center justify-center text-center">
+    <div className="flex items-center justify-center text-center my-32 flex-col">
       <ExclamationCircle />
-      <Heading
-        level="h2"
-        className="mt-4"
-      >
+      <Heading level="h2" className="mt-4">
         Not connected
       </Heading>
-      <Text
-        className="text-ui-fg-subtle"
-        size="small"
-      >
+      <Text className="text-ui-fg-subtle" size="small">
         No stripe connection
       </Text>
       <Button
@@ -27,7 +20,7 @@ export const NotConnected = () => {
         onClick={() =>
           mutateAsync({
             context: {
-              country: 'US'
+              country: "US",
               // external_account: {
               //   object: 'bank_account',
               //   country: 'US',
@@ -35,12 +28,12 @@ export const NotConnected = () => {
               //   account_number: '000123456789',
               //   routing_number: '110000000',
               // },
-            }
+            },
           })
         }
       >
         Connect Stripe
       </Button>
     </div>
-  );
-};
+  )
+}

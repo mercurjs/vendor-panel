@@ -1,7 +1,7 @@
-import { createContext } from 'react';
+import { createContext } from "react"
+import { DashboardExtensionManager } from "../dashboard-extension-manager"
 
-import { DashboardExtensionManager } from '../dashboard-extension-manager';
+type DasboardExtenstionContextValue = DashboardExtensionManager["api"]
 
-type DasboardExtenstionContextValue = DashboardExtensionManager['api'];
-
-export const DashboardExtensionContext = createContext<DasboardExtenstionContextValue | null>(null);
+export const DashboardExtensionContext =
+  createContext<DasboardExtenstionContextValue | null>(null)

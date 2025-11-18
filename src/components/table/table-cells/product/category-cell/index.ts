@@ -1,1 +1,1 @@
-export * from './category-cell';
+export * from "./category-cell"

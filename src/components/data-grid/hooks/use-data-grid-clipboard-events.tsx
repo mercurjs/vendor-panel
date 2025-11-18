@@ -1,90 +1,105 @@
-import { useCallback } from 'react';
+import { useCallback } from "react"
+import { FieldValues, Path, PathValue } from "react-hook-form"
 
-import { FieldValues, Path, PathValue } from 'react-hook-form';
+import { DataGridBulkUpdateCommand, DataGridMatrix } from "../models"
+import { DataGridCoordinates } from "../types"
 
-import { DataGridBulkUpdateCommand, DataGridMatrix } from '../models';
-import { DataGridCoordinates } from '../types';
-
-type UseDataGridClipboardEventsOptions<TData, TFieldValues extends FieldValues> = {
-  matrix: DataGridMatrix<TData, TFieldValues>;
-  isEditing: boolean;
-  anchor: DataGridCoordinates | null;
-  rangeEnd: DataGridCoordinates | null;
-  getSelectionValues: (fields: string[]) => PathValue<TFieldValues, Path<TFieldValues>>[];
+type UseDataGridClipboardEventsOptions<
+  TData,
+  TFieldValues extends FieldValues,
+> = {
+  matrix: DataGridMatrix<TData, TFieldValues>
+  isEditing: boolean
+  anchor: DataGridCoordinates | null
+  rangeEnd: DataGridCoordinates | null
+  getSelectionValues: (
+    fields: string[]
+  ) => PathValue<TFieldValues, Path<TFieldValues>>[]
   setSelectionValues: (
     fields: string[],
     values: PathValue<TFieldValues, Path<TFieldValues>>[]
-  ) => void;
-  execute: (command: DataGridBulkUpdateCommand) => void;
-};
+  ) => void
+  execute: (command: DataGridBulkUpdateCommand) => void
+}
 
-export const useDataGridClipboardEvents = <TData, TFieldValues extends FieldValues>({
+export const useDataGridClipboardEvents = <
+  TData,
+  TFieldValues extends FieldValues,
+>({
   matrix,
   anchor,
   rangeEnd,
   isEditing,
   getSelectionValues,
   setSelectionValues,
-  execute
+  execute,
 }: UseDataGridClipboardEventsOptions<TData, TFieldValues>) => {
   const handleCopyEvent = useCallback(
     (e: ClipboardEvent) => {
       if (isEditing || !anchor || !rangeEnd) {
-        return;
+        return
       }
 
-      e.preventDefault();
+      e.preventDefault()
 
-      const fields = matrix.getFieldsInSelection(anchor, rangeEnd);
-      const values = getSelectionValues(fields);
+      const fields = matrix.getFieldsInSelection(anchor, rangeEnd)
+      const values = getSelectionValues(fields)
 
       const text = values
-        .map(value => {
-          if (typeof value === 'object' && value !== null) {
-            return JSON.stringify(value);
+        .map((value) => {
+          if (typeof value === "object" && value !== null) {
+            return JSON.stringify(value)
           }
-          return `${value}` ?? '';
+          return `${value}` ?? ""
         })
-        .join('\t');
+        .join("\t")
 
-      e.clipboardData?.setData('text/plain', text);
+      e.clipboardData?.setData("text/plain", text)
     },
     [isEditing, anchor, rangeEnd, matrix, getSelectionValues]
-  );
+  )
 
   const handlePasteEvent = useCallback(
     (e: ClipboardEvent) => {
       if (isEditing || !anchor || !rangeEnd) {
-        return;
+        return
       }
 
-      e.preventDefault();
+      e.preventDefault()
 
-      const text = e.clipboardData?.getData('text/plain');
+      const text = e.clipboardData?.getData("text/plain")
 
       if (!text) {
-        return;
+        return
       }
 
-      const next = text.split('\t');
+      const next = text.split("\t")
 
-      const fields = matrix.getFieldsInSelection(anchor, rangeEnd);
-      const prev = getSelectionValues(fields);
+      const fields = matrix.getFieldsInSelection(anchor, rangeEnd)
+      const prev = getSelectionValues(fields)
 
       const command = new DataGridBulkUpdateCommand({
         fields,
         next,
         prev,
-        setter: setSelectionValues
-      });
+        setter: setSelectionValues,
+      })
 
-      execute(command);
+      execute(command)
     },
-    [isEditing, anchor, rangeEnd, matrix, getSelectionValues, setSelectionValues, execute]
-  );
+    [
+      isEditing,
+      anchor,
+      rangeEnd,
+      matrix,
+      getSelectionValues,
+      setSelectionValues,
+      execute,
+    ]
+  )
 
   return {
     handleCopyEvent,
-    handlePasteEvent
-  };
-};
+    handlePasteEvent,
+  }
+}

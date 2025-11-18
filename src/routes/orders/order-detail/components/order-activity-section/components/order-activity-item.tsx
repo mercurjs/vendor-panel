@@ -1,19 +1,19 @@
-import { PropsWithChildren } from 'react';
-
-import { AdminClaim, AdminExchange, AdminOrderLineItem, AdminReturn } from '@medusajs/types';
-import { clx, Text, Tooltip } from '@medusajs/ui';
-
-import { useDate } from '../../../../../../hooks/use-date';
-import ActivityItems from '../activity-items';
+import { Text, Tooltip, clx } from "@medusajs/ui"
+import { PropsWithChildren } from "react"
+import { AdminClaim, AdminExchange, AdminReturn, AdminOrderLineItem } from "@medusajs/types"
+import { useDate } from "../../../../../../hooks/use-date"
+import ActivityItems from "../activity-items"
 
 type OrderActivityItemProps = PropsWithChildren<{
-  title: string | React.ReactNode;
-  timestamp: string | Date | null;
-  isFirst?: boolean;
-  itemsToSend?: AdminClaim['additional_items'] | AdminExchange['additional_items'];
-  itemsToReturn?: AdminReturn['items'];
-  itemsMap?: Map<string, AdminOrderLineItem>;
-}>;
+  title: string | React.ReactNode
+  timestamp: string | Date | null
+  isFirst?: boolean
+  itemsToSend?:
+    | AdminClaim["additional_items"]
+    | AdminExchange["additional_items"]
+  itemsToReturn?: AdminReturn["items"]
+  itemsMap?: Map<string, AdminOrderLineItem>
+}>
 
 export const OrderActivityItem = ({
   title,
@@ -22,23 +22,23 @@ export const OrderActivityItem = ({
   children,
   itemsToSend,
   itemsToReturn,
-  itemsMap
+  itemsMap,
 }: OrderActivityItemProps) => {
-  const { getFullDate, getRelativeDate } = useDate();
+  const { getFullDate, getRelativeDate } = useDate()
 
   return (
     <div className="grid grid-cols-[20px_1fr] items-start gap-2">
       <div className="flex size-full flex-col items-center gap-y-0.5">
         <div className="flex size-5 items-center justify-center">
-          <div className="flex size-2.5 items-center justify-center rounded-full bg-ui-bg-base shadow-borders-base">
-            <div className="size-1.5 rounded-full bg-ui-tag-neutral-icon" />
+          <div className="bg-ui-bg-base shadow-borders-base flex size-2.5 items-center justify-center rounded-full">
+            <div className="bg-ui-tag-neutral-icon size-1.5 rounded-full" />
           </div>
         </div>
-        {!isFirst && <div className="w-px flex-1 bg-ui-border-base" />}
+        {!isFirst && <div className="bg-ui-border-base w-px flex-1" />}
       </div>
-      <div
+    <div
         className={clx({
-          'pb-4': !isFirst
+          "pb-4": !isFirst,
         })}
       >
         <div className="flex items-center justify-between">
@@ -49,26 +49,22 @@ export const OrderActivityItem = ({
               itemsToReturn={itemsToReturn}
               itemsMap={itemsMap}
             />
-          ) : (
-            <Text
-              size="small"
-              leading="compact"
-              weight="plus"
-            >
+          ) : ( 
+            <Text size="small" leading="compact" weight="plus">
               {title}
             </Text>
-          )}
+           )} 
           {timestamp && (
             <Tooltip
               content={getFullDate({
                 date: timestamp,
-                includeTime: true
+                includeTime: true,
               })}
             >
               <Text
                 size="small"
                 leading="compact"
-                className="text-right text-ui-fg-subtle"
+                className="text-ui-fg-subtle text-right"
               >
                 {getRelativeDate(timestamp)}
               </Text>
@@ -78,5 +74,6 @@ export const OrderActivityItem = ({
         <div>{children}</div>
       </div>
     </div>
-  );
-};
+  )
+}
+

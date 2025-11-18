@@ -1,20 +1,22 @@
-import { FetchError } from '@medusajs/js-sdk';
-import { HttpTypes } from '@medusajs/types';
 import {
   QueryKey,
   useMutation,
   UseMutationOptions,
   useQuery,
-  UseQueryOptions
-} from '@tanstack/react-query';
+  UseQueryOptions,
+} from "@tanstack/react-query"
 
-import { fetchQuery } from '../../lib/client';
-import convertShippingProfileNames from '../../lib/convert-shipping-profile-names';
-import { queryClient } from '../../lib/query-client';
-import { queryKeysFactory } from '../../lib/query-key-factory';
+import { FetchError } from "@medusajs/js-sdk"
+import { HttpTypes } from "@medusajs/types"
+import { fetchQuery } from "../../lib/client"
+import { queryClient } from "../../lib/query-client"
+import { queryKeysFactory } from "../../lib/query-key-factory"
+import convertShippingProfileNames from "../../lib/convert-shipping-profile-names"
 
-const SHIPPING_PROFILE_QUERY_KEY = 'shipping_profile' as const;
-export const shippingProfileQueryKeys = queryKeysFactory(SHIPPING_PROFILE_QUERY_KEY);
+const SHIPPING_PROFILE_QUERY_KEY = "shipping_profile" as const
+export const shippingProfileQueryKeys = queryKeysFactory(
+  SHIPPING_PROFILE_QUERY_KEY
+)
 
 export const useCreateShippingProfile = (
   options?: UseMutationOptions<
@@ -24,21 +26,21 @@ export const useCreateShippingProfile = (
   >
 ) => {
   return useMutation({
-    mutationFn: payload =>
-      fetchQuery('/vendor/shipping-profiles', {
-        method: 'POST',
-        body: payload
+    mutationFn: (payload) =>
+      fetchQuery("/vendor/shipping-profiles", {
+        method: "POST",
+        body: payload,
       }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: shippingProfileQueryKeys.lists()
-      });
+        queryKey: shippingProfileQueryKeys.lists(),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useShippingProfile = (
   id: string,
@@ -50,33 +52,33 @@ export const useShippingProfile = (
       HttpTypes.AdminShippingProfileResponse,
       QueryKey
     >,
-    'queryFn' | 'queryKey'
+    "queryFn" | "queryKey"
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: () =>
       fetchQuery(`/vendor/shipping-profiles/${id}`, {
-        method: 'GET',
-        query
+        method: "GET",
+        query,
       }),
     queryKey: shippingProfileQueryKeys.detail(id, query),
-    ...options
-  });
+    ...options,
+  })
 
   const shipping_profile = data?.shipping_profile
     ? {
         ...data.shipping_profile,
-        name: data.shipping_profile.name?.includes(':')
-          ? data.shipping_profile.name.split(':')[1]
-          : data.shipping_profile.name
+        name: data.shipping_profile.name?.includes(":")
+          ? data.shipping_profile.name.split(":")[1]
+          : data.shipping_profile.name,
       }
-    : undefined;
+    : undefined
 
   return {
     shipping_profile,
-    ...rest
-  };
-};
+    ...rest,
+  }
+}
 
 export const useShippingProfiles = (
   query?: HttpTypes.AdminShippingProfileListParams,
@@ -87,22 +89,24 @@ export const useShippingProfiles = (
       HttpTypes.AdminShippingProfileListResponse,
       QueryKey
     >,
-    'queryFn' | 'queryKey'
+    "queryFn" | "queryKey"
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: () =>
-      fetchQuery('/vendor/shipping-profiles', {
-        method: 'GET'
+      fetchQuery("/vendor/shipping-profiles", {
+        method: "GET",
       }),
     queryKey: shippingProfileQueryKeys.list(query),
-    ...options
-  });
+    ...options,
+  })
 
-  const shipping_profiles = data?.shipping_profiles.map(sp => convertShippingProfileNames(sp));
+  const shipping_profiles = data?.shipping_profiles.map((sp) =>
+    convertShippingProfileNames(sp)
+  )
 
-  return { ...data, shipping_profiles, ...rest };
-};
+  return { ...data, shipping_profiles, ...rest }
+}
 
 export const useUpdateShippingProfile = (
   id: string,
@@ -113,46 +117,50 @@ export const useUpdateShippingProfile = (
   >
 ) => {
   const { data, ...rest } = useMutation({
-    mutationFn: payload =>
+    mutationFn: (payload) =>
       fetchQuery(`/vendor/shipping-profiles/${id}`, {
-        method: 'POST',
-        body: payload
+        method: "POST",
+        body: payload,
       }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: shippingProfileQueryKeys.detail(id)
-      });
+        queryKey: shippingProfileQueryKeys.detail(id),
+      })
       queryClient.invalidateQueries({
-        queryKey: shippingProfileQueryKeys.lists()
-      });
+        queryKey: shippingProfileQueryKeys.lists(),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
+    ...options,
+  })
 
-  return { ...data, ...rest };
-};
+  return { ...data, ...rest }
+}
 
 export const useDeleteShippingProfile = (
   id: string,
-  options?: UseMutationOptions<HttpTypes.AdminShippingProfileDeleteResponse, FetchError, void>
+  options?: UseMutationOptions<
+    HttpTypes.AdminShippingProfileDeleteResponse,
+    FetchError,
+    void
+  >
 ) => {
   return useMutation({
     mutationFn: () =>
       fetchQuery(`/vendor/shipping-profiles/${id}`, {
-        method: 'DELETE'
+        method: "DELETE",
       }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: shippingProfileQueryKeys.detail(id)
-      });
+        queryKey: shippingProfileQueryKeys.detail(id),
+      })
       queryClient.invalidateQueries({
-        queryKey: shippingProfileQueryKeys.lists()
-      });
+        queryKey: shippingProfileQueryKeys.lists(),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}

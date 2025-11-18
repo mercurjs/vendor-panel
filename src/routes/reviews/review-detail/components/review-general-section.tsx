@@ -1,18 +1,17 @@
-import { ExclamationCircle } from '@medusajs/icons';
-import { Badge, Button, Container, Heading } from '@medusajs/ui';
-import { format } from 'date-fns';
-import { Link } from 'react-router-dom';
-
-import { ActionMenu } from '../../../../components/common/action-menu';
-import { StarsRating } from '../../../../components/common/stars-rating/stars-rating';
-import { StatusCell } from '../../../../components/table/table-cells/review/status-cell';
+import { Badge, Button, Container, Heading } from "@medusajs/ui"
+import { format } from "date-fns"
+import { StarsRating } from "../../../../components/common/stars-rating/stars-rating"
+import { StatusCell } from "../../../../components/table/table-cells/review/status-cell"
+import { ActionMenu } from "../../../../components/common/action-menu"
+import { ExclamationCircle } from "@medusajs/icons"
+import { Link } from "react-router-dom"
 
 export const ReviewGeneralSection = ({
   review,
-  isRequested = false
+  isRequested = false,
 }: {
-  review: any;
-  isRequested?: boolean;
+  review: any
+  isRequested?: boolean
 }) => {
   return (
     <Container className="divide-y p-0">
@@ -33,41 +32,45 @@ export const ReviewGeneralSection = ({
                 {
                   actions: [
                     {
-                      label: 'Report review',
+                      label: "Report review",
                       to: `/reviews/${review.id}/report`,
                       icon: <ExclamationCircle />,
-                      disabled: isRequested
-                    }
-                  ]
-                }
+                      disabled: isRequested,
+                    },
+                  ],
+                },
               ]}
             />
           )}
         </div>
       </div>
-      <div className="grid grid-cols-2 px-6 py-4">
+      <div className="px-6 py-4 grid grid-cols-2">
         <div>Stars</div>
         <div>
           <StarsRating rate={review.rating} />
         </div>
       </div>
-      <div className="grid grid-cols-2 px-6 py-4">
+      <div className="px-6 py-4 grid grid-cols-2">
         <div>Review</div>
-        <div className="whitespace-pre-line break-words">{review.customer_note}</div>
+        <div className="whitespace-pre-line break-words">
+          {review.customer_note}
+        </div>
       </div>
-      <div className="grid grid-cols-2 px-6 py-4">
+      <div className="px-6 py-4 grid grid-cols-2">
         <div>Reply</div>
-        <div>{review.seller_note || '-'}</div>
+        <div>{review.seller_note || "-"}</div>
       </div>
-      <div className="grid grid-cols-2 px-6 py-4">
+      <div className="px-6 py-4 grid grid-cols-2">
         <div>Added</div>
-        <div>{format(review.created_at, 'dd MMM yyyy')}</div>
+        <div>{format(review.created_at, "dd MMM yyyy")}</div>
       </div>
-      <div className="flex justify-end px-6 py-4">
+      <div className="px-6 py-4 flex justify-end">
         <Link to={`/reviews/${review.id}/reply`}>
-          <Button className="px-6">{review.seller_note ? 'Edit Reply' : 'Reply'}</Button>
+          <Button className="px-6">
+            {review.seller_note ? "Edit Reply" : "Reply"}
+          </Button>
         </Link>
       </div>
     </Container>
-  );
-};
+  )
+}

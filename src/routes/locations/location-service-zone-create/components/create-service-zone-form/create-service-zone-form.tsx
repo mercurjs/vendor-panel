@@ -1,78 +1,82 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Heading, InlineTip, Input, toast } from '@medusajs/ui';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { z } from 'zod';
+import { zodResolver } from "@hookform/resolvers/zod"
+import { VendorExtendedAdminStockLocation, VendorExtendedAdminFulfillmentSet } from "../../../../../types/stock-location"
+import { Button, Heading, InlineTip, Input, toast } from "@medusajs/ui"
+import { useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { z } from "zod"
 
-import { Form } from '../../../../../components/common/form';
+import { Form } from "../../../../../components/common/form"
 import {
   RouteFocusModal,
   StackedFocusModal,
-  useRouteModal
-} from '../../../../../components/modals';
-import { KeyboundForm } from '../../../../../components/utilities/keybound-form';
-import { useCreateFulfillmentSetServiceZone } from '../../../../../hooks/api/fulfillment-sets';
+  useRouteModal,
+} from "../../../../../components/modals"
+import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
+import { useCreateFulfillmentSetServiceZone } from "../../../../../hooks/api/fulfillment-sets"
+import { GeoZoneForm } from "../../../common/components/geo-zone-form"
 import {
-  VendorExtendedAdminFulfillmentSet,
-  VendorExtendedAdminStockLocation
-} from '../../../../../types/stock-location';
-import { GeoZoneForm } from '../../../common/components/geo-zone-form';
-import { FulfillmentSetType, GEO_ZONE_STACKED_MODAL_ID } from '../../../common/constants';
+  FulfillmentSetType,
+  GEO_ZONE_STACKED_MODAL_ID,
+} from "../../../common/constants"
 
 const CreateServiceZoneSchema = z.object({
   name: z.string().min(1),
-  countries: z.array(z.object({ iso_2: z.string().min(2), display_name: z.string() })).min(1)
-});
+  countries: z
+    .array(z.object({ iso_2: z.string().min(2), display_name: z.string() }))
+    .min(1),
+})
 
 type CreateServiceZoneFormProps = {
-  fulfillmentSet: VendorExtendedAdminFulfillmentSet;
-  type: FulfillmentSetType;
-  location: VendorExtendedAdminStockLocation;
-};
+  fulfillmentSet: VendorExtendedAdminFulfillmentSet
+  type: FulfillmentSetType
+  location: VendorExtendedAdminStockLocation
+}
 
 export function CreateServiceZoneForm({
   fulfillmentSet,
   type,
-  location
+  location,
 }: CreateServiceZoneFormProps) {
-  const { t } = useTranslation();
-  const { handleSuccess } = useRouteModal();
+  const { t } = useTranslation()
+  const { handleSuccess } = useRouteModal()
 
   const form = useForm<z.infer<typeof CreateServiceZoneSchema>>({
     defaultValues: {
-      name: '',
-      countries: []
+      name: "",
+      countries: [],
     },
-    resolver: zodResolver(CreateServiceZoneSchema)
-  });
+    resolver: zodResolver(CreateServiceZoneSchema),
+  })
 
-  const { mutateAsync, isPending } = useCreateFulfillmentSetServiceZone(fulfillmentSet.id);
+  const { mutateAsync, isPending } = useCreateFulfillmentSetServiceZone(
+    fulfillmentSet.id
+  )
 
-  const handleSubmit = form.handleSubmit(async data => {
+  const handleSubmit = form.handleSubmit(async (data) => {
     await mutateAsync(
       {
         name: data.name,
         geo_zones: data.countries.map(({ iso_2 }) => ({
           country_code: iso_2,
-          type: 'country'
-        }))
+          type: "country",
+        })),
       },
       {
         onSuccess: () => {
           toast.success(
-            t('stockLocations.serviceZones.create.successToast', {
-              name: data.name
+            t("stockLocations.serviceZones.create.successToast", {
+              name: data.name,
             })
-          );
+          )
 
-          handleSuccess(`/settings/locations/${location.id}`);
+          handleSuccess(`/settings/locations/${location.id}`)
         },
-        onError: e => {
-          toast.error(e.message);
-        }
+        onError: (e) => {
+          toast.error(e.message)
+        },
       }
-    );
-  });
+    )
+  })
 
   return (
     <RouteFocusModal.Form form={form}>
@@ -87,11 +91,11 @@ export function CreateServiceZoneForm({
               <div className="flex w-full max-w-[720px] flex-col gap-y-8 px-2 py-16">
                 <Heading>
                   {type === FulfillmentSetType.Pickup
-                    ? t('stockLocations.serviceZones.create.headerPickup', {
-                        location: location.name
+                    ? t("stockLocations.serviceZones.create.headerPickup", {
+                        location: location.name,
                       })
-                    : t('stockLocations.serviceZones.create.headerShipping', {
-                        location: location.name
+                    : t("stockLocations.serviceZones.create.headerShipping", {
+                        location: location.name,
                       })}
                 </Heading>
 
@@ -102,19 +106,19 @@ export function CreateServiceZoneForm({
                     render={({ field }) => {
                       return (
                         <Form.Item>
-                          <Form.Label>{t('fields.name')}</Form.Label>
+                          <Form.Label>{t("fields.name")}</Form.Label>
                           <Form.Control>
                             <Input {...field} />
                           </Form.Control>
                           <Form.ErrorMessage />
                         </Form.Item>
-                      );
+                      )
                     }}
                   />
                 </div>
 
-                <InlineTip label={t('general.tip')}>
-                  {t('stockLocations.serviceZones.fields.tip')}
+                <InlineTip label={t("general.tip")}>
+                  {t("stockLocations.serviceZones.fields.tip")}
                 </InlineTip>
 
                 <GeoZoneForm form={form} />
@@ -127,23 +131,16 @@ export function CreateServiceZoneForm({
         <RouteFocusModal.Footer>
           <div className="flex items-center justify-end gap-x-2">
             <RouteFocusModal.Close asChild>
-              <Button
-                variant="secondary"
-                size="small"
-              >
-                {t('actions.cancel')}
+              <Button variant="secondary" size="small">
+                {t("actions.cancel")}
               </Button>
             </RouteFocusModal.Close>
-            <Button
-              type="submit"
-              size="small"
-              isLoading={isPending}
-            >
-              {t('actions.save')}
+            <Button type="submit" size="small" isLoading={isPending}>
+              {t("actions.save")}
             </Button>
           </div>
         </RouteFocusModal.Footer>
       </KeyboundForm>
     </RouteFocusModal.Form>
-  );
+  )
 }

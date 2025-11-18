@@ -1,39 +1,39 @@
-import { HttpTypes } from '@medusajs/types';
-import { Divider, Text } from '@medusajs/ui';
-import { useTranslation } from 'react-i18next';
+import { Divider, Text } from "@medusajs/ui"
+import { HttpTypes } from "@medusajs/types"
+import { useTranslation } from "react-i18next"
 
 export const ImportSummary = ({
-  summary
+  summary,
 }: {
-  summary: HttpTypes.AdminImportProductResponse['summary'];
+  summary: HttpTypes.AdminImportProductResponse["summary"]
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   return (
-    <div className="flex flex-row rounded-md bg-ui-bg-component px-3 py-2 shadow-elevation-card-rest transition-fg">
+    <div className="shadow-elevation-card-rest bg-ui-bg-component transition-fg flex flex-row rounded-md px-3 py-2">
       <Stat
         title={summary.toCreate.toLocaleString()}
-        description={t('products.import.upload.productsToCreate')}
+        description={t("products.import.upload.productsToCreate")}
       />
-      <Divider
-        orientation="vertical"
-        className="h-10 px-3"
-      />
+      <Divider orientation="vertical" className="h-10 px-3" />
       <Stat
         title={summary.toUpdate.toLocaleString()}
-        description={t('products.import.upload.productsToUpdate')}
+        description={t("products.import.upload.productsToUpdate")}
       />
     </div>
-  );
-};
+  )
+}
 
-const Stat = ({ title, description }: { title: string; description: string }) => {
+const Stat = ({
+  title,
+  description,
+}: {
+  title: string
+  description: string
+}) => {
   return (
     <div className="flex flex-1 flex-col justify-center">
-      <Text
-        size="xlarge"
-        className="font-sans font-medium"
-      >
+      <Text size="xlarge" className="font-sans font-medium">
         {title}
       </Text>
 
@@ -46,5 +46,5 @@ const Stat = ({ title, description }: { title: string; description: string }) =>
         {description}
       </Text>
     </div>
-  );
-};
+  )
+}

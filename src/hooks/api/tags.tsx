@@ -1,19 +1,18 @@
-import { FetchError } from '@medusajs/js-sdk';
-import { HttpTypes } from '@medusajs/types';
+import { FetchError } from "@medusajs/js-sdk"
+import { HttpTypes } from "@medusajs/types"
 import {
   QueryKey,
-  useMutation,
   UseMutationOptions,
+  UseQueryOptions,
+  useMutation,
   useQuery,
-  UseQueryOptions
-} from '@tanstack/react-query';
+} from "@tanstack/react-query"
+import { fetchQuery, sdk } from "../../lib/client"
+import { queryClient } from "../../lib/query-client"
+import { queryKeysFactory } from "../../lib/query-key-factory"
 
-import { fetchQuery, sdk } from '../../lib/client';
-import { queryClient } from '../../lib/query-client';
-import { queryKeysFactory } from '../../lib/query-key-factory';
-
-const TAGS_QUERY_KEY = 'tags' as const;
-export const productTagsQueryKeys = queryKeysFactory(TAGS_QUERY_KEY);
+const TAGS_QUERY_KEY = "tags" as const
+export const productTagsQueryKeys = queryKeysFactory(TAGS_QUERY_KEY)
 
 export const useProductTag = (
   id: string,
@@ -25,20 +24,20 @@ export const useProductTag = (
       HttpTypes.AdminProductTagResponse,
       QueryKey
     >,
-    'queryFn' | 'queryKey'
+    "queryFn" | "queryKey"
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryKey: productTagsQueryKeys.detail(id, query),
     queryFn: async () =>
       fetchQuery(`/vendor/product-tags/${id}`, {
-        method: 'GET'
+        method: "GET",
       }),
-    ...options
-  });
+    ...options,
+  })
 
-  return { ...data, ...rest };
-};
+  return { ...data, ...rest }
+}
 
 export const useProductTags = (
   query?: HttpTypes.AdminProductTagListParams,
@@ -49,21 +48,21 @@ export const useProductTags = (
       HttpTypes.AdminProductTagListResponse,
       QueryKey
     >,
-    'queryFn' | 'queryKey'
+    "queryFn" | "queryKey"
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryKey: productTagsQueryKeys.list(query),
     queryFn: async () =>
-      fetchQuery('/vendor/product-tags', {
-        method: 'GET',
-        query: query as { [key: string]: string | number }
+      fetchQuery("/vendor/product-tags", {
+        method: "GET",
+        query: query as { [key: string]: string | number },
       }),
-    ...options
-  });
+    ...options,
+  })
 
-  return { ...data, ...rest };
-};
+  return { ...data, ...rest }
+}
 
 export const useCreateProductTag = (
   options?: UseMutationOptions<
@@ -73,21 +72,21 @@ export const useCreateProductTag = (
   >
 ) => {
   return useMutation({
-    mutationFn: async body =>
-      fetchQuery('/vendor/product-tags', {
-        method: 'POST',
-        body
+    mutationFn: async (body) =>
+      fetchQuery("/vendor/product-tags", {
+        method: "POST",
+        body,
       }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: productTagsQueryKeys.lists()
-      });
+        queryKey: productTagsQueryKeys.lists(),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useUpdateProductTag = (
   id: string,
@@ -99,37 +98,41 @@ export const useUpdateProductTag = (
   >
 ) => {
   return useMutation({
-    mutationFn: async data => sdk.admin.productTag.update(id, data, query),
+    mutationFn: async (data) => sdk.admin.productTag.update(id, data, query),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: productTagsQueryKeys.lists()
-      });
+        queryKey: productTagsQueryKeys.lists(),
+      })
       queryClient.invalidateQueries({
-        queryKey: productTagsQueryKeys.detail(data.product_tag.id, query)
-      });
+        queryKey: productTagsQueryKeys.detail(data.product_tag.id, query),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useDeleteProductTag = (
   id: string,
-  options?: UseMutationOptions<HttpTypes.AdminProductTagDeleteResponse, FetchError, void>
+  options?: UseMutationOptions<
+    HttpTypes.AdminProductTagDeleteResponse,
+    FetchError,
+    void
+  >
 ) => {
   return useMutation({
     mutationFn: async () => sdk.admin.productTag.delete(id),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: productTagsQueryKeys.lists()
-      });
+        queryKey: productTagsQueryKeys.lists(),
+      })
       queryClient.invalidateQueries({
-        queryKey: productTagsQueryKeys.detail(id)
-      });
+        queryKey: productTagsQueryKeys.detail(id),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}

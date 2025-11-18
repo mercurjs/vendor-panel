@@ -1,65 +1,66 @@
-import { useMemo, useState } from 'react';
+import { HttpTypes } from "@medusajs/types"
+import { Container, Heading } from "@medusajs/ui"
+import { keepPreviousData } from "@tanstack/react-query"
+import { RowSelectionState } from "@tanstack/react-table"
+import { useMemo, useState } from "react"
+import { useTranslation } from "react-i18next"
 
-import { HttpTypes } from '@medusajs/types';
-import { Container, Heading } from '@medusajs/ui';
-import { keepPreviousData } from '@tanstack/react-query';
-import { RowSelectionState } from '@tanstack/react-table';
-import { useTranslation } from 'react-i18next';
-
-import { _DataTable } from '../../../../../components/table/data-table';
-import { useProducts } from '../../../../../hooks/api/products';
-import { useProductTableColumns } from '../../../../../hooks/table/columns/use-product-table-columns';
-import { useProductTableQuery } from '../../../../../hooks/table/query/use-product-table-query';
-import { useDataTable } from '../../../../../hooks/use-data-table';
+import { _DataTable } from "../../../../../components/table/data-table"
+import { useProducts } from "../../../../../hooks/api/products"
+import { useProductTableColumns } from "../../../../../hooks/table/columns/use-product-table-columns"
+import { useProductTableQuery } from "../../../../../hooks/table/query/use-product-table-query"
+import { useDataTable } from "../../../../../hooks/use-data-table"
 
 type CategoryProductSectionProps = {
-  category: HttpTypes.AdminProductCategory;
-};
+  category: HttpTypes.AdminProductCategory
+}
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 10
 
-export const CategoryProductSection = ({ category }: CategoryProductSectionProps) => {
-  const { t } = useTranslation();
+export const CategoryProductSection = ({
+  category,
+}: CategoryProductSectionProps) => {
+  const { t } = useTranslation()
 
-  const [selection, setSelection] = useState<RowSelectionState>({});
+  const [selection, setSelection] = useState<RowSelectionState>({})
 
   const { raw, searchParams } = useProductTableQuery({
-    pageSize: PAGE_SIZE
-  });
+    pageSize: PAGE_SIZE,
+  })
   const { products, count, isLoading, isError, error } = useProducts(
     {
       ...searchParams,
-      fields: '*categories.id',
+      fields: "*categories.id",
       // limit: 9999,
       limit: searchParams.limit,
       offset: searchParams.offset,
-      category_id: category.id
+      category_id: category.id,
     },
     {
-      placeholderData: keepPreviousData
+      placeholderData: keepPreviousData,
     }
-  );
+  )
 
-  const columns = useColumns();
+  const columns = useColumns()
 
   const { table } = useDataTable({
     data: Array.isArray(products)
-      ? products.map(p => ({
+      ? products.map((p) => ({
           ...p,
-          images: p.images ?? null
+          images: p.images ?? null,
         }))
       : [],
     columns,
     count,
-    getRowId: original => original.id,
+    getRowId: (original) => original.id,
     pageSize: PAGE_SIZE,
     enableRowSelection: true,
     enablePagination: true,
     rowSelection: {
       state: selection,
-      updater: setSelection
-    }
-  });
+      updater: setSelection,
+    },
+  })
 
   // Not used, there's a lot of commented code, leaving it commented for future
   // const { mutateAsync } = useUpdateProductCategoryProducts(category.id)
@@ -102,13 +103,13 @@ export const CategoryProductSection = ({ category }: CategoryProductSectionProps
   // }
 
   if (isError) {
-    throw error;
+    throw error
   }
 
   return (
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
-        <Heading level="h2">{t('products.domain')}</Heading>
+        <Heading level="h2">{t("products.domain")}</Heading>
         {/* <ActionMenu
           groups={[
             {
@@ -128,23 +129,23 @@ export const CategoryProductSection = ({ category }: CategoryProductSectionProps
         // filters={filters}
         columns={columns}
         orderBy={[
-          { key: 'title', label: t('fields.title') },
+          { key: "title", label: t("fields.title") },
           {
-            key: 'created_at',
-            label: t('fields.createdAt')
+            key: "created_at",
+            label: t("fields.createdAt"),
           },
           {
-            key: 'updated_at',
-            label: t('fields.updatedAt')
-          }
+            key: "updated_at",
+            label: t("fields.updatedAt"),
+          },
         ]}
         pageSize={PAGE_SIZE}
         count={count}
-        navigateTo={row => `/products/${row.id}`}
+        navigateTo={(row) => `/products/${row.id}`}
         isLoading={isLoading}
         queryObject={raw}
         noRecords={{
-          message: t('categories.products.list.noRecordsMessage')
+          message: t("categories.products.list.noRecordsMessage"),
         }}
       />
       {/* <CommandBar open={!!Object.keys(selection).length}>
@@ -163,13 +164,13 @@ export const CategoryProductSection = ({ category }: CategoryProductSectionProps
         </CommandBar.Bar>
       </CommandBar> */}
     </Container>
-  );
-};
+  )
+}
 
 // const columnHelper = createColumnHelper<HttpTypes.AdminProduct>()
 
 const useColumns = () => {
-  const base = useProductTableColumns();
+  const base = useProductTableColumns()
 
   return useMemo(
     () => [
@@ -201,8 +202,8 @@ const useColumns = () => {
       //     )
       //   },
       // }),
-      ...base
+      ...base,
     ],
     [base]
-  );
-};
+  )
+}

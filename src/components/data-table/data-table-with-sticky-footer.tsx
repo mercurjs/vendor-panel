@@ -1,17 +1,16 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import { clx, Container, Heading } from "@medusajs/ui"
+import React, { useLayoutEffect, useRef, useState } from "react"
 
-import { clx, Container, Heading } from '@medusajs/ui';
+import { _DataTable } from "../table/data-table/data-table"
+import { TableSkeleton } from "../common/skeleton"
 
-import { TableSkeleton } from '../common/skeleton';
-import { _DataTable } from '../table/data-table/data-table';
-
-type InnerDataTableProps<TData> = Parameters<typeof _DataTable<TData>>[0];
+type InnerDataTableProps<TData> = Parameters<typeof _DataTable<TData>>[0]
 
 type DataTableWithStickyFooterProps<TData> = InnerDataTableProps<TData> & {
-  heading: string | React.ReactNode;
-  className?: string;
-  marginPx?: number;
-};
+  heading: string | React.ReactNode
+  className?: string
+  marginPx?: number
+}
 
 export function DataTableWithStickyFooter<TData>({
   heading,
@@ -20,39 +19,44 @@ export function DataTableWithStickyFooter<TData>({
   isLoading,
   ...dataTableProps
 }: DataTableWithStickyFooterProps<TData>) {
-  const [containerMaxHeight, setContainerMaxHeight] = useState<number | null>(null);
+  const [containerMaxHeight, setContainerMaxHeight] = useState<number | null>(
+    null
+  )
 
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null)
 
   function handleCalcMaxHeight() {
-    const container = containerRef.current;
+    const container = containerRef.current
     if (!container) {
-      return;
+      return
     }
 
-    const rect = container?.getBoundingClientRect();
-    const availableVerticalSpace = Math.max(0, window.innerHeight - rect.top - marginPx);
-    setContainerMaxHeight(availableVerticalSpace);
+    const rect = container?.getBoundingClientRect()
+    const availableVerticalSpace = Math.max(
+      0,
+      window.innerHeight - rect.top - marginPx
+    )
+    setContainerMaxHeight(availableVerticalSpace)
   }
 
   useLayoutEffect(() => {
-    handleCalcMaxHeight();
+    handleCalcMaxHeight()
 
-    window.addEventListener('resize', handleCalcMaxHeight);
-    window.addEventListener('scroll', handleCalcMaxHeight);
+    window.addEventListener("resize", handleCalcMaxHeight)
+    window.addEventListener("scroll", handleCalcMaxHeight)
 
     return () => {
-      window.removeEventListener('resize', handleCalcMaxHeight);
-      window.removeEventListener('scroll', handleCalcMaxHeight);
-    };
-  }, []);
+      window.removeEventListener("resize", handleCalcMaxHeight)
+      window.removeEventListener("scroll", handleCalcMaxHeight)
+    }
+  }, [])
 
   return (
     <Container
       ref={containerRef}
-      className={clx('flex flex-col divide-y p-0', className)}
+      className={clx("divide-y p-0 flex flex-col", className)}
       style={{
-        maxHeight: containerMaxHeight ? `${containerMaxHeight}px` : undefined
+        maxHeight: containerMaxHeight ? `${containerMaxHeight}px` : undefined,
       }}
     >
       {isLoading ? (
@@ -70,5 +74,5 @@ export function DataTableWithStickyFooter<TData>({
         </>
       )}
     </Container>
-  );
+  )
 }

@@ -1,50 +1,52 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Heading, Input, Text, toast } from '@medusajs/ui';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { z } from 'zod';
-
-import { Form } from '../../../../../components/common/form';
-import { RouteFocusModal, useRouteModal } from '../../../../../components/modals';
-import { KeyboundForm } from '../../../../../components/utilities/keybound-form';
-import { useCreateVendorRequest } from '../../../../../hooks/api';
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Button, Heading, Input, Text, toast } from "@medusajs/ui"
+import { useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { z } from "zod"
+import { Form } from "../../../../../components/common/form"
+import {
+  RouteFocusModal,
+  useRouteModal,
+} from "../../../../../components/modals"
+import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
+import { useCreateVendorRequest } from "../../../../../hooks/api"
 
 const ProductTagCreateSchema = z.object({
-  value: z.string().min(1)
-});
+  value: z.string().min(1),
+})
 
 export const ProductTagCreateForm = () => {
-  const { t } = useTranslation();
-  const { handleSuccess } = useRouteModal();
+  const { t } = useTranslation()
+  const { handleSuccess } = useRouteModal()
 
   const form = useForm<z.infer<typeof ProductTagCreateSchema>>({
     defaultValues: {
-      value: ''
+      value: "",
     },
-    resolver: zodResolver(ProductTagCreateSchema)
-  });
+    resolver: zodResolver(ProductTagCreateSchema),
+  })
 
-  const { mutateAsync, isPending } = useCreateVendorRequest();
+  const { mutateAsync, isPending } = useCreateVendorRequest()
 
-  const handleSubmit = form.handleSubmit(async data => {
+  const handleSubmit = form.handleSubmit(async (data) => {
     await mutateAsync(
       {
         request: {
-          type: 'product_tag',
-          data
-        }
+          type: "product_tag",
+          data,
+        },
       },
       {
         onSuccess: () => {
-          toast.success('Product Tag Requested');
-          handleSuccess();
+          toast.success("Product Tag Requested")
+          handleSuccess()
         },
-        onError: error => {
-          toast.error(error.message);
-        }
+        onError: (error) => {
+          toast.error(error.message)
+        },
       }
-    );
-  });
+    )
+  })
 
   return (
     <RouteFocusModal.Form form={form}>
@@ -60,11 +62,8 @@ export const ProductTagCreateForm = () => {
                 <Heading>Request Product Tag</Heading>
               </RouteFocusModal.Title>
               <RouteFocusModal.Description asChild>
-                <Text
-                  size="small"
-                  className="text-ui-fg-subtle"
-                >
-                  {t('productTags.create.subtitle')}
+                <Text size="small" className="text-ui-fg-subtle">
+                  {t("productTags.create.subtitle")}
                 </Text>
               </RouteFocusModal.Description>
             </div>
@@ -75,13 +74,13 @@ export const ProductTagCreateForm = () => {
                 render={({ field }) => {
                   return (
                     <Form.Item>
-                      <Form.Label>{t('productTags.fields.value')}</Form.Label>
+                      <Form.Label>{t("productTags.fields.value")}</Form.Label>
                       <Form.Control>
                         <Input {...field} />
                       </Form.Control>
                       <Form.ErrorMessage />
                     </Form.Item>
-                  );
+                  )
                 }}
               />
             </div>
@@ -90,24 +89,16 @@ export const ProductTagCreateForm = () => {
         <RouteFocusModal.Footer>
           <div className="flex items-center justify-end gap-2">
             <RouteFocusModal.Close asChild>
-              <Button
-                size="small"
-                variant="secondary"
-                type="button"
-              >
-                {t('actions.cancel')}
+              <Button size="small" variant="secondary" type="button">
+                {t("actions.cancel")}
               </Button>
             </RouteFocusModal.Close>
-            <Button
-              size="small"
-              type="submit"
-              isLoading={isPending}
-            >
+            <Button size="small" type="submit" isLoading={isPending}>
               Request
             </Button>
           </div>
         </RouteFocusModal.Footer>
       </KeyboundForm>
     </RouteFocusModal.Form>
-  );
-};
+  )
+}

@@ -1,56 +1,65 @@
-import { useCallback, useMemo, useState } from 'react';
+import { Button, Checkbox, Hint, Switch, toast, Tooltip } from "@medusajs/ui"
+import {
+  createColumnHelper,
+  OnChangeFn,
+  RowSelectionState,
+} from "@tanstack/react-table"
+import { useCallback, useMemo, useState } from "react"
+import { useTranslation } from "react-i18next"
+import * as zod from "zod"
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { HttpTypes } from '@medusajs/types';
-import { Button, Checkbox, Hint, Switch, toast, Tooltip } from '@medusajs/ui';
-import { keepPreviousData } from '@tanstack/react-query';
-import { createColumnHelper, OnChangeFn, RowSelectionState } from '@tanstack/react-table';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import * as zod from 'zod';
-
-import { RouteFocusModal, useRouteModal } from '../../../../../components/modals';
-import { _DataTable } from '../../../../../components/table/data-table';
-import { KeyboundForm } from '../../../../../components/utilities/keybound-form';
-import { useCurrencies } from '../../../../../hooks/api/currencies';
-import { pricePreferencesQueryKeys } from '../../../../../hooks/api/price-preferences';
-import { useUpdateStore } from '../../../../../hooks/api/store';
-import { useDataTable } from '../../../../../hooks/use-data-table';
-import { queryClient } from '../../../../../lib/query-client';
-import { useCurrenciesTableColumns } from '../../../common/hooks/use-currencies-table-columns';
-import { useCurrenciesTableQuery } from '../../../common/hooks/use-currencies-table-query';
+import { zodResolver } from "@hookform/resolvers/zod"
+import { HttpTypes } from "@medusajs/types"
+import { keepPreviousData } from "@tanstack/react-query"
+import { useForm } from "react-hook-form"
+import {
+  RouteFocusModal,
+  useRouteModal,
+} from "../../../../../components/modals"
+import { _DataTable } from "../../../../../components/table/data-table"
+import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
+import { useCurrencies } from "../../../../../hooks/api/currencies"
+import { pricePreferencesQueryKeys } from "../../../../../hooks/api/price-preferences"
+import { useUpdateStore } from "../../../../../hooks/api/store"
+import { useDataTable } from "../../../../../hooks/use-data-table"
+import { queryClient } from "../../../../../lib/query-client"
+import { useCurrenciesTableColumns } from "../../../common/hooks/use-currencies-table-columns"
+import { useCurrenciesTableQuery } from "../../../common/hooks/use-currencies-table-query"
 
 type AddCurrenciesFormProps = {
-  store: HttpTypes.AdminStore;
-  pricePreferences: HttpTypes.AdminPricePreference[];
-};
+  store: HttpTypes.AdminStore
+  pricePreferences: HttpTypes.AdminPricePreference[]
+}
 
 const AddCurrenciesSchema = zod.object({
   currencies: zod.array(zod.string()).min(1),
-  pricePreferences: zod.record(zod.boolean())
-});
+  pricePreferences: zod.record(zod.boolean()),
+})
 
-const PAGE_SIZE = 50;
-const PREFIX = 'ac';
+const PAGE_SIZE = 50
+const PREFIX = "ac"
 
-export const AddCurrenciesForm = ({ store, pricePreferences }: AddCurrenciesFormProps) => {
-  const { t } = useTranslation();
-  const { handleSuccess } = useRouteModal();
+export const AddCurrenciesForm = ({
+  store,
+  pricePreferences,
+}: AddCurrenciesFormProps) => {
+  const { t } = useTranslation()
+  const { handleSuccess } = useRouteModal()
 
   const { raw, searchParams } = useCurrenciesTableQuery({
     pageSize: 50,
-    prefix: PREFIX
-  });
+    prefix: PREFIX,
+  })
 
   const {
     currencies,
     count,
     isPending: isLoading,
     isError,
-    error
+    error,
   } = useCurrencies(searchParams, {
-    placeholderData: keepPreviousData
-  });
+    placeholderData: keepPreviousData,
+  })
 
   const form = useForm<zod.infer<typeof AddCurrenciesSchema>>({
     defaultValues: {
@@ -58,100 +67,105 @@ export const AddCurrenciesForm = ({ store, pricePreferences }: AddCurrenciesForm
       pricePreferences: pricePreferences?.reduce(
         (acc, curr) => {
           if (curr.value) {
-            acc[curr.value] = curr.is_tax_inclusive;
+            acc[curr.value] = curr.is_tax_inclusive
           }
 
-          return acc;
+          return acc
         },
         {} as Record<string, boolean>
-      )
+      ),
     },
-    resolver: zodResolver(AddCurrenciesSchema)
-  });
+    resolver: zodResolver(AddCurrenciesSchema),
+  })
 
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
-  const { setValue, watch } = form;
-  const pricePreferenceValues = watch('pricePreferences');
+  const { setValue, watch } = form
+  const pricePreferenceValues = watch("pricePreferences")
 
-  const updater: OnChangeFn<RowSelectionState> = fn => {
-    const updated = typeof fn === 'function' ? fn(rowSelection) : fn;
+  const updater: OnChangeFn<RowSelectionState> = (fn) => {
+    const updated = typeof fn === "function" ? fn(rowSelection) : fn
 
-    const ids = Object.keys(updated);
-    setValue('currencies', ids, {
+    const ids = Object.keys(updated)
+    setValue("currencies", ids, {
       shouldDirty: true,
-      shouldTouch: true
-    });
+      shouldTouch: true,
+    })
 
-    setRowSelection(updated);
-  };
+    setRowSelection(updated)
+  }
 
-  const preSelectedRows = store.supported_currencies?.map(c => c.currency_code) ?? [];
+  const preSelectedRows =
+    store.supported_currencies?.map((c) => c.currency_code) ?? []
 
   const setPricePreferences = useCallback(
     (values: Record<string, boolean>) => {
-      setValue('pricePreferences', values);
+      setValue("pricePreferences", values)
     },
     [setValue]
-  );
+  )
 
-  const columns = useColumns(pricePreferenceValues, setPricePreferences);
+  const columns = useColumns(pricePreferenceValues, setPricePreferences)
 
   const { table } = useDataTable({
     data: currencies ?? [],
     columns,
     count: count,
-    getRowId: row => row.code,
-    enableRowSelection: row => !preSelectedRows.includes(row.original.code),
+    getRowId: (row) => row.code,
+    enableRowSelection: (row) => !preSelectedRows.includes(row.original.code),
     enablePagination: true,
     pageSize: PAGE_SIZE,
     prefix: PREFIX,
     rowSelection: {
       state: rowSelection,
-      updater
-    }
-  });
+      updater,
+    },
+  })
 
-  const { mutateAsync, isPending } = useUpdateStore(store.id);
+  const { mutateAsync, isPending } = useUpdateStore(store.id)
 
-  const handleSubmit = form.handleSubmit(async data => {
-    const currencies = Array.from(new Set([...data.currencies, ...preSelectedRows])) as string[];
+  const handleSubmit = form.handleSubmit(async (data) => {
+    const currencies = Array.from(
+      new Set([...data.currencies, ...preSelectedRows])
+    ) as string[]
 
-    let defaultCurrency = store.supported_currencies?.find(c => c.is_default)?.currency_code;
+    let defaultCurrency = store.supported_currencies?.find(
+      (c) => c.is_default
+    )?.currency_code
 
-    if (!currencies.includes(defaultCurrency ?? '')) {
-      defaultCurrency = currencies?.[0];
+    if (!currencies.includes(defaultCurrency ?? "")) {
+      defaultCurrency = currencies?.[0]
     }
 
     await mutateAsync(
       {
-        supported_currencies: currencies.map(c => ({
+        supported_currencies: currencies.map((c) => ({
           currency_code: c,
           is_default: c === defaultCurrency,
-          is_tax_inclusive: data.pricePreferences[c]
-        }))
+          is_tax_inclusive: data.pricePreferences[c],
+        })),
       },
       {
         onSuccess: () => {
-          toast.success(t('store.toast.currenciesUpdated'));
+          toast.success(t("store.toast.currenciesUpdated"))
 
           // We invalidate all price preferences queries to ensure that if a currency is added
           // as being tax inclusive, it will be reflected in the table view immediately.
           queryClient.invalidateQueries({
-            queryKey: pricePreferencesQueryKeys.all
-          });
+            queryKey: pricePreferencesQueryKeys.all,
+          })
 
-          handleSuccess();
+          handleSuccess()
         },
-        onError: error => {
-          toast.error(error.message);
-        }
+        onError: (error) => {
+          toast.error(error.message)
+        },
       }
-    );
-  });
+    )
+  })
 
   if (isError) {
-    throw error;
+    throw error
   }
 
   return (
@@ -164,7 +178,9 @@ export const AddCurrenciesForm = ({ store, pricePreferences }: AddCurrenciesForm
           <div className="flex flex-1 items-center justify-between">
             <div className="flex items-center">
               {form.formState.errors.currencies && (
-                <Hint variant="error">{form.formState.errors.currencies.message}</Hint>
+                <Hint variant="error">
+                  {form.formState.errors.currencies.message}
+                </Hint>
               )}
             </div>
           </div>
@@ -180,8 +196,8 @@ export const AddCurrenciesForm = ({ store, pricePreferences }: AddCurrenciesForm
             search="autofocus"
             prefix={PREFIX}
             orderBy={[
-              { key: 'name', label: t('fields.name') },
-              { key: 'code', label: t('fields.code') }
+              { key: "name", label: t("fields.name") },
+              { key: "code", label: t("fields.code") },
             ]}
             isLoading={isLoading}
             queryObject={raw}
@@ -190,102 +206,101 @@ export const AddCurrenciesForm = ({ store, pricePreferences }: AddCurrenciesForm
         <RouteFocusModal.Footer>
           <div className="flex items-center justify-end gap-x-2">
             <RouteFocusModal.Close asChild>
-              <Button
-                size="small"
-                variant="secondary"
-              >
-                {t('actions.cancel')}
+              <Button size="small" variant="secondary">
+                {t("actions.cancel")}
               </Button>
             </RouteFocusModal.Close>
-            <Button
-              size="small"
-              type="submit"
-              isLoading={isPending}
-            >
-              {t('actions.save')}
+            <Button size="small" type="submit" isLoading={isPending}>
+              {t("actions.save")}
             </Button>
           </div>
         </RouteFocusModal.Footer>
       </KeyboundForm>
     </RouteFocusModal.Form>
-  );
-};
+  )
+}
 
-const columnHelper = createColumnHelper<HttpTypes.AdminCurrency>();
+const columnHelper = createColumnHelper<HttpTypes.AdminCurrency>()
 
-const useColumns = (pricePreferences: Record<string, boolean>, setPricePreferences: any) => {
-  const { t } = useTranslation();
-  const base = useCurrenciesTableColumns();
+const useColumns = (
+  pricePreferences: Record<string, boolean>,
+  setPricePreferences: any
+) => {
+  const { t } = useTranslation()
+  const base = useCurrenciesTableColumns()
 
   return useMemo(
     () => [
       columnHelper.display({
-        id: 'select',
+        id: "select",
         header: ({ table }) => {
           return (
             <Checkbox
               checked={
                 table.getIsSomePageRowsSelected()
-                  ? 'indeterminate'
+                  ? "indeterminate"
                   : table.getIsAllPageRowsSelected()
               }
-              onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
+              onCheckedChange={(value) =>
+                table.toggleAllPageRowsSelected(!!value)
+              }
             />
-          );
+          )
         },
         cell: ({ row }) => {
-          const isPreSelected = !row.getCanSelect();
-          const isSelected = row.getIsSelected() || isPreSelected;
+          const isPreSelected = !row.getCanSelect()
+          const isSelected = row.getIsSelected() || isPreSelected
 
           const Component = (
             <Checkbox
               checked={isSelected}
               disabled={isPreSelected}
-              onCheckedChange={value => row.toggleSelected(!!value)}
-              onClick={e => {
-                e.stopPropagation();
+              onCheckedChange={(value) => row.toggleSelected(!!value)}
+              onClick={(e) => {
+                e.stopPropagation()
               }}
             />
-          );
+          )
 
           if (isPreSelected) {
             return (
-              <Tooltip
-                content={t('store.currencyAlreadyAdded')}
-                side="right"
-              >
+              <Tooltip content={t("store.currencyAlreadyAdded")} side="right">
                 {Component}
               </Tooltip>
-            );
+            )
           }
 
-          return Component;
-        }
+          return Component
+        },
       }),
       ...base,
       columnHelper.display({
-        id: 'select',
-        header: () => <div className="whitespace-nowrap">{t('fields.taxInclusivePricing')}</div>,
+        id: "select",
+        header: () => (
+          <div className="whitespace-nowrap">
+            {t("fields.taxInclusivePricing")}
+          </div>
+        ),
         cell: ({ row }) => {
-          const isPreSelected = !row.getCanSelect();
-          const isTaxInclusive = pricePreferences[row.original.code];
+          const isPreSelected = !row.getCanSelect()
+          const isTaxInclusive = pricePreferences[row.original.code]
           return (
             <div className="flex items-center justify-end">
               <Switch
                 disabled={isPreSelected}
                 checked={isTaxInclusive ?? false}
-                onCheckedChange={val => {
+                onCheckedChange={(val) => {
                   setPricePreferences({
                     ...pricePreferences,
-                    [row.original.code]: val
-                  });
+                    [row.original.code]: val,
+                  })
                 }}
               />
             </div>
-          );
-        }
-      })
+          )
+        },
+      }),
     ],
     [t, base, pricePreferences, setPricePreferences]
-  );
-};
+  )
+}

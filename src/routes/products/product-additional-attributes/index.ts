@@ -1,1 +1,1 @@
-export { ProductAdditionalAttributesForm as Component } from './ProductAdditionalAttributesForm';
+export { ProductAdditionalAttributesForm as Component } from "./ProductAdditionalAttributesForm"

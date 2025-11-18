@@ -1,1 +1,1 @@
-export { Register as Component } from './register';
+export { Register as Component } from "./register"

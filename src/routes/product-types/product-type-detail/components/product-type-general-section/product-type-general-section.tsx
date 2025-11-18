@@ -1,18 +1,19 @@
-import { PencilSquare, Trash } from '@medusajs/icons';
-import { HttpTypes } from '@medusajs/types';
-import { Container, Heading } from '@medusajs/ui';
-import { useTranslation } from 'react-i18next';
-
-import { ActionMenu } from '../../../../../components/common/action-menu';
-import { useDeleteProductTypeAction } from '../../../common/hooks/use-delete-product-type-action';
+import { PencilSquare, Trash } from "@medusajs/icons"
+import { HttpTypes } from "@medusajs/types"
+import { Container, Heading } from "@medusajs/ui"
+import { useTranslation } from "react-i18next"
+import { ActionMenu } from "../../../../../components/common/action-menu"
+import { useDeleteProductTypeAction } from "../../../common/hooks/use-delete-product-type-action"
 
 type ProductTypeGeneralSectionProps = {
-  productType: HttpTypes.AdminProductType;
-};
+  productType: HttpTypes.AdminProductType
+}
 
-export const ProductTypeGeneralSection = ({ productType }: ProductTypeGeneralSectionProps) => {
-  const { t } = useTranslation();
-  const handleDelete = useDeleteProductTypeAction(productType.id);
+export const ProductTypeGeneralSection = ({
+  productType,
+}: ProductTypeGeneralSectionProps) => {
+  const { t } = useTranslation()
+  const handleDelete = useDeleteProductTypeAction(productType.id)
 
   return (
     <Container className="flex items-center justify-between">
@@ -22,23 +23,23 @@ export const ProductTypeGeneralSection = ({ productType }: ProductTypeGeneralSec
           {
             actions: [
               {
-                label: t('actions.edit'),
+                label: t("actions.edit"),
                 icon: <PencilSquare />,
-                to: 'edit'
-              }
-            ]
+                to: "edit",
+              },
+            ],
           },
           {
             actions: [
               {
-                label: t('actions.delete'),
+                label: t("actions.delete"),
                 icon: <Trash />,
-                onClick: handleDelete
-              }
-            ]
-          }
+                onClick: handleDelete,
+              },
+            ],
+          },
         ]}
       />
     </Container>
-  );
-};
+  )
+}

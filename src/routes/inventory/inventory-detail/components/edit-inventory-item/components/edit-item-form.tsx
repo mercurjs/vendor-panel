@@ -1,51 +1,52 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { HttpTypes } from '@medusajs/types';
-import { Button, Input, toast } from '@medusajs/ui';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import * as zod from 'zod';
-import { z } from 'zod';
+import * as zod from "zod"
 
-import { Form } from '../../../../../../components/common/form';
-import { RouteDrawer, useRouteModal } from '../../../../../../components/modals';
-import { KeyboundForm } from '../../../../../../components/utilities/keybound-form';
-import { useUpdateInventoryItem } from '../../../../../../hooks/api/inventory';
+import { Button, Input, toast } from "@medusajs/ui"
+import { RouteDrawer, useRouteModal } from "../../../../../../components/modals"
+
+import { zodResolver } from "@hookform/resolvers/zod"
+import { HttpTypes } from "@medusajs/types"
+import { useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { z } from "zod"
+import { Form } from "../../../../../../components/common/form"
+import { KeyboundForm } from "../../../../../../components/utilities/keybound-form"
+import { useUpdateInventoryItem } from "../../../../../../hooks/api/inventory"
 
 type EditInventoryItemFormProps = {
-  item: HttpTypes.AdminInventoryItem;
-};
+  item: HttpTypes.AdminInventoryItem
+}
 
 const EditInventoryItemSchema = z.object({
   title: z.string().optional(),
-  sku: z.string().min(1)
-});
+  sku: z.string().min(1),
+})
 
 const getDefaultValues = (item: HttpTypes.AdminInventoryItem) => {
   return {
     title: item.title ?? undefined,
-    sku: item.sku ?? undefined
-  };
-};
+    sku: item.sku ?? undefined,
+  }
+}
 
 export const EditInventoryItemForm = ({ item }: EditInventoryItemFormProps) => {
-  const { t } = useTranslation();
-  const { handleSuccess } = useRouteModal();
+  const { t } = useTranslation()
+  const { handleSuccess } = useRouteModal()
   const form = useForm<zod.infer<typeof EditInventoryItemSchema>>({
     defaultValues: getDefaultValues(item),
-    resolver: zodResolver(EditInventoryItemSchema)
-  });
+    resolver: zodResolver(EditInventoryItemSchema),
+  })
 
-  const { mutateAsync, isPending: isLoading } = useUpdateInventoryItem(item.id);
+  const { mutateAsync, isPending: isLoading } = useUpdateInventoryItem(item.id)
 
-  const handleSubmit = form.handleSubmit(async values => {
+  const handleSubmit = form.handleSubmit(async (values) => {
     mutateAsync(values as any, {
       onSuccess: () => {
-        toast.success(t('inventory.toast.updateItem'));
-        handleSuccess();
+        toast.success(t("inventory.toast.updateItem"))
+        handleSuccess()
       },
-      onError: e => toast.error(e.message)
-    });
-  });
+      onError: (e) => toast.error(e.message),
+    })
+  })
 
   return (
     <RouteDrawer.Form form={form}>
@@ -60,13 +61,13 @@ export const EditInventoryItemForm = ({ item }: EditInventoryItemFormProps) => {
             render={({ field }) => {
               return (
                 <Form.Item>
-                  <Form.Label>{t('fields.title')}</Form.Label>
+                  <Form.Label>{t("fields.title")}</Form.Label>
                   <Form.Control>
                     <Input {...field} />
                   </Form.Control>
                   <Form.ErrorMessage />
                 </Form.Item>
-              );
+              )
             }}
           />
           <Form.Field
@@ -75,36 +76,29 @@ export const EditInventoryItemForm = ({ item }: EditInventoryItemFormProps) => {
             render={({ field }) => {
               return (
                 <Form.Item>
-                  <Form.Label>{t('fields.sku')}</Form.Label>
+                  <Form.Label>{t("fields.sku")}</Form.Label>
                   <Form.Control>
                     <Input {...field} />
                   </Form.Control>
                   <Form.ErrorMessage />
                 </Form.Item>
-              );
+              )
             }}
           />
         </RouteDrawer.Body>
         <RouteDrawer.Footer>
           <div className="flex items-center justify-end gap-x-2">
             <RouteDrawer.Close asChild>
-              <Button
-                variant="secondary"
-                size="small"
-              >
-                {t('actions.cancel')}
+              <Button variant="secondary" size="small">
+                {t("actions.cancel")}
               </Button>
             </RouteDrawer.Close>
-            <Button
-              type="submit"
-              size="small"
-              isLoading={isLoading}
-            >
-              {t('actions.save')}
+            <Button type="submit" size="small" isLoading={isLoading}>
+              {t("actions.save")}
             </Button>
           </div>
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  );
-};
+  )
+}

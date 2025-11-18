@@ -1,12 +1,18 @@
-import { motion } from 'motion/react';
+import { motion } from "motion/react"
 
-import { IconAvatar } from '../icon-avatar';
+import { IconAvatar } from "../icon-avatar"
 
-export default function AvatarBox({ checked, size = 44 }: { checked?: boolean; size?: number }) {
+export default function AvatarBox({
+  checked,
+  size = 44,
+}: {
+  checked?: boolean
+  size?: number
+}) {
   return (
     <IconAvatar
-      size={size === 44 ? 'xlarge' : 'small'}
-      className="after:button-neutral-gradient relative mb-4 flex items-center justify-center rounded-xl bg-ui-button-neutral shadow-buttons-neutral after:inset-0 after:content-['']"
+      size={size === 44 ? "xlarge" : "small"}
+      className="bg-ui-button-neutral shadow-buttons-neutral after:button-neutral-gradient relative mb-4 flex items-center justify-center rounded-xl after:inset-0 after:content-['']"
     >
       {checked && (
         <motion.div
@@ -16,7 +22,7 @@ export default function AvatarBox({ checked, size = 44 }: { checked?: boolean; s
           transition={{
             duration: 1.2,
             delay: 0.8,
-            ease: [0, 0.71, 0.2, 1.01]
+            ease: [0, 0.71, 0.2, 1.01],
           }}
         >
           <svg
@@ -38,7 +44,7 @@ export default function AvatarBox({ checked, size = 44 }: { checked?: boolean; s
                 duration: 1.3,
                 delay: 1.1,
                 bounce: 0.6,
-                ease: [0.1, 0.8, 0.2, 1.01]
+                ease: [0.1, 0.8, 0.2, 1.01],
               }}
             />
           </svg>
@@ -51,25 +57,14 @@ export default function AvatarBox({ checked, size = 44 }: { checked?: boolean; s
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <rect
-          width="44"
-          height="44"
-          rx="10"
-          fill="#FAFAFA"
-        />
+        <rect width="44" height="44" rx="10" fill="#FAFAFA" />
         <g clipPath="url(#clip0_11_175)">
-          <path
-            d="M8 7V20.7349L19.821 13.8675L8 7Z"
-            fill="#4C24DD"
-          />
+          <path d="M8 7V20.7349L19.821 13.8675L8 7Z" fill="#4C24DD" />
           <path
             d="M36.0002 37.0001V23.2651L24.1792 30.1326L36.0002 37.0001Z"
             fill="#4C24DD"
           />
-          <path
-            d="M8 23.2651V37L36 20.7349V7L8 23.2651Z"
-            fill="#4C24DD"
-          />
+          <path d="M8 23.2651V37L36 20.7349V7L8 23.2651Z" fill="#4C24DD" />
         </g>
         <defs>
           <clipPath id="clip0_11_175">
@@ -83,5 +78,5 @@ export default function AvatarBox({ checked, size = 44 }: { checked?: boolean; s
         </defs>
       </svg>
     </IconAvatar>
-  );
+  )
 }

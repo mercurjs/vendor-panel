@@ -1,105 +1,119 @@
-import { useMemo, useState } from 'react';
+import { zodResolver } from "@hookform/resolvers/zod"
+import { XMarkMini } from "@medusajs/icons"
+import {
+  Button,
+  Checkbox,
+  Heading,
+  Input,
+  Select,
+  Switch,
+  Text,
+  clx,
+  toast,
+} from "@medusajs/ui"
+import { RowSelectionState, createColumnHelper } from "@tanstack/react-table"
+import { useMemo, useState } from "react"
+import { useForm, useWatch } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import * as zod from "zod"
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { XMarkMini } from '@medusajs/icons';
-import { PaymentProviderDTO } from '@medusajs/types';
-import { Button, Checkbox, clx, Heading, Input, Select, Switch, Text, toast } from '@medusajs/ui';
-import { createColumnHelper, RowSelectionState } from '@tanstack/react-table';
-import { useForm, useWatch } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import * as zod from 'zod';
+import { PaymentProviderDTO } from "@medusajs/types"
 
-import { Form } from '../../../../../components/common/form';
-import { Combobox } from '../../../../../components/inputs/combobox';
+import { Form } from "../../../../../components/common/form"
+import { Combobox } from "../../../../../components/inputs/combobox"
 import {
   RouteFocusModal,
   StackedFocusModal,
   useRouteModal,
-  useStackedModal
-} from '../../../../../components/modals';
-import { _DataTable } from '../../../../../components/table/data-table';
-import { KeyboundForm } from '../../../../../components/utilities/keybound-form';
-import { useCreateRegion } from '../../../../../hooks/api/regions';
-import { useDataTable } from '../../../../../hooks/use-data-table';
-import { countries as staticCountries, StaticCountry } from '../../../../../lib/data/countries';
-import { CurrencyInfo } from '../../../../../lib/data/currencies';
-import { formatProvider } from '../../../../../lib/format-provider';
-import { useCountries } from '../../../common/hooks/use-countries';
-import { useCountryTableColumns } from '../../../common/hooks/use-country-table-columns';
-import { useCountryTableQuery } from '../../../common/hooks/use-country-table-query';
+  useStackedModal,
+} from "../../../../../components/modals"
+import { _DataTable } from "../../../../../components/table/data-table"
+import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
+import { useCreateRegion } from "../../../../../hooks/api/regions"
+import { useDataTable } from "../../../../../hooks/use-data-table"
+import { countries as staticCountries, StaticCountry } from "../../../../../lib/data/countries"
+import { CurrencyInfo } from "../../../../../lib/data/currencies"
+import { formatProvider } from "../../../../../lib/format-provider"
+import { useCountries } from "../../../common/hooks/use-countries"
+import { useCountryTableColumns } from "../../../common/hooks/use-country-table-columns"
+import { useCountryTableQuery } from "../../../common/hooks/use-country-table-query"
 
 type CreateRegionFormProps = {
-  currencies: CurrencyInfo[];
-  paymentProviders: PaymentProviderDTO[];
-};
+  currencies: CurrencyInfo[]
+  paymentProviders: PaymentProviderDTO[]
+}
 
 const CreateRegionSchema = zod.object({
   name: zod.string().min(1),
-  currency_code: zod.string().min(2, 'Select a currency'),
+  currency_code: zod.string().min(2, "Select a currency"),
   automatic_taxes: zod.boolean(),
   is_tax_inclusive: zod.boolean(),
   countries: zod.array(zod.object({ code: zod.string(), name: zod.string() })),
-  payment_providers: zod.array(zod.string()).min(1)
-});
+  payment_providers: zod.array(zod.string()).min(1),
+})
 
-const PREFIX = 'cr';
-const PAGE_SIZE = 50;
+const PREFIX = "cr"
+const PAGE_SIZE = 50
 
-const STACKED_MODAL_ID = 'countries-modal';
+const STACKED_MODAL_ID = "countries-modal"
 
-export const CreateRegionForm = ({ currencies, paymentProviders }: CreateRegionFormProps) => {
-  const { setIsOpen } = useStackedModal();
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const { handleSuccess } = useRouteModal();
+export const CreateRegionForm = ({
+  currencies,
+  paymentProviders,
+}: CreateRegionFormProps) => {
+  const { setIsOpen } = useStackedModal()
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const { handleSuccess } = useRouteModal()
 
   const form = useForm<zod.infer<typeof CreateRegionSchema>>({
     defaultValues: {
-      name: '',
-      currency_code: '',
+      name: "",
+      currency_code: "",
       automatic_taxes: true,
       is_tax_inclusive: false,
       countries: [],
-      payment_providers: []
+      payment_providers: [],
     },
-    resolver: zodResolver(CreateRegionSchema)
-  });
+    resolver: zodResolver(CreateRegionSchema),
+  })
 
   const selectedCountries = useWatch({
     control: form.control,
-    name: 'countries',
-    defaultValue: []
-  });
+    name: "countries",
+    defaultValue: [],
+  })
 
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
-  const { mutateAsync: createRegion, isPending: isPendingRegion } = useCreateRegion();
+  const { mutateAsync: createRegion, isPending: isPendingRegion } =
+    useCreateRegion()
 
-  const handleSubmit = form.handleSubmit(async values => {
+  const handleSubmit = form.handleSubmit(async (values) => {
     await createRegion(
       {
         name: values.name,
-        countries: values.countries.map(c => c.code),
+        countries: values.countries.map((c) => c.code),
         currency_code: values.currency_code,
         payment_providers: values.payment_providers,
         automatic_taxes: values.automatic_taxes,
-        is_tax_inclusive: values.is_tax_inclusive
+        is_tax_inclusive: values.is_tax_inclusive,
       },
       {
         onSuccess: ({ region }) => {
-          toast.success(t('regions.toast.create'));
-          handleSuccess(`../${region.id}`);
+          toast.success(t("regions.toast.create"))
+          handleSuccess(`../${region.id}`)
         },
-        onError: e => {
-          toast.error(e.message);
-        }
+        onError: (e) => {
+          toast.error(e.message)
+        },
       }
-    );
-  });
+    )
+  })
 
   const { searchParams, raw } = useCountryTableQuery({
     pageSize: PAGE_SIZE,
-    prefix: PREFIX
-  });
+    prefix: PREFIX,
+  })
   const { countries, count } = useCountries({
     countries: staticCountries.map((c, i) => ({
       display_name: c.display_name,
@@ -109,12 +123,12 @@ export const CreateRegionForm = ({ currencies, paymentProviders }: CreateRegionF
       iso_3: c.iso_3,
       num_code: c.num_code,
       region_id: null,
-      region: {} as any
+      region: {} as any,
     })),
-    ...searchParams
-  });
+    ...searchParams,
+  })
 
-  const columns = useColumns();
+  const columns = useColumns()
 
   const { table } = useDataTable({
     data: countries || [],
@@ -124,45 +138,47 @@ export const CreateRegionForm = ({ currencies, paymentProviders }: CreateRegionF
     enableRowSelection: true,
     rowSelection: {
       state: rowSelection,
-      updater: setRowSelection
+      updater: setRowSelection,
     },
-    getRowId: row => row.iso_2,
+    getRowId: (row) => row.iso_2,
     pageSize: PAGE_SIZE,
-    prefix: PREFIX
-  });
+    prefix: PREFIX,
+  })
 
   const saveCountries = () => {
-    const selected = Object.keys(rowSelection).filter(key => rowSelection[key]);
+    const selected = Object.keys(rowSelection).filter(
+      (key) => rowSelection[key]
+    )
 
     form.setValue(
-      'countries',
-      selected.map(key => ({
+      "countries",
+      selected.map((key) => ({
         code: key,
-        name: staticCountries.find(c => c.iso_2 === key)!.display_name
+        name: staticCountries.find((c) => c.iso_2 === key)!.display_name,
       })),
       { shouldDirty: true, shouldTouch: true }
-    );
+    )
 
-    setIsOpen(STACKED_MODAL_ID, false);
-  };
+    setIsOpen(STACKED_MODAL_ID, false)
+  }
 
   const removeCountry = (code: string) => {
-    const update = selectedCountries.filter(c => c.code !== code);
+    const update = selectedCountries.filter((c) => c.code !== code)
     const ids = update
-      .map(c => c.code)
+      .map((c) => c.code)
       .reduce((acc, c) => {
-        acc[c] = true;
-        return acc;
-      }, {} as RowSelectionState);
+        acc[c] = true
+        return acc
+      }, {} as RowSelectionState)
 
-    form.setValue('countries', update, { shouldDirty: true, shouldTouch: true });
-    setRowSelection(ids);
-  };
+    form.setValue("countries", update, { shouldDirty: true, shouldTouch: true })
+    setRowSelection(ids)
+  }
 
   const clearCountries = () => {
-    form.setValue('countries', [], { shouldDirty: true, shouldTouch: true });
-    setRowSelection({});
-  };
+    form.setValue("countries", [], { shouldDirty: true, shouldTouch: true })
+    setRowSelection({})
+  }
 
   return (
     <RouteFocusModal.Form form={form}>
@@ -173,35 +189,27 @@ export const CreateRegionForm = ({ currencies, paymentProviders }: CreateRegionF
         <RouteFocusModal.Header>
           <div className="flex items-center justify-end gap-x-2">
             <RouteFocusModal.Close asChild>
-              <Button
-                size="small"
-                variant="secondary"
-              >
-                {t('actions.cancel')}
+              <Button size="small" variant="secondary">
+                {t("actions.cancel")}
               </Button>
             </RouteFocusModal.Close>
-            <Button
-              size="small"
-              type="submit"
-              isLoading={isPendingRegion}
-            >
-              {t('actions.save')}
+            <Button size="small" type="submit" isLoading={isPendingRegion}>
+              {t("actions.save")}
             </Button>
           </div>
         </RouteFocusModal.Header>
         <RouteFocusModal.Body className="flex overflow-hidden">
           <div
-            className={clx('flex h-full w-full flex-col items-center overflow-y-auto p-16')}
+            className={clx(
+              "flex h-full w-full flex-col items-center overflow-y-auto p-16"
+            )}
             id="form-section"
           >
             <div className="flex w-full max-w-[720px] flex-col gap-y-8">
               <div>
-                <Heading>{t('regions.createRegion')}</Heading>
-                <Text
-                  size="small"
-                  className="text-ui-fg-subtle"
-                >
-                  {t('regions.createRegionHint')}
+                <Heading>{t("regions.createRegion")}</Heading>
+                <Text size="small" className="text-ui-fg-subtle">
+                  {t("regions.createRegionHint")}
                 </Text>
               </div>
               <div className="flex flex-col gap-y-4">
@@ -212,13 +220,13 @@ export const CreateRegionForm = ({ currencies, paymentProviders }: CreateRegionF
                     render={({ field }) => {
                       return (
                         <Form.Item>
-                          <Form.Label>{t('fields.name')}</Form.Label>
+                          <Form.Label>{t("fields.name")}</Form.Label>
                           <Form.Control>
                             <Input {...field} />
                           </Form.Control>
                           <Form.ErrorMessage />
                         </Form.Item>
-                      );
+                      )
                     }}
                   />
                   <Form.Field
@@ -227,17 +235,14 @@ export const CreateRegionForm = ({ currencies, paymentProviders }: CreateRegionF
                     render={({ field: { onChange, ref, ...field } }) => {
                       return (
                         <Form.Item>
-                          <Form.Label>{t('fields.currency')}</Form.Label>
+                          <Form.Label>{t("fields.currency")}</Form.Label>
                           <Form.Control>
-                            <Select
-                              {...field}
-                              onValueChange={onChange}
-                            >
+                            <Select {...field} onValueChange={onChange}>
                               <Select.Trigger ref={ref}>
                                 <Select.Value />
                               </Select.Trigger>
                               <Select.Content>
-                                {currencies.map(currency => (
+                                {currencies.map((currency) => (
                                   <Select.Item
                                     value={currency.code}
                                     key={currency.code}
@@ -250,7 +255,7 @@ export const CreateRegionForm = ({ currencies, paymentProviders }: CreateRegionF
                           </Form.Control>
                           <Form.ErrorMessage />
                         </Form.Item>
-                      );
+                      )
                     }}
                   />
                 </div>
@@ -263,7 +268,7 @@ export const CreateRegionForm = ({ currencies, paymentProviders }: CreateRegionF
                     <Form.Item>
                       <div>
                         <div className="flex items-start justify-between">
-                          <Form.Label>{t('fields.automaticTaxes')}</Form.Label>
+                          <Form.Label>{t("fields.automaticTaxes")}</Form.Label>
                           <Form.Control>
                             <Switch
                               {...field}
@@ -272,11 +277,11 @@ export const CreateRegionForm = ({ currencies, paymentProviders }: CreateRegionF
                             />
                           </Form.Control>
                         </div>
-                        <Form.Hint>{t('regions.automaticTaxesHint')}</Form.Hint>
+                        <Form.Hint>{t("regions.automaticTaxesHint")}</Form.Hint>
                         <Form.ErrorMessage />
                       </div>
                     </Form.Item>
-                  );
+                  )
                 }}
               />
 
@@ -288,7 +293,9 @@ export const CreateRegionForm = ({ currencies, paymentProviders }: CreateRegionF
                     <Form.Item>
                       <div>
                         <div className="flex items-start justify-between">
-                          <Form.Label>{t('fields.taxInclusivePricing')}</Form.Label>
+                          <Form.Label>
+                            {t("fields.taxInclusivePricing")}
+                          </Form.Label>
                           <Form.Control>
                             <Switch
                               {...field}
@@ -297,34 +304,27 @@ export const CreateRegionForm = ({ currencies, paymentProviders }: CreateRegionF
                             />
                           </Form.Control>
                         </div>
-                        <Form.Hint>{t('regions.taxInclusiveHint')}</Form.Hint>
+                        <Form.Hint>{t("regions.taxInclusiveHint")}</Form.Hint>
                         <Form.ErrorMessage />
                       </div>
                     </Form.Item>
-                  );
+                  )
                 }}
               />
 
-              <div className="h-px w-full bg-ui-border-base" />
+              <div className="bg-ui-border-base h-px w-full" />
               <div className="flex flex-col gap-y-4">
                 <div>
-                  <Text
-                    size="small"
-                    leading="compact"
-                    weight="plus"
-                  >
-                    {t('fields.countries')}
+                  <Text size="small" leading="compact" weight="plus">
+                    {t("fields.countries")}
                   </Text>
-                  <Text
-                    size="small"
-                    className="text-ui-fg-subtle"
-                  >
-                    {t('regions.countriesHint')}
+                  <Text size="small" className="text-ui-fg-subtle">
+                    {t("regions.countriesHint")}
                   </Text>
                 </div>
                 {selectedCountries.length > 0 && (
                   <div className="flex flex-wrap gap-2">
-                    {selectedCountries.map(country => (
+                    {selectedCountries.map((country) => (
                       <CountryTag
                         key={country.code}
                         country={country}
@@ -337,18 +337,15 @@ export const CreateRegionForm = ({ currencies, paymentProviders }: CreateRegionF
                       className="text-ui-fg-muted hover:text-ui-fg-subtle"
                       onClick={clearCountries}
                     >
-                      {t('actions.clearAll')}
+                      {t("actions.clearAll")}
                     </Button>
                   </div>
                 )}
                 <StackedFocusModal id={STACKED_MODAL_ID}>
                   <div className="flex items-center justify-end">
                     <StackedFocusModal.Trigger asChild>
-                      <Button
-                        variant="secondary"
-                        size="small"
-                      >
-                        {t('regions.addCountries')}
+                      <Button variant="secondary" size="small">
+                        {t("regions.addCountries")}
                       </Button>
                     </StackedFocusModal.Trigger>
                   </div>
@@ -356,7 +353,9 @@ export const CreateRegionForm = ({ currencies, paymentProviders }: CreateRegionF
                     <div className="flex size-full flex-col overflow-hidden">
                       <StackedFocusModal.Header>
                         <StackedFocusModal.Title asChild>
-                          <span className="sr-only">{t('regions.addCountries')}</span>
+                          <span className="sr-only">
+                            {t("regions.addCountries")}
+                          </span>
                         </StackedFocusModal.Title>
                       </StackedFocusModal.Header>
                       <StackedFocusModal.Body className="overflow-hidden">
@@ -366,8 +365,8 @@ export const CreateRegionForm = ({ currencies, paymentProviders }: CreateRegionF
                           count={count}
                           pageSize={PAGE_SIZE}
                           orderBy={[
-                            { key: 'display_name', label: t('fields.name') },
-                            { key: 'iso_2', label: t('fields.code') }
+                            { key: "display_name", label: t("fields.name") },
+                            { key: "iso_2", label: t("fields.code") },
                           ]}
                           pagination
                           search="autofocus"
@@ -379,11 +378,8 @@ export const CreateRegionForm = ({ currencies, paymentProviders }: CreateRegionF
                       <StackedFocusModal.Footer>
                         <div className="flex items-center justify-end gap-x-2">
                           <StackedFocusModal.Close asChild>
-                            <Button
-                              variant="secondary"
-                              size="small"
-                            >
-                              {t('actions.cancel')}
+                            <Button variant="secondary" size="small">
+                              {t("actions.cancel")}
                             </Button>
                           </StackedFocusModal.Close>
                           <Button
@@ -391,7 +387,7 @@ export const CreateRegionForm = ({ currencies, paymentProviders }: CreateRegionF
                             type="button"
                             onClick={saveCountries}
                           >
-                            {t('actions.save')}
+                            {t("actions.save")}
                           </Button>
                         </div>
                       </StackedFocusModal.Footer>
@@ -399,21 +395,14 @@ export const CreateRegionForm = ({ currencies, paymentProviders }: CreateRegionF
                   </StackedFocusModal.Content>
                 </StackedFocusModal>
               </div>
-              <div className="h-px w-full bg-ui-border-base" />
+              <div className="bg-ui-border-base h-px w-full" />
               <div className="flex flex-col gap-y-4">
                 <div>
-                  <Text
-                    size="small"
-                    leading="compact"
-                    weight="plus"
-                  >
-                    {t('fields.providers')}
+                  <Text size="small" leading="compact" weight="plus">
+                    {t("fields.providers")}
                   </Text>
-                  <Text
-                    size="small"
-                    className="text-ui-fg-subtle"
-                  >
-                    {t('regions.providersHint')}
+                  <Text size="small" className="text-ui-fg-subtle">
+                    {t("regions.providersHint")}
                   </Text>
                 </div>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -423,19 +412,21 @@ export const CreateRegionForm = ({ currencies, paymentProviders }: CreateRegionF
                     render={({ field }) => {
                       return (
                         <Form.Item>
-                          <Form.Label>{t('fields.paymentProviders')}</Form.Label>
+                          <Form.Label>
+                            {t("fields.paymentProviders")}
+                          </Form.Label>
                           <Form.Control>
                             <Combobox
-                              options={paymentProviders.map(pp => ({
+                              options={paymentProviders.map((pp) => ({
                                 label: formatProvider(pp.id),
-                                value: pp.id
+                                value: pp.id,
                               }))}
                               {...field}
                             />
                           </Form.Control>
                           <Form.ErrorMessage />
                         </Form.Item>
-                      );
+                      )
                     }}
                   />
                 </div>
@@ -445,70 +436,72 @@ export const CreateRegionForm = ({ currencies, paymentProviders }: CreateRegionF
         </RouteFocusModal.Body>
       </KeyboundForm>
     </RouteFocusModal.Form>
-  );
-};
+  )
+}
 
-const columnHelper = createColumnHelper<StaticCountry>();
+const columnHelper = createColumnHelper<StaticCountry>()
 
 const useColumns = () => {
-  const base = useCountryTableColumns();
+  const base = useCountryTableColumns()
 
   return useMemo(
     () => [
       columnHelper.display({
-        id: 'select',
+        id: "select",
         header: ({ table }) => {
           return (
             <Checkbox
               checked={
                 table.getIsSomePageRowsSelected()
-                  ? 'indeterminate'
+                  ? "indeterminate"
                   : table.getIsAllPageRowsSelected()
               }
-              onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
+              onCheckedChange={(value) =>
+                table.toggleAllPageRowsSelected(!!value)
+              }
             />
-          );
+          )
         },
         cell: ({ row }) => {
-          const isPreselected = !row.getCanSelect();
+          const isPreselected = !row.getCanSelect()
 
           return (
             <Checkbox
               checked={row.getIsSelected() || isPreselected}
               disabled={isPreselected}
-              onCheckedChange={value => row.toggleSelected(!!value)}
-              onClick={e => {
-                e.stopPropagation();
+              onCheckedChange={(value) => row.toggleSelected(!!value)}
+              onClick={(e) => {
+                e.stopPropagation()
               }}
             />
-          );
-        }
+          )
+        },
       }),
-      ...base
+      ...base,
     ],
     [base]
-  );
-};
+  )
+}
 
 const CountryTag = ({
   country,
-  onRemove
+  onRemove,
 }: {
-  country: { code: string; name: string };
-  onRemove: (code: string) => void;
+  country: { code: string; name: string }
+  onRemove: (code: string) => void
 }) => {
   return (
-    <div className="flex h-7 items-center overflow-hidden rounded-md bg-ui-bg-field shadow-borders-base transition-fg hover:bg-ui-bg-field-hover">
+    <div className="bg-ui-bg-field shadow-borders-base transition-fg hover:bg-ui-bg-field-hover flex h-7 items-center overflow-hidden rounded-md">
       <div className="txt-compact-small-plus flex h-full select-none items-center justify-center px-2 py-0.5">
         {country.name}
       </div>
       <button
         type="button"
         onClick={() => onRemove(country.code)}
-        className="flex h-full w-7 items-center justify-center border-l outline-none transition-fg hover:bg-ui-bg-field-hover focus-visible:bg-ui-bg-field-hover"
+        className="focus-visible:bg-ui-bg-field-hover transition-fg hover:bg-ui-bg-field-hover flex h-full w-7 items-center justify-center border-l outline-none"
       >
         <XMarkMini className="text-ui-fg-muted" />
       </button>
     </div>
-  );
-};
+  )
+}

@@ -1,1 +1,1 @@
-export { Messages as Component } from './messages';
+export { Messages as Component } from "./messages"

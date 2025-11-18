@@ -1,23 +1,24 @@
-import { useLoaderData, useParams } from 'react-router-dom';
-
-import { TwoColumnPageSkeleton } from '../../../components/common/skeleton';
-import { TwoColumnPage } from '../../../components/layout/pages';
-import { useDashboardExtension } from '../../../extensions';
-import { useRequest } from '../../../hooks/api';
-import { ReviewGeneralSection } from './components/review-general-section';
-import { requestLoader } from './loader';
+import { useLoaderData, useParams } from "react-router-dom"
+import { TwoColumnPage } from "../../../components/layout/pages"
+import { useDashboardExtension } from "../../../extensions"
+import { ReviewGeneralSection } from "./components/review-general-section"
+import { requestLoader } from "./loader"
+import { TwoColumnPageSkeleton } from "../../../components/common/skeleton"
+import { useRequest } from "../../../hooks/api"
 
 export const RequestDetail = () => {
-  const initialData = useLoaderData() as Awaited<ReturnType<typeof requestLoader>>;
+  const initialData = useLoaderData() as Awaited<
+    ReturnType<typeof requestLoader>
+  >
 
-  const { id } = useParams();
+  const { id } = useParams()
   const { request, isLoading, isError, error } = useRequest(
     id!,
-    { fields: '*' },
+    { fields: "*" },
     { initialData }
-  ) as any;
+  ) as any
 
-  const { getWidgets } = useDashboardExtension();
+  const { getWidgets } = useDashboardExtension()
   if (isLoading || !request) {
     return (
       <TwoColumnPageSkeleton
@@ -26,20 +27,20 @@ export const RequestDetail = () => {
         showJSON
         showMetadata
       />
-    );
+    )
   }
 
   if (isError) {
-    throw error;
+    throw error
   }
 
   return (
     <TwoColumnPage
       widgets={{
-        after: getWidgets('campaign.details.after'),
-        before: getWidgets('campaign.details.before'),
-        sideAfter: getWidgets('campaign.details.side.after'),
-        sideBefore: getWidgets('campaign.details.side.before')
+        after: getWidgets("campaign.details.after"),
+        before: getWidgets("campaign.details.before"),
+        sideAfter: getWidgets("campaign.details.side.after"),
+        sideBefore: getWidgets("campaign.details.side.before"),
       }}
       hasOutlet
       showJSON
@@ -51,5 +52,5 @@ export const RequestDetail = () => {
       </TwoColumnPage.Main>
       <TwoColumnPage.Sidebar>Sidebar</TwoColumnPage.Sidebar>
     </TwoColumnPage>
-  );
-};
+  )
+}

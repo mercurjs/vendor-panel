@@ -1,1 +1,1 @@
-export { ReviewList as Component } from './review-list';
+export { ReviewList as Component } from "./review-list"

@@ -1,19 +1,20 @@
-import { FetchError } from '@medusajs/js-sdk';
-import { HttpTypes } from '@medusajs/types';
+import { FetchError } from "@medusajs/js-sdk"
+import { HttpTypes } from "@medusajs/types"
 import {
   QueryKey,
-  useMutation,
   UseMutationOptions,
+  UseQueryOptions,
+  useMutation,
   useQuery,
-  UseQueryOptions
-} from '@tanstack/react-query';
+} from "@tanstack/react-query"
+import { fetchQuery, sdk } from "../../lib/client"
+import { queryClient } from "../../lib/query-client"
+import { queryKeysFactory } from "../../lib/query-key-factory"
 
-import { fetchQuery, sdk } from '../../lib/client';
-import { queryClient } from '../../lib/query-client';
-import { queryKeysFactory } from '../../lib/query-key-factory';
-
-const PRICE_PREFERENCES_QUERY_KEY = 'price-preferences' as const;
-export const pricePreferencesQueryKeys = queryKeysFactory(PRICE_PREFERENCES_QUERY_KEY);
+const PRICE_PREFERENCES_QUERY_KEY = "price-preferences" as const
+export const pricePreferencesQueryKeys = queryKeysFactory(
+  PRICE_PREFERENCES_QUERY_KEY
+)
 
 export const usePricePreference = (
   id: string,
@@ -25,18 +26,18 @@ export const usePricePreference = (
       HttpTypes.AdminPricePreferenceResponse,
       QueryKey
     >,
-    'queryKey' | 'queryFn'
+    "queryKey" | "queryFn"
   >
 ) => {
   const { data, ...rest } = useQuery({
     // queryFn: () => fetchQuery(`/admin/price-preferences/${id}`, { query }),
     queryFn: () => sdk.admin.pricePreference.retrieve(id, query),
     queryKey: pricePreferencesQueryKeys.detail(id),
-    ...options
-  });
+    ...options,
+  })
 
-  return { ...data, ...rest };
-};
+  return { ...data, ...rest }
+}
 
 export const usePricePreferences = (
   query?: HttpTypes.AdminPricePreferenceListParams,
@@ -47,21 +48,21 @@ export const usePricePreferences = (
       HttpTypes.AdminPricePreferenceListResponse,
       QueryKey
     >,
-    'queryKey' | 'queryFn'
+    "queryKey" | "queryFn"
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: () =>
       fetchQuery(`/vendor/price-preferences`, {
-        method: 'GET',
-        query: query as Record<string, string | number>
+        method: "GET",
+        query: query as Record<string, string | number>,
       }),
     queryKey: pricePreferencesQueryKeys.list(query),
-    ...options
-  });
+    ...options,
+  })
 
-  return { ...data, ...rest };
-};
+  return { ...data, ...rest }
+}
 
 export const useUpsertPricePreference = (
   id?: string | undefined,
@@ -73,50 +74,45 @@ export const useUpsertPricePreference = (
   >
 ) => {
   return useMutation({
-    mutationFn: (
-      payload: HttpTypes.AdminUpdatePricePreference | HttpTypes.AdminCreatePricePreference
-    ) => {
+    mutationFn: (payload: HttpTypes.AdminUpdatePricePreference | HttpTypes.AdminCreatePricePreference) => {
       if (id) {
-        return sdk.admin.pricePreference.update(
-          id,
-          payload as HttpTypes.AdminUpdatePricePreference,
-          query
-        );
+        return sdk.admin.pricePreference.update(id, payload as HttpTypes.AdminUpdatePricePreference, query)
       }
-      return sdk.admin.pricePreference.create(
-        payload as HttpTypes.AdminCreatePricePreference,
-        query
-      );
+      return sdk.admin.pricePreference.create(payload as HttpTypes.AdminCreatePricePreference, query)
     },
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: pricePreferencesQueryKeys.list()
-      });
+        queryKey: pricePreferencesQueryKeys.list(),
+      })
       if (id) {
         queryClient.invalidateQueries({
-          queryKey: pricePreferencesQueryKeys.detail(id)
-        });
+          queryKey: pricePreferencesQueryKeys.detail(id),
+        })
       }
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useDeletePricePreference = (
   id: string,
-  options?: UseMutationOptions<HttpTypes.AdminPricePreferenceDeleteResponse, FetchError, void>
+  options?: UseMutationOptions<
+    HttpTypes.AdminPricePreferenceDeleteResponse,
+    FetchError,
+    void
+  >
 ) => {
   return useMutation({
     mutationFn: () => sdk.admin.pricePreference.delete(id),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: pricePreferencesQueryKeys.list()
-      });
+        queryKey: pricePreferencesQueryKeys.list(),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}

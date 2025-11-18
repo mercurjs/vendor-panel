@@ -1,19 +1,18 @@
-import { FetchError } from '@medusajs/js-sdk';
-import { PaginatedResponse } from '@medusajs/types';
+import { FetchError } from "@medusajs/js-sdk"
+import { PaginatedResponse } from "@medusajs/types"
 import {
   QueryKey,
   useMutation,
   UseMutationOptions,
   useQuery,
-  UseQueryOptions
-} from '@tanstack/react-query';
+  UseQueryOptions,
+} from "@tanstack/react-query"
+import { queryKeysFactory } from "../../lib/query-key-factory"
+import { fetchQuery } from "../../lib/client"
+import { queryClient } from "../../lib/query-client"
 
-import { fetchQuery } from '../../lib/client';
-import { queryClient } from '../../lib/query-client';
-import { queryKeysFactory } from '../../lib/query-key-factory';
-
-const REQUESTS_QUERY_KEY = 'requests' as const;
-export const requestsQueryKeys = queryKeysFactory(REQUESTS_QUERY_KEY);
+const REQUESTS_QUERY_KEY = "requests" as const
+export const requestsQueryKeys = queryKeysFactory(REQUESTS_QUERY_KEY)
 
 export const useRequest = (
   id: string,
@@ -21,184 +20,186 @@ export const useRequest = (
   options?: Omit<
     UseQueryOptions<
       {
-        request: any;
+        request: any
       },
       FetchError,
       {
-        request: any;
+        request: any
       },
       QueryKey
     >,
-    'queryFn' | 'queryKey'
+    "queryFn" | "queryKey"
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryKey: requestsQueryKeys.detail(id),
     queryFn: async () =>
       fetchQuery(`/vendor/requests/${id}`, {
-        method: 'GET',
-        query: query as { [key: string]: string | number }
+        method: "GET",
+        query: query as { [key: string]: string | number },
       }),
-    ...options
-  });
+    ...options,
+  })
 
-  return { ...data, ...rest };
-};
+  return { ...data, ...rest }
+}
 
 export const useRequests = (
   query?: Record<string, any>,
   options?: Omit<
     UseQueryOptions<
       PaginatedResponse<{
-        requests: any;
+        requests: any
       }>,
       FetchError,
       PaginatedResponse<{
-        requests: any;
+        requests: any
       }>,
       QueryKey
     >,
-    'queryFn' | 'queryKey'
+    "queryFn" | "queryKey"
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: () =>
-      fetchQuery('/vendor/requests', {
-        method: 'GET',
-        query: query as { [key: string]: string | number }
+      fetchQuery("/vendor/requests", {
+        method: "GET",
+        query: query as { [key: string]: string | number },
       }),
 
-    queryKey: [REQUESTS_QUERY_KEY, 'list'],
-    ...options
-  });
+    queryKey: [REQUESTS_QUERY_KEY, "list"],
+    ...options,
+  })
 
-  return { ...data, ...rest };
-};
+  return { ...data, ...rest }
+}
 
-export const useCreateVendorRequest = (options?: UseMutationOptions<any, FetchError, any>) => {
+export const useCreateVendorRequest = (
+  options?: UseMutationOptions<any, FetchError, any>
+) => {
   return useMutation({
-    mutationFn: payload =>
-      fetchQuery('/vendor/requests', {
-        method: 'POST',
-        body: payload
+    mutationFn: (payload) =>
+      fetchQuery("/vendor/requests", {
+        method: "POST",
+        body: payload,
       }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: [REQUESTS_QUERY_KEY, 'list']
-      });
+        queryKey: [REQUESTS_QUERY_KEY, "list"],
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useUpdateRequest = (
   id: string,
   options?: UseMutationOptions<any, FetchError, any>
 ) => {
   return useMutation({
-    mutationFn: payload =>
+    mutationFn: (payload) =>
       fetchQuery(`/vendor/requests/${id}`, {
-        method: 'POST',
-        body: payload
+        method: "POST",
+        body: payload,
       }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: [REQUESTS_QUERY_KEY, 'list']
-      });
+        queryKey: [REQUESTS_QUERY_KEY, "list"],
+      })
 
       queryClient.invalidateQueries({
-        queryKey: requestsQueryKeys.detail(id)
-      });
+        queryKey: requestsQueryKeys.detail(id),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useUpdateOrderReturnRequest = (id: string) => {
   return useMutation({
     mutationFn: (payload: any) =>
       fetchQuery(`/vendor/return-request/${id}`, {
-        method: 'POST',
-        body: payload
+        method: "POST",
+        body: payload,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [REQUESTS_QUERY_KEY, 'return-request', id]
-      });
+        queryKey: [REQUESTS_QUERY_KEY, "return-request", id],
+      })
 
       queryClient.invalidateQueries({
-        queryKey: [REQUESTS_QUERY_KEY, 'return-requests']
-      });
-    }
-  });
-};
+        queryKey: [REQUESTS_QUERY_KEY, "return-requests"],
+      })
+    },
+  })
+}
 
 export const useOrderReturnRequest = (
   id: string,
   options?: UseQueryOptions<any, FetchError, any>
 ) => {
   const { data, ...rest } = useQuery({
-    queryKey: [REQUESTS_QUERY_KEY, 'return-request', id],
+    queryKey: [REQUESTS_QUERY_KEY, "return-request", id],
     queryFn: () =>
       fetchQuery(`/vendor/return-request/${id}`, {
-        method: 'GET',
-        query: { fields: '*order' }
+        method: "GET",
+        query: { fields: "*order" },
       }),
-    ...options
-  });
+    ...options,
+  })
 
-  return { ...data, ...rest };
-};
+  return { ...data, ...rest }
+}
 
 export const useOrderReturnRequests = (
   query?: Record<string, any>,
   options?: Omit<
     UseQueryOptions<
       PaginatedResponse<{
-        order_return_request: any;
+        order_return_request: any
       }>,
       FetchError,
       PaginatedResponse<{
-        order_return_request: any;
+        order_return_request: any
       }>,
       QueryKey
     >,
-    'queryFn' | 'queryKey'
+    "queryFn" | "queryKey"
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: () =>
-      fetchQuery('/vendor/return-request', {
-        method: 'GET',
+      fetchQuery("/vendor/return-request", {
+        method: "GET",
         query: {
-          fields: '*order.customer,+created_at'
-        }
+          fields: "*order.customer,+created_at",
+        },
       }),
 
-    queryKey: [REQUESTS_QUERY_KEY, 'return-requests'],
-    ...options
-  });
+    queryKey: [REQUESTS_QUERY_KEY, "return-requests"],
+    ...options,
+  })
 
-  let processedData = data?.order_return_request;
+  let processedData = data?.order_return_request
 
   if (query?.limit) {
-    processedData = data?.order_return_request.slice(0, Number(query.limit));
+    processedData = data?.order_return_request.slice(0, Number(query.limit))
   }
 
   if (query?.offset) {
     processedData = data?.order_return_request.slice(
       Number(query.offset),
       Number(query.offset) + Number(query.limit)
-    );
+    )
   }
 
   return {
     order_return_request: processedData,
     count: data?.count || 0,
-    ...rest
-  };
-};
+    ...rest,
+  }
+}

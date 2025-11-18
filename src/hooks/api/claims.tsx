@@ -1,21 +1,21 @@
-import { FetchError } from '@medusajs/js-sdk';
-import { HttpTypes } from '@medusajs/types';
+import { FetchError } from "@medusajs/js-sdk"
+import { HttpTypes } from "@medusajs/types"
 import {
   QueryKey,
   useMutation,
   UseMutationOptions,
   useQuery,
-  UseQueryOptions
-} from '@tanstack/react-query';
+  UseQueryOptions,
+} from "@tanstack/react-query"
 
-import { sdk } from '../../lib/client';
-import { queryClient } from '../../lib/query-client';
-import { queryKeysFactory } from '../../lib/query-key-factory';
-import { ordersQueryKeys } from './orders';
-import { returnsQueryKeys } from './returns';
+import { sdk } from "../../lib/client"
+import { queryClient } from "../../lib/query-client"
+import { queryKeysFactory } from "../../lib/query-key-factory"
+import { ordersQueryKeys } from "./orders"
+import { returnsQueryKeys } from "./returns"
 
-const CLAIMS_QUERY_KEY = 'claims' as const;
-export const claimsQueryKeys = queryKeysFactory(CLAIMS_QUERY_KEY);
+const CLAIMS_QUERY_KEY = "claims" as const
+export const claimsQueryKeys = queryKeysFactory(CLAIMS_QUERY_KEY)
 
 export const useClaim = (
   id: string,
@@ -27,17 +27,17 @@ export const useClaim = (
       HttpTypes.AdminClaimResponse,
       QueryKey
     >,
-    'queryFn' | 'queryKey'
+    "queryFn" | "queryKey"
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: async () => sdk.admin.claim.retrieve(id, query),
     queryKey: claimsQueryKeys.detail(id, query),
-    ...options
-  });
+    ...options,
+  })
 
-  return { ...data, ...rest };
-};
+  return { ...data, ...rest }
+}
 
 export const useClaims = (
   query?: HttpTypes.AdminClaimListParams,
@@ -48,42 +48,47 @@ export const useClaims = (
       HttpTypes.AdminClaimListResponse,
       QueryKey
     >,
-    'queryFn' | 'queryKey'
+    "queryFn" | "queryKey"
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: async () => sdk.admin.claim.list(query),
     queryKey: claimsQueryKeys.list(query),
-    ...options
-  });
+    ...options,
+  })
 
-  return { ...data, ...rest };
-};
+  return { ...data, ...rest }
+}
 
 export const useCreateClaim = (
   orderId: string,
-  options?: UseMutationOptions<HttpTypes.AdminClaimResponse, FetchError, HttpTypes.AdminCreateClaim>
+  options?: UseMutationOptions<
+    HttpTypes.AdminClaimResponse,
+    FetchError,
+    HttpTypes.AdminCreateClaim
+  >
 ) => {
   return useMutation({
-    mutationFn: (payload: HttpTypes.AdminCreateClaim) => sdk.admin.claim.create(payload),
+    mutationFn: (payload: HttpTypes.AdminCreateClaim) =>
+      sdk.admin.claim.create(payload),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: claimsQueryKeys.lists()
-      });
+        queryKey: claimsQueryKeys.lists(),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useCancelClaim = (
   id: string,
@@ -94,25 +99,25 @@ export const useCancelClaim = (
     mutationFn: () => sdk.admin.claim.cancel(id),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: claimsQueryKeys.details()
-      });
+        queryKey: claimsQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: claimsQueryKeys.lists()
-      });
-      options?.onSuccess?.(data, variables, context);
+        queryKey: claimsQueryKeys.lists(),
+      })
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useAddClaimItems = (
   id: string,
@@ -124,21 +129,22 @@ export const useAddClaimItems = (
   >
 ) => {
   return useMutation({
-    mutationFn: (payload: HttpTypes.AdminAddClaimItems) => sdk.admin.claim.addItems(id, payload),
+    mutationFn: (payload: HttpTypes.AdminAddClaimItems) =>
+      sdk.admin.claim.addItems(id, payload),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useUpdateClaimItems = (
   id: string,
@@ -154,44 +160,49 @@ export const useUpdateClaimItems = (
       actionId,
       ...payload
     }: HttpTypes.AdminUpdateClaimItem & { actionId: string }) => {
-      return sdk.admin.claim.updateItem(id, actionId, payload);
+      return sdk.admin.claim.updateItem(id, actionId, payload)
     },
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useRemoveClaimItem = (
   id: string,
   orderId: string,
-  options?: UseMutationOptions<HttpTypes.AdminReturnResponse, FetchError, string>
+  options?: UseMutationOptions<
+    HttpTypes.AdminReturnResponse,
+    FetchError,
+    string
+  >
 ) => {
   return useMutation({
-    mutationFn: (actionId: string) => sdk.admin.return.removeReturnItem(id, actionId),
+    mutationFn: (actionId: string) =>
+      sdk.admin.return.removeReturnItem(id, actionId),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useAddClaimInboundItems = (
   id: string,
@@ -203,21 +214,21 @@ export const useAddClaimInboundItems = (
   >
 ) => {
   return useMutation({
-    mutationFn: payload => sdk.admin.claim.addInboundItems(id, payload),
+    mutationFn: (payload) => sdk.admin.claim.addInboundItems(id, payload),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useUpdateClaimInboundItem = (
   id: string,
@@ -233,22 +244,22 @@ export const useUpdateClaimInboundItem = (
       actionId,
       ...payload
     }: HttpTypes.AdminUpdateClaimInboundItem & { actionId: string }) => {
-      return sdk.admin.claim.updateInboundItem(id, actionId, payload);
+      return sdk.admin.claim.updateInboundItem(id, actionId, payload)
     },
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useRemoveClaimInboundItem = (
   id: string,
@@ -256,25 +267,26 @@ export const useRemoveClaimInboundItem = (
   options?: UseMutationOptions<HttpTypes.AdminClaimReturnPreviewResponse, FetchError, string>
 ) => {
   return useMutation({
-    mutationFn: (actionId: string) => sdk.admin.claim.removeInboundItem(id, actionId),
+    mutationFn: (actionId: string) =>
+      sdk.admin.claim.removeInboundItem(id, actionId),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: returnsQueryKeys.details()
-      });
+        queryKey: returnsQueryKeys.details(),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useAddClaimInboundShipping = (
   id: string,
@@ -290,18 +302,18 @@ export const useAddClaimInboundShipping = (
       sdk.admin.claim.addInboundShipping(id, payload),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useUpdateClaimInboundShipping = (
   id: string,
@@ -320,18 +332,18 @@ export const useUpdateClaimInboundShipping = (
       sdk.admin.claim.updateInboundShipping(id, actionId, payload),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useDeleteClaimInboundShipping = (
   id: string,
@@ -339,21 +351,22 @@ export const useDeleteClaimInboundShipping = (
   options?: UseMutationOptions<HttpTypes.AdminClaimReturnPreviewResponse, FetchError, string>
 ) => {
   return useMutation({
-    mutationFn: (actionId: string) => sdk.admin.claim.deleteInboundShipping(id, actionId),
+    mutationFn: (actionId: string) =>
+      sdk.admin.claim.deleteInboundShipping(id, actionId),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useAddClaimOutboundItems = (
   id: string,
@@ -369,18 +382,18 @@ export const useAddClaimOutboundItems = (
       sdk.admin.claim.addOutboundItems(id, payload),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useUpdateClaimOutboundItems = (
   id: string,
@@ -396,22 +409,22 @@ export const useUpdateClaimOutboundItems = (
       actionId,
       ...payload
     }: HttpTypes.AdminUpdateClaimOutboundItem & { actionId: string }) => {
-      return sdk.admin.claim.updateOutboundItem(id, actionId, payload);
+      return sdk.admin.claim.updateOutboundItem(id, actionId, payload)
     },
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useRemoveClaimOutboundItem = (
   id: string,
@@ -419,21 +432,22 @@ export const useRemoveClaimOutboundItem = (
   options?: UseMutationOptions<HttpTypes.AdminClaimResponse, FetchError, string>
 ) => {
   return useMutation({
-    mutationFn: (actionId: string) => sdk.admin.claim.removeOutboundItem(id, actionId),
+    mutationFn: (actionId: string) =>
+      sdk.admin.claim.removeOutboundItem(id, actionId),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useAddClaimOutboundShipping = (
   id: string,
@@ -449,18 +463,18 @@ export const useAddClaimOutboundShipping = (
       sdk.admin.claim.addOutboundShipping(id, payload),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useUpdateClaimOutboundShipping = (
   id: string,
@@ -479,18 +493,18 @@ export const useUpdateClaimOutboundShipping = (
       sdk.admin.claim.updateOutboundShipping(id, actionId, payload),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useDeleteClaimOutboundShipping = (
   id: string,
@@ -498,21 +512,22 @@ export const useDeleteClaimOutboundShipping = (
   options?: UseMutationOptions<HttpTypes.AdminClaimResponse, FetchError, string>
 ) => {
   return useMutation({
-    mutationFn: (actionId: string) => sdk.admin.claim.deleteOutboundShipping(id, actionId),
+    mutationFn: (actionId: string) =>
+      sdk.admin.claim.deleteOutboundShipping(id, actionId),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useClaimConfirmRequest = (
   id: string,
@@ -524,29 +539,30 @@ export const useClaimConfirmRequest = (
   >
 ) => {
   return useMutation({
-    mutationFn: (payload: HttpTypes.AdminRequestClaim) => sdk.admin.claim.request(id, payload),
+    mutationFn: (payload: HttpTypes.AdminRequestClaim) =>
+      sdk.admin.claim.request(id, payload),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: returnsQueryKeys.all
-      });
+        queryKey: returnsQueryKeys.all,
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: claimsQueryKeys.lists()
-      });
+        queryKey: claimsQueryKeys.lists(),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useCancelClaimRequest = (
   id: string,
@@ -557,21 +573,21 @@ export const useCancelClaimRequest = (
     mutationFn: () => sdk.admin.claim.cancelRequest(id),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: claimsQueryKeys.details()
-      });
+        queryKey: claimsQueryKeys.details(),
+      })
       queryClient.invalidateQueries({
-        queryKey: claimsQueryKeys.lists()
-      });
-      options?.onSuccess?.(data, variables, context);
+        queryKey: claimsQueryKeys.lists(),
+      })
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}

@@ -1,20 +1,22 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { HttpTypes } from '@medusajs/types';
-import { Button, Input, toast } from '@medusajs/ui';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import * as zod from 'zod';
-import { z } from 'zod';
+import * as zod from "zod"
 
-import { Form } from '../../../../../../components/common/form';
-import { CountrySelect } from '../../../../../../components/inputs/country-select';
-import { RouteDrawer, useRouteModal } from '../../../../../../components/modals';
-import { KeyboundForm } from '../../../../../../components/utilities/keybound-form';
-import { useUpdateInventoryItem } from '../../../../../../hooks/api/inventory';
+import { Button, Input, toast } from "@medusajs/ui"
+import { RouteDrawer, useRouteModal } from "../../../../../../components/modals"
+
+import { zodResolver } from "@hookform/resolvers/zod"
+import { HttpTypes } from "@medusajs/types"
+import { useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { z } from "zod"
+
+import { Form } from "../../../../../../components/common/form"
+import { CountrySelect } from "../../../../../../components/inputs/country-select"
+import { KeyboundForm } from "../../../../../../components/utilities/keybound-form"
+import { useUpdateInventoryItem } from "../../../../../../hooks/api/inventory"
 
 type EditInventoryItemAttributeFormProps = {
-  item: HttpTypes.AdminInventoryItem;
-};
+  item: HttpTypes.AdminInventoryItem
+}
 
 const EditInventoryItemAttributesSchema = z.object({
   height: z.number().positive().optional(),
@@ -23,8 +25,8 @@ const EditInventoryItemAttributesSchema = z.object({
   weight: z.number().positive().optional(),
   mid_code: z.string().optional(),
   hs_code: z.string().optional(),
-  origin_country: z.string().optional()
-});
+  origin_country: z.string().optional(),
+})
 
 const getDefaultValues = (item: HttpTypes.AdminInventoryItem) => {
   return {
@@ -34,29 +36,31 @@ const getDefaultValues = (item: HttpTypes.AdminInventoryItem) => {
     weight: item.weight ?? undefined,
     mid_code: item.mid_code ?? undefined,
     hs_code: item.hs_code ?? undefined,
-    origin_country: item.origin_country ?? undefined
-  };
-};
+    origin_country: item.origin_country ?? undefined,
+  }
+}
 
-export const EditInventoryItemAttributesForm = ({ item }: EditInventoryItemAttributeFormProps) => {
-  const { t } = useTranslation();
-  const { handleSuccess } = useRouteModal();
+export const EditInventoryItemAttributesForm = ({
+  item,
+}: EditInventoryItemAttributeFormProps) => {
+  const { t } = useTranslation()
+  const { handleSuccess } = useRouteModal()
   const form = useForm<zod.infer<typeof EditInventoryItemAttributesSchema>>({
     defaultValues: getDefaultValues(item),
-    resolver: zodResolver(EditInventoryItemAttributesSchema)
-  });
+    resolver: zodResolver(EditInventoryItemAttributesSchema),
+  })
 
-  const { mutateAsync, isPending: isLoading } = useUpdateInventoryItem(item.id);
+  const { mutateAsync, isPending: isLoading } = useUpdateInventoryItem(item.id)
 
-  const handleSubmit = form.handleSubmit(async values => {
+  const handleSubmit = form.handleSubmit(async (values) => {
     await mutateAsync(values, {
       onSuccess: () => {
-        toast.success(t('inventory.toast.updateItem'));
-        handleSuccess();
+        toast.success(t("inventory.toast.updateItem"))
+        handleSuccess()
       },
-      onError: error => toast.error(error.message)
-    });
-  });
+      onError: (error) => toast.error(error.message),
+    })
+  })
 
   return (
     <RouteDrawer.Form form={form}>
@@ -71,19 +75,19 @@ export const EditInventoryItemAttributesForm = ({ item }: EditInventoryItemAttri
             render={({ field: { onChange, value, ...field } }) => {
               return (
                 <Form.Item>
-                  <Form.Label optional>{t('fields.height')}</Form.Label>
+                  <Form.Label optional>{t("fields.height")}</Form.Label>
                   <Form.Control>
                     <Input
                       type="number"
                       min={0}
-                      value={value || ''}
-                      onChange={e => {
-                        const value = e.target.value;
+                      value={value || ""}
+                      onChange={(e) => {
+                        const value = e.target.value
 
-                        if (value === '') {
-                          onChange(null);
+                        if (value === "") {
+                          onChange(null)
                         } else {
-                          onChange(parseFloat(value));
+                          onChange(parseFloat(value))
                         }
                       }}
                       {...field}
@@ -91,7 +95,7 @@ export const EditInventoryItemAttributesForm = ({ item }: EditInventoryItemAttri
                   </Form.Control>
                   <Form.ErrorMessage />
                 </Form.Item>
-              );
+              )
             }}
           />
           <Form.Field
@@ -100,19 +104,19 @@ export const EditInventoryItemAttributesForm = ({ item }: EditInventoryItemAttri
             render={({ field: { onChange, value, ...field } }) => {
               return (
                 <Form.Item>
-                  <Form.Label optional>{t('fields.width')}</Form.Label>
+                  <Form.Label optional>{t("fields.width")}</Form.Label>
                   <Form.Control>
                     <Input
                       type="number"
                       min={0}
-                      value={value || ''}
-                      onChange={e => {
-                        const value = e.target.value;
+                      value={value || ""}
+                      onChange={(e) => {
+                        const value = e.target.value
 
-                        if (value === '') {
-                          onChange(null);
+                        if (value === "") {
+                          onChange(null)
                         } else {
-                          onChange(parseFloat(value));
+                          onChange(parseFloat(value))
                         }
                       }}
                       {...field}
@@ -120,7 +124,7 @@ export const EditInventoryItemAttributesForm = ({ item }: EditInventoryItemAttri
                   </Form.Control>
                   <Form.ErrorMessage />
                 </Form.Item>
-              );
+              )
             }}
           />
           <Form.Field
@@ -129,19 +133,19 @@ export const EditInventoryItemAttributesForm = ({ item }: EditInventoryItemAttri
             render={({ field: { onChange, value, ...field } }) => {
               return (
                 <Form.Item>
-                  <Form.Label optional>{t('fields.length')}</Form.Label>
+                  <Form.Label optional>{t("fields.length")}</Form.Label>
                   <Form.Control>
                     <Input
                       type="number"
                       min={0}
-                      value={value || ''}
-                      onChange={e => {
-                        const value = e.target.value;
+                      value={value || ""}
+                      onChange={(e) => {
+                        const value = e.target.value
 
-                        if (value === '') {
-                          onChange(null);
+                        if (value === "") {
+                          onChange(null)
                         } else {
-                          onChange(parseFloat(value));
+                          onChange(parseFloat(value))
                         }
                       }}
                       {...field}
@@ -149,7 +153,7 @@ export const EditInventoryItemAttributesForm = ({ item }: EditInventoryItemAttri
                   </Form.Control>
                   <Form.ErrorMessage />
                 </Form.Item>
-              );
+              )
             }}
           />
           <Form.Field
@@ -158,19 +162,19 @@ export const EditInventoryItemAttributesForm = ({ item }: EditInventoryItemAttri
             render={({ field: { onChange, value, ...field } }) => {
               return (
                 <Form.Item>
-                  <Form.Label optional>{t('fields.weight')}</Form.Label>
+                  <Form.Label optional>{t("fields.weight")}</Form.Label>
                   <Form.Control>
                     <Input
                       type="number"
                       min={0}
-                      value={value || ''}
-                      onChange={e => {
-                        const value = e.target.value;
+                      value={value || ""}
+                      onChange={(e) => {
+                        const value = e.target.value
 
-                        if (value === '') {
-                          onChange(null);
+                        if (value === "") {
+                          onChange(null)
                         } else {
-                          onChange(parseFloat(value));
+                          onChange(parseFloat(value))
                         }
                       }}
                       {...field}
@@ -178,7 +182,7 @@ export const EditInventoryItemAttributesForm = ({ item }: EditInventoryItemAttri
                   </Form.Control>
                   <Form.ErrorMessage />
                 </Form.Item>
-              );
+              )
             }}
           />
           <Form.Field
@@ -187,13 +191,13 @@ export const EditInventoryItemAttributesForm = ({ item }: EditInventoryItemAttri
             render={({ field }) => {
               return (
                 <Form.Item>
-                  <Form.Label optional>{t('fields.midCode')}</Form.Label>
+                  <Form.Label optional>{t("fields.midCode")}</Form.Label>
                   <Form.Control>
                     <Input {...field} />
                   </Form.Control>
                   <Form.ErrorMessage />
                 </Form.Item>
-              );
+              )
             }}
           />
           <Form.Field
@@ -202,13 +206,13 @@ export const EditInventoryItemAttributesForm = ({ item }: EditInventoryItemAttri
             render={({ field }) => {
               return (
                 <Form.Item>
-                  <Form.Label optional>{t('fields.hsCode')}</Form.Label>
+                  <Form.Label optional>{t("fields.hsCode")}</Form.Label>
                   <Form.Control>
                     <Input {...field} />
                   </Form.Control>
                   <Form.ErrorMessage />
                 </Form.Item>
-              );
+              )
             }}
           />
 
@@ -218,36 +222,31 @@ export const EditInventoryItemAttributesForm = ({ item }: EditInventoryItemAttri
             render={({ field }) => {
               return (
                 <Form.Item>
-                  <Form.Label optional>{t('fields.countryOfOrigin')}</Form.Label>
+                  <Form.Label optional>
+                    {t("fields.countryOfOrigin")}
+                  </Form.Label>
                   <Form.Control>
                     <CountrySelect {...field} />
                   </Form.Control>
                   <Form.ErrorMessage />
                 </Form.Item>
-              );
+              )
             }}
           />
         </RouteDrawer.Body>
         <RouteDrawer.Footer>
           <div className="flex items-center justify-end gap-x-2">
             <RouteDrawer.Close asChild>
-              <Button
-                variant="secondary"
-                size="small"
-              >
-                {t('actions.cancel')}
+              <Button variant="secondary" size="small">
+                {t("actions.cancel")}
               </Button>
             </RouteDrawer.Close>
-            <Button
-              type="submit"
-              size="small"
-              isLoading={isLoading}
-            >
-              {t('actions.save')}
+            <Button type="submit" size="small" isLoading={isLoading}>
+              {t("actions.save")}
             </Button>
           </div>
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  );
-};
+  )
+}

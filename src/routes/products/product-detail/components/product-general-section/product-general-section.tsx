@@ -1,63 +1,65 @@
-import { PencilSquare, Trash } from '@medusajs/icons';
-import { Container, Heading, StatusBadge, usePrompt } from '@medusajs/ui';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { PencilSquare, Trash } from "@medusajs/icons"
+import { ExtendedAdminProduct } from "../../../../../types/products"
+import { Container, Heading, StatusBadge, usePrompt } from "@medusajs/ui"
+import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
 
-import { ActionMenu } from '../../../../../components/common/action-menu';
-import { SectionRow } from '../../../../../components/common/section';
-import { useDashboardExtension } from '../../../../../extensions';
-import { useDeleteProduct } from '../../../../../hooks/api/products';
-import { ExtendedAdminProduct } from '../../../../../types/products';
+import { ActionMenu } from "../../../../../components/common/action-menu"
+import { SectionRow } from "../../../../../components/common/section"
+import { useDashboardExtension } from "../../../../../extensions"
+import { useDeleteProduct } from "../../../../../hooks/api/products"
 
 const productStatusColor = (status: string) => {
   switch (status) {
-    case 'draft':
-      return 'grey';
-    case 'proposed':
-      return 'orange';
-    case 'published':
-      return 'green';
-    case 'rejected':
-      return 'red';
+    case "draft":
+      return "grey"
+    case "proposed":
+      return "orange"
+    case "published":
+      return "green"
+    case "rejected":
+      return "red"
     default:
-      return 'grey';
+      return "grey"
   }
-};
+}
 
 type ProductGeneralSectionProps = {
-  product: ExtendedAdminProduct;
-};
+  product: ExtendedAdminProduct
+}
 
-export const ProductGeneralSection = ({ product }: ProductGeneralSectionProps) => {
-  const { t } = useTranslation();
-  const prompt = usePrompt();
-  const navigate = useNavigate();
-  const { getDisplays } = useDashboardExtension();
+export const ProductGeneralSection = ({
+  product,
+}: ProductGeneralSectionProps) => {
+  const { t } = useTranslation()
+  const prompt = usePrompt()
+  const navigate = useNavigate()
+  const { getDisplays } = useDashboardExtension()
 
-  const displays = getDisplays('product', 'general');
+  const displays = getDisplays("product", "general")
 
-  const { mutateAsync } = useDeleteProduct(product.id);
+  const { mutateAsync } = useDeleteProduct(product.id)
 
   const handleDelete = async () => {
     const res = await prompt({
-      title: t('general.areYouSure'),
-      description: t('products.deleteWarning', {
-        title: product.title
+      title: t("general.areYouSure"),
+      description: t("products.deleteWarning", {
+        title: product.title,
       }),
-      confirmText: t('actions.delete'),
-      cancelText: t('actions.cancel')
-    });
+      confirmText: t("actions.delete"),
+      cancelText: t("actions.cancel"),
+    })
 
     if (!res) {
-      return;
+      return
     }
 
     await mutateAsync(undefined, {
       onSuccess: () => {
-        navigate('..');
-      }
-    });
-  };
+        navigate("..")
+      },
+    })
+  }
 
   return (
     <Container className="divide-y p-0">
@@ -72,47 +74,36 @@ export const ProductGeneralSection = ({ product }: ProductGeneralSectionProps) =
               {
                 actions: [
                   {
-                    label: t('actions.edit'),
-                    to: 'edit',
-                    icon: <PencilSquare />
-                  }
-                ]
+                    label: t("actions.edit"),
+                    to: "edit",
+                    icon: <PencilSquare />,
+                  },
+                ],
               },
               {
                 actions: [
                   {
-                    label: t('actions.delete'),
+                    label: t("actions.delete"),
                     onClick: handleDelete,
-                    icon: <Trash />
-                  }
-                ]
-              }
+                    icon: <Trash />,
+                  },
+                ],
+              },
             ]}
           />
         </div>
       </div>
 
-      <SectionRow
-        title={t('fields.description')}
-        value={product.description}
-      />
+      <SectionRow title={t("fields.description")} value={product.description} />
       {/* <SectionRow title={t("fields.subtitle")} value={product.subtitle} /> */}
+      <SectionRow title={t("fields.handle")} value={`/${product.handle}`} />
       <SectionRow
-        title={t('fields.handle')}
-        value={`/${product.handle}`}
-      />
-      <SectionRow
-        title={t('fields.discountable')}
-        value={product.discountable ? t('fields.true') : t('fields.false')}
+        title={t("fields.discountable")}
+        value={product.discountable ? t("fields.true") : t("fields.false")}
       />
       {displays.map((Component, index) => {
-        return (
-          <Component
-            key={index}
-            data={product}
-          />
-        );
+        return <Component key={index} data={product} />
       })}
     </Container>
-  );
-};
+  )
+}

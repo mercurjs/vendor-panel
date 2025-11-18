@@ -1,21 +1,25 @@
-import { Heading, Input, RadioGroup, Text } from '@medusajs/ui';
-import { UseFormReturn } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import { Heading, Input, RadioGroup, Text } from "@medusajs/ui"
+import { UseFormReturn } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 
-import { Form } from '../../../../../components/common/form';
-import { Combobox } from '../../../../../components/inputs/combobox';
-import { useComboboxData } from '../../../../../hooks/use-combobox-data';
-import { fetchQuery } from '../../../../../lib/client';
-import { VendorExtendedAdminServiceZone } from '../../../../../types/stock-location';
-import { FulfillmentSetType, ShippingOptionPriceType } from '../../../common/constants';
-import { CreateShippingOptionSchema } from './schema';
+import { VendorExtendedAdminServiceZone } from "../../../../../types/stock-location"
+
+import { Form } from "../../../../../components/common/form"
+import { Combobox } from "../../../../../components/inputs/combobox"
+import { useComboboxData } from "../../../../../hooks/use-combobox-data"
+import { fetchQuery } from "../../../../../lib/client"
+import {
+  FulfillmentSetType,
+  ShippingOptionPriceType,
+} from "../../../common/constants"
+import { CreateShippingOptionSchema } from "./schema"
 
 type CreateShippingOptionDetailsFormProps = {
-  form: UseFormReturn<CreateShippingOptionSchema>;
-  isReturn?: boolean;
-  zone: VendorExtendedAdminServiceZone;
-  type: FulfillmentSetType;
-};
+  form: UseFormReturn<CreateShippingOptionSchema>
+  isReturn?: boolean
+  zone: VendorExtendedAdminServiceZone
+  type: FulfillmentSetType
+}
 
 export const CreateShippingOptionDetailsForm = ({
   form,
@@ -23,24 +27,24 @@ export const CreateShippingOptionDetailsForm = ({
   zone,
   type
 }: CreateShippingOptionDetailsFormProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
-  const isPickup = type === FulfillmentSetType.Pickup;
+  const isPickup = type === FulfillmentSetType.Pickup
 
   const shippingProfiles = useComboboxData({
     queryFn: () =>
       fetchQuery(`/vendor/shipping-profiles`, {
-        method: 'GET'
+        method: "GET",
       }),
-    queryKey: ['shipping_profiles_create_shipping_option'],
-    getOptions: data =>
+    queryKey: ["shipping_profiles_create_shipping_option"],
+    getOptions: (data) =>
       (data.shipping_profiles || []).map((profile: any) => ({
-        label: profile.shipping_profile.name.includes(':')
-          ? profile.shipping_profile.name.split(':')[1]
+        label: profile.shipping_profile.name.includes(":")
+          ? profile.shipping_profile.name.split(":")[1]
           : profile.shipping_profile.name,
-        value: profile.shipping_profile.id
-      }))
-  });
+        value: profile.shipping_profile.id,
+      })),
+  })
 
   // const fulfillmentProviders = useComboboxData({
   //   queryFn: (params) =>
@@ -63,20 +67,17 @@ export const CreateShippingOptionDetailsForm = ({
           <Heading>
             {t(
               `stockLocations.shippingOptions.create.${
-                isPickup ? 'pickup' : isReturn ? 'returns' : 'shipping'
+                isPickup ? "pickup" : isReturn ? "returns" : "shipping"
               }.header`,
               {
-                zone: zone.name
+                zone: zone.name,
               }
             )}
           </Heading>
-          <Text
-            size="small"
-            className="text-ui-fg-subtle"
-          >
+          <Text size="small" className="text-ui-fg-subtle">
             {t(
               `stockLocations.shippingOptions.create.${
-                isReturn ? 'returns' : isPickup ? 'pickup' : 'shipping'
+                isReturn ? "returns" : isPickup ? "pickup" : "shipping"
               }.hint`
             )}
           </Text>
@@ -90,7 +91,7 @@ export const CreateShippingOptionDetailsForm = ({
               return (
                 <Form.Item>
                   <Form.Label>
-                    {t('stockLocations.shippingOptions.fields.priceType.label')}
+                    {t("stockLocations.shippingOptions.fields.priceType.label")}
                   </Form.Label>
                   <Form.Control>
                     <RadioGroup
@@ -102,27 +103,27 @@ export const CreateShippingOptionDetailsForm = ({
                         className="flex-1"
                         value={ShippingOptionPriceType.FlatRate}
                         label={t(
-                          'stockLocations.shippingOptions.fields.priceType.options.fixed.label'
+                          "stockLocations.shippingOptions.fields.priceType.options.fixed.label"
                         )}
                         description={t(
-                          'stockLocations.shippingOptions.fields.priceType.options.fixed.hint'
+                          "stockLocations.shippingOptions.fields.priceType.options.fixed.hint"
                         )}
                       />
                       <RadioGroup.ChoiceBox
                         className="flex-1"
                         value={ShippingOptionPriceType.Calculated}
                         label={t(
-                          'stockLocations.shippingOptions.fields.priceType.options.calculated.label'
+                          "stockLocations.shippingOptions.fields.priceType.options.calculated.label"
                         )}
                         description={t(
-                          'stockLocations.shippingOptions.fields.priceType.options.calculated.hint'
+                          "stockLocations.shippingOptions.fields.priceType.options.calculated.hint"
                         )}
                       />
                     </RadioGroup>
                   </Form.Control>
                   <Form.ErrorMessage />
                 </Form.Item>
-              );
+              )
             }}
           />
         )}
@@ -134,13 +135,13 @@ export const CreateShippingOptionDetailsForm = ({
             render={({ field }) => {
               return (
                 <Form.Item>
-                  <Form.Label>{t('fields.name')}</Form.Label>
+                  <Form.Label>{t("fields.name")}</Form.Label>
                   <Form.Control>
                     <Input {...field} />
                   </Form.Control>
                   <Form.ErrorMessage />
                 </Form.Item>
-              );
+              )
             }}
           />
           <Form.Field
@@ -149,7 +150,9 @@ export const CreateShippingOptionDetailsForm = ({
             render={({ field }) => {
               return (
                 <Form.Item>
-                  <Form.Label>{t('stockLocations.shippingOptions.fields.profile')}</Form.Label>
+                  <Form.Label>
+                    {t("stockLocations.shippingOptions.fields.profile")}
+                  </Form.Label>
                   <Form.Control>
                     <Combobox
                       {...field}
@@ -161,7 +164,7 @@ export const CreateShippingOptionDetailsForm = ({
                   </Form.Control>
                   <Form.ErrorMessage />
                 </Form.Item>
-              );
+              )
             }}
           />
         </div>
@@ -267,5 +270,5 @@ export const CreateShippingOptionDetailsForm = ({
         /> */}
       </div>
     </div>
-  );
-};
+  )
+}

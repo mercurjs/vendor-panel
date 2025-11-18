@@ -1,63 +1,61 @@
-import { Button, InlineTip, Input, toast } from '@medusajs/ui';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import * as zod from 'zod';
+import { VendorExtendedAdminServiceZone } from "../../../../../types/stock-location"
+import { Button, InlineTip, Input, toast } from "@medusajs/ui"
+import { useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import * as zod from "zod"
 
-import { Form } from '../../../../../components/common/form';
-import { RouteDrawer, useRouteModal } from '../../../../../components/modals';
-import { KeyboundForm } from '../../../../../components/utilities/keybound-form';
-import { useUpdateFulfillmentSetServiceZone } from '../../../../../hooks/api/fulfillment-sets';
-import { VendorExtendedAdminServiceZone } from '../../../../../types/stock-location';
+import { Form } from "../../../../../components/common/form"
+import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
+import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
+import { useUpdateFulfillmentSetServiceZone } from "../../../../../hooks/api/fulfillment-sets"
 
 type EditServiceZoneFormProps = {
-  zone: VendorExtendedAdminServiceZone;
-  fulfillmentSetId: string;
-  locationId: string;
-};
+  zone: VendorExtendedAdminServiceZone
+  fulfillmentSetId: string
+  locationId: string
+}
 
 const EditServiceZoneSchema = zod.object({
-  name: zod.string().min(1)
-});
+  name: zod.string().min(1),
+})
 
 export const EditServiceZoneForm = ({
   zone,
   fulfillmentSetId,
-  locationId
+  locationId,
 }: EditServiceZoneFormProps) => {
-  const { t } = useTranslation();
-  const { handleSuccess } = useRouteModal();
+  const { t } = useTranslation()
+  const { handleSuccess } = useRouteModal()
 
   const form = useForm<zod.infer<typeof EditServiceZoneSchema>>({
     defaultValues: {
-      name: zone.name
-    }
-  });
+      name: zone.name,
+    },
+  })
 
-  const { mutateAsync, isPending: isLoading } = useUpdateFulfillmentSetServiceZone(
-    fulfillmentSetId,
-    zone.id
-  );
+  const { mutateAsync, isPending: isLoading } =
+    useUpdateFulfillmentSetServiceZone(fulfillmentSetId, zone.id)
 
-  const handleSubmit = form.handleSubmit(async values => {
+  const handleSubmit = form.handleSubmit(async (values) => {
     await mutateAsync(
       {
-        name: values.name
+        name: values.name,
       },
       {
         onSuccess: () => {
           toast.success(
-            t('stockLocations.serviceZones.edit.successToast', {
-              name: values.name
+            t("stockLocations.serviceZones.edit.successToast", {
+              name: values.name,
             })
-          );
-          handleSuccess(`/settings/locations/${locationId}`);
+          )
+          handleSuccess(`/settings/locations/${locationId}`)
         },
-        onError: e => {
-          toast.error(e.message);
-        }
+        onError: (e) => {
+          toast.error(e.message)
+        },
       }
-    );
-  });
+    )
+  })
 
   return (
     <RouteDrawer.Form form={form}>
@@ -74,41 +72,34 @@ export const EditServiceZoneForm = ({
                 render={({ field }) => {
                   return (
                     <Form.Item>
-                      <Form.Label>{t('fields.name')}</Form.Label>
+                      <Form.Label>{t("fields.name")}</Form.Label>
                       <Form.Control>
                         <Input {...field} />
                       </Form.Control>
                       <Form.ErrorMessage />
                     </Form.Item>
-                  );
+                  )
                 }}
               />
             </div>
-            <InlineTip label={t('general.tip')}>
-              {t('stockLocations.serviceZones.fields.tip')}
+            <InlineTip label={t("general.tip")}>
+              {t("stockLocations.serviceZones.fields.tip")}
             </InlineTip>
           </div>
         </RouteDrawer.Body>
         <RouteDrawer.Footer>
           <div className="flex items-center gap-x-2">
             <RouteDrawer.Close asChild>
-              <Button
-                size="small"
-                variant="secondary"
-              >
-                {t('actions.cancel')}
+              <Button size="small" variant="secondary">
+                {t("actions.cancel")}
               </Button>
             </RouteDrawer.Close>
-            <Button
-              size="small"
-              type="submit"
-              isLoading={isLoading}
-            >
-              {t('actions.save')}
+            <Button size="small" type="submit" isLoading={isLoading}>
+              {t("actions.save")}
             </Button>
           </div>
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  );
-};
+  )
+}

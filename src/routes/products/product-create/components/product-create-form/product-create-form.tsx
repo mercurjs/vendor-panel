@@ -1,58 +1,68 @@
-import { useEffect, useMemo, useState } from 'react';
-
-import { HttpTypes } from '@medusajs/types';
-import { Button, ProgressStatus, ProgressTabs, toast } from '@medusajs/ui';
-import { useWatch } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-
-import { RouteFocusModal, useRouteModal } from '../../../../../components/modals';
-import { KeyboundForm } from '../../../../../components/utilities/keybound-form';
-import { useDashboardExtension, useExtendableForm } from '../../../../../extensions';
-import { useRegions } from '../../../../../hooks/api';
-import { usePricePreferences } from '../../../../../hooks/api/price-preferences';
-import { useCreateProduct } from '../../../../../hooks/api/products';
-import { uploadFilesQuery } from '../../../../../lib/client';
-import { PRODUCT_CREATE_FORM_DEFAULTS, ProductCreateSchema } from '../../constants';
-import { ProductCreateDetailsForm } from '../product-create-details-form';
-import { ProductCreateInventoryKitForm } from '../product-create-inventory-kit-form';
-import { ProductCreateOrganizeForm } from '../product-create-organize-form';
-import { ProductCreateVariantsForm } from '../product-create-variants-form';
+import { Button, ProgressStatus, ProgressTabs, toast } from "@medusajs/ui"
+import { HttpTypes } from "@medusajs/types"
+import { useEffect, useMemo, useState } from "react"
+import { useWatch } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import {
+  RouteFocusModal,
+  useRouteModal,
+} from "../../../../../components/modals"
+import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
+import {
+  useDashboardExtension,
+  useExtendableForm,
+} from "../../../../../extensions"
+import { useCreateProduct } from "../../../../../hooks/api/products"
+import { uploadFilesQuery } from "../../../../../lib/client"
+import {
+  PRODUCT_CREATE_FORM_DEFAULTS,
+  ProductCreateSchema,
+} from "../../constants"
+import { ProductCreateDetailsForm } from "../product-create-details-form"
+import { ProductCreateInventoryKitForm } from "../product-create-inventory-kit-form"
+import { ProductCreateOrganizeForm } from "../product-create-organize-form"
+import { ProductCreateVariantsForm } from "../product-create-variants-form"
+import { usePricePreferences } from "../../../../../hooks/api/price-preferences"
+import { useRegions } from "../../../../../hooks/api"
 
 enum Tab {
-  DETAILS = 'details',
-  ORGANIZE = 'organize',
-  VARIANTS = 'variants',
-  INVENTORY = 'inventory'
+  DETAILS = "details",
+  ORGANIZE = "organize",
+  VARIANTS = "variants",
+  INVENTORY = "inventory",
 }
 
-type TabState = Record<Tab, ProgressStatus>;
+type TabState = Record<Tab, ProgressStatus>
 
-const SAVE_DRAFT_BUTTON = 'save-draft-button';
+const SAVE_DRAFT_BUTTON = "save-draft-button"
 
 type ProductCreateFormProps = {
-  defaultChannel?: HttpTypes.AdminSalesChannel;
-  store?: HttpTypes.AdminStore;
-  pricePreferences?: HttpTypes.AdminPricePreference[];
-};
+  defaultChannel?: HttpTypes.AdminSalesChannel
+  store?: HttpTypes.AdminStore
+  pricePreferences?: HttpTypes.AdminPricePreference[]
+}
 
-export const ProductCreateForm = ({ defaultChannel, store }: ProductCreateFormProps) => {
-  const [tab, setTab] = useState<Tab>(Tab.DETAILS);
+export const ProductCreateForm = ({
+  defaultChannel,
+  store,
+}: ProductCreateFormProps) => {
+  const [tab, setTab] = useState<Tab>(Tab.DETAILS)
   const [tabState, setTabState] = useState<TabState>({
-    [Tab.DETAILS]: 'in-progress',
-    [Tab.ORGANIZE]: 'not-started',
-    [Tab.VARIANTS]: 'not-started',
-    [Tab.INVENTORY]: 'not-started'
-  });
+    [Tab.DETAILS]: "in-progress",
+    [Tab.ORGANIZE]: "not-started",
+    [Tab.VARIANTS]: "not-started",
+    [Tab.INVENTORY]: "not-started",
+  })
 
-  const { t } = useTranslation();
-  const { handleSuccess } = useRouteModal();
-  const { getFormConfigs } = useDashboardExtension();
-  const configs = getFormConfigs('product', 'create');
+  const { t } = useTranslation()
+  const { handleSuccess } = useRouteModal()
+  const { getFormConfigs } = useDashboardExtension()
+  const configs = getFormConfigs("product", "create")
 
-  const { regions } = useRegions({ limit: 9999 });
+  const { regions } = useRegions({ limit: 9999 })
   const { price_preferences: pricePreferences } = usePricePreferences({
-    limit: 9999
-  });
+    limit: 9999,
+  })
 
   const form = useExtendableForm({
     defaultValues: {
@@ -61,16 +71,16 @@ export const ProductCreateForm = ({ defaultChannel, store }: ProductCreateFormPr
         ? [
             {
               id: defaultChannel.id,
-              name: defaultChannel.name
-            }
+              name: defaultChannel.name,
+            },
           ]
-        : []
+        : [],
     },
     schema: ProductCreateSchema,
-    configs
-  });
+    configs,
+  })
 
-  const { mutateAsync, isPending } = useCreateProduct();
+  const { mutateAsync, isPending } = useCreateProduct()
 
   /**
    * TODO: Important to revisit this - use variants watch so high in the tree can cause needless rerenders of the entire page
@@ -79,183 +89,186 @@ export const ProductCreateForm = ({ defaultChannel, store }: ProductCreateFormPr
 
   const watchedVariants = useWatch({
     control: form.control,
-    name: 'variants'
-  });
+    name: "variants",
+  })
 
   const showInventoryTab = useMemo(
-    () => watchedVariants.some(v => v.manage_inventory && v.inventory_kit),
+    () => watchedVariants.some((v) => v.manage_inventory && v.inventory_kit),
     [watchedVariants]
-  );
+  )
 
   const handleSubmit = form.handleSubmit(async (values, e) => {
-    let isDraftSubmission = false;
+    let isDraftSubmission = false
 
     if (e?.nativeEvent instanceof SubmitEvent) {
-      const submitter = e?.nativeEvent?.submitter as HTMLButtonElement;
-      isDraftSubmission = submitter.dataset.name === SAVE_DRAFT_BUTTON;
+      const submitter = e?.nativeEvent?.submitter as HTMLButtonElement
+      isDraftSubmission = submitter.dataset.name === SAVE_DRAFT_BUTTON
     }
 
-    const media = values.media || [];
-    const payload = { ...values, media: undefined };
+    const media = values.media || []
+    const payload = { ...values, media: undefined }
 
     let uploadedMedia: (HttpTypes.AdminFile & {
-      isThumbnail: boolean;
-    })[] = [];
+      isThumbnail: boolean
+    })[] = []
     try {
       if (media.length) {
-        const thumbnailReq = media.filter(m => m.isThumbnail);
-        const otherMediaReq = media.filter(m => !m.isThumbnail);
+        const thumbnailReq = media.filter((m) => m.isThumbnail)
+        const otherMediaReq = media.filter((m) => !m.isThumbnail)
 
-        const fileReqs = [];
+        const fileReqs = []
         if (thumbnailReq?.length) {
           fileReqs.push(
             uploadFilesQuery(thumbnailReq).then((r: any) =>
               r.files.map((f: any) => ({
                 ...f,
-                isThumbnail: true
+                isThumbnail: true,
               }))
             )
-          );
+          )
         }
         if (otherMediaReq?.length) {
           fileReqs.push(
             uploadFilesQuery(otherMediaReq).then((r: any) =>
               r.files.map((f: any) => ({
                 ...f,
-                isThumbnail: false
+                isThumbnail: false,
               }))
             )
-          );
+          )
         }
 
-        uploadedMedia = (await Promise.all(fileReqs)).flat();
+        uploadedMedia = (await Promise.all(fileReqs)).flat()
       }
     } catch (error) {
       if (error instanceof Error) {
-        toast.error(error.message);
+        toast.error(error.message)
       }
     }
 
     await mutateAsync(
       {
         ...payload,
-        status: isDraftSubmission ? 'draft' : 'proposed',
+        status: isDraftSubmission ? "draft" : "proposed",
         images: uploadedMedia,
-        weight: parseInt(payload.weight || '') || undefined,
-        length: parseInt(payload.length || '') || undefined,
-        height: parseInt(payload.height || '') || undefined,
-        width: parseInt(payload.width || '') || undefined,
+        weight: parseInt(payload.weight || "") || undefined,
+        length: parseInt(payload.length || "") || undefined,
+        height: parseInt(payload.height || "") || undefined,
+        width: parseInt(payload.width || "") || undefined,
         type_id: payload.type_id || undefined,
         tags:
-          payload.tags?.map(tag => ({
-            id: tag
+          payload.tags?.map((tag) => ({
+            id: tag,
           })) || [],
         collection_id: payload.collection_id || undefined,
         shipping_profile_id: undefined,
         enable_variants: undefined,
         additional_data: undefined,
-        categories: payload.categories.map(cat => ({
-          id: cat
+        categories: payload.categories.map((cat) => ({
+          id: cat,
         })),
-        variants: payload.variants.map(variant => ({
+        variants: payload.variants.map((variant) => ({
           ...variant,
-          sku: variant.sku === '' ? undefined : variant.sku,
+          sku: variant.sku === "" ? undefined : variant.sku,
           manage_inventory: true,
           allow_backorder: false,
           should_create: undefined,
           is_default: undefined,
           inventory_kit: undefined,
           inventory: undefined,
-          prices: Object.keys(variant.prices || {}).map(key => ({
+          prices: Object.keys(variant.prices || {}).map((key) => ({
             currency_code: key,
-            amount: parseFloat(variant.prices?.[key] as string)
-          }))
-        }))
+            amount: parseFloat(variant.prices?.[key] as string),
+          })),
+        })),
       },
       {
-        onSuccess: data => {
+        onSuccess: (data) => {
           toast.success(
-            t('products.create.successToast', {
-              title: data.product.title
+            t("products.create.successToast", {
+              title: data.product.title,
             })
-          );
+          )
 
-          handleSuccess(`../${data.product.id}`);
+          handleSuccess(`../${data.product.id}`)
         },
-        onError: error => {
-          toast.error(error.message);
-        }
+        onError: (error) => {
+          toast.error(error.message)
+        },
       }
-    );
-  });
+    )
+  })
 
   const onNext = async (currentTab: Tab) => {
-    const valid = await form.trigger();
+    const valid = await form.trigger()
 
     if (!valid) {
-      return;
+      return
     }
 
     if (currentTab === Tab.DETAILS) {
-      setTab(Tab.ORGANIZE);
+      setTab(Tab.ORGANIZE)
     }
 
     if (currentTab === Tab.ORGANIZE) {
-      setTab(Tab.VARIANTS);
+      setTab(Tab.VARIANTS)
     }
 
     if (currentTab === Tab.VARIANTS) {
-      setTab(Tab.INVENTORY);
+      setTab(Tab.INVENTORY)
     }
-  };
+  }
 
   useEffect(() => {
-    const currentState = { ...tabState };
+    const currentState = { ...tabState }
     if (tab === Tab.DETAILS) {
-      currentState[Tab.DETAILS] = 'in-progress';
+      currentState[Tab.DETAILS] = "in-progress"
     }
     if (tab === Tab.ORGANIZE) {
-      currentState[Tab.DETAILS] = 'completed';
-      currentState[Tab.ORGANIZE] = 'in-progress';
+      currentState[Tab.DETAILS] = "completed"
+      currentState[Tab.ORGANIZE] = "in-progress"
     }
     if (tab === Tab.VARIANTS) {
-      currentState[Tab.DETAILS] = 'completed';
-      currentState[Tab.ORGANIZE] = 'completed';
-      currentState[Tab.VARIANTS] = 'in-progress';
+      currentState[Tab.DETAILS] = "completed"
+      currentState[Tab.ORGANIZE] = "completed"
+      currentState[Tab.VARIANTS] = "in-progress"
     }
     if (tab === Tab.INVENTORY) {
-      currentState[Tab.DETAILS] = 'completed';
-      currentState[Tab.ORGANIZE] = 'completed';
-      currentState[Tab.VARIANTS] = 'completed';
-      currentState[Tab.INVENTORY] = 'in-progress';
+      currentState[Tab.DETAILS] = "completed"
+      currentState[Tab.ORGANIZE] = "completed"
+      currentState[Tab.VARIANTS] = "completed"
+      currentState[Tab.INVENTORY] = "in-progress"
     }
 
-    setTabState({ ...currentState });
+    setTabState({ ...currentState })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- we only want this effect to run when the tab changes
-  }, [tab]);
+  }, [tab])
 
   return (
     <RouteFocusModal.Form form={form}>
       <KeyboundForm
-        onKeyDown={e => {
+        onKeyDown={(e) => {
           // We want to continue to the next tab on enter instead of saving as draft immediately
-          if (e.key === 'Enter') {
-            if (e.target instanceof HTMLTextAreaElement && !(e.metaKey || e.ctrlKey)) {
-              return;
+          if (e.key === "Enter") {
+            if (
+              e.target instanceof HTMLTextAreaElement &&
+              !(e.metaKey || e.ctrlKey)
+            ) {
+              return
             }
 
-            e.preventDefault();
+            e.preventDefault()
 
             if (e.metaKey || e.ctrlKey) {
               if (tab !== Tab.VARIANTS) {
-                e.preventDefault();
-                e.stopPropagation();
-                onNext(tab);
+                e.preventDefault()
+                e.stopPropagation()
+                onNext(tab)
 
-                return;
+                return
               }
 
-              handleSubmit();
+              handleSubmit()
             }
           }
         }}
@@ -264,14 +277,14 @@ export const ProductCreateForm = ({ defaultChannel, store }: ProductCreateFormPr
       >
         <ProgressTabs
           value={tab}
-          onValueChange={async tab => {
-            const valid = await form.trigger();
+          onValueChange={async (tab) => {
+            const valid = await form.trigger()
 
             if (!valid) {
-              return;
+              return
             }
 
-            setTab(tab as Tab);
+            setTab(tab as Tab)
           }}
           className="flex h-full flex-col overflow-hidden"
         >
@@ -283,21 +296,21 @@ export const ProductCreateForm = ({ defaultChannel, store }: ProductCreateFormPr
                   value={Tab.DETAILS}
                   className="max-w-[200px] truncate"
                 >
-                  {t('products.create.tabs.details')}
+                  {t("products.create.tabs.details")}
                 </ProgressTabs.Trigger>
                 <ProgressTabs.Trigger
                   status={tabState[Tab.ORGANIZE]}
                   value={Tab.ORGANIZE}
                   className="max-w-[200px] truncate"
                 >
-                  {t('products.create.tabs.organize')}
+                  {t("products.create.tabs.organize")}
                 </ProgressTabs.Trigger>
                 <ProgressTabs.Trigger
                   status={tabState[Tab.VARIANTS]}
                   value={Tab.VARIANTS}
                   className="max-w-[200px] truncate"
                 >
-                  {t('products.create.tabs.variants')}
+                  {t("products.create.tabs.variants")}
                 </ProgressTabs.Trigger>
                 {showInventoryTab && (
                   <ProgressTabs.Trigger
@@ -305,7 +318,7 @@ export const ProductCreateForm = ({ defaultChannel, store }: ProductCreateFormPr
                     value={Tab.INVENTORY}
                     className="max-w-[200px] truncate"
                   >
-                    {t('products.create.tabs.inventory')}
+                    {t("products.create.tabs.inventory")}
                   </ProgressTabs.Trigger>
                 )}
               </ProgressTabs.List>
@@ -348,11 +361,8 @@ export const ProductCreateForm = ({ defaultChannel, store }: ProductCreateFormPr
         <RouteFocusModal.Footer>
           <div className="flex items-center justify-end gap-x-2">
             <RouteFocusModal.Close asChild>
-              <Button
-                variant="secondary"
-                size="small"
-              >
-                {t('actions.cancel')}
+              <Button variant="secondary" size="small">
+                {t("actions.cancel")}
               </Button>
             </RouteFocusModal.Close>
             <Button
@@ -374,20 +384,28 @@ export const ProductCreateForm = ({ defaultChannel, store }: ProductCreateFormPr
         </RouteFocusModal.Footer>
       </KeyboundForm>
     </RouteFocusModal.Form>
-  );
-};
+  )
+}
 
 type PrimaryButtonProps = {
-  tab: Tab;
-  next: (tab: Tab) => void;
-  isLoading?: boolean;
-  showInventoryTab: boolean;
-};
+  tab: Tab
+  next: (tab: Tab) => void
+  isLoading?: boolean
+  showInventoryTab: boolean
+}
 
-const PrimaryButton = ({ tab, next, isLoading, showInventoryTab }: PrimaryButtonProps) => {
-  const { t } = useTranslation();
+const PrimaryButton = ({
+  tab,
+  next,
+  isLoading,
+  showInventoryTab,
+}: PrimaryButtonProps) => {
+  const { t } = useTranslation()
 
-  if ((tab === Tab.VARIANTS && !showInventoryTab) || (tab === Tab.INVENTORY && showInventoryTab)) {
+  if (
+    (tab === Tab.VARIANTS && !showInventoryTab) ||
+    (tab === Tab.INVENTORY && showInventoryTab)
+  ) {
     return (
       <Button
         data-name="publish-button"
@@ -399,7 +417,7 @@ const PrimaryButton = ({ tab, next, isLoading, showInventoryTab }: PrimaryButton
       >
         Create Product
       </Button>
-    );
+    )
   }
 
   return (
@@ -410,7 +428,7 @@ const PrimaryButton = ({ tab, next, isLoading, showInventoryTab }: PrimaryButton
       size="small"
       onClick={() => next(tab)}
     >
-      {t('actions.continue')}
+      {t("actions.continue")}
     </Button>
-  );
-};
+  )
+}

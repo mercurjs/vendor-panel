@@ -1,20 +1,24 @@
-import { FetchError } from '@medusajs/js-sdk';
-import { HttpTypes } from '@medusajs/types';
 import {
   QueryKey,
-  useMutation,
   UseMutationOptions,
+  UseQueryOptions,
+  useMutation,
   useQuery,
-  UseQueryOptions
-} from '@tanstack/react-query';
+} from "@tanstack/react-query"
+import { HttpTypes } from "@medusajs/types"
+import { fetchQuery } from "../../lib/client"
+import { queryClient } from "../../lib/query-client"
+import { queryKeysFactory } from "../../lib/query-key-factory"
+import {
+  inventoryItemLevelsQueryKeys,
+  inventoryItemsQueryKeys,
+} from "./inventory.tsx"
+import { FetchError } from "@medusajs/js-sdk"
 
-import { fetchQuery } from '../../lib/client';
-import { queryClient } from '../../lib/query-client';
-import { queryKeysFactory } from '../../lib/query-key-factory';
-import { inventoryItemLevelsQueryKeys, inventoryItemsQueryKeys } from './inventory.tsx';
-
-const RESERVATION_ITEMS_QUERY_KEY = 'reservation_items' as const;
-export const reservationItemsQueryKeys = queryKeysFactory(RESERVATION_ITEMS_QUERY_KEY);
+const RESERVATION_ITEMS_QUERY_KEY = "reservation_items" as const
+export const reservationItemsQueryKeys = queryKeysFactory(
+  RESERVATION_ITEMS_QUERY_KEY
+)
 
 export const useReservationItem = (
   id: string,
@@ -26,21 +30,21 @@ export const useReservationItem = (
       HttpTypes.AdminReservationResponse,
       QueryKey
     >,
-    'queryFn' | 'queryKey'
+    "queryFn" | "queryKey"
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryKey: reservationItemsQueryKeys.detail(id),
     queryFn: async () =>
       fetchQuery(`/vendor/reservations/${id}`, {
-        method: 'GET',
-        query
+        method: "GET",
+        query,
       }),
-    ...options
-  });
+    ...options,
+  })
 
-  return { ...data, ...rest };
-};
+  return { ...data, ...rest }
+}
 
 export const useReservationItems = (
   query?: HttpTypes.AdminGetReservationsParams,
@@ -51,34 +55,36 @@ export const useReservationItems = (
       HttpTypes.AdminReservationListResponse,
       QueryKey
     >,
-    'queryKey' | 'queryFn'
+    "queryKey" | "queryFn"
   >,
   filters?: { inventory_item_id: string[] }
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: () =>
-      fetchQuery('/vendor/reservations', {
-        method: 'GET',
-        query: query as { [key: string]: string | number }
+      fetchQuery("/vendor/reservations", {
+        method: "GET",
+        query: query as { [key: string]: string | number },
       }),
     queryKey: reservationItemsQueryKeys.list(query),
-    ...options
-  });
+    ...options,
+  })
 
   if (!filters) {
-    return { ...data, ...rest };
+    return { ...data, ...rest }
   }
   const reservations =
-    data?.reservations.filter(r => filters.inventory_item_id.includes(r.inventory_item_id)) || [];
+    data?.reservations.filter((r) =>
+      filters.inventory_item_id.includes(r.inventory_item_id)
+    ) || []
 
-  const count = reservations.length || 0;
+  const count = reservations.length || 0
 
   return {
     reservations,
     count,
-    ...rest
-  };
-};
+    ...rest,
+  }
+}
 
 export const useUpdateReservationItem = (
   id: string,
@@ -91,27 +97,27 @@ export const useUpdateReservationItem = (
   return useMutation({
     mutationFn: (payload: HttpTypes.AdminUpdateReservation) =>
       fetchQuery(`/vendor/reservations/${id}`, {
-        method: 'POST',
-        body: payload
+        method: "POST",
+        body: payload,
       }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: reservationItemsQueryKeys.detail(id)
-      });
+        queryKey: reservationItemsQueryKeys.detail(id),
+      })
       queryClient.invalidateQueries({
-        queryKey: reservationItemsQueryKeys.lists()
-      });
+        queryKey: reservationItemsQueryKeys.lists(),
+      })
       queryClient.invalidateQueries({
-        queryKey: inventoryItemsQueryKeys.details()
-      });
+        queryKey: inventoryItemsQueryKeys.details(),
+      })
       queryClient.invalidateQueries({
-        queryKey: inventoryItemLevelsQueryKeys.details()
-      });
-      options?.onSuccess?.(data, variables, context);
+        queryKey: inventoryItemLevelsQueryKeys.details(),
+      })
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useCreateReservationItem = (
   options?: UseMutationOptions<
@@ -122,47 +128,52 @@ export const useCreateReservationItem = (
 ) => {
   return useMutation({
     mutationFn: (payload: HttpTypes.AdminCreateReservation) =>
-      fetchQuery('/vendor/reservations', {
-        method: 'POST',
-        body: payload
+      fetchQuery("/vendor/reservations", {
+        method: "POST",
+        body: payload,
       }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: reservationItemsQueryKeys.lists()
-      });
+        queryKey: reservationItemsQueryKeys.lists(),
+      })
       queryClient.invalidateQueries({
-        queryKey: inventoryItemsQueryKeys.details()
-      });
+        queryKey: inventoryItemsQueryKeys.details(),
+      })
       queryClient.invalidateQueries({
-        queryKey: inventoryItemLevelsQueryKeys.details()
-      });
-      options?.onSuccess?.(data, variables, context);
+        queryKey: inventoryItemLevelsQueryKeys.details(),
+      })
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useDeleteReservationItem = (
   id: string,
-  options?: UseMutationOptions<HttpTypes.AdminReservationDeleteResponse, FetchError, void>
+  options?: UseMutationOptions<
+    HttpTypes.AdminReservationDeleteResponse,
+    FetchError,
+    void
+  >
 ) => {
   return useMutation({
-    mutationFn: () => fetchQuery(`/vendor/reservations/${id}`, { method: 'DELETE' }),
+    mutationFn: () =>
+      fetchQuery(`/vendor/reservations/${id}`, { method: "DELETE" }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: reservationItemsQueryKeys.lists()
-      });
+        queryKey: reservationItemsQueryKeys.lists(),
+      })
       queryClient.invalidateQueries({
-        queryKey: reservationItemsQueryKeys.detail(id)
-      });
+        queryKey: reservationItemsQueryKeys.detail(id),
+      })
       queryClient.invalidateQueries({
-        queryKey: inventoryItemsQueryKeys.details()
-      });
+        queryKey: inventoryItemsQueryKeys.details(),
+      })
       queryClient.invalidateQueries({
-        queryKey: inventoryItemLevelsQueryKeys.details()
-      });
-      options?.onSuccess?.(data, variables, context);
+        queryKey: inventoryItemLevelsQueryKeys.details(),
+      })
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}

@@ -1,24 +1,25 @@
-import { ComponentType } from 'react';
-
-import { LoaderFunction, RouteObject } from 'react-router-dom';
-
-import { ErrorBoundary } from '../../components/utilities/error-boundary';
-import { RouteExtension, RouteModule } from '../types';
+import { ComponentType } from "react"
+import { LoaderFunction, RouteObject } from "react-router-dom"
+import { ErrorBoundary } from "../../components/utilities/error-boundary"
+import { RouteExtension, RouteModule } from "../types"
 
 /**
  * Used to test if a route is a settings route.
  */
-const settingsRouteRegex = /^\/settings\//;
+const settingsRouteRegex = /^\/settings\//
 
-export const getRouteExtensions = (module: RouteModule, type: 'settings' | 'core') => {
-  return module.routes.filter(route => {
-    if (type === 'settings') {
-      return settingsRouteRegex.test(route.path);
+export const getRouteExtensions = (
+  module: RouteModule,
+  type: "settings" | "core"
+) => {
+  return module.routes.filter((route) => {
+    if (type === "settings") {
+      return settingsRouteRegex.test(route.path)
     }
 
-    return !settingsRouteRegex.test(route.path);
-  });
-};
+    return !settingsRouteRegex.test(route.path)
+  })
+}
 
 /**
  * Creates a route object for a branch node in the route tree
@@ -26,8 +27,8 @@ export const getRouteExtensions = (module: RouteModule, type: 'settings' | 'core
  */
 const createBranchRoute = (segment: string): RouteObject => ({
   path: segment,
-  children: []
-});
+  children: [],
+})
 
 /**
  * Creates a route object for a leaf node with its component
@@ -38,26 +39,26 @@ const createLeafRoute = (
   loader?: LoaderFunction,
   handle?: object
 ): RouteObject => ({
-  path: '',
+  path: "",
   ErrorBoundary: ErrorBoundary,
   async lazy() {
     const result: {
-      Component: ComponentType;
-      loader?: LoaderFunction;
-      handle?: object;
-    } = { Component };
+      Component: ComponentType
+      loader?: LoaderFunction
+      handle?: object
+    } = { Component }
 
     if (loader) {
-      result.loader = loader;
+      result.loader = loader
     }
 
     if (handle) {
-      result.handle = handle;
+      result.handle = handle
     }
 
-    return result;
-  }
-});
+    return result
+  },
+})
 
 /**
  * Creates a parallel route configuration
@@ -73,22 +74,22 @@ const createParallelRoute = (
   path,
   async lazy() {
     const result: {
-      Component: ComponentType;
-      loader?: LoaderFunction;
-      handle?: object;
-    } = { Component };
+      Component: ComponentType
+      loader?: LoaderFunction
+      handle?: object
+    } = { Component }
 
     if (loader) {
-      result.loader = loader;
+      result.loader = loader
     }
 
     if (handle) {
-      result.handle = handle;
+      result.handle = handle
     }
 
-    return result;
-  }
-});
+    return result
+  },
+})
 
 /**
  * Processes parallel routes by cleaning their paths relative to the current path
@@ -101,14 +102,14 @@ const processParallelRoutes = (
 ): RouteObject[] | undefined => {
   return parallelRoutes
     ?.map(({ path, Component, loader, handle }) => {
-      const childPath = path?.replace(currentFullPath, '').replace(/^\/+/, '');
+      const childPath = path?.replace(currentFullPath, "").replace(/^\/+/, "")
       if (!childPath) {
-        return null;
+        return null
       }
-      return createParallelRoute(childPath, Component, loader, handle);
+      return createParallelRoute(childPath, Component, loader, handle)
     })
-    .filter(Boolean) as RouteObject[];
-};
+    .filter(Boolean) as RouteObject[]
+}
 
 /**
  * Recursively builds the route tree by adding routes at the correct level
@@ -128,22 +129,24 @@ const addRoute = (
   fullPath?: string
 ) => {
   if (!pathSegments.length) {
-    return;
+    return
   }
 
-  const [currentSegment, ...remainingSegments] = pathSegments;
-  let route = currentLevel.find(r => r.path === currentSegment);
+  const [currentSegment, ...remainingSegments] = pathSegments
+  let route = currentLevel.find((r) => r.path === currentSegment)
 
   if (!route) {
-    route = createBranchRoute(currentSegment);
-    currentLevel.push(route);
+    route = createBranchRoute(currentSegment)
+    currentLevel.push(route)
   }
 
-  const currentFullPath = fullPath ? `${fullPath}/${currentSegment}` : currentSegment;
+  const currentFullPath = fullPath
+    ? `${fullPath}/${currentSegment}`
+    : currentSegment
 
   if (remainingSegments.length === 0) {
-    route.children ||= [];
-    const leaf = createLeafRoute(Component, loader);
+    route.children ||= []
+    const leaf = createLeafRoute(Component, loader)
 
     /**
      * The handle needs to be set on the wrapper route object,
@@ -151,13 +154,13 @@ const addRoute = (
      * the branch.
      */
     if (handle) {
-      route.handle = handle;
+      route.handle = handle
     }
 
-    leaf.children = processParallelRoutes(parallelRoutes, currentFullPath);
-    route.children.push(leaf);
+    leaf.children = processParallelRoutes(parallelRoutes, currentFullPath)
+    route.children.push(leaf)
   } else {
-    route.children ||= [];
+    route.children ||= []
     addRoute(
       remainingSegments,
       Component,
@@ -166,9 +169,9 @@ const addRoute = (
       handle,
       parallelRoutes,
       currentFullPath
-    );
+    )
   }
-};
+}
 
 /**
  * Creates a complete route map from route extensions
@@ -176,16 +179,19 @@ const addRoute = (
  * @param ignore - Optional path prefix to ignore when processing routes
  * @returns An array of route objects forming a route tree
  */
-export const createRouteMap = (routes: RouteExtension[], ignore?: string): RouteObject[] => {
-  const root: RouteObject[] = [];
+export const createRouteMap = (
+  routes: RouteExtension[],
+  ignore?: string
+): RouteObject[] => {
+  const root: RouteObject[] = []
 
   routes.forEach(({ path, Component, loader, handle, children }) => {
     const cleanedPath = ignore
-      ? path.replace(ignore, '').replace(/^\/+/, '')
-      : path.replace(/^\/+/, '');
-    const pathSegments = cleanedPath.split('/').filter(Boolean);
-    addRoute(pathSegments, Component, root, loader, handle, children);
-  });
+      ? path.replace(ignore, "").replace(/^\/+/, "")
+      : path.replace(/^\/+/, "")
+    const pathSegments = cleanedPath.split("/").filter(Boolean)
+    addRoute(pathSegments, Component, root, loader, handle, children)
+  })
 
-  return root;
-};
+  return root
+}

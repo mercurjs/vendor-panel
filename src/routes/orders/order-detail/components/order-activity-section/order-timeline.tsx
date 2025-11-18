@@ -1,13 +1,13 @@
-import { ExtendedAdminOrder } from '../../../../../types/order';
-import { OrderActivityCollapsible, OrderActivityItem } from './components';
-import { useActivityItems } from './hooks';
+import { ExtendedAdminOrder } from "../../../../../types/order"
+import { useActivityItems } from "./hooks"
+import { OrderActivityItem, OrderActivityCollapsible } from "./components"
 
 type OrderTimelineProps = {
-  order: ExtendedAdminOrder;
-};
+  order: ExtendedAdminOrder
+}
 
 export const OrderTimeline = ({ order }: OrderTimelineProps) => {
-  const items = useActivityItems(order);
+  const items = useActivityItems(order)
 
   if (items.length <= 3) {
     return (
@@ -25,15 +25,15 @@ export const OrderTimeline = ({ order }: OrderTimelineProps) => {
             >
               {item.children}
             </OrderActivityItem>
-          );
+          )
         })}
       </div>
-    );
+    )
   }
 
-  const lastItems = items.slice(0, 2);
-  const collapsibleItems = items.slice(2, items.length - 1);
-  const firstItem = items[items.length - 1];
+  const lastItems = items.slice(0, 2)
+  const collapsibleItems = items.slice(2, items.length - 1)
+  const firstItem = items[items.length - 1]
 
   return (
     <div className="flex flex-col gap-y-0.5">
@@ -49,7 +49,7 @@ export const OrderTimeline = ({ order }: OrderTimelineProps) => {
           >
             {item.children}
           </OrderActivityItem>
-        );
+        )
       })}
       <OrderActivityCollapsible activities={collapsibleItems} />
       <OrderActivityItem
@@ -63,5 +63,5 @@ export const OrderTimeline = ({ order }: OrderTimelineProps) => {
         {firstItem.children}
       </OrderActivityItem>
     </div>
-  );
-};
+  )
+}

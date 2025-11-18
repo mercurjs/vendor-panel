@@ -1,43 +1,53 @@
-import { useCallback } from 'react';
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Button, Input, Textarea, toast } from "@medusajs/ui"
+import { useFieldArray, useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { z } from "zod"
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { HttpTypes } from '@medusajs/types';
-import { Button, Input, Textarea, toast } from '@medusajs/ui';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { z } from 'zod';
+import { Form } from "../../../../../components/common/form"
 
-import { FileType, FileUpload } from '../../../../../components/common/file-upload';
-import { Form } from '../../../../../components/common/form';
-import { RouteDrawer, useRouteModal } from '../../../../../components/modals';
-import { KeyboundForm } from '../../../../../components/utilities/keybound-form';
-import { useUpdateMe } from '../../../../../hooks/api';
-import { uploadFilesQuery } from '../../../../../lib/client';
-import { StoreVendor } from '../../../../../types/user';
-import { MediaSchema } from '../../../../products/product-create/constants';
+import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
+import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
+import { StoreVendor } from "../../../../../types/user"
+import { useUpdateMe } from "../../../../../hooks/api"
+import { MediaSchema } from "../../../../products/product-create/constants"
+import {
+  FileType,
+  FileUpload,
+} from "../../../../../components/common/file-upload"
+import { useCallback } from "react"
+import { uploadFilesQuery } from "../../../../../lib/client"
+import { HttpTypes } from "@medusajs/types"
 
 export const EditStoreSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
   phone: z.string().optional(),
   email: z.string().optional(),
-  media: z.array(MediaSchema).optional()
-});
+  media: z.array(MediaSchema).optional(),
+})
 
 const SUPPORTED_FORMATS = [
-  'image/jpeg',
-  'image/png',
-  'image/gif',
-  'image/webp',
-  'image/heic',
-  'image/svg+xml'
-];
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "image/heic",
+  "image/svg+xml",
+]
 
-const SUPPORTED_FORMATS_FILE_EXTENSIONS = ['.jpeg', '.png', '.gif', '.webp', '.heic', '.svg'];
+const SUPPORTED_FORMATS_FILE_EXTENSIONS = [
+  ".jpeg",
+  ".png",
+  ".gif",
+  ".webp",
+  ".heic",
+  ".svg",
+]
 
 export const EditStoreForm = ({ seller }: { seller: StoreVendor }) => {
-  const { t } = useTranslation();
-  const { handleSuccess } = useRouteModal();
+  const { t } = useTranslation()
+  const { handleSuccess } = useRouteModal()
 
   const form = useForm<z.infer<typeof EditStoreSchema>>({
     defaultValues: {
@@ -45,73 +55,75 @@ export const EditStoreForm = ({ seller }: { seller: StoreVendor }) => {
       description: seller.description,
       phone: seller.phone,
       email: seller.email,
-      media: []
+      media: [],
     },
-    resolver: zodResolver(EditStoreSchema)
-  });
+    resolver: zodResolver(EditStoreSchema),
+  })
 
   const { fields } = useFieldArray({
-    name: 'media',
+    name: "media",
     control: form.control,
-    keyName: 'field_id'
-  });
+    keyName: "field_id",
+  })
 
-  const { mutateAsync, isPending } = useUpdateMe();
+  const { mutateAsync, isPending } = useUpdateMe()
 
   const hasInvalidFiles = useCallback(
     (fileList: FileType[]) => {
-      const invalidFile = fileList.find(f => !SUPPORTED_FORMATS.includes(f.file.type));
+      const invalidFile = fileList.find(
+        (f) => !SUPPORTED_FORMATS.includes(f.file.type)
+      )
 
       if (invalidFile) {
-        form.setError('media', {
-          type: 'invalid_file',
-          message: t('products.media.invalidFileType', {
+        form.setError("media", {
+          type: "invalid_file",
+          message: t("products.media.invalidFileType", {
             name: invalidFile.file.name,
-            types: SUPPORTED_FORMATS_FILE_EXTENSIONS.join(', ')
-          })
-        });
+            types: SUPPORTED_FORMATS_FILE_EXTENSIONS.join(", "),
+          }),
+        })
 
-        return true;
+        return true
       }
 
-      return false;
+      return false
     },
     [form, t]
-  );
+  )
 
   const onUploaded = useCallback(
     (files: FileType[]) => {
-      form.clearErrors('media');
+      form.clearErrors("media")
       if (hasInvalidFiles(files)) {
-        return;
+        return
       }
 
-      form.setValue('media', [{ ...files[0], isThumbnail: false }]);
+      form.setValue("media", [{ ...files[0], isThumbnail: false }])
     },
     [form, hasInvalidFiles]
-  );
+  )
 
-  const handleSubmit = form.handleSubmit(async values => {
+  const handleSubmit = form.handleSubmit(async (values) => {
     let uploadedMedia: (HttpTypes.AdminFile & {
-      isThumbnail: boolean;
-    })[] = [];
+      isThumbnail: boolean
+    })[] = []
     try {
       if (values.media?.length) {
-        const fileReqs = [];
+        const fileReqs = []
         fileReqs.push(
           uploadFilesQuery(values.media).then((r: any) =>
             r.files.map((f: any) => ({
               ...f,
-              isThumbnail: false
+              isThumbnail: false,
             }))
           )
-        );
+        )
 
-        uploadedMedia = (await Promise.all(fileReqs)).flat();
+        uploadedMedia = (await Promise.all(fileReqs)).flat()
       }
     } catch (error) {
       if (error instanceof Error) {
-        toast.error(error.message);
+        toast.error(error.message)
       }
     }
 
@@ -121,27 +133,24 @@ export const EditStoreForm = ({ seller }: { seller: StoreVendor }) => {
         email: values.email,
         phone: values.phone,
         description: values.description,
-        photo: uploadedMedia[0]?.url || seller.photo || ''
+        photo: uploadedMedia[0]?.url || seller.photo || "",
       },
       {
         onSuccess: () => {
-          toast.success('Store updated');
+          toast.success("Store updated")
 
-          handleSuccess();
+          handleSuccess()
         },
-        onError: error => {
-          toast.error(error.message);
-        }
+        onError: (error) => {
+          toast.error(error.message)
+        },
       }
-    );
-  });
+    )
+  })
 
   return (
     <RouteDrawer.Form form={form}>
-      <KeyboundForm
-        onSubmit={handleSubmit}
-        className="flex h-full flex-col"
-      >
+      <KeyboundForm onSubmit={handleSubmit} className="flex h-full flex-col">
         <RouteDrawer.Body>
           <div className="flex flex-col gap-y-8">
             <Form.Field
@@ -156,10 +165,10 @@ export const EditStoreForm = ({ seller }: { seller: StoreVendor }) => {
                       </div>
                       <Form.Control>
                         <FileUpload
-                          uploadedImage={fields[0]?.url || ''}
+                          uploadedImage={fields[0]?.url || ""}
                           multiple={false}
-                          label={t('products.media.uploadImagesLabel')}
-                          hint={t('products.media.uploadImagesHint')}
+                          label={t("products.media.uploadImagesLabel")}
+                          hint={t("products.media.uploadImagesHint")}
                           hasError={!!form.formState.errors.media}
                           formats={SUPPORTED_FORMATS}
                           onUploaded={onUploaded}
@@ -168,7 +177,7 @@ export const EditStoreForm = ({ seller }: { seller: StoreVendor }) => {
                       <Form.ErrorMessage />
                     </div>
                   </Form.Item>
-                );
+                )
               }}
             />
             <Form.Field
@@ -228,23 +237,16 @@ export const EditStoreForm = ({ seller }: { seller: StoreVendor }) => {
         <RouteDrawer.Footer>
           <div className="flex items-center justify-end gap-x-2">
             <RouteDrawer.Close asChild>
-              <Button
-                size="small"
-                variant="secondary"
-              >
-                {t('actions.cancel')}
+              <Button size="small" variant="secondary">
+                {t("actions.cancel")}
               </Button>
             </RouteDrawer.Close>
-            <Button
-              size="small"
-              isLoading={isPending}
-              type="submit"
-            >
-              {t('actions.save')}
+            <Button size="small" isLoading={isPending} type="submit">
+              {t("actions.save")}
             </Button>
           </div>
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  );
-};
+  )
+}

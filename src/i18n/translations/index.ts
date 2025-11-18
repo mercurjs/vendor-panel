@@ -1,87 +1,87 @@
-import ar from './ar.json';
-import bg from './bg.json';
-import cs from './cs.json';
-import de from './de.json';
-import el from './el.json';
-import en from './en.json';
-import es from './es.json';
-import fa from './fa.json';
-import fr from './fr.json';
-import it from './it.json';
-import ja from './ja.json';
-import mk from './mk.json';
-import mn from './mn.json';
-import pl from './pl.json';
-import ptBR from './ptBR.json';
-import ro from './ro.json';
-import ru from './ru.json';
-import th from './th.json';
-import tr from './tr.json';
-import uk from './uk.json';
-import zhCN from './zhCN.json';
+import bg from "./bg.json"
+import de from "./de.json"
+import el from "./el.json"
+import en from "./en.json"
+import es from "./es.json"
+import fr from "./fr.json"
+import it from "./it.json"
+import ja from "./ja.json"
+import pl from "./pl.json"
+import ptBR from "./ptBR.json"
+import th from "./th.json"
+import tr from "./tr.json"
+import uk from "./uk.json"
+import ro from "./ro.json"
+import mk from "./mk.json"
+import mn from "./mn.json"
+import ar from "./ar.json"
+import zhCN from "./zhCN.json"
+import fa from "./fa.json"
+import cs from "./cs.json"
+import ru from "./ru.json"
 
 export default {
   bg: {
-    translation: bg
+    translation: bg,
   },
   de: {
-    translation: de
+    translation: de,
   },
   el: {
-    translation: el
+    translation: el,
   },
   en: {
-    translation: en
+    translation: en,
   },
   es: {
-    translation: es
+    translation: es,
   },
   fr: {
-    translation: fr
+    translation: fr,
   },
   it: {
-    translation: it
+    translation: it,
   },
   ja: {
-    translation: ja
+    translation: ja,
   },
   pl: {
-    translation: pl
+    translation: pl,
   },
   ptBR: {
-    translation: ptBR
+    translation: ptBR,
   },
   th: {
-    translation: th
+    translation: th,
   },
   tr: {
-    translation: tr
+    translation: tr,
   },
   uk: {
-    translation: uk
+    translation: uk,
   },
   ro: {
-    translation: ro
+    translation: ro,
   },
   mk: {
-    translation: mk
+    translation: mk,
   },
   mn: {
-    translation: mn
+    translation: mn,
   },
   ar: {
-    translation: ar
+    translation: ar,
   },
   zhCN: {
-    translation: zhCN
+    translation: zhCN,
   },
   fa: {
-    translation: fa
+    translation: fa,
   },
   cs: {
-    translation: cs
+    translation: cs,
   },
   ru: {
-    translation: ru
-  }
-};
+    translation: ru,
+  },
+}

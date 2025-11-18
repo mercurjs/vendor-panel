@@ -1,90 +1,107 @@
-import { FetchError } from '@medusajs/js-sdk';
-import { HttpTypes } from '@medusajs/types';
+import { FetchError } from "@medusajs/js-sdk"
+import { HttpTypes } from "@medusajs/types"
 import {
   QueryKey,
-  useMutation,
   UseMutationOptions,
+  UseQueryOptions,
+  useMutation,
   useQuery,
-  UseQueryOptions
-} from '@tanstack/react-query';
+} from "@tanstack/react-query"
+import { fetchQuery, sdk } from "../../lib/client"
+import { queryClient } from "../../lib/query-client"
+import { queryKeysFactory } from "../../lib/query-key-factory"
+import {
+  ExtendedPriceList,
+  PriceListListResponse,
+} from "../../types/price-list"
+import { customerGroupsQueryKeys } from "./customer-groups"
+import { productsQueryKeys } from "./products"
 
-import { fetchQuery, sdk } from '../../lib/client';
-import { queryClient } from '../../lib/query-client';
-import { queryKeysFactory } from '../../lib/query-key-factory';
-import { ExtendedPriceList, PriceListListResponse } from '../../types/price-list';
-import { customerGroupsQueryKeys } from './customer-groups';
-import { productsQueryKeys } from './products';
-
-const PRICE_LISTS_QUERY_KEY = 'price-lists' as const;
-export const priceListsQueryKeys = queryKeysFactory(PRICE_LISTS_QUERY_KEY);
+const PRICE_LISTS_QUERY_KEY = "price-lists" as const
+export const priceListsQueryKeys = queryKeysFactory(PRICE_LISTS_QUERY_KEY)
 
 export const usePriceList = (
   id: string,
   query?: Record<string, string | number>,
   options?: Omit<
-    UseQueryOptions<HttpTypes.AdminPriceListResponse, FetchError, any, QueryKey>,
-    'queryKey' | 'queryFn'
+    UseQueryOptions<
+      HttpTypes.AdminPriceListResponse,
+      FetchError,
+      any,
+      QueryKey
+    >,
+    "queryKey" | "queryFn"
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: () =>
       fetchQuery(`/vendor/price-lists/${id}`, {
-        method: 'GET',
-        query
+        method: "GET",
+        query,
       }),
     queryKey: priceListsQueryKeys.detail(id),
-    ...options
-  });
+    ...options,
+  })
 
-  return { ...data, ...rest };
-};
+  return { ...data, ...rest }
+}
 
 export const usePriceListProducts = (
   id: string,
   query?: Record<string, string | number>,
   options?: Omit<
-    UseQueryOptions<HttpTypes.AdminPriceListResponse, FetchError, any, QueryKey>,
-    'queryKey' | 'queryFn'
+    UseQueryOptions<
+      HttpTypes.AdminPriceListResponse,
+      FetchError,
+      any,
+      QueryKey
+    >,
+    "queryKey" | "queryFn"
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: () =>
       fetchQuery(`/vendor/price-lists/${id}/products`, {
-        method: 'GET',
-        query
+        method: "GET",
+        query,
       }),
-    queryKey: [PRICE_LISTS_QUERY_KEY, id, 'products'],
-    ...options
-  });
+    queryKey: [PRICE_LISTS_QUERY_KEY, id, "products"],
+    ...options,
+  })
 
-  return { ...data, ...rest };
-};
+  return { ...data, ...rest }
+}
 
 export const usePriceLists = (
   query?: HttpTypes.AdminPriceListListParams,
   options?: Omit<
-    UseQueryOptions<PriceListListResponse, FetchError, PriceListListResponse, QueryKey>,
-    'queryKey' | 'queryFn'
+    UseQueryOptions<
+      PriceListListResponse,
+      FetchError,
+      PriceListListResponse,
+      QueryKey
+    >,
+    "queryKey" | "queryFn"
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: () =>
-      fetchQuery('/vendor/price-lists', {
-        method: 'GET',
-        query: query as { [key: string]: string | number }
+      fetchQuery("/vendor/price-lists", {
+        method: "GET",
+        query: query as { [key: string]: string | number },
       }),
     queryKey: priceListsQueryKeys.list(query),
-    ...options
-  });
+    ...options,
+  })
 
   const price_lists: ExtendedPriceList[] = (data?.price_lists || [])
-    .filter(item => item.price_list)
-    .map(item => ({ ...item.price_list, id: item.price_list.id }));
+    .filter((item) => item.price_list)
+    .map((item) => ({ ...item.price_list, id: item.price_list.id }))
 
-  const count = price_lists?.length;
+  const count = price_lists?.length
 
-  return { ...data, price_lists, count, ...rest };
-};
+  return { ...data, price_lists, count, ...rest }
+}
 
 export const useCreatePriceList = (
   options?: UseMutationOptions<
@@ -94,25 +111,25 @@ export const useCreatePriceList = (
   >
 ) => {
   return useMutation({
-    mutationFn: payload =>
-      fetchQuery('/vendor/price-lists', {
-        method: 'POST',
-        body: payload
+    mutationFn: (payload) =>
+      fetchQuery("/vendor/price-lists", {
+        method: "POST",
+        body: payload,
       }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: priceListsQueryKeys.lists()
-      });
+        queryKey: priceListsQueryKeys.lists(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: customerGroupsQueryKeys.all
-      });
+        queryKey: customerGroupsQueryKeys.all,
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useUpdatePriceList = (
   id: string,
@@ -123,48 +140,52 @@ export const useUpdatePriceList = (
   >
 ) => {
   return useMutation({
-    mutationFn: payload =>
+    mutationFn: (payload) =>
       fetchQuery(`/vendor/price-lists/${id}`, {
-        method: 'POST',
-        body: payload
+        method: "POST",
+        body: payload,
       }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: priceListsQueryKeys.lists()
-      });
+        queryKey: priceListsQueryKeys.lists(),
+      })
       queryClient.invalidateQueries({
-        queryKey: priceListsQueryKeys.details()
-      });
+        queryKey: priceListsQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: customerGroupsQueryKeys.all
-      });
+        queryKey: customerGroupsQueryKeys.all,
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useDeletePriceList = (
   id: string,
-  options?: UseMutationOptions<HttpTypes.AdminPriceListDeleteResponse, FetchError, void>
+  options?: UseMutationOptions<
+    HttpTypes.AdminPriceListDeleteResponse,
+    FetchError,
+    void
+  >
 ) => {
   return useMutation({
     mutationFn: () =>
       fetchQuery(`/vendor/price-lists/${id}`, {
-        method: 'DELETE'
+        method: "DELETE",
       }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: priceListsQueryKeys.lists()
-      });
+        queryKey: priceListsQueryKeys.lists(),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useBatchPriceListPrices = (
   id: string,
@@ -176,20 +197,21 @@ export const useBatchPriceListPrices = (
   >
 ) => {
   return useMutation({
-    mutationFn: payload => sdk.admin.priceList.batchPrices(id, payload, query),
+    mutationFn: (payload) =>
+      sdk.admin.priceList.batchPrices(id, payload, query),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: priceListsQueryKeys.detail(id)
-      });
+        queryKey: priceListsQueryKeys.detail(id),
+      })
       queryClient.invalidateQueries({
-        queryKey: productsQueryKeys.lists()
-      });
+        queryKey: productsQueryKeys.lists(),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const usePriceListLinkProducts = (
   id: string,
@@ -200,24 +222,24 @@ export const usePriceListLinkProducts = (
   >
 ) => {
   return useMutation({
-    mutationFn: payload =>
+    mutationFn: (payload) =>
       fetchQuery(`/vendor/price-lists/${id}/products`, {
-        method: 'POST',
-        body: payload
+        method: "POST",
+        body: payload,
       }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: priceListsQueryKeys.detail(id)
-      });
+        queryKey: priceListsQueryKeys.detail(id),
+      })
       queryClient.invalidateQueries({
-        queryKey: priceListsQueryKeys.lists()
-      });
+        queryKey: priceListsQueryKeys.lists(),
+      })
       queryClient.invalidateQueries({
-        queryKey: [PRICE_LISTS_QUERY_KEY, id, 'products']
-      });
+        queryKey: [PRICE_LISTS_QUERY_KEY, id, "products"],
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}

@@ -1,102 +1,102 @@
-import { useMemo } from 'react';
-
-import { PencilSquare, Trash } from '@medusajs/icons';
-import { HttpTypes } from '@medusajs/types';
-import { Checkbox, Container, Heading, toast, usePrompt } from '@medusajs/ui';
-import { createColumnHelper } from '@tanstack/react-table';
-import { useTranslation } from 'react-i18next';
-
-import { ActionMenu } from '../../../../../components/common/action-menu';
-import { _DataTable } from '../../../../../components/table/data-table';
-import { useUpdateCollectionProducts } from '../../../../../hooks/api/collections';
-import { useProducts } from '../../../../../hooks/api/products';
-import { useProductTableColumns } from '../../../../../hooks/table/columns/use-product-table-columns';
-import { useProductTableFilters } from '../../../../../hooks/table/filters/use-product-table-filters';
-import { useProductTableQuery } from '../../../../../hooks/table/query/use-product-table-query';
-import { useDataTable } from '../../../../../hooks/use-data-table';
-import { ExtendedAdminProduct } from '../../../../../types/products';
+import { PencilSquare, Trash } from "@medusajs/icons"
+import { HttpTypes } from "@medusajs/types"
+import { Checkbox, Container, Heading, toast, usePrompt } from "@medusajs/ui"
+import { createColumnHelper } from "@tanstack/react-table"
+import { useMemo } from "react"
+import { useTranslation } from "react-i18next"
+import { ActionMenu } from "../../../../../components/common/action-menu"
+import { _DataTable } from "../../../../../components/table/data-table"
+import { useUpdateCollectionProducts } from "../../../../../hooks/api/collections"
+import { useProducts } from "../../../../../hooks/api/products"
+import { useProductTableColumns } from "../../../../../hooks/table/columns/use-product-table-columns"
+import { useProductTableFilters } from "../../../../../hooks/table/filters/use-product-table-filters"
+import { useProductTableQuery } from "../../../../../hooks/table/query/use-product-table-query"
+import { useDataTable } from "../../../../../hooks/use-data-table"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 
 type CollectionProductSectionProps = {
-  collection: HttpTypes.AdminCollection;
-};
+  collection: HttpTypes.AdminCollection
+}
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 10
 
-export const CollectionProductSection = ({ collection }: CollectionProductSectionProps) => {
-  const { t } = useTranslation();
+export const CollectionProductSection = ({
+  collection,
+}: CollectionProductSectionProps) => {
+  const { t } = useTranslation()
 
   const { searchParams, raw } = useProductTableQuery({
-    pageSize: PAGE_SIZE
-  });
+    pageSize: PAGE_SIZE,
+  })
   const { products, count, isLoading, isError, error } = useProducts({
     ...searchParams,
-    fields: '+thumbnail',
-    collection_id: collection.id!
-  });
+    fields: "+thumbnail",
+    collection_id: collection.id!,
+  })
 
-  const filters = useProductTableFilters(['collections']);
-  const columns = useColumns();
+  const filters = useProductTableFilters(["collections"])
+  const columns = useColumns()
 
   const { table } = useDataTable({
     data: products ?? [],
     columns,
-    getRowId: row => row.id,
+    getRowId: (row) => row.id,
     count,
     enablePagination: true,
     enableRowSelection: true,
     pageSize: PAGE_SIZE,
     meta: {
-      collectionId: collection.id
-    }
-  });
+      collectionId: collection.id,
+    },
+  })
 
-  const prompt = usePrompt();
+  const prompt = usePrompt()
 
-  const { mutateAsync } = useUpdateCollectionProducts(collection.id!);
+  const { mutateAsync } = useUpdateCollectionProducts(collection.id!)
 
   const handleRemove = async (selection: Record<string, boolean>) => {
-    const ids = Object.keys(selection);
+    const ids = Object.keys(selection)
 
     const res = await prompt({
-      title: t('general.areYouSure'),
-      description: t('collections.removeProductsWarning', {
-        count: ids.length
+      title: t("general.areYouSure"),
+      description: t("collections.removeProductsWarning", {
+        count: ids.length,
       }),
-      confirmText: t('actions.remove'),
-      cancelText: t('actions.cancel')
-    });
+      confirmText: t("actions.remove"),
+      cancelText: t("actions.cancel"),
+    })
 
     if (!res) {
-      return;
+      return
     }
 
     await mutateAsync(
       {
-        remove: ids
+        remove: ids,
       },
       {
         onSuccess: () => {
           toast.success(
-            t('collections.products.remove.successToast', {
-              count: ids.length
+            t("collections.products.remove.successToast", {
+              count: ids.length,
             })
-          );
+          )
         },
-        onError: e => {
-          toast.error(e.message);
-        }
+        onError: (e) => {
+          toast.error(e.message)
+        },
       }
-    );
-  };
+    )
+  }
 
   if (isError) {
-    throw error;
+    throw error
   }
 
   return (
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
-        <Heading level="h2">{t('products.domain')}</Heading>
+        <Heading level="h2">{t("products.domain")}</Heading>
         {/* <ActionMenu
           groups={[
             {
@@ -122,75 +122,75 @@ export const CollectionProductSection = ({ collection }: CollectionProductSectio
         filters={filters}
         isLoading={isLoading}
         orderBy={[
-          { key: 'title', label: t('fields.title') },
+          { key: "title", label: t("fields.title") },
           {
-            key: 'created_at',
-            label: t('fields.createdAt')
+            key: "created_at",
+            label: t("fields.createdAt"),
           },
           {
-            key: 'updated_at',
-            label: t('fields.updatedAt')
-          }
+            key: "updated_at",
+            label: t("fields.updatedAt"),
+          },
         ]}
         queryObject={raw}
         commands={[
           {
             action: handleRemove,
-            label: t('actions.remove'),
-            shortcut: 'r'
-          }
+            label: t("actions.remove"),
+            shortcut: "r",
+          },
         ]}
         noRecords={{
-          message: t('collections.products.list.noRecordsMessage')
+          message: t("collections.products.list.noRecordsMessage"),
         }}
       />
     </Container>
-  );
-};
+  )
+}
 
 const ProductActions = ({
   product,
-  collectionId
+  collectionId,
 }: {
-  product: ExtendedAdminProduct;
-  collectionId: string;
+  product: ExtendedAdminProduct
+  collectionId: string
 }) => {
-  const { t } = useTranslation();
-  const prompt = usePrompt();
-  const { mutateAsync } = useUpdateCollectionProducts(collectionId);
+  const { t } = useTranslation()
+  const prompt = usePrompt()
+  const { mutateAsync } = useUpdateCollectionProducts(collectionId)
 
   const handleRemove = async () => {
     const res = await prompt({
-      title: t('general.areYouSure'),
-      description: t('collections.removeSingleProductWarning', {
-        title: product.title
+      title: t("general.areYouSure"),
+      description: t("collections.removeSingleProductWarning", {
+        title: product.title,
       }),
-      confirmText: t('actions.remove'),
-      cancelText: t('actions.cancel')
-    });
+      confirmText: t("actions.remove"),
+      cancelText: t("actions.cancel"),
+    })
 
     if (!res) {
-      return;
+      return
     }
 
     await mutateAsync(
       {
-        remove: [product.id]
+        remove: [product.id],
       },
       {
         onSuccess: () => {
           toast.success(
-            t('collections.products.remove.successToast', {
-              count: 1
+            t("collections.products.remove.successToast", {
+              count: 1,
             })
-          );
+          )
         },
-        onError: e => {
-          toast.error(e.message);
-        }
+        onError: (e) => {
+          toast.error(e.message)
+        },
       }
-    );
-  };
+    )
+  }
 
   return (
     <ActionMenu
@@ -199,75 +199,77 @@ const ProductActions = ({
           actions: [
             {
               icon: <PencilSquare />,
-              label: t('actions.edit'),
-              to: `/products/${product.id}/edit`
-            }
-          ]
+              label: t("actions.edit"),
+              to: `/products/${product.id}/edit`,
+            },
+          ],
         },
         {
           actions: [
             {
               icon: <Trash />,
-              label: t('actions.remove'),
-              onClick: handleRemove
-            }
-          ]
-        }
+              label: t("actions.remove"),
+              onClick: handleRemove,
+            },
+          ],
+        },
       ]}
     />
-  );
-};
+  )
+}
 
-const columnHelper = createColumnHelper<ExtendedAdminProduct>();
+const columnHelper = createColumnHelper<ExtendedAdminProduct>()
 
 const useColumns = () => {
-  const columns = useProductTableColumns();
+  const columns = useProductTableColumns()
 
   return useMemo(
     () => [
       columnHelper.display({
-        id: 'select',
+        id: "select",
         header: ({ table }) => {
           return (
             <Checkbox
               checked={
                 table.getIsSomePageRowsSelected()
-                  ? 'indeterminate'
+                  ? "indeterminate"
                   : table.getIsAllPageRowsSelected()
               }
-              onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
+              onCheckedChange={(value) =>
+                table.toggleAllPageRowsSelected(!!value)
+              }
             />
-          );
+          )
         },
         cell: ({ row }) => {
           return (
             <Checkbox
               checked={row.getIsSelected()}
-              onCheckedChange={value => row.toggleSelected(!!value)}
-              onClick={e => {
-                e.stopPropagation();
+              onCheckedChange={(value) => row.toggleSelected(!!value)}
+              onClick={(e) => {
+                e.stopPropagation()
               }}
             />
-          );
-        }
+          )
+        },
       }),
       ...columns,
       columnHelper.display({
-        id: 'actions',
+        id: "actions",
         cell: ({ row, table }) => {
           const { collectionId } = table.options.meta as {
-            collectionId: string;
-          };
+            collectionId: string
+          }
 
           return (
             <ProductActions
               product={row.original}
               collectionId={collectionId}
             />
-          );
-        }
-      })
+          )
+        },
+      }),
     ],
     [columns]
-  );
-};
+  )
+}

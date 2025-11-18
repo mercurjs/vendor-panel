@@ -1,24 +1,20 @@
-import { Select } from '@medusajs/ui';
-import { ControllerRenderProps } from 'react-hook-form';
-
-import { ProductAttributePossibleValue } from '../../../../types/products';
+import { Select } from "@medusajs/ui"
+import { ProductAttributePossibleValue } from "../../../../types/products"
+import { ControllerRenderProps } from "react-hook-form"
 
 export const AttributeSelect = ({
   values,
-  field
+  field,
 }: {
-  values: ProductAttributePossibleValue[];
-  field: ControllerRenderProps<any, string>;
+  values: ProductAttributePossibleValue[]
+  field: ControllerRenderProps<any, string>
 }) => {
   const handleChange = (value: string) => {
-    field.onChange(value);
-  };
+    field.onChange(value)
+  }
 
   return (
-    <Select
-      onValueChange={value => handleChange(value)}
-      value={field.value}
-    >
+    <Select onValueChange={(value) => handleChange(value)} value={field.value}>
       <Select.Trigger className="bg-ui-bg-base">
         <Select.Value placeholder="Select value" />
       </Select.Trigger>
@@ -33,5 +29,5 @@ export const AttributeSelect = ({
         ))}
       </Select.Content>
     </Select>
-  );
-};
+  )
+}

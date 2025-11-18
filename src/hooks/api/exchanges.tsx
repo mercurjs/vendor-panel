@@ -1,21 +1,20 @@
-import { FetchError } from '@medusajs/js-sdk';
-import { HttpTypes } from '@medusajs/types';
+import { FetchError } from "@medusajs/js-sdk"
+import { HttpTypes } from "@medusajs/types"
 import {
   QueryKey,
   useMutation,
   UseMutationOptions,
   useQuery,
-  UseQueryOptions
-} from '@tanstack/react-query';
+  UseQueryOptions,
+} from "@tanstack/react-query"
+import { sdk } from "../../lib/client"
+import { queryClient } from "../../lib/query-client"
+import { queryKeysFactory } from "../../lib/query-key-factory"
+import { ordersQueryKeys } from "./orders"
+import { returnsQueryKeys } from "./returns"
 
-import { sdk } from '../../lib/client';
-import { queryClient } from '../../lib/query-client';
-import { queryKeysFactory } from '../../lib/query-key-factory';
-import { ordersQueryKeys } from './orders';
-import { returnsQueryKeys } from './returns';
-
-const EXCHANGES_QUERY_KEY = 'exchanges' as const;
-export const exchangesQueryKeys = queryKeysFactory(EXCHANGES_QUERY_KEY);
+const EXCHANGES_QUERY_KEY = "exchanges" as const
+export const exchangesQueryKeys = queryKeysFactory(EXCHANGES_QUERY_KEY)
 
 export const useExchange = (
   id: string,
@@ -27,17 +26,17 @@ export const useExchange = (
       HttpTypes.AdminExchangeResponse,
       QueryKey
     >,
-    'queryFn' | 'queryKey'
+    "queryFn" | "queryKey"
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: async () => sdk.admin.exchange.retrieve(id, query),
     queryKey: exchangesQueryKeys.detail(id, query),
-    ...options
-  });
+    ...options,
+  })
 
-  return { ...data, ...rest };
-};
+  return { ...data, ...rest }
+}
 
 export const useExchanges = (
   query?: HttpTypes.AdminExchangeListParams,
@@ -48,17 +47,17 @@ export const useExchanges = (
       HttpTypes.AdminExchangeListResponse,
       QueryKey
     >,
-    'queryFn' | 'queryKey'
+    "queryFn" | "queryKey"
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: async () => sdk.admin.exchange.list(query),
     queryKey: exchangesQueryKeys.list(query),
-    ...options
-  });
+    ...options,
+  })
 
-  return { ...data, ...rest };
-};
+  return { ...data, ...rest }
+}
 
 export const useCreateExchange = (
   orderId: string,
@@ -69,25 +68,26 @@ export const useCreateExchange = (
   >
 ) => {
   return useMutation({
-    mutationFn: (payload: HttpTypes.AdminCreateExchange) => sdk.admin.exchange.create(payload),
+    mutationFn: (payload: HttpTypes.AdminCreateExchange) =>
+      sdk.admin.exchange.create(payload),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: exchangesQueryKeys.lists()
-      });
+        queryKey: exchangesQueryKeys.lists(),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useCancelExchange = (
   id: string,
@@ -98,25 +98,25 @@ export const useCancelExchange = (
     mutationFn: () => sdk.admin.exchange.cancel(id),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: exchangesQueryKeys.details()
-      });
+        queryKey: exchangesQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: exchangesQueryKeys.lists()
-      });
-      options?.onSuccess?.(data, variables, context);
+        queryKey: exchangesQueryKeys.lists(),
+      })
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useAddExchangeInboundItems = (
   id: string,
@@ -132,13 +132,13 @@ export const useAddExchangeInboundItems = (
       sdk.admin.exchange.addInboundItems(id, payload),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
-      options?.onSuccess?.(data, variables, context);
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useUpdateExchangeInboundItem = (
   id: string,
@@ -154,43 +154,48 @@ export const useUpdateExchangeInboundItem = (
       actionId,
       ...payload
     }: HttpTypes.AdminUpdateExchangeInboundItem & { actionId: string }) => {
-      return sdk.admin.exchange.updateInboundItem(id, actionId, payload);
+      return sdk.admin.exchange.updateInboundItem(id, actionId, payload)
     },
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
-      options?.onSuccess?.(data, variables, context);
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useRemoveExchangeInboundItem = (
   id: string,
   orderId: string,
-  options?: UseMutationOptions<HttpTypes.AdminExchangeReturnResponse, FetchError, string>
+  options?: UseMutationOptions<
+    HttpTypes.AdminExchangeReturnResponse,
+    FetchError,
+    string
+  >
 ) => {
   return useMutation({
-    mutationFn: (actionId: string) => sdk.admin.exchange.removeInboundItem(id, actionId),
+    mutationFn: (actionId: string) =>
+      sdk.admin.exchange.removeInboundItem(id, actionId),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: returnsQueryKeys.details()
-      });
+        queryKey: returnsQueryKeys.details(),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useAddExchangeInboundShipping = (
   id: string,
@@ -206,13 +211,13 @@ export const useAddExchangeInboundShipping = (
       sdk.admin.exchange.addInboundShipping(id, payload),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
-      options?.onSuccess?.(data, variables, context);
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useUpdateExchangeInboundShipping = (
   id: string,
@@ -231,31 +236,36 @@ export const useUpdateExchangeInboundShipping = (
       sdk.admin.exchange.updateInboundShipping(id, actionId, payload),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
-      options?.onSuccess?.(data, variables, context);
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useDeleteExchangeInboundShipping = (
   id: string,
   orderId: string,
-  options?: UseMutationOptions<HttpTypes.AdminExchangeReturnResponse, FetchError, string>
+  options?: UseMutationOptions<
+    HttpTypes.AdminExchangeReturnResponse,
+    FetchError,
+    string
+  >
 ) => {
   return useMutation({
-    mutationFn: (actionId: string) => sdk.admin.exchange.deleteInboundShipping(id, actionId),
+    mutationFn: (actionId: string) =>
+      sdk.admin.exchange.deleteInboundShipping(id, actionId),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useAddExchangeOutboundItems = (
   id: string,
@@ -271,13 +281,13 @@ export const useAddExchangeOutboundItems = (
       sdk.admin.exchange.addOutboundItems(id, payload),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
-      options?.onSuccess?.(data, variables, context);
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useUpdateExchangeOutboundItems = (
   id: string,
@@ -293,39 +303,44 @@ export const useUpdateExchangeOutboundItems = (
       actionId,
       ...payload
     }: HttpTypes.AdminUpdateExchangeOutboundItem & { actionId: string }) => {
-      return sdk.admin.exchange.updateOutboundItem(id, actionId, payload);
+      return sdk.admin.exchange.updateOutboundItem(id, actionId, payload)
     },
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
-      options?.onSuccess?.(data, variables, context);
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useRemoveExchangeOutboundItem = (
   id: string,
   orderId: string,
-  options?: UseMutationOptions<HttpTypes.AdminExchangeResponse, FetchError, string>
+  options?: UseMutationOptions<
+    HttpTypes.AdminExchangeResponse,
+    FetchError,
+    string
+  >
 ) => {
   return useMutation({
-    mutationFn: (actionId: string) => sdk.admin.exchange.removeOutboundItem(id, actionId),
+    mutationFn: (actionId: string) =>
+      sdk.admin.exchange.removeOutboundItem(id, actionId),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useAddExchangeOutboundShipping = (
   id: string,
@@ -341,13 +356,13 @@ export const useAddExchangeOutboundShipping = (
       sdk.admin.exchange.addOutboundShipping(id, payload),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
-      options?.onSuccess?.(data, variables, context);
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useUpdateExchangeOutboundShipping = (
   id: string,
@@ -366,30 +381,35 @@ export const useUpdateExchangeOutboundShipping = (
       sdk.admin.exchange.updateOutboundShipping(id, actionId, payload),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
-      options?.onSuccess?.(data, variables, context);
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useDeleteExchangeOutboundShipping = (
   id: string,
   orderId: string,
-  options?: UseMutationOptions<HttpTypes.AdminExchangeResponse, FetchError, string>
+  options?: UseMutationOptions<
+    HttpTypes.AdminExchangeResponse,
+    FetchError,
+    string
+  >
 ) => {
   return useMutation({
-    mutationFn: (actionId: string) => sdk.admin.exchange.deleteOutboundShipping(id, actionId),
+    mutationFn: (actionId: string) =>
+      sdk.admin.exchange.deleteOutboundShipping(id, actionId),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
-      options?.onSuccess?.(data, variables, context);
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useExchangeConfirmRequest = (
   id: string,
@@ -405,26 +425,26 @@ export const useExchangeConfirmRequest = (
       sdk.admin.exchange.request(id, payload),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: returnsQueryKeys.all
-      });
+        queryKey: returnsQueryKeys.all,
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: exchangesQueryKeys.lists()
-      });
+        queryKey: exchangesQueryKeys.lists(),
+      })
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}
 
 export const useCancelExchangeRequest = (
   id: string,
@@ -435,21 +455,21 @@ export const useCancelExchangeRequest = (
     mutationFn: () => sdk.admin.exchange.cancelRequest(id),
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.details()
-      });
+        queryKey: ordersQueryKeys.details(),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.preview(orderId)
-      });
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
 
       queryClient.invalidateQueries({
-        queryKey: exchangesQueryKeys.details()
-      });
+        queryKey: exchangesQueryKeys.details(),
+      })
       queryClient.invalidateQueries({
-        queryKey: exchangesQueryKeys.lists()
-      });
-      options?.onSuccess?.(data, variables, context);
+        queryKey: exchangesQueryKeys.lists(),
+      })
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options
-  });
-};
+    ...options,
+  })
+}

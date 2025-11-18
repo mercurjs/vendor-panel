@@ -1,62 +1,67 @@
-import { useEffect, useMemo, useState } from 'react';
+import { zodResolver } from "@hookform/resolvers/zod"
+import {
+  RowSelectionState,
+  createColumnHelper,
+} from "@tanstack/react-table"
+import { useEffect, useMemo, useState } from "react"
+import { useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import * as zod from "zod"
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { HttpTypes } from '@medusajs/types';
-import { Button, Checkbox, toast } from '@medusajs/ui';
-import { createColumnHelper, RowSelectionState } from '@tanstack/react-table';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import * as zod from 'zod';
-
-import { RouteFocusModal, useRouteModal } from '../../../../../components/modals';
-import { _DataTable } from '../../../../../components/table/data-table';
-import { KeyboundForm } from '../../../../../components/utilities/keybound-form';
-import { useUpdateRegion } from '../../../../../hooks/api/regions';
-import { useDataTable } from '../../../../../hooks/use-data-table';
-import { countries as staticCountries, StaticCountry } from '../../../../../lib/data/countries';
-import { useCountries } from '../../../common/hooks/use-countries';
-import { useCountryTableColumns } from '../../../common/hooks/use-country-table-columns';
-import { useCountryTableQuery } from '../../../common/hooks/use-country-table-query';
+import { HttpTypes } from "@medusajs/types"
+import { Button, Checkbox, toast } from "@medusajs/ui"
+import {
+  RouteFocusModal,
+  useRouteModal,
+} from "../../../../../components/modals"
+import { _DataTable } from "../../../../../components/table/data-table"
+import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
+import { useUpdateRegion } from "../../../../../hooks/api/regions"
+import { useDataTable } from "../../../../../hooks/use-data-table"
+import { countries as staticCountries, StaticCountry } from "../../../../../lib/data/countries"
+import { useCountries } from "../../../common/hooks/use-countries"
+import { useCountryTableColumns } from "../../../common/hooks/use-country-table-columns"
+import { useCountryTableQuery } from "../../../common/hooks/use-country-table-query"
 
 type AddCountriesFormProps = {
-  region: HttpTypes.AdminRegion;
-};
+  region: HttpTypes.AdminRegion
+}
 
 const AddCountriesSchema = zod.object({
-  countries: zod.array(zod.string()).min(1)
-});
+  countries: zod.array(zod.string()).min(1),
+})
 
-const PAGE_SIZE = 50;
-const PREFIX = 'ac';
+const PAGE_SIZE = 50
+const PREFIX = "ac"
 
 export const AddCountriesForm = ({ region }: AddCountriesFormProps) => {
-  const { t } = useTranslation();
-  const { handleSuccess } = useRouteModal();
+  const { t } = useTranslation()
+  const { handleSuccess } = useRouteModal()
 
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
   const form = useForm<zod.infer<typeof AddCountriesSchema>>({
     defaultValues: {
-      countries: []
+      countries: [],
     },
-    resolver: zodResolver(AddCountriesSchema)
-  });
+    resolver: zodResolver(AddCountriesSchema),
+  })
 
-  const { setValue } = form;
+  const { setValue } = form
 
   useEffect(() => {
-    const ids = Object.keys(rowSelection).filter(k => rowSelection[k]);
+    const ids = Object.keys(rowSelection).filter((k) => rowSelection[k])
 
-    setValue('countries', ids, {
+    setValue("countries", ids, {
       shouldDirty: true,
-      shouldTouch: true
-    });
-  }, [rowSelection, setValue]);
+      shouldTouch: true,
+    })
+  }, [rowSelection, setValue])
 
   const { searchParams, raw } = useCountryTableQuery({
     pageSize: PAGE_SIZE,
-    prefix: PREFIX
-  });
+    prefix: PREFIX,
+  })
   const { countries, count } = useCountries({
     countries: staticCountries.map((c, i) => ({
       display_name: c.display_name,
@@ -66,50 +71,56 @@ export const AddCountriesForm = ({ region }: AddCountriesFormProps) => {
       iso_3: c.iso_3,
       num_code: c.num_code,
       region_id: null,
-      region: {} as HttpTypes.AdminRegion
+      region: {} as HttpTypes.AdminRegion,
     })),
-    ...searchParams
-  });
+    ...searchParams,
+  })
 
-  const columns = useColumns();
+  const columns = useColumns()
 
   const { table } = useDataTable({
     data: countries || [],
     columns,
     count,
     enablePagination: true,
-    enableRowSelection: row => {
-      return region.countries?.findIndex(c => c.iso_2 === row.original.iso_2) === -1;
+    enableRowSelection: (row) => {
+      return (
+        region.countries?.findIndex((c) => c.iso_2 === row.original.iso_2) ===
+        -1
+      )
     },
-    getRowId: row => row.iso_2,
+    getRowId: (row) => row.iso_2,
     pageSize: PAGE_SIZE,
     rowSelection: {
       state: rowSelection,
-      updater: setRowSelection
+      updater: setRowSelection,
     },
-    prefix: PREFIX
-  });
+    prefix: PREFIX,
+  })
 
-  const { mutateAsync, isPending: isLoading } = useUpdateRegion(region.id);
+  const { mutateAsync, isPending: isLoading } = useUpdateRegion(region.id)
 
-  const handleSubmit = form.handleSubmit(async values => {
-    const payload = [...(region.countries?.map(c => c.iso_2!) ?? []), ...values.countries];
+  const handleSubmit = form.handleSubmit(async (values) => {
+    const payload = [
+      ...(region.countries?.map((c) => c.iso_2!) ?? []),
+      ...values.countries,
+    ]
 
     await mutateAsync(
       {
-        countries: payload
+        countries: payload,
       },
       {
         onSuccess: () => {
-          toast.success(t('regions.toast.countries'));
-          handleSuccess();
+          toast.success(t("regions.toast.countries"))
+          handleSuccess()
         },
-        onError: error => {
-          toast.error(error.message);
-        }
+        onError: (error) => {
+          toast.error(error.message)
+        },
       }
-    );
-  });
+    )
+  })
 
   return (
     <RouteFocusModal.Form form={form}>
@@ -120,19 +131,12 @@ export const AddCountriesForm = ({ region }: AddCountriesFormProps) => {
         <RouteFocusModal.Header>
           <div className="flex items-center justify-end gap-x-2">
             <RouteFocusModal.Close asChild>
-              <Button
-                size="small"
-                variant="secondary"
-              >
-                {t('actions.cancel')}
+              <Button size="small" variant="secondary">
+                {t("actions.cancel")}
               </Button>
             </RouteFocusModal.Close>
-            <Button
-              size="small"
-              isLoading={isLoading}
-              type="submit"
-            >
-              {t('actions.add')}
+            <Button size="small" isLoading={isLoading} type="submit">
+              {t("actions.add")}
             </Button>
           </div>
         </RouteFocusModal.Header>
@@ -146,8 +150,8 @@ export const AddCountriesForm = ({ region }: AddCountriesFormProps) => {
             pagination
             layout="fill"
             orderBy={[
-              { key: 'display_name', label: t('fields.name') },
-              { key: 'iso_2', label: t('fields.code') }
+              { key: "display_name", label: t("fields.name") },
+              { key: "iso_2", label: t("fields.code") },
             ]}
             queryObject={raw}
             prefix={PREFIX}
@@ -155,47 +159,49 @@ export const AddCountriesForm = ({ region }: AddCountriesFormProps) => {
         </RouteFocusModal.Body>
       </KeyboundForm>
     </RouteFocusModal.Form>
-  );
-};
+  )
+}
 
-const columnHelper = createColumnHelper<StaticCountry>();
+const columnHelper = createColumnHelper<StaticCountry>()
 
 const useColumns = () => {
-  const base = useCountryTableColumns();
+  const base = useCountryTableColumns()
 
   return useMemo(
     () => [
       columnHelper.display({
-        id: 'select',
+        id: "select",
         header: ({ table }) => {
           return (
             <Checkbox
               checked={
                 table.getIsSomePageRowsSelected()
-                  ? 'indeterminate'
+                  ? "indeterminate"
                   : table.getIsAllPageRowsSelected()
               }
-              onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
+              onCheckedChange={(value) =>
+                table.toggleAllPageRowsSelected(!!value)
+              }
             />
-          );
+          )
         },
         cell: ({ row }) => {
-          const isPreselected = !row.getCanSelect();
+          const isPreselected = !row.getCanSelect()
 
           return (
             <Checkbox
               checked={row.getIsSelected() || isPreselected}
               disabled={isPreselected}
-              onCheckedChange={value => row.toggleSelected(!!value)}
-              onClick={e => {
-                e.stopPropagation();
+              onCheckedChange={(value) => row.toggleSelected(!!value)}
+              onClick={(e) => {
+                e.stopPropagation()
               }}
             />
-          );
-        }
+          )
+        },
       }),
-      ...base
+      ...base,
     ],
     [base]
-  );
-};
+  )
+}

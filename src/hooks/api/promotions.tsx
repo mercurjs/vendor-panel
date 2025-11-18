@@ -320,13 +320,17 @@ export const usePromotionAddRules = (
   })
 }
 
+type BatchRemovePromotionRulesReq = {
+  rules: string[]
+}
+
 export const usePromotionRemoveRules = (
   id: string,
   ruleType: string,
   options?: UseMutationOptions<
     HttpTypes.AdminPromotionResponse,
     FetchError,
-    HttpTypes.BatchAddPromotionRulesReq
+    BatchRemovePromotionRulesReq
   >
 ) => {
   return useMutation({

@@ -29,7 +29,7 @@ export const useCampaign = (
   >
 ) => {
   const { data, ...rest } = useQuery({
-    queryKey: campaignsQueryKeys.detail(id),
+    queryKey: campaignsQueryKeys.detail(id, query),
     queryFn: async () =>
       fetchQuery(`/vendor/campaigns/${id}`, {
         method: "GET",
@@ -159,7 +159,11 @@ export const useAddOrRemoveCampaignPromotions = (
   >
 ) => {
   return useMutation({
-    mutationFn: (payload) => sdk.admin.campaign.batchPromotions(id, payload),
+    mutationFn: (payload) =>
+      fetchQuery(`/vendor/campaigns/${id}/promotions`, {
+        method: "POST",
+        body: payload,
+      }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
         queryKey: campaignsQueryKeys.details(),

@@ -2034,6 +2034,9 @@
       },
       "successToast": "Cennik {{title}} został pomyślnie utworzony.",
       "products": {
+        "errors": {
+          "noProducts": "Wybierz co najmniej jeden produkt."
+        },
         "list": {
           "noRecordsMessage": "Najpierw utwórz produkt."
         }

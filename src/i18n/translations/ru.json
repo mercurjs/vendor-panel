@@ -2158,6 +2158,9 @@
       },
       "successToast": "Прайс-лист {{title}} успешно создан.",
       "products": {
+        "errors": {
+          "noProducts": "Пожалуйста, выберите хотя бы один товар."
+        },
         "list": {
           "noRecordsMessage": "Сначала создайте товар."
         }

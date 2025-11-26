@@ -2034,6 +2034,9 @@
       },
       "successToast": "Lista de preços {{title}} foi criada com sucesso.",
       "products": {
+        "errors": {
+          "noProducts": "Por favor, selecione pelo menos um produto."
+        },
         "list": {
           "noRecordsMessage": "Crie um produto primeiro."
         }

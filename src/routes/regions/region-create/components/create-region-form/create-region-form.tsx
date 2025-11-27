@@ -17,7 +17,7 @@ import { useForm, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import * as zod from "zod"
 
-import { PaymentProviderDTO, RegionCountryDTO } from "@medusajs/types"
+import { PaymentProviderDTO } from "@medusajs/types"
 
 import { Form } from "../../../../../components/common/form"
 import { Combobox } from "../../../../../components/inputs/combobox"
@@ -31,7 +31,7 @@ import { _DataTable } from "../../../../../components/table/data-table"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useCreateRegion } from "../../../../../hooks/api/regions"
 import { useDataTable } from "../../../../../hooks/use-data-table"
-import { countries as staticCountries } from "../../../../../lib/data/countries"
+import { countries as staticCountries, StaticCountry } from "../../../../../lib/data/countries"
 import { CurrencyInfo } from "../../../../../lib/data/currencies"
 import { formatProvider } from "../../../../../lib/format-provider"
 import { useCountries } from "../../../common/hooks/use-countries"
@@ -439,7 +439,7 @@ export const CreateRegionForm = ({
   )
 }
 
-const columnHelper = createColumnHelper<RegionCountryDTO>()
+const columnHelper = createColumnHelper<StaticCountry>()
 
 const useColumns = () => {
   const base = useCountryTableColumns()

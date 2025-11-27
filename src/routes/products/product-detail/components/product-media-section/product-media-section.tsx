@@ -15,10 +15,10 @@ import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { useUpdateProduct } from "../../../../../hooks/api/products"
-import { HttpTypes } from "@medusajs/types"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 
 type ProductMedisaSectionProps = {
-  product: HttpTypes.AdminProduct
+  product: ExtendedAdminProduct
 }
 
 export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
@@ -65,7 +65,7 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
     }
 
     const mediaToKeep = product.images
-      .filter((i) => !ids.includes(i.id))
+      ?.filter((i) => ids.includes(i.id))
       .map((i) => ({ url: i.url }))
 
     await mutateAsync(
@@ -187,10 +187,10 @@ type Media = {
   isThumbnail: boolean
 }
 
-const getMedia = (product: Product) => {
+const getMedia = (product: ExtendedAdminProduct) => {
   const { images = [], thumbnail } = product
 
-  const media: Media[] = images.map((image) => ({
+  const media: Media[] = (images || []).map((image) => ({
     id: image.id,
     url: image.url,
     isThumbnail: image.url === thumbnail,

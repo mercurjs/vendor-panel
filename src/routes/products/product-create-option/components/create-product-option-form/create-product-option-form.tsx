@@ -3,8 +3,7 @@ import { Button, Input, toast } from "@medusajs/ui"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod"
-
-import { HttpTypes } from "@medusajs/types"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 import { Form } from "../../../../../components/common/form"
 import { ChipInput } from "../../../../../components/inputs/chip-input"
 import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
@@ -12,7 +11,7 @@ import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useCreateProductOption } from "../../../../../hooks/api/products"
 
 type EditProductOptionsFormProps = {
-  product: HttpTypes.AdminProduct
+  product: ExtendedAdminProduct
 }
 
 const CreateProductOptionSchema = z.object({
@@ -37,7 +36,12 @@ export const CreateProductOptionForm = ({
   const { mutateAsync, isPending } = useCreateProductOption(product.id)
 
   const handleSubmit = form.handleSubmit(async (values) => {
-    mutateAsync(values, {
+    const payload = {
+      title: values.title,
+      values: values.values || [],
+    }
+
+    mutateAsync(payload, {
       onSuccess: () => {
         toast.success(
           t("products.options.create.successToast", {

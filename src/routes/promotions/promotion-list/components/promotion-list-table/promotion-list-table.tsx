@@ -1,5 +1,5 @@
 import { PencilSquare, Trash } from "@medusajs/icons"
-import { HttpTypes, PromotionDTO } from "@medusajs/types"
+import { HttpTypes } from "@medusajs/types"
 import { Button, Container, Heading, usePrompt } from "@medusajs/ui"
 import { createColumnHelper } from "@tanstack/react-table"
 import { useMemo } from "react"
@@ -22,7 +22,7 @@ const PAGE_SIZE = 20
 export const PromotionListTable = () => {
   const { t } = useTranslation()
 
-  const { raw } = usePromotionTableQuery({
+  const { searchParams, raw } = usePromotionTableQuery({
     pageSize: PAGE_SIZE,
   })
   const {
@@ -33,6 +33,7 @@ export const PromotionListTable = () => {
     error,
   } = usePromotions({
     fields: "+status",
+    ...searchParams,
   })
 
   const promotions = data?.filter((item) => item !== null)
@@ -90,7 +91,7 @@ export const PromotionListTable = () => {
   )
 }
 
-const PromotionActions = ({ promotion }: { promotion: PromotionDTO }) => {
+const PromotionActions = ({ promotion }: { promotion: HttpTypes.AdminPromotion }) => {
   const { t } = useTranslation()
   const prompt = usePrompt()
   const navigate = useNavigate()
@@ -147,7 +148,7 @@ const PromotionActions = ({ promotion }: { promotion: PromotionDTO }) => {
   )
 }
 
-const columnHelper = createColumnHelper<PromotionDTO>()
+const columnHelper = createColumnHelper<HttpTypes.AdminPromotion>()
 
 const useColumns = () => {
   const base = usePromotionTableColumns()

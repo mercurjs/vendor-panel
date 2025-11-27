@@ -32,7 +32,6 @@ import {
   UpdateConditionalPriceSchema,
 } from "../../../common/schema"
 import { ConditionalPriceInfo } from "../../../common/types"
-import { buildShippingOptionPriceRules } from "../../../common/utils/price-rule-helpers"
 import { useRegions } from "../../../../../hooks/api"
 
 type PriceRecord = {
@@ -122,31 +121,31 @@ export function EditShippingOptionsPricingForm({
   const data = useMemo(() => [[...(currencies || [])]], [currencies])
 
   const handleSubmit = form.handleSubmit(async (data) => {
-    const currencyPrices = Object.entries(data.currency_prices)
-      .map(([code, value]) => {
-        if (
-          !value ||
-          !currencies.some((c) => c.toLowerCase() === code.toLowerCase())
-        ) {
-          return undefined
-        }
+    // const currencyPrices = Object.entries(data.currency_prices)
+    //   .map(([code, value]) => {
+    //     if (
+    //       !value ||
+    //       !currencies.some((c) => c.toLowerCase() === code.toLowerCase())
+    //     ) {
+    //       return undefined
+    //     }
 
-        const priceRecord: PriceRecord = {
-          currency_code: code,
-          amount: castNumber(value),
-        }
+    //     const priceRecord: PriceRecord = {
+    //       currency_code: code,
+    //       amount: castNumber(value),
+    //     }
 
-        const existingPrice = shippingOption.prices.find(
-          (p) => p.currency_code === code && !p.price_rules!.length
-        )
+    //     const existingPrice = shippingOption.prices.find(
+    //       (p) => p.currency_code === code && !p.price_rules!.length
+    //     )
 
-        if (existingPrice) {
-          priceRecord.id = existingPrice.id
-        }
+    //     if (existingPrice) {
+    //       priceRecord.id = existingPrice.id
+    //     }
 
-        return priceRecord
-      })
-      .filter((p): p is PriceRecord => !!p)
+    //     return priceRecord
+    //   })
+    //   .filter((p): p is PriceRecord => !!p)
 
     // const conditionalCurrencyPrices = Object.entries(
     //   data.conditional_currency_prices

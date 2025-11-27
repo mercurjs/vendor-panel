@@ -1,5 +1,5 @@
 import { Buildings, Component, PencilSquare, Trash } from "@medusajs/icons"
-import { HttpTypes } from "@medusajs/types"
+import { ExtendedAdminProduct, ExtendedAdminProductVariant } from "../../../../../types/products"
 import {
   Badge,
   clx,
@@ -24,7 +24,7 @@ import { PRODUCT_VARIANT_IDS_KEY } from "../../../common/constants"
 import { useInventoryItemLevels } from "../../../../../hooks/api"
 
 type ProductVariantSectionProps = {
-  product: HttpTypes.AdminProduct
+  product: ExtendedAdminProduct
 }
 
 const PAGE_SIZE = 10
@@ -63,6 +63,19 @@ export const ProductVariantSection = ({
             description: t("products.variants.filtered.description"),
           },
         }}
+        actionMenu={{
+          groups: [
+            {
+              actions: [
+                {
+                  label: t("products.variants.editStocksAndPrices.header"),
+                  to: `edit-stocks-and-prices`,
+                  icon: <PencilSquare />,
+                },
+              ],
+            },
+          ],
+        }}
         action={{
           label: t("actions.create"),
           to: `variants/create`,
@@ -74,15 +87,15 @@ export const ProductVariantSection = ({
 }
 
 const columnHelper =
-  createDataTableColumnHelper<HttpTypes.AdminProductVariant>()
+  createDataTableColumnHelper<ExtendedAdminProductVariant>()
 
-const useColumns = (product: HttpTypes.AdminProduct) => {
+const useColumns = (product: ExtendedAdminProduct) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { mutateAsync } = useDeleteVariantLazy(product.id)
   const prompt = usePrompt()
 
-  const dateColumns = useDataTableDateColumns<HttpTypes.AdminProductVariant>()
+  const dateColumns = useDataTableDateColumns<ExtendedAdminProductVariant>()
 
   const handleDelete = useCallback(
     async (id: string, title: string) => {
@@ -141,14 +154,10 @@ const useColumns = (product: HttpTypes.AdminProduct) => {
   }, [product])
 
   const getActions = useCallback(
-    (ctx: CellContext<HttpTypes.AdminProductVariant, unknown>) => {
-      const variant = ctx.row.original as HttpTypes.AdminProductVariant & {
-        inventory_items: {
-          inventory: HttpTypes.AdminInventoryItem
-        }[]
-      }
+    (ctx: CellContext<ExtendedAdminProductVariant, unknown>) => {
+      const variant = ctx.row.original
 
-      const mainActions: DataTableAction<HttpTypes.AdminProductVariant>[] = [
+      const mainActions: DataTableAction<ExtendedAdminProductVariant>[] = [
         {
           icon: <PencilSquare />,
           label: t("actions.edit"),
@@ -158,7 +167,7 @@ const useColumns = (product: HttpTypes.AdminProduct) => {
         },
       ]
 
-      const secondaryActions: DataTableAction<HttpTypes.AdminProductVariant>[] =
+      const secondaryActions: DataTableAction<ExtendedAdminProductVariant>[] =
         [
           {
             icon: <Trash />,
@@ -213,23 +222,17 @@ const useColumns = (product: HttpTypes.AdminProduct) => {
   )
 
   const getInventory = useCallback(
-    (variant: HttpTypes.AdminProductVariant) => {
-      const castVariant = variant as HttpTypes.AdminProductVariant & {
-        inventory_items: {
-          inventory: HttpTypes.AdminInventoryItem
-        }[]
-      }
-
-      const inventoryItems = castVariant.inventory_items
+    (variant: ExtendedAdminProductVariant) => {
+      const inventoryItems = variant.inventory_items
         ?.map((i) => i.inventory)
-        .filter(Boolean) as HttpTypes.AdminInventoryItem[]
+        .filter(Boolean)
 
       const hasInventoryKit = inventoryItems ? inventoryItems.length > 1 : false
 
       const locations: Record<string, boolean> = {}
 
       inventoryItems?.forEach((i) => {
-        i.location_levels?.forEach((l) => {
+        i?.location_levels?.forEach((l) => {
           locations[l.id] = true
         })
       })
@@ -238,8 +241,16 @@ const useColumns = (product: HttpTypes.AdminProduct) => {
         variant?.inventory_items?.[0]?.inventory_item_id!
       )
 
-      const quantity = location_levels?.[0]?.available_quantity || 0
-      const locationCount = location_levels?.[0]?.stock_locations?.length || 0
+      const quantity =
+        location_levels?.reduce(
+          (acc, curr) => acc + curr.available_quantity,
+          0
+        ) || 0
+      const locationCount =
+        location_levels?.reduce(
+          (acc, curr) => acc + curr.stock_locations?.length,
+          0
+        ) || 0
 
       const text = hasInventoryKit
         ? t("products.variant.tableItemAvailable", {
@@ -302,7 +313,7 @@ const useColumns = (product: HttpTypes.AdminProduct) => {
 }
 
 const filterHelper =
-  createDataTableFilterHelper<HttpTypes.AdminProductVariant>()
+  createDataTableFilterHelper<ExtendedAdminProductVariant>()
 
 const useFilters = () => {
   const { t } = useTranslation()

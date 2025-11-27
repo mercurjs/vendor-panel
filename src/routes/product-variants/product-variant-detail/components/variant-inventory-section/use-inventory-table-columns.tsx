@@ -1,16 +1,13 @@
-import { ProductVariantDTO } from "@medusajs/types"
-
 import { PlaceholderCell } from "../../../../../components/table/table-cells/common/placeholder-cell"
 import { createColumnHelper } from "@tanstack/react-table"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
+import { ExtendedAdminProductVariant } from "../../../../../types/products"
 
 export interface ExtendedInventoryItem {
+  id: string
   required_quantity: number
-  variant: ProductVariantDTO[] & {
-    inventory_items: any[]
-    id: string
-  }
+  variant: ExtendedAdminProductVariant
 }
 
 const columnHelper = createColumnHelper<ExtendedInventoryItem>()

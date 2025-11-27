@@ -7,18 +7,16 @@ import {
   useQuery,
   UseQueryOptions,
 } from "@tanstack/react-query"
+import { ProductAttributesResponse } from "../../types/products"
 import { fetchQuery, importProductsQuery, sdk } from "../../lib/client"
 import { queryClient } from "../../lib/query-client"
 import { queryKeysFactory } from "../../lib/query-key-factory"
 import { inventoryItemsQueryKeys } from "./inventory.tsx"
-import {
-  checkCategoryMatch,
-  checkCollectionMatch,
-  checkTagMatch,
-  checkTypeMatch,
-  checkStatusMatch,
-} from "./helpers/productFilters"
 import productsImagesFormatter from "../../utils/products-images-formatter"
+import {
+  ExtendedAdminProductResponse,
+  ExtendedAdminProductListResponse,
+} from "../../types/products"
 
 const PRODUCTS_QUERY_KEY = "products" as const
 export const productsQueryKeys = queryKeysFactory(PRODUCTS_QUERY_KEY)
@@ -28,6 +26,12 @@ export const variantsQueryKeys = queryKeysFactory(VARIANTS_QUERY_KEY)
 
 const OPTIONS_QUERY_KEY = "product_options" as const
 export const optionsQueryKeys = queryKeysFactory(OPTIONS_QUERY_KEY)
+
+const productAttributesQueryKey = (productId: string) => [
+  "product",
+  productId,
+  "product-attributes",
+]
 
 export const useCreateProductOption = (
   productId: string,
@@ -220,28 +224,24 @@ export const useUpdateProductVariant = (
   })
 }
 
+// TODO: Change this to use endpoint that updates multiple variants at once
 export const useUpdateProductVariantsBatch = (
   productId: string,
   options?: UseMutationOptions<any, FetchError, any>
 ) => {
   return useMutation({
-    mutationFn: (
-      payload: HttpTypes.AdminBatchProductVariantRequest["update"]
-    ) =>
-      sdk.admin.product.batchVariants(productId, {
-        update: payload,
-      }),
-    onSuccess: (data: any, variables: any, context: any) => {
-      queryClient.invalidateQueries({
-        queryKey: variantsQueryKeys.lists(),
-      })
-      queryClient.invalidateQueries({
-        queryKey: variantsQueryKeys.details(),
-      })
-      queryClient.invalidateQueries({
-        queryKey: productsQueryKeys.detail(productId),
+    mutationFn: async (variants: Array<{ id: string; [key: string]: any }>) => {
+      const promises = variants.map((variant) => {
+        const { id, ...updateData } = variant
+        return fetchQuery(`/vendor/products/${productId}/variants/${id}`, {
+          method: "POST",
+          body: updateData,
+        })
       })
 
+      return Promise.all(promises)
+    },
+    onSuccess: (data: any, variables: any, context: any) => {
       options?.onSuccess?.(data, variables, context)
     },
     ...options,
@@ -334,12 +334,12 @@ export const useDeleteVariantLazy = (
 }
 
 export const useProductAttributes = (id: string) => {
-  const { data, ...rest } = useQuery({
+  const { data, ...rest } = useQuery<ProductAttributesResponse>({
     queryFn: () =>
       fetchQuery(`/vendor/products/${id}/applicable-attributes`, {
         method: "GET",
       }),
-    queryKey: ["product", id, "product-attributes"],
+    queryKey: productAttributesQueryKey(id),
   })
 
   return { ...data, ...rest }
@@ -350,55 +350,51 @@ export const useProduct = (
   query?: Record<string, any>,
   options?: Omit<
     UseQueryOptions<
-      HttpTypes.AdminProductResponse,
+      ExtendedAdminProductResponse,
       FetchError,
-      HttpTypes.AdminProductResponse,
+      ExtendedAdminProductResponse,
       QueryKey
     >,
     "queryFn" | "queryKey"
   >
 ) => {
   const { data, ...rest } = useQuery({
-    queryFn: () =>
-      fetchQuery(`/vendor/products/${id}`, {
+    queryFn: async () => {
+      const response = await fetchQuery(`/vendor/products/${id}`, {
         method: "GET",
         query: query as { [key: string]: string | number },
-      }),
-    queryKey: productsQueryKeys.detail(id),
+      })
+
+      return {
+        ...response,
+        product: productsImagesFormatter(response.product),
+      }
+    },
+    queryKey: productsQueryKeys.detail(id, query),
     ...options,
   })
 
   return {
     ...data,
-    product: productsImagesFormatter(data?.product),
     ...rest,
   }
 }
 
 export const useProducts = (
-  query?: HttpTypes.AdminProductListParams,
+  query?: HttpTypes.AdminProductListParams & { tag_id?: string | string[] },
   options?: Omit<
     UseQueryOptions<
-      HttpTypes.AdminProductListResponse,
+      ExtendedAdminProductListResponse,
       FetchError,
-      HttpTypes.AdminProductListResponse,
+      ExtendedAdminProductListResponse,
       QueryKey
     >,
     "queryFn" | "queryKey"
-  >,
-  filter?: HttpTypes.AdminProductListParams & {
-    tagId?: string | string[]
-    categoryId?: string | string[]
-    collectionId?: string | string[]
-    typeId?: string | string[]
-    status?: string | string[]
-    q?: string
-    sort?: string
-  }
+  >
 ) => {
   const { data, ...rest } = useQuery({
-    queryFn: () =>
-      fetchQuery("/vendor/products", {
+    queryFn: () => 
+     fetchQuery("/vendor/products", {
         method: "GET",
         query: query as Record<string, string | number>,
       }),
@@ -406,66 +402,7 @@ export const useProducts = (
     ...options,
   })
 
-  let products = data?.products || []
-
-  // Apply filters if any exist
-  if (
-    filter?.q ||
-    filter?.categoryId ||
-    filter?.tagId ||
-    filter?.collectionId ||
-    filter?.typeId ||
-    filter?.status
-  ) {
-    products = products.filter((item) => {
-      if (filter.q) {
-        return item.title.toLowerCase().includes(filter.q.toLowerCase())
-      }
-
-      return (
-        (filter.categoryId &&
-          checkCategoryMatch(item?.categories, filter.categoryId)) ||
-        (filter.tagId && checkTagMatch(item?.tags, filter.tagId)) ||
-        (filter.collectionId &&
-          checkCollectionMatch(item?.collection, filter.collectionId)) ||
-        (filter.typeId && checkTypeMatch(item?.type_id, filter.typeId)) ||
-        (filter.status && checkStatusMatch(item?.status, filter.status))
-      )
-    })
-  }
-
-  // Apply sorting if specified
-  if (filter?.sort) {
-    const isDescending = filter.sort.startsWith("-")
-    const field = isDescending ? filter.sort.slice(1) : filter.sort
-
-    if (["title", "created_at", "updated_at"].includes(field)) {
-      products = [...products].sort((a, b) => {
-        const aValue = a[field as keyof HttpTypes.AdminProduct]
-        const bValue = b[field as keyof HttpTypes.AdminProduct]
-
-        if (field === "title") {
-          const titleA = String(aValue || "")
-          const titleB = String(bValue || "")
-          return isDescending
-            ? titleB.localeCompare(titleA)
-            : titleA.localeCompare(titleB)
-        }
-
-        // For dates
-        const dateA = new Date((aValue as string) || new Date()).getTime()
-        const dateB = new Date((bValue as string) || new Date()).getTime()
-        return isDescending ? dateB - dateA : dateA - dateB
-      })
-    }
-  }
-
-  return {
-    ...data,
-    products: productsImagesFormatter(products?.slice(0, filter?.limit)) || [],
-    count: products?.length || 0,
-    ...rest,
-  }
+  return { ...data, ...rest }
 }
 
 export const useCreateProduct = (
@@ -500,26 +437,9 @@ export const useUpdateProduct = (
 ) => {
   return useMutation({
     mutationFn: async (payload) => {
-      const { product } = await fetchQuery(`/vendor/products/${id}`, {
-        method: "GET",
-        query: {
-          fields:
-            "-status,-options,-variants,-type,-collection,-attribute_values",
-        },
-      })
-
-      await delete product.id
-      await delete product.rating
-      await delete payload.status
-
       return fetchQuery(`/vendor/products/${id}`, {
         method: "POST",
         body: {
-          ...product,
-          height: parseInt(product.height),
-          width: parseInt(product.width),
-          weight: parseInt(product.weight),
-          length: parseInt(product.length),
           ...payload,
         },
       })
@@ -530,6 +450,9 @@ export const useUpdateProduct = (
       })
       await queryClient.invalidateQueries({
         queryKey: productsQueryKeys.detail(id),
+      })
+      await queryClient.invalidateQueries({
+        queryKey: productAttributesQueryKey(id),
       })
 
       options?.onSuccess?.(data, variables, context)
@@ -557,6 +480,39 @@ export const useDeleteProduct = (
       })
       queryClient.invalidateQueries({
         queryKey: productsQueryKeys.detail(id),
+      })
+
+      options?.onSuccess?.(data, variables, context)
+    },
+    ...options,
+  })
+}
+
+export const useBulkDeleteProducts = (
+  options?: UseMutationOptions<
+    HttpTypes.AdminProductDeleteResponse[],
+    FetchError,
+    string[]
+  >
+) => {
+  return useMutation({
+    mutationFn: async (productIds: string[]) => {
+      const deletePromises = productIds.map((id) =>
+        fetchQuery(`/vendor/products/${id}`, {
+          method: "DELETE",
+        })
+      )
+      return Promise.all(deletePromises)
+    },
+    onSuccess: (data: any, variables: any, context: any) => {
+      queryClient.invalidateQueries({
+        queryKey: productsQueryKeys.lists(),
+      })
+
+      variables.forEach((id: string) => {
+        queryClient.invalidateQueries({
+          queryKey: productsQueryKeys.detail(id),
+        })
       })
 
       options?.onSuccess?.(data, variables, context)

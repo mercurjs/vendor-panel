@@ -1,6 +1,6 @@
 import { InformationCircle } from "@medusajs/icons"
-import { HttpTypes } from "@medusajs/types"
 import { Switch, Tooltip } from "@medusajs/ui"
+import { HttpTypes } from "@medusajs/types"
 import { useCallback, useMemo } from "react"
 
 import { useTranslation } from "react-i18next"
@@ -11,12 +11,9 @@ import { DataGridDuplicateCell } from "../../../../components/data-grid/componen
 import { DataGridTogglableNumberCell } from "../../../../components/data-grid/components/data-grid-toggleable-number-cell"
 import { ProductStockSchema } from "../schema"
 import { isProductVariant } from "../utils"
+import { ProductStockGridRow } from "../../../../types/products"
 
-const helper = createDataGridHelper<
-  | HttpTypes.AdminProductVariant
-  | HttpTypes.AdminProductVariantInventoryItemLink,
-  ProductStockSchema
->()
+const helper = createDataGridHelper<ProductStockGridRow, ProductStockSchema>()
 
 type DisabledItem = { id: string; title: string; sku: string }
 type DisabledResult =

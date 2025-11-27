@@ -1,4 +1,3 @@
-import { HttpTypes } from "@medusajs/types"
 import { Checkbox } from "@medusajs/ui"
 import { keepPreviousData } from "@tanstack/react-query"
 import {
@@ -18,6 +17,7 @@ import { useProductTableQuery } from "../../../../../hooks/table/query/use-produ
 import { useDataTable } from "../../../../../hooks/use-data-table"
 import { PriceListCreateProductsSchema } from "../../../common/schemas"
 import { PricingCreateSchemaType } from "./schema"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 
 type PriceListProductsFormProps = {
   form: UseFormReturn<PricingCreateSchemaType>
@@ -152,7 +152,7 @@ export const PriceListProductsForm = ({ form }: PriceListProductsFormProps) => {
   )
 }
 
-const columnHelper = createColumnHelper<HttpTypes.AdminProduct>()
+const columnHelper = createColumnHelper<ExtendedAdminProduct>()
 
 const useColumns = () => {
   const base = useProductTableColumns()

@@ -1,11 +1,12 @@
 import { Button, createDataTableColumnHelper } from "@medusajs/ui"
+import { HttpTypes } from "@medusajs/types"
 import { RowSelectionState } from "@tanstack/react-table"
 import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import * as zod from "zod"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { HttpTypes } from "@medusajs/types"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 import { keepPreviousData } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import { DataTable } from "../../../../../components/data-table"
@@ -18,7 +19,7 @@ import { useUpdateProduct } from "../../../../../hooks/api/products"
 import { useSalesChannels } from "../../../../../hooks/api/sales-channels"
 
 type EditSalesChannelsFormProps = {
-  product: HttpTypes.AdminProduct
+  product: ExtendedAdminProduct
 }
 
 const EditSalesChannelsSchema = zod.object({

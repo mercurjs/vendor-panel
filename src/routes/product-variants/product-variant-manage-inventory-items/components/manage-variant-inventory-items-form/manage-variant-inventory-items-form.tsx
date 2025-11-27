@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { XMarkMini } from "@medusajs/icons"
-import { AdminProductVariant, HttpTypes } from "@medusajs/types"
+import { HttpTypes } from "@medusajs/types"
 import { Button, Heading, IconButton, Input, Label, toast } from "@medusajs/ui"
 import i18next from "i18next"
 import { useFieldArray, useForm } from "react-hook-form"
@@ -18,15 +18,10 @@ import { useProductVariantsInventoryItemsBatch } from "../../../../../hooks/api/
 import { useComboboxData } from "../../../../../hooks/use-combobox-data"
 import { castNumber } from "../../../../../lib/cast-number"
 import { sdk } from "../../../../../lib/client"
+import { ExtendedAdminProductVariant } from "../../../../../types/products"
 
 type ManageVariantInventoryItemsFormProps = {
-  variant: AdminProductVariant & {
-    inventory_items: {
-      inventory: HttpTypes.AdminInventoryItem
-      inventory_item_id: string
-      required_quantity: number
-    }[]
-  }
+  variant: ExtendedAdminProductVariant
 }
 
 const ManageVariantInventoryItemsSchema = zod.object({
@@ -64,10 +59,10 @@ export function ManageVariantInventoryItemsForm({
 
   const form = useForm<zod.infer<typeof ManageVariantInventoryItemsSchema>>({
     defaultValues: {
-      inventory: variant.inventory_items.length
+      inventory: variant.inventory_items?.length
         ? variant.inventory_items!.map((i) => ({
             required_quantity: i.required_quantity,
-            inventory_item_id: i.inventory.id,
+            inventory_item_id: i.inventory?.id || i.inventory_item_id,
           }))
         : [
             {
@@ -105,9 +100,11 @@ export function ManageVariantInventoryItemsForm({
     const existingItems: Record<string, number> = {}
     const selectedItems: Record<string, boolean> = {}
 
-    variant.inventory_items.forEach(
-      (i) => (existingItems[i.inventory.id] = i.required_quantity)
-    )
+    variant.inventory_items?.forEach((i) => {
+      if (i.inventory?.id) {
+        existingItems[i.inventory.id] = i.required_quantity
+      }
+    })
 
     values.inventory.forEach((i) => (selectedItems[i.inventory_item_id] = true))
 
@@ -135,8 +132,8 @@ export function ManageVariantInventoryItemsForm({
       }
     })
 
-    variant.inventory_items.forEach((i) => {
-      if (!(i.inventory.id in selectedItems)) {
+    variant.inventory_items?.forEach((i) => {
+      if (i.inventory?.id && !(i.inventory.id in selectedItems)) {
         payload.delete = payload.delete || []
 
         payload.delete.push({

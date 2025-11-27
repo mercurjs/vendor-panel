@@ -1,4 +1,4 @@
-import { HttpTypes } from "@medusajs/types"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 import { Button, toast } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import * as zod from "zod"
@@ -17,7 +17,7 @@ import { useComboboxData } from "../../../../../hooks/use-combobox-data"
 import { fetchQuery } from "../../../../../lib/client"
 
 type ProductOrganizationFormProps = {
-  product: HttpTypes.AdminProduct
+  product: ExtendedAdminProduct
 }
 
 const ProductOrganizationSchema = zod.object({

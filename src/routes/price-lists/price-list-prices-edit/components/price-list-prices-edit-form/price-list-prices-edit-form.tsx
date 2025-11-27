@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod"
 
+import { ExtendedAdminProduct } from "../../../../../types/products"
 import { DataGrid } from "../../../../../components/data-grid"
 import {
   RouteFocusModal,
@@ -19,10 +20,11 @@ import {
   PriceListUpdateProductsSchema,
 } from "../../../common/schemas"
 import { isProductRow } from "../../../common/utils"
+import { ExtendedPriceList } from "../../../../../types/price-list"
 
 type PriceListPricesEditFormProps = {
-  priceList: HttpTypes.AdminPriceList
-  products: HttpTypes.AdminProduct[]
+  priceList: ExtendedPriceList
+  products: ExtendedAdminProduct[]
   regions: HttpTypes.AdminRegion[]
   currencies: HttpTypes.AdminStoreCurrency[]
   pricePreferences: HttpTypes.AdminPricePreference[]
@@ -122,22 +124,20 @@ export const PriceListPricesEditForm = ({
 }
 
 function initRecord(
-  priceList: HttpTypes.AdminPriceList,
-  products: HttpTypes.AdminProduct[]
+  priceList: ExtendedPriceList,
+  products: ExtendedAdminProduct[]
 ): PriceListUpdateProductsSchema {
   const record: PriceListUpdateProductsSchema = {}
 
   const variantPrices = priceList.prices?.reduce((variants, price) => {
     const variantObject = variants[price.price_set.variant.id] || {}
 
-    const isRegionPrice = !!price.price_rules.find(
-      (item) => item.attribute === "region_id"
+    const regionPrice = price.price_rules.find(
+      (item: { attribute: string }) => item.attribute === "region_id"
     )
 
-    if (isRegionPrice) {
-      const regionId = price.price_rules.find(
-        (item) => item.attribute === "region_id"
-      ).value as string
+    if (!!regionPrice) {
+      const regionId = regionPrice.value
 
       variantObject.region_prices = {
         ...variantObject.region_prices,

@@ -1,4 +1,5 @@
 import { HttpTypes } from "@medusajs/types"
+import { VendorExtendedAdminStockLocation } from "../../../../../types/stock-location"
 import { Button, Checkbox, toast } from "@medusajs/ui"
 import { keepPreviousData } from "@tanstack/react-query"
 import {
@@ -26,7 +27,7 @@ import { useFulfillmentProvidersTableQuery } from "../../../../../hooks/table/qu
 import { useDataTable } from "../../../../../hooks/use-data-table"
 
 type LocationEditFulfillmentProvidersFormProps = {
-  location: HttpTypes.AdminStockLocation
+  location: VendorExtendedAdminStockLocation
 }
 
 const EditFulfillmentProvidersFormSchema = zod.object({

@@ -59,7 +59,7 @@ const CustomerGroupDisplay = ({
       (rule) => rule.attribute === "customer.groups.id"
     )?.value || ([] as string[])
 
-  const { customer_groups, isPending, isError, error } = useCustomerGroups(
+  const { customer_groups: customerGroupsData, isPending, isError, error } = useCustomerGroups(
     undefined,
     {
       enabled: !!customerGroupIds?.length,
@@ -74,12 +74,13 @@ const CustomerGroupDisplay = ({
     return null
   }
 
-  if (isPending || !customer_groups) {
+  if (isPending || !customerGroupsData) {
     return <Skeleton className="h-5 w-full max-w-48" />
   }
 
-  const customerGroups = customer_groups
-    .map(({ customer_group }) => customer_group)
+  const flatCustomerGroups = customerGroupsData.map((item) => item.customer_group)
+
+  const filteredCustomerGroups = flatCustomerGroups
     .filter((group) => customerGroupIds.includes(group.id))
 
   return (
@@ -89,7 +90,7 @@ const CustomerGroupDisplay = ({
       </span>
       <span>·</span>
       <ListSummary
-        list={customerGroups.map((group) => group.name!)}
+        list={filteredCustomerGroups.map((group) => group.name!)}
         n={1}
         className="txt-small-plus text-ui-fg-muted"
       />

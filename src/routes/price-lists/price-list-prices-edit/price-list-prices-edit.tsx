@@ -16,15 +16,13 @@ export const PriceListPricesEdit = () => {
     isLoading: isProductsLoading,
     isError: isProductsError,
     error: productError,
-  } = usePriceListProducts(id!, {
-    fields: "title,thumbnail,*variants,+status",
-  })
+  } = usePriceListProducts(id!)
 
-  const { isReady, regions, currencies, pricePreferences } =
+  const priceListCurrencyData =
     usePriceListCurrencyData()
 
   const ready =
-    !isLoading && !!price_list && !isProductsLoading && !!products && isReady
+    !isLoading && !!price_list && !isProductsLoading && !!products && priceListCurrencyData.isReady
 
   if (isError) {
     throw error
@@ -46,9 +44,7 @@ export const PriceListPricesEdit = () => {
         <PriceListPricesEditForm
           priceList={price_list}
           products={products}
-          regions={regions}
-          currencies={currencies}
-          pricePreferences={pricePreferences}
+          {...priceListCurrencyData}
         />
       )}
     </RouteFocusModal>

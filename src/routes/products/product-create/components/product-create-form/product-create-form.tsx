@@ -62,6 +62,7 @@ export const ProductCreateForm = ({
   onOpenMediaModal
 }: ProductCreateFormProps) => {
   const [tab, setTab] = useState<Tab>(Tab.DETAILS);
+  const [maxReachedTab, setMaxReachedTab] = useState<Tab>(Tab.DETAILS);
   const [tabState, setTabState] = useState<TabState>({
     [Tab.DETAILS]: 'in-progress',
     [Tab.ORGANIZE]: 'not-started',
@@ -633,55 +634,64 @@ export const ProductCreateForm = ({
       return;
     }
 
-    // Navigate to next tab
+    // Determine next tab
+    let nextTab: Tab;
     if (currentTab === Tab.DETAILS) {
-      setTab(Tab.ORGANIZE);
+      nextTab = Tab.ORGANIZE;
+    } else if (currentTab === Tab.ORGANIZE) {
+      nextTab = Tab.ATTRIBUTES;
+    } else if (currentTab === Tab.ATTRIBUTES) {
+      nextTab = Tab.VARIANTS;
+    } else if (currentTab === Tab.VARIANTS) {
+      nextTab = Tab.INVENTORY;
+    } else {
+      return; // Already at last tab
     }
 
-    if (currentTab === Tab.ORGANIZE) {
-      setTab(Tab.ATTRIBUTES);
+    // Update maxReachedTab to the current tab since we've successfully validated it
+    // maxReachedTab represents the last completed tab, not the next one
+    const currentTabIndex = TAB_ORDER.indexOf(currentTab);
+    const currentMaxIndex = TAB_ORDER.indexOf(maxReachedTab);
+    if (currentTabIndex >= currentMaxIndex) {
+      setMaxReachedTab(currentTab);
     }
 
-    if (currentTab === Tab.ATTRIBUTES) {
-      setTab(Tab.VARIANTS);
-    }
-
-    if (currentTab === Tab.VARIANTS) {
-      setTab(Tab.INVENTORY);
-    }
+    // Navigate to next tab
+    setTab(nextTab);
   };
 
   useEffect(() => {
-    const currentState = { ...tabState };
-    if (tab === Tab.DETAILS) {
-      currentState[Tab.DETAILS] = 'in-progress';
-    }
-    if (tab === Tab.ORGANIZE) {
-      currentState[Tab.DETAILS] = 'completed';
-      currentState[Tab.ORGANIZE] = 'in-progress';
-    }
-    if (tab === Tab.ATTRIBUTES) {
-      currentState[Tab.DETAILS] = 'completed';
-      currentState[Tab.ORGANIZE] = 'completed';
-      currentState[Tab.ATTRIBUTES] = 'in-progress';
-    }
-    if (tab === Tab.VARIANTS) {
-      currentState[Tab.DETAILS] = 'completed';
-      currentState[Tab.ORGANIZE] = 'completed';
-      currentState[Tab.ATTRIBUTES] = 'completed';
-      currentState[Tab.VARIANTS] = 'in-progress';
-    }
-    if (tab === Tab.INVENTORY) {
-      currentState[Tab.DETAILS] = 'completed';
-      currentState[Tab.ORGANIZE] = 'completed';
-      currentState[Tab.ATTRIBUTES] = 'completed';
-      currentState[Tab.VARIANTS] = 'completed';
-      currentState[Tab.INVENTORY] = 'in-progress';
-    }
+    const currentIndex = TAB_ORDER.indexOf(tab);
+    const maxReachedIndex = TAB_ORDER.indexOf(maxReachedTab);
 
-    setTabState({ ...currentState });
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- we only want this effect to run when the tab changes
-  }, [tab]);
+    const currentState: TabState = {
+      [Tab.DETAILS]: 'not-started',
+      [Tab.ORGANIZE]: 'not-started',
+      [Tab.ATTRIBUTES]: 'not-started',
+      [Tab.VARIANTS]: 'not-started',
+      [Tab.INVENTORY]: 'not-started'
+    };
+
+    // Set status for each tab
+    TAB_ORDER.forEach((tabItem, index) => {
+      if (index < currentIndex && index <= maxReachedIndex) {
+        // Tabs before current that have been reached (validated) are completed
+        currentState[tabItem] = 'completed';
+      } else if (index === currentIndex) {
+        // Current tab is in-progress
+        currentState[tabItem] = 'in-progress';
+      } else if (index > currentIndex && index <= maxReachedIndex) {
+        // Tabs after current but within maxReachedTab are completed (preserved when going back)
+        currentState[tabItem] = 'completed';
+      } else {
+        // Tabs beyond maxReachedTab are not-started
+        currentState[tabItem] = 'not-started';
+      }
+    });
+
+    setTabState(currentState);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- we only want this effect to run when the tab or maxReachedTab changes
+  }, [tab, maxReachedTab]);
 
   return (
     <>
@@ -751,6 +761,14 @@ export const ProductCreateForm = ({
                       return;
                     }
                   }
+                }
+
+                // Update maxReachedTab to the current tab since we've successfully validated it
+                // maxReachedTab represents the last completed tab, not the next one
+                const currentTabIndex = TAB_ORDER.indexOf(tab);
+                const currentMaxIndex = TAB_ORDER.indexOf(maxReachedTab);
+                if (currentTabIndex >= currentMaxIndex) {
+                  setMaxReachedTab(tab);
                 }
               }
 

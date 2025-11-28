@@ -1804,7 +1804,7 @@
     },
     "errors": {
       "requiredField": "Campo obligatorio",
-      "promotionTabError": "Corrige los errores en la pestaña de Promoción antes de continuar"
+      "promotionTabError": "Corrige los errores en la pestaña de Detalles de la promoción antes de continuar"
     },
     "toasts": {
       "promotionCreateSuccess": "La promoción ({{code}}) fue creada correctamente."

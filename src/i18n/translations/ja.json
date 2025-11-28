@@ -1830,7 +1830,7 @@
     },
     "errors": {
       "requiredField": "必須項目です",
-      "promotionTabError": "進む前にプロモーションタブのエラーを修正してください"
+      "promotionTabError": "進む前にプロモーション詳細タブのエラーを修正してください"
     },
     "toasts": {
       "promotionCreateSuccess": "プロモーション「{{code}}」が正常に作成されました。"

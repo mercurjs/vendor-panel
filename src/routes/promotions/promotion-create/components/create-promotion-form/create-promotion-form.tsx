@@ -222,7 +222,7 @@ export const CreatePromotionForm = () => {
         break
       case Tab.PROMOTION: {
         const valid =
-          !!form.getValues("code") ||
+          !!form.getValues("code") &&
           !!form.getValues("application_method.value")
 
         if (valid) {
@@ -231,13 +231,13 @@ export const CreatePromotionForm = () => {
 
         if (!form.getValues("code")) {
           form.setError("code", {
-            message: "error",
+            message: t("promotions.errors.requiredField"),
           })
         }
 
         if (!form.getValues("application_method.value")) {
           form.setError("application_method.value", {
-            message: "error",
+            message: t("promotions.errors.requiredField"),
           })
         }
 
@@ -601,6 +601,7 @@ export const CreatePromotionForm = () => {
                                 components={[<br key="break" />]}
                               />
                             </Text>
+                            <Form.ErrorMessage />
                           </Form.Item>
                         )
                       }}

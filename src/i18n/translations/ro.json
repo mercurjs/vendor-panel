@@ -1916,7 +1916,7 @@
     },
     "errors": {
       "requiredField": "Câmp obligatoriu",
-      "promotionTabError": "Remediați erorile din fila Promoție înainte de a continua"
+      "promotionTabError": "Remediați erorile din fila Detalii promoție înainte de a continua"
     },
     "toasts": {
       "promotionCreateSuccess": "Promovare ({{code}}) a fost creat cu succes."

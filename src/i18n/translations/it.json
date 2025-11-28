@@ -1806,7 +1806,7 @@
     },
     "errors": {
       "requiredField": "Campo obbligatorio",
-      "promotionTabError": "Correggi gli errori nella scheda Promozione prima di procedere"
+      "promotionTabError": "Correggi gli errori nella scheda Dettagli promozione prima di procedere"
     },
     "toasts": {
       "promotionCreateSuccess": "Promozione ({{code}}) creata con successo."

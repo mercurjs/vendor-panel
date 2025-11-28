@@ -1916,7 +1916,7 @@
     },
     "errors": {
       "requiredField": "فیلد الزامی",
-      "promotionTabError": "قبل از ادامه، خطاهای تب تبلیغات را برطرف کنید"
+      "promotionTabError": "قبل از ادامه، خطاهای تب جزئیات تبلیغات را برطرف کنید"
     },
     "toasts": {
       "promotionCreateSuccess": "تبلیغ ({{code}}) با موفقیت ایجاد شد."

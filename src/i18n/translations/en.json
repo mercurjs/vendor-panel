@@ -1966,7 +1966,7 @@
     },
     "errors": {
       "requiredField": "Required field",
-      "promotionTabError": "Fix errors in Promotion Tab before proceeding"
+      "promotionTabError": "Fix errors in Promotion Details Tab before proceeding"
     },
     "toasts": {
       "promotionCreateSuccess": "Promotion ({{code}}) was successfully created."

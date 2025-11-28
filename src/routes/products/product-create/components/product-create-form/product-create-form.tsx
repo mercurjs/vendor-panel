@@ -39,6 +39,16 @@ type TabState = Record<Tab, ProgressStatus>;
 
 const SAVE_DRAFT_BUTTON = 'save-draft-button';
 
+// Tab order for determining navigation direction
+const TAB_ORDER: Tab[] = [Tab.DETAILS, Tab.ORGANIZE, Tab.ATTRIBUTES, Tab.VARIANTS, Tab.INVENTORY];
+
+// Helper function to check if we're moving forward
+const isMovingForward = (currentTab: Tab, newTab: Tab): boolean => {
+  const currentIndex = TAB_ORDER.indexOf(currentTab);
+  const newIndex = TAB_ORDER.indexOf(newTab);
+  return newIndex > currentIndex;
+};
+
 type ProductCreateFormProps = {
   defaultChannel?: HttpTypes.AdminSalesChannel;
   store?: HttpTypes.AdminStore;
@@ -705,40 +715,46 @@ export const ProductCreateForm = ({
           <ProgressTabs
             value={tab}
             onValueChange={async newTab => {
-              // Only validate fields relevant to the current tab when switching
-              let fieldsToValidate: (keyof ProductCreateSchemaType)[] = [];
+              // Only validate when moving forward, not backward
+              const movingForward = isMovingForward(tab, newTab as Tab);
 
-              switch (tab) {
-                case Tab.DETAILS:
-                  fieldsToValidate = ['title'];
-                  break;
-                case Tab.ORGANIZE:
-                  fieldsToValidate = ['categories'];
-                  break;
-                case Tab.ATTRIBUTES:
-                  fieldsToValidate = [];
-                  break;
-                case Tab.VARIANTS:
-                  fieldsToValidate = ['variants', 'options'];
-                  break;
-                case Tab.INVENTORY:
-                  break;
-              }
+              if (movingForward) {
+                // Only validate fields relevant to the current tab when moving forward
+                let fieldsToValidate: (keyof ProductCreateSchemaType)[] = [];
 
-              if (fieldsToValidate.length > 0) {
-                const valid = await form.trigger(fieldsToValidate);
-                if (!valid) {
-                  return;
+                switch (tab) {
+                  case Tab.DETAILS:
+                    fieldsToValidate = ['title'];
+                    break;
+                  case Tab.ORGANIZE:
+                    fieldsToValidate = ['categories'];
+                    break;
+                  case Tab.ATTRIBUTES:
+                    fieldsToValidate = [];
+                    break;
+                  case Tab.VARIANTS:
+                    fieldsToValidate = ['variants', 'options'];
+                    break;
+                  case Tab.INVENTORY:
+                    break;
                 }
-              } else if (tab === Tab.ATTRIBUTES) {
-                if (attributesFormRef.current) {
-                  const valid = await attributesFormRef.current.validateAttributes();
+
+                if (fieldsToValidate.length > 0) {
+                  const valid = await form.trigger(fieldsToValidate);
                   if (!valid) {
                     return;
+                  }
+                } else if (tab === Tab.ATTRIBUTES) {
+                  if (attributesFormRef.current) {
+                    const valid = await attributesFormRef.current.validateAttributes();
+                    if (!valid) {
+                      return;
+                    }
                   }
                 }
               }
 
+              // Allow navigation (forward or backward) if validation passed or moving backward
               setTab(newTab as Tab);
             }}
             className="flex h-full flex-col overflow-hidden"

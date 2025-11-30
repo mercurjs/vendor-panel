@@ -190,19 +190,22 @@ export const CreatePromotionForm = () => {
         setTab(tab)
         break
       case Tab.CAMPAIGN: {
-        // const valid = await form.trigger()
+        const valid = await form.trigger([
+          "code",
+          "application_method.value",
+        ])
 
-        // if (!valid) {
-        //   // If the promotion tab is not valid, we want to set the tab state to in-progress
-        //   // and set the tab to the promotion tab
-        //   setTabState({
-        //     [Tab.TYPE]: "completed",
-        //     [Tab.PROMOTION]: "in-progress",
-        //     [Tab.CAMPAIGN]: "not-started",
-        //   })
-        //   setTab(Tab.PROMOTION)
-        //   break
-        // }
+        if (!valid) {
+          // If the promotion tab is not valid, we want to set the tab state to in-progress
+          // and set the tab to the promotion tab
+          setTabState({
+            [Tab.TYPE]: "completed",
+            [Tab.PROMOTION]: "in-progress",
+            [Tab.CAMPAIGN]: "not-started",
+          })
+          setTab(Tab.PROMOTION)
+          break
+        }
 
         setTabState((prev) => ({
           ...prev,
@@ -222,7 +225,7 @@ export const CreatePromotionForm = () => {
         break
       case Tab.PROMOTION: {
         const valid =
-          !!form.getValues("code") ||
+          !!form.getValues("code") &&
           !!form.getValues("application_method.value")
 
         if (valid) {
@@ -231,13 +234,13 @@ export const CreatePromotionForm = () => {
 
         if (!form.getValues("code")) {
           form.setError("code", {
-            message: "error",
+            message: t("promotions.errors.requiredField"),
           })
         }
 
         if (!form.getValues("application_method.value")) {
           form.setError("application_method.value", {
-            message: "error",
+            message: t("promotions.errors.requiredField"),
           })
         }
 

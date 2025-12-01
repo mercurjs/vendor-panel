@@ -1,4 +1,20 @@
 import { HttpTypes } from "@medusajs/types"
+export interface SecondaryCategory {
+  id: string
+  category_id: string
+  created_at: string
+  updated_at: string
+  deleted_at: string | null
+}
+
+export interface AdminProductWithAttributes extends HttpTypes.AdminProduct {
+  attribute_values?: {
+    attribute_id: string
+    value: string
+  }[]
+  secondary_categories?: SecondaryCategory[]
+}
+
 
 export type ExtendedAdminProduct = Omit<HttpTypes.AdminProduct, "variants"> & {
   thumbnail: string

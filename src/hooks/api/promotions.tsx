@@ -1,5 +1,5 @@
-import { HttpTypes } from "@medusajs/types"
 import { FetchError } from "@medusajs/js-sdk"
+import { HttpTypes } from "@medusajs/types"
 import {
   QueryKey,
   useMutation,

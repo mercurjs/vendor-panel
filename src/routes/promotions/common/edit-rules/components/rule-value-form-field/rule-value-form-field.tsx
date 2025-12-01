@@ -20,6 +20,11 @@ type RuleValueFormFieldType = {
   ruleType: "rules" | "target-rules" | "buy-rules"
 }
 
+type VendorPromotionRuleValueParams = HttpTypes.AdminGetPromotionsRuleValueParams & {
+  promotion_type?: string
+  application_method_type?: string
+}
+
 const buildFilters = (attribute?: string, store?: HttpTypes.AdminStore) => {
   if (!attribute || !store) {
     return {}
@@ -49,10 +54,25 @@ export const RuleValueFormField = ({
   )
 
   const { store, isLoading: isStoreLoading } = useStore()
+  
+  const promotionType = useWatch({
+    control: form.control,
+    name: "type",
+  })
+
+  const applicationMethodType = useWatch({
+    control: form.control,
+    name: "application_method.type",
+  })
+
   const { values: options = [] } = usePromotionRuleValues(
     ruleType,
     attribute?.id!,
-    buildFilters(attribute?.id, store),
+    {
+      ...buildFilters(attribute?.id, store),
+      promotion_type: promotionType,
+      application_method_type: applicationMethodType,
+    } as VendorPromotionRuleValueParams,
     {
       enabled:
         !!attribute?.id &&

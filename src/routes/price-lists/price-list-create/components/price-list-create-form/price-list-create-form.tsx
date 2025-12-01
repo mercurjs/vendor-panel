@@ -213,6 +213,7 @@ export const PriceListCreateForm = ({
         if (
           !partialFormValidation(PricingProductsFields, PricingProductsSchema)
         ) {
+          toast.error(t("priceLists.create.products.errors.noProducts"))
           setTabState((prev) => ({
             ...prev,
             [tab]: "in-progress",

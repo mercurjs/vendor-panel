@@ -2180,6 +2180,9 @@
       },
       "successToast": "{{title}} fiyat listesi başarıyla oluşturuldu.",
       "products": {
+        "errors": {
+          "noProducts": "Lütfen en az bir ürün seçin."
+        },
         "list": {
           "noRecordsMessage": "Önce bir ürün oluşturun."
         }

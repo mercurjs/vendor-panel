@@ -2158,6 +2158,9 @@
       },
       "successToast": "价格列表 {{title}} 创建成功。",
       "products": {
+        "errors": {
+          "noProducts": "请至少选择一个产品。"
+        },
         "list": {
           "noRecordsMessage": "首先创建产品。"
         }

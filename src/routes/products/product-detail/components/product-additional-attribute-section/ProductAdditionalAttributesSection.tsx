@@ -18,7 +18,7 @@ export const ProductAdditionalAttributesSection = ({
   const attributeList = useMemo(() => {
     return attributes?.map((attribute) => {
       const value =
-        product.attribute_values?.find((av) => av.attribute_id === attribute.id)
+        product.attribute_values?.find((av) => av && av.attribute_id === attribute.id)
           ?.value || "-"
       return {
         ...attribute,

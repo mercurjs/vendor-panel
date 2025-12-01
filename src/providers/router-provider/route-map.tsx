@@ -672,11 +672,6 @@ export const RouteMap: RouteObject[] = [
                 },
                 children: [
                   {
-                    path: "edit",
-                    lazy: () =>
-                      import("../../routes/collections/collection-edit"),
-                  },
-                  {
                     path: "products",
                     lazy: () =>
                       import(

@@ -256,6 +256,12 @@ export const useUpdatePromotion = (
       queryClient.invalidateQueries({
         queryKey: promotionsQueryKeys.all,
       })
+      queryClient.invalidateQueries({
+        queryKey: campaignsQueryKeys.details(),
+      })
+      queryClient.invalidateQueries({
+        queryKey: campaignsQueryKeys.lists(),
+      })
 
       options?.onSuccess?.(data, variables, context)
     },

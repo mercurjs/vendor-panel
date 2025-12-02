@@ -212,7 +212,8 @@ export const ProductCreateForm = ({
         : []
     },
     schema: extendedSchema,
-    configs
+    configs,
+    mode: 'onBlur'
   });
 
   const { mutateAsync, isPending } = useCreateProduct();
@@ -725,11 +726,23 @@ export const ProductCreateForm = ({
           <ProgressTabs
             value={tab}
             onValueChange={async newTab => {
+              const newTabValue = newTab as Tab;
+              const currentIndex = TAB_ORDER.indexOf(tab);
+              const newIndex = TAB_ORDER.indexOf(newTabValue);
+              const maxReachedIndex = TAB_ORDER.indexOf(maxReachedTab);
+
               // Only validate when moving forward, not backward
-              const movingForward = isMovingForward(tab, newTab as Tab);
+              const movingForward = isMovingForward(tab, newTabValue);
 
               if (movingForward) {
-                // Only validate fields relevant to the current tab when moving forward
+                // Check if we're trying to skip tabs - if newTab is beyond maxReachedTab + 1, block it
+                if (newIndex > maxReachedIndex + 1) {
+                  // Can't skip tabs - must complete them sequentially
+                  return;
+                }
+
+                // If moving to a tab that's not the immediate next one, we need to validate all tabs in between
+                // But since we can only move to maxReachedTab + 1, we only need to validate current tab
                 let fieldsToValidate: (keyof ProductCreateSchemaType)[] = [];
 
                 switch (tab) {
@@ -765,15 +778,13 @@ export const ProductCreateForm = ({
 
                 // Update maxReachedTab to the current tab since we've successfully validated it
                 // maxReachedTab represents the last completed tab, not the next one
-                const currentTabIndex = TAB_ORDER.indexOf(tab);
-                const currentMaxIndex = TAB_ORDER.indexOf(maxReachedTab);
-                if (currentTabIndex >= currentMaxIndex) {
+                if (currentIndex >= maxReachedIndex) {
                   setMaxReachedTab(tab);
                 }
               }
 
               // Allow navigation (forward or backward) if validation passed or moving backward
-              setTab(newTab as Tab);
+              setTab(newTabValue);
             }}
             className="flex h-full flex-col overflow-hidden"
           >

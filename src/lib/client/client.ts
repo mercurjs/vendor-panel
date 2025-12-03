@@ -80,7 +80,7 @@ export const fetchQuery = async (
   }: {
     method: 'GET' | 'POST' | 'DELETE';
     body?: object;
-    query?: Record<string, string | number>;
+    query?: Record<string, string | number | object>;
     headers?: { [key: string]: string };
   }
 ) => {
@@ -88,7 +88,8 @@ export const fetchQuery = async (
   const params = Object.entries(query || {}).reduce((acc, [key, value]) => {
     if (value !== null && value !== undefined && value !== '') {
       const separator = acc ? '&' : '';
-      acc += `${separator}${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+      const serializedValue = typeof value === 'object' ? JSON.stringify(value) : value;
+      acc += `${separator}${encodeURIComponent(key)}=${encodeURIComponent(serializedValue)}`;
     }
     return acc;
   }, '');

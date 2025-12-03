@@ -22,6 +22,7 @@ export const Login = () => {
   const [searchParams] = useSearchParams()
 
   const reason = searchParams.get("reason") || ""
+  const reasonMessage = reason && reason.toLowerCase() === "unauthorized" ? "Session expired" : reason
 
   const { getWidgets } = useDashboardExtension()
 
@@ -71,7 +72,7 @@ export const Login = () => {
   })
 
   const serverError =
-    form.formState.errors?.root?.serverError?.message || reason
+    form.formState.errors?.root?.serverError?.message || reasonMessage
   const validationError =
     form.formState.errors.email?.message ||
     form.formState.errors.password?.message
@@ -142,6 +143,7 @@ export const Login = () => {
                   </Hint>
                 </div>
               )}
+
               {serverError && (
                 <Alert
                   className="bg-ui-bg-base items-center p-2"

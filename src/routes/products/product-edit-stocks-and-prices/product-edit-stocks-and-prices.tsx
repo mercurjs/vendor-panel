@@ -74,7 +74,11 @@ export const ProductEditStocksAndPrices = () => {
   const isRefetching =
     isProductRefetching || isStockLocationsRefetching || isInventoryRefetching
   const ready =
-    !isPending && !!product && !!inventoryItemsWithLevels && !!stock_locations
+    !isPending &&
+    !!product &&
+    !!inventoryItemsWithLevels &&
+    !!stock_locations &&
+    !isRefetching
 
   if (isError) {
     throw error

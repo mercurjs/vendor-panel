@@ -263,6 +263,37 @@ export const useUpdatePromotion = (
   })
 }
 
+export const useRemovePromotionFromCampaign = (
+  promotionId: string,
+  options?: UseMutationOptions<
+    HttpTypes.AdminPromotionResponse,
+    FetchError,
+    void
+  >
+) => {
+  return useMutation({
+    mutationFn: () =>
+      fetchQuery(`/vendor/promotions/${promotionId}`, {
+        method: "POST",
+        body: { campaign_id: null },
+      }),
+    onSuccess: (data, variables, context) => {
+      queryClient.invalidateQueries({
+        queryKey: promotionsQueryKeys.all,
+      })
+      queryClient.invalidateQueries({
+        queryKey: campaignsQueryKeys.details(),
+      })
+      queryClient.invalidateQueries({
+        queryKey: campaignsQueryKeys.lists(),
+      })
+
+      options?.onSuccess?.(data, variables, context)
+    },
+    ...options,
+  })
+}
+
 export const usePromotionAddRules = (
   id: string,
   ruleType: string,
@@ -289,13 +320,17 @@ export const usePromotionAddRules = (
   })
 }
 
+type BatchRemovePromotionRulesReq = {
+  rules: string[]
+}
+
 export const usePromotionRemoveRules = (
   id: string,
   ruleType: string,
   options?: UseMutationOptions<
     HttpTypes.AdminPromotionResponse,
     FetchError,
-    HttpTypes.BatchAddPromotionRulesReq
+    BatchRemovePromotionRulesReq
   >
 ) => {
   return useMutation({

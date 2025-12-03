@@ -24,7 +24,7 @@ export interface PromotionRuleFormData {
   id?: string
   attribute: string
   operator: string
-  values: number | string | string[]
+  values: string | string[]
   required?: boolean
   disguised?: boolean
   field_type?: string

@@ -1916,7 +1916,7 @@
     },
     "errors": {
       "requiredField": "Povinné pole",
-      "promotionTabError": "Opravte chyby v záložce Propagace před pokračováním"
+      "promotionTabError": "Opravte chyby v záložce Detaily propagace před pokračováním"
     },
     "toasts": {
       "promotionCreateSuccess": "Propagace ({{code}}) byla úspěšně vytvořena."

@@ -1865,7 +1865,7 @@
     },
     "errors": {
       "requiredField": "Обов'язкове поле",
-      "promotionTabError": "Виправте помилки на вкладці Акція перед продовженням"
+      "promotionTabError": "Виправте помилки на вкладці Деталі акції перед продовженням"
     },
     "toasts": {
       "promotionCreateSuccess": "Акція ({{code}}) була успішно створена."

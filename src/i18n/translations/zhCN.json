@@ -1916,7 +1916,7 @@
     },
     "errors": {
       "requiredField": "必填字段",
-      "promotionTabError": "继续前请修复促销选项卡中的错误"
+      "promotionTabError": "继续前请修复促销详情选项卡中的错误"
     },
     "toasts": {
       "promotionCreateSuccess": "促销活动 ({{code}}) 创建成功。"

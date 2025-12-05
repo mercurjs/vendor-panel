@@ -1806,7 +1806,7 @@
     },
     "errors": {
       "requiredField": "Champ requis",
-      "promotionTabError": "Corriger les erreurs dans la promotion avant de continuer"
+      "promotionTabError": "Corriger les erreurs dans l'onglet Détails de la promotion avant de continuer"
     },
     "toasts": {
       "promotionCreateSuccess": "Promotion ({{code}}) a été créée avec succès."

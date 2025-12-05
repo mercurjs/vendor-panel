@@ -1804,7 +1804,7 @@
     },
     "errors": {
       "requiredField": "Erforderliches Feld",
-      "promotionTabError": "Beheben Sie Fehler im Tab „Werbung“, bevor Sie fortfahren"
+      "promotionTabError": "Beheben Sie Fehler im Tab Werbedetails, bevor Sie fortfahren"
     },
     "toasts": {
       "promotionCreateSuccess": "Aktion ({{code}}) wurde erfolgreich erstellt."

@@ -1804,7 +1804,7 @@
     },
     "errors": {
       "requiredField": "Pole wymagane",
-      "promotionTabError": "Zanim przejdziesz dalej, napraw błędy w zakładce Promocja"
+      "promotionTabError": "Zanim przejdziesz dalej, napraw błędy w zakładce Szczegóły promocji"
     },
     "toasts": {
       "promotionCreateSuccess": "Promocja ({{code}}) została pomyślnie utworzona."

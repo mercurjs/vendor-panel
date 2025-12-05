@@ -41,34 +41,34 @@ export const EditRulesForm = ({
 
   return (
     <RouteDrawer.Form form={form}>
-      <KeyboundForm
-        onSubmit={handleFormSubmit}
-        className="flex h-full flex-col"
-      >
-        <RouteDrawer.Body>
-          <RulesFormField
-            form={form as any}
-            ruleType={ruleType}
-            setRulesToRemove={setRulesToRemove}
-            rulesToRemove={rulesToRemove}
-            promotion={promotion}
-          />
-        </RouteDrawer.Body>
+        <KeyboundForm
+          onSubmit={handleFormSubmit}
+          className="flex flex-col overflow-hidden h-full"
+        >
+          <RouteDrawer.Body className="flex-1 overflow-y-auto">
+            <RulesFormField
+              form={form as any}
+              ruleType={ruleType}
+              setRulesToRemove={setRulesToRemove}
+              rulesToRemove={rulesToRemove}
+              promotion={promotion}
+            />
+          </RouteDrawer.Body>
 
-        <RouteDrawer.Footer>
-          <div className="flex items-center justify-end gap-x-2">
-            <RouteDrawer.Close asChild>
-              <Button size="small" variant="secondary" disabled={isSubmitting}>
-                {t("actions.cancel")}
+          <RouteDrawer.Footer>
+            <div className="flex items-center justify-end gap-x-2">
+              <RouteDrawer.Close asChild>
+                <Button size="small" variant="secondary" disabled={isSubmitting}>
+                  {t("actions.cancel")}
+                </Button>
+              </RouteDrawer.Close>
+
+              <Button size="small" type="submit" isLoading={isSubmitting}>
+                {t("actions.save")}
               </Button>
-            </RouteDrawer.Close>
-
-            <Button size="small" type="submit" isLoading={isSubmitting}>
-              {t("actions.save")}
-            </Button>
-          </div>
-        </RouteDrawer.Footer>
-      </KeyboundForm>
+            </div>
+          </RouteDrawer.Footer>
+        </KeyboundForm>
     </RouteDrawer.Form>
   )
 }

@@ -11,7 +11,6 @@ node_modules
 dist
 dist-ssr
 *.local
-yarn.lock
 
 .env
 .env.local
@@ -27,3 +26,4 @@ yarn.lock
 *.sln
 *.sw?
 .vercel
+.yarn

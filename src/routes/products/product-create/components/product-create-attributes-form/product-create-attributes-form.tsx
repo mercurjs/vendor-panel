@@ -1,6 +1,6 @@
 import { forwardRef, Fragment, useEffect, useImperativeHandle } from 'react';
 
-import { Divider, Heading, Select, Text, Textarea } from '@medusajs/ui';
+import { Button, Divider, Heading, Select, Text, Textarea } from '@medusajs/ui';
 import { UseFormReturn } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -409,18 +409,30 @@ const Header = () => {
 
   return (
     <div className="flex flex-col gap-y-2">
-      <Heading
-        level="h1"
-        className="text-ui-fg-base"
-      >
-        {t('products.create.tabs.attributes')}
-      </Heading>
-      <Text
-        size="small"
-        className="text-ui-fg-subtle"
-      >
-        {t('products.create.attributes.description')}
-      </Text>
+      <div className="flex items-start justify-between">
+        <div className="flex flex-col gap-y-2">
+          <Heading
+            level="h1"
+            className="text-ui-fg-base"
+          >
+            {t('products.create.tabs.attributes')}
+          </Heading>
+          <Text
+            size="small"
+            className="max-w-[440px] text-ui-fg-subtle"
+          >
+            {t('products.create.attributes.description')}
+          </Text>
+        </div>
+        <Button
+          size="small"
+          variant="secondary"
+          type="button"
+          className="min-w-[100px]"
+        >
+          {t('actions.add')} {t('products.create.attributes.buttonLabel')}
+        </Button>
+      </div>
     </div>
   );
 };

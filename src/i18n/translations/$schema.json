@@ -1708,9 +1708,12 @@
               "properties": {
                 "description": {
                   "type": "string"
+                },
+                "buttonLabel": {
+                  "type": "string"
                 }
               },
-              "required": ["description"],
+              "required": ["description", "buttonLabel"],
               "additionalProperties": false
             },
             "successToast": {

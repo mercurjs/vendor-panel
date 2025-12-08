@@ -302,12 +302,7 @@
           "additionalProperties": false
         }
       },
-      "required": [
-        "header",
-        "numberOfKeys_one",
-        "numberOfKeys_other",
-        "drawer"
-      ],
+      "required": ["header", "numberOfKeys_one", "numberOfKeys_other", "drawer"],
       "additionalProperties": false
     },
     "metadata": {
@@ -380,14 +375,7 @@
               "additionalProperties": false
             }
           },
-          "required": [
-            "header",
-            "description",
-            "successToast",
-            "actions",
-            "labels",
-            "complexRow"
-          ],
+          "required": ["header", "description", "successToast", "actions", "labels", "complexRow"],
           "additionalProperties": false
         }
       },
@@ -945,13 +933,7 @@
                   "additionalProperties": false
                 }
               },
-              "required": [
-                "documentation",
-                "changelog",
-                "shortcuts",
-                "profileSettings",
-                "theme"
-              ],
+              "required": ["documentation", "changelog", "shortcuts", "profileSettings", "theme"],
               "additionalProperties": false
             },
             "store": {
@@ -1292,12 +1274,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "alphabeticallyAsc",
-            "alphabeticallyDesc",
-            "dateAsc",
-            "dateDesc"
-          ],
+          "required": ["alphabeticallyAsc", "alphabeticallyDesc", "dateAsc", "dateDesc"],
           "additionalProperties": false
         },
         "radio": {
@@ -1424,13 +1401,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "header",
-            "editHeader",
-            "editLabel",
-            "label",
-            "sameAsShipping"
-          ],
+          "required": ["header", "editHeader", "editLabel", "label", "sameAsShipping"],
           "additionalProperties": false
         },
         "contactHeading": {
@@ -1440,12 +1411,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "shippingAddress",
-        "billingAddress",
-        "contactHeading",
-        "locationHeading"
-      ],
+      "required": ["shippingAddress", "billingAddress", "contactHeading", "locationHeading"],
       "additionalProperties": false
     },
     "email": {
@@ -1526,14 +1492,7 @@
           "additionalProperties": false
         }
       },
-      "required": [
-        "header",
-        "label",
-        "details",
-        "currentOwner",
-        "newOwner",
-        "validation"
-      ],
+      "required": ["header", "label", "details", "currentOwner", "newOwner", "validation"],
       "additionalProperties": false
     },
     "sales_channels": {
@@ -1634,7 +1593,13 @@
                   "type": "string"
                 }
               },
-              "required": ["variants", "options", "uniqueSku", "titleRequired", "primaryCategoryRequired"],
+              "required": [
+                "variants",
+                "options",
+                "uniqueSku",
+                "titleRequired",
+                "primaryCategoryRequired"
+              ],
               "additionalProperties": false
             },
             "inventory": {
@@ -1653,12 +1618,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "heading",
-                "label",
-                "itemPlaceholder",
-                "quantityPlaceholder"
-              ],
+              "required": ["heading", "label", "itemPlaceholder", "quantityPlaceholder"],
               "additionalProperties": false
             },
             "variants": {
@@ -1743,6 +1703,16 @@
               ],
               "additionalProperties": false
             },
+            "attributes": {
+              "type": "object",
+              "properties": {
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": ["description"],
+              "additionalProperties": false
+            },
             "successToast": {
               "type": "string"
             }
@@ -1755,6 +1725,7 @@
             "errors",
             "inventory",
             "variants",
+            "attributes",
             "successToast"
           ],
           "additionalProperties": false
@@ -1808,13 +1779,7 @@
               "additionalProperties": false
             }
           },
-          "required": [
-            "header",
-            "description",
-            "success",
-            "filters",
-            "columns"
-          ],
+          "required": ["header", "description", "success", "filters", "columns"],
           "additionalProperties": false
         },
         "import": {
@@ -2480,7 +2445,12 @@
                       "type": "string"
                     }
                   },
-                  "required": ["required", "requiredSelect", "requiredSelectMultiple", "requiredEnter"],
+                  "required": [
+                    "required",
+                    "requiredSelect",
+                    "requiredSelectMultiple",
+                    "requiredEnter"
+                  ],
                   "additionalProperties": false
                 }
               },
@@ -2649,12 +2619,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "levelsBatch",
-                    "update",
-                    "updateLevel",
-                    "itemsManageSuccess"
-                  ],
+                  "required": ["levelsBatch", "update", "updateLevel", "itemsManageSuccess"],
                   "additionalProperties": false
                 }
               },
@@ -3103,11 +3068,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "disabledTooltip",
-                "successToast_one",
-                "successToast_other"
-              ],
+              "required": ["disabledTooltip", "successToast_one", "successToast_other"],
               "additionalProperties": false
             },
             "remove": {
@@ -3883,12 +3844,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "title_one",
-                "title_other",
-                "description_one",
-                "description_other"
-              ],
+              "required": ["title_one", "title_other", "description_one", "description_other"],
               "additionalProperties": false
             },
             "list": {
@@ -3906,15 +3862,7 @@
           "additionalProperties": false
         }
       },
-      "required": [
-        "domain",
-        "subtitle",
-        "list",
-        "create",
-        "edit",
-        "delete",
-        "customers"
-      ],
+      "required": ["domain", "subtitle", "list", "create", "edit", "delete", "customers"],
       "additionalProperties": false
     },
     "orders": {
@@ -4509,10 +4457,7 @@
                   "additionalProperties": false
                 }
               },
-              "required": [
-                "noReturnShippingOptions",
-                "outboundShippingOptions"
-              ],
+              "required": ["noReturnShippingOptions", "outboundShippingOptions"],
               "additionalProperties": false
             },
             "receive": {
@@ -5315,12 +5260,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "label",
-                "placeholder",
-                "addButtonText",
-                "deleteButtonText"
-              ],
+              "required": ["label", "placeholder", "addButtonText", "deleteButtonText"],
               "additionalProperties": false
             },
             "from": {
@@ -5438,13 +5378,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "created",
-                    "canceled",
-                    "received",
-                    "items_one",
-                    "items_other"
-                  ],
+                  "required": ["created", "canceled", "received", "items_one", "items_other"],
                   "additionalProperties": false
                 },
                 "note": {
@@ -5476,12 +5410,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "created",
-                    "canceled",
-                    "itemsInbound",
-                    "itemsOutbound"
-                  ],
+                  "required": ["created", "canceled", "itemsInbound", "itemsOutbound"],
                   "additionalProperties": false
                 },
                 "exchange": {
@@ -5500,12 +5429,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "created",
-                    "canceled",
-                    "itemsInbound",
-                    "itemsOutbound"
-                  ],
+                  "required": ["created", "canceled", "itemsInbound", "itemsOutbound"],
                   "additionalProperties": false
                 },
                 "edit": {
@@ -5777,11 +5701,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "requiredEmailOrCustomer",
-            "requiredItems",
-            "invalidEmail"
-          ],
+          "required": ["requiredEmailOrCustomer", "requiredItems", "invalidEmail"],
           "additionalProperties": false
         }
       },
@@ -6384,14 +6304,7 @@
               "additionalProperties": false
             }
           },
-          "required": [
-            "create",
-            "delete",
-            "edit",
-            "pricing",
-            "conditionalPrices",
-            "fields"
-          ],
+          "required": ["create", "delete", "edit", "pricing", "conditionalPrices", "fields"],
           "additionalProperties": false
         },
         "serviceZones": {
@@ -6413,12 +6326,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "headerPickup",
-                "headerShipping",
-                "action",
-                "successToast"
-              ],
+              "required": ["headerPickup", "headerShipping", "action", "successToast"],
               "additionalProperties": false
             },
             "edit": {
@@ -8120,13 +8028,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "title",
-            "description",
-            "hint",
-            "header",
-            "successToast"
-          ],
+          "required": ["title", "description", "hint", "header", "successToast"],
           "additionalProperties": false
         },
         "fields": {
@@ -8426,13 +8328,7 @@
               "additionalProperties": false
             }
           },
-          "required": [
-            "header",
-            "subheader",
-            "tabs",
-            "successToast",
-            "products"
-          ],
+          "required": ["header", "subheader", "tabs", "successToast", "products"],
           "additionalProperties": false
         },
         "edit": {
@@ -8677,13 +8573,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "header",
-                "label",
-                "hint",
-                "placeholder",
-                "attribute"
-              ],
+              "required": ["header", "label", "hint", "placeholder", "attribute"],
               "additionalProperties": false
             }
           },
@@ -8748,12 +8638,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "header",
-            "languageHint",
-            "languagePlaceholder",
-            "usageInsightsHint"
-          ],
+          "required": ["header", "languageHint", "languagePlaceholder", "usageInsightsHint"],
           "additionalProperties": false
         },
         "toast": {
@@ -8767,13 +8652,7 @@
           "additionalProperties": false
         }
       },
-      "required": [
-        "domain",
-        "manageYourProfileDetails",
-        "fields",
-        "edit",
-        "toast"
-      ],
+      "required": ["domain", "manageYourProfileDetails", "fields", "edit", "toast"],
       "additionalProperties": false
     },
     "users": {
@@ -9917,12 +9796,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "lastUsedAtLabel",
-            "revokedByLabel",
-            "revokedAtLabel",
-            "createdByLabel"
-          ],
+          "required": ["lastUsedAtLabel", "revokedByLabel", "revokedAtLabel", "createdByLabel"],
           "additionalProperties": false
         }
       },
@@ -10375,14 +10249,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "done",
-            "failed",
-            "reverted",
-            "invoking",
-            "compensating",
-            "notStarted"
-          ],
+          "required": ["done", "failed", "reverted", "invoking", "compensating", "notStarted"],
           "additionalProperties": false
         },
         "transaction": {
@@ -10646,15 +10513,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "scheduled",
-        "expired",
-        "active",
-        "inactive",
-        "draft",
-        "enabled",
-        "disabled"
-      ],
+      "required": ["scheduled", "expired", "active", "inactive", "draft", "enabled", "disabled"],
       "additionalProperties": false
     },
     "labels": {

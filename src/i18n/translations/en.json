@@ -438,6 +438,9 @@
         "itemPlaceholder": "Select inventory item",
         "quantityPlaceholder": "How many of these are needed for the kit?"
       },
+      "attributes": {
+        "description": "Manage attributes and variations for your product, e.g. color, size, etc. Select from attributes defined by the Admin or create your own."
+      },
       "variants": {
         "header": "Variants",
         "subHeadingTitle": "Yes, this is a product with variants",

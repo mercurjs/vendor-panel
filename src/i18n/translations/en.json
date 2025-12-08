@@ -440,7 +440,9 @@
       },
       "attributes": {
         "description": "Manage attributes and variations for your product, e.g. color, size, etc. Select from attributes defined by the Admin or create your own.",
-        "buttonLabel": "attribute"
+        "buttonLabel": "attribute",
+        "requiredHeading": "Required attributes",
+        "requiredDescription": "This attributes are required by the Admin. Select them before proceeding."
       },
       "variants": {
         "header": "Variants",

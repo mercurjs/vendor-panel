@@ -205,40 +205,26 @@ export const ProductCreateAttributesForm = forwardRef<
                 : 'No attributes available for this category'}
             </div>
           ) : (
-            allFormFields.map((field: any, index: number) => (
-              <Fragment key={field.id}>
-                <div className="flex flex-col gap-y-4">
-                  {field.ui_component === 'select' && (
-                    <Form.Field
-                      control={form.control}
-                      name={field.handle as any}
-                      rules={validationRules[field.handle] || {}}
-                      render={({ field: formField, fieldState }) => (
-                        <Form.Item>
-                          <Form.Label
-                            optional={!field.is_required}
-                            tooltip={
-                              field.is_required && t('products.fields.attributes.requiredTooltip')
-                            }
-                          >
-                            {field.name}
-                          </Form.Label>
-                          <Form.Control>
-                            <Combobox
-                              {...formField}
-                              options={field.possible_values}
-                              aria-invalid={!!fieldState.error}
-                              // placeholder={`Select ${field.name.toLowerCase()}`}
-                            />
-                          </Form.Control>
-                          <Form.ErrorMessage />
-                        </Form.Item>
-                      )}
-                    />
-                  )}
-
-                  {field.ui_component === 'multivalue' && (
-                    <>
+            <>
+              <div className="flex flex-col gap-y-2">
+                <Heading
+                  level="h3"
+                  className="text-ui-fg-base"
+                >
+                  {t('products.create.attributes.requiredHeading')}
+                </Heading>
+                <Text
+                  size="small"
+                  className="text-ui-fg-subtle"
+                >
+                  {t('products.create.attributes.requiredDescription')}
+                </Text>
+              </div>
+              <Divider variant="dashed" />
+              {allFormFields.map((field: any, index: number) => (
+                <Fragment key={field.id}>
+                  <div className="flex flex-col gap-y-4">
+                    {field.ui_component === 'select' && (
                       <Form.Field
                         control={form.control}
                         name={field.handle as any}
@@ -254,12 +240,78 @@ export const ProductCreateAttributesForm = forwardRef<
                               {field.name}
                             </Form.Label>
                             <Form.Control>
-                              <MultiSelect
-                                value={formField.value}
-                                onChange={formField.onChange}
-                                name={formField.name}
+                              <Combobox
+                                {...formField}
                                 options={field.possible_values}
-                                showSearch={true}
+                                aria-invalid={!!fieldState.error}
+                                // placeholder={`Select ${field.name.toLowerCase()}`}
+                              />
+                            </Form.Control>
+                            <Form.ErrorMessage />
+                          </Form.Item>
+                        )}
+                      />
+                    )}
+
+                    {field.ui_component === 'multivalue' && (
+                      <>
+                        <Form.Field
+                          control={form.control}
+                          name={field.handle as any}
+                          rules={validationRules[field.handle] || {}}
+                          render={({ field: formField, fieldState }) => (
+                            <Form.Item>
+                              <Form.Label
+                                optional={!field.is_required}
+                                tooltip={
+                                  field.is_required &&
+                                  t('products.fields.attributes.requiredTooltip')
+                                }
+                              >
+                                {field.name}
+                              </Form.Label>
+                              <Form.Control>
+                                <MultiSelect
+                                  value={formField.value}
+                                  onChange={formField.onChange}
+                                  name={formField.name}
+                                  options={field.possible_values}
+                                  showSearch={true}
+                                  aria-invalid={!!fieldState.error}
+                                />
+                              </Form.Control>
+                              <Form.ErrorMessage />
+                            </Form.Item>
+                          )}
+                        />
+                        <SwitchBox
+                          control={form.control as any}
+                          name={`${field.handle}UseForVariants` as any}
+                          label={t('products.fields.attributes.useForVariants.label')}
+                          description={t('products.fields.attributes.useForVariants.description')}
+                        />
+                      </>
+                    )}
+
+                    {field.ui_component === 'text_area' && (
+                      <Form.Field
+                        control={form.control}
+                        name={field.handle as any}
+                        rules={validationRules[field.handle] || {}}
+                        render={({ field: formField, fieldState }) => (
+                          <Form.Item>
+                            <Form.Label
+                              optional={!field.is_required}
+                              tooltip={
+                                field.is_required && t('products.fields.attributes.requiredTooltip')
+                              }
+                            >
+                              {field.name}
+                            </Form.Label>
+                            <Form.Control>
+                              <Textarea
+                                {...formField}
+                                placeholder={t('products.fields.attributes.enterValuePlaceholder')}
                                 aria-invalid={!!fieldState.error}
                               />
                             </Form.Control>
@@ -267,134 +319,100 @@ export const ProductCreateAttributesForm = forwardRef<
                           </Form.Item>
                         )}
                       />
-                      <SwitchBox
-                        control={form.control as any}
-                        name={`${field.handle}UseForVariants` as any}
-                        label={t('products.fields.attributes.useForVariants.label')}
-                        description={t('products.fields.attributes.useForVariants.description')}
-                      />
-                    </>
-                  )}
+                    )}
 
-                  {field.ui_component === 'text_area' && (
-                    <Form.Field
-                      control={form.control}
-                      name={field.handle as any}
-                      rules={validationRules[field.handle] || {}}
-                      render={({ field: formField, fieldState }) => (
-                        <Form.Item>
-                          <Form.Label
-                            optional={!field.is_required}
-                            tooltip={
-                              field.is_required && t('products.fields.attributes.requiredTooltip')
-                            }
-                          >
-                            {field.name}
-                          </Form.Label>
-                          <Form.Control>
-                            <Textarea
-                              {...formField}
-                              placeholder={t('products.fields.attributes.enterValuePlaceholder')}
-                              aria-invalid={!!fieldState.error}
-                            />
-                          </Form.Control>
-                          <Form.ErrorMessage />
-                        </Form.Item>
-                      )}
-                    />
-                  )}
-
-                  {field.ui_component === 'toggle' && (
-                    <Form.Field
-                      control={form.control}
-                      name={field.handle as any}
-                      rules={validationRules[field.handle] || {}}
-                      render={({ field: formField, fieldState }) => (
-                        <Form.Item>
-                          <Form.Label
-                            optional={!field.is_required}
-                            tooltip={
-                              field.is_required && t('products.fields.attributes.requiredTooltip')
-                            }
-                          >
-                            {field.name}
-                          </Form.Label>
-                          <Form.Control>
-                            <Select
-                              {...formField}
-                              onValueChange={formField.onChange}
-                              value={formField.value}
+                    {field.ui_component === 'toggle' && (
+                      <Form.Field
+                        control={form.control}
+                        name={field.handle as any}
+                        rules={validationRules[field.handle] || {}}
+                        render={({ field: formField, fieldState }) => (
+                          <Form.Item>
+                            <Form.Label
+                              optional={!field.is_required}
+                              tooltip={
+                                field.is_required && t('products.fields.attributes.requiredTooltip')
+                              }
                             >
-                              <Select.Trigger aria-invalid={!!fieldState.error}>
-                                <Select.Value
-                                  placeholder={t(
-                                    'products.fields.attributes.selectValuePlaceholder'
-                                  )}
-                                />
-                              </Select.Trigger>
-                              <Select.Content>
-                                <Select.Item value="true">{t('general.true')}</Select.Item>
-                                <Select.Item value="false">{t('general.false')}</Select.Item>
-                              </Select.Content>
-                            </Select>
-                          </Form.Control>
-                          <Form.ErrorMessage />
-                        </Form.Item>
-                      )}
-                    />
-                  )}
+                              {field.name}
+                            </Form.Label>
+                            <Form.Control>
+                              <Select
+                                {...formField}
+                                onValueChange={formField.onChange}
+                                value={formField.value}
+                              >
+                                <Select.Trigger aria-invalid={!!fieldState.error}>
+                                  <Select.Value
+                                    placeholder={t(
+                                      'products.fields.attributes.selectValuePlaceholder'
+                                    )}
+                                  />
+                                </Select.Trigger>
+                                <Select.Content>
+                                  <Select.Item value="true">{t('general.true')}</Select.Item>
+                                  <Select.Item value="false">{t('general.false')}</Select.Item>
+                                </Select.Content>
+                              </Select>
+                            </Form.Control>
+                            <Form.ErrorMessage />
+                          </Form.Item>
+                        )}
+                      />
+                    )}
 
-                  {field.ui_component === 'unit' && (
-                    <Form.Field
-                      control={form.control}
-                      name={field.handle as any}
-                      rules={validationRules[field.handle] || {}}
-                      render={({ field: formField, fieldState }) => (
-                        <Form.Item>
-                          <Form.Label
-                            optional={!field.is_required}
-                            tooltip={
-                              field.is_required && t('products.fields.attributes.requiredTooltip')
-                            }
-                          >
-                            {field.name}
-                          </Form.Label>
-                          <Form.Control>
-                            <NumericInput
-                              value={formField.value}
-                              onChange={formField.onChange}
-                              onBlur={() => {
-                                formField.onBlur();
-                                // Blur the input when validation errors appear to prevent aria-hidden warning
-                                if (fieldState.error) {
-                                  // Use setTimeout to blur after the current event loop
-                                  setTimeout(() => {
-                                    const input = document.querySelector(
-                                      `input[name="${formField.name}"]`
-                                    ) as HTMLInputElement;
-                                    if (input) {
-                                      input.blur();
-                                    }
-                                  }, 0);
-                                }
-                              }}
-                              name={formField.name}
-                              placeholder={t('products.fields.attributes.enterValuePlaceholder')}
-                              aria-invalid={!!fieldState.error}
-                            />
-                          </Form.Control>
-                          <Form.ErrorMessage />
-                        </Form.Item>
-                      )}
-                    />
-                  )}
-                  {field.description && (
-                    <p className="txt-compact-small text-ui-fg-subtle">{field.description}</p>
-                  )}
-                </div>
-                {index < allFormFields.length - 1 && <Divider variant="dashed" />}
-              </Fragment>
-            ))
+                    {field.ui_component === 'unit' && (
+                      <Form.Field
+                        control={form.control}
+                        name={field.handle as any}
+                        rules={validationRules[field.handle] || {}}
+                        render={({ field: formField, fieldState }) => (
+                          <Form.Item>
+                            <Form.Label
+                              optional={!field.is_required}
+                              tooltip={
+                                field.is_required && t('products.fields.attributes.requiredTooltip')
+                              }
+                            >
+                              {field.name}
+                            </Form.Label>
+                            <Form.Control>
+                              <NumericInput
+                                value={formField.value}
+                                onChange={formField.onChange}
+                                onBlur={() => {
+                                  formField.onBlur();
+                                  // Blur the input when validation errors appear to prevent aria-hidden warning
+                                  if (fieldState.error) {
+                                    // Use setTimeout to blur after the current event loop
+                                    setTimeout(() => {
+                                      const input = document.querySelector(
+                                        `input[name="${formField.name}"]`
+                                      ) as HTMLInputElement;
+                                      if (input) {
+                                        input.blur();
+                                      }
+                                    }, 0);
+                                  }
+                                }}
+                                name={formField.name}
+                                placeholder={t('products.fields.attributes.enterValuePlaceholder')}
+                                aria-invalid={!!fieldState.error}
+                              />
+                            </Form.Control>
+                            <Form.ErrorMessage />
+                          </Form.Item>
+                        )}
+                      />
+                    )}
+                    {field.description && (
+                      <p className="txt-compact-small text-ui-fg-subtle">{field.description}</p>
+                    )}
+                  </div>
+                  {index < allFormFields.length - 1 && <Divider variant="dashed" />}
+                </Fragment>
+              ))}
+            </>
           )}
         </div>
       </div>

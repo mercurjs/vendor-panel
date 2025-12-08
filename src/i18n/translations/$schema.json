@@ -1711,9 +1711,15 @@
                 },
                 "buttonLabel": {
                   "type": "string"
+                },
+                "requiredHeading": {
+                  "type": "string"
+                },
+                "requiredDescription": {
+                  "type": "string"
                 }
               },
-              "required": ["description", "buttonLabel"],
+              "required": ["description", "buttonLabel", "requiredHeading", "requiredDescription"],
               "additionalProperties": false
             },
             "successToast": {

@@ -42,6 +42,7 @@ export type ExtendedAdminProduct = Omit<HttpTypes.AdminProduct, 'variants'> & {
     updated_at: string
     deleted_at: string | null
   }[]
+  secondary_categories?: SecondaryCategory[]
   variants?: ExtendedAdminProductVariant[]
   shipping_profile: HttpTypes.AdminShippingProfile
 }

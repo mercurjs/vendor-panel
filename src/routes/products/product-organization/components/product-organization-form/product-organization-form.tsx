@@ -101,10 +101,13 @@ export const ProductOrganizationForm = ({
       type_id: product.type_id ?? "",
       collection_id: product.collection_id ?? "",
       primary_category_id: product.categories?.[0]?.id || "",
-      secondary_category_ids:
-        product.secondary_categories
-          ?.map((sc) => sc.category_id)
-          .filter((id) => id !== product.categories?.[0]?.id) || [], // Filter out primary category
+      secondary_category_ids: [
+        ...new Set(
+          product.secondary_categories
+            ?.map((sc) => sc.category_id)
+            .filter((id) => id !== product.categories?.[0]?.id) || []
+        )
+      ],
       tag_ids: product.tags?.map((t) => t.id) || [],
     },
     schema: ProductOrganizationSchema,
@@ -134,6 +137,21 @@ export const ProductOrganizationForm = ({
       (id) => id !== data.primary_category_id
     )
 
+    const originalSecondaryIds = [
+      ...new Set(
+        product.secondary_categories
+          ?.map((sc) => sc.category_id)
+          .filter((id) => id !== product.categories?.[0]?.id) || []
+      )
+    ]
+
+    const toAdd = filteredSecondaryCategories.filter(
+      (id) => !originalSecondaryIds.includes(id)
+    )
+    const toRemove = originalSecondaryIds.filter(
+      (id) => !filteredSecondaryCategories.includes(id)
+    )
+
     await mutateAsync(
       {
         type_id: data.type_id || null,
@@ -146,7 +164,8 @@ export const ProductOrganizationForm = ({
           secondary_categories: [
             {
               product_id: product.id,
-              secondary_categories_ids: filteredSecondaryCategories,
+              add: toAdd,
+              remove: toRemove,
             },
           ],
         },

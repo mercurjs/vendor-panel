@@ -6,7 +6,6 @@ import { Link } from "react-router-dom"
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { SectionRow } from "../../../../../components/common/section"
 import { useDashboardExtension } from "../../../../../extensions"
-import { AdminProductWithAttributes } from "../../../../../types/products"
 import { useProductCategories } from "../../../../../hooks/api/categories"
 
 type ProductOrganizationSectionProps = {
@@ -21,13 +20,18 @@ export const ProductOrganizationSection = ({
 
   // Fetch ALL categories and then filter to show only secondary ones
   const { product_categories: allCategories } = useProductCategories()
-  
+
   const primaryCategory = product.categories?.[0]
   const primaryCategoryId = primaryCategory?.id
-  const secondaryCategoryIds = product.secondary_categories
-    ?.map((sc) => sc.category_id)
-    .filter((id) => id !== primaryCategoryId) || []
-  
+
+  const secondaryCategoryIds = [
+    ...new Set(
+      product.secondary_categories
+        ?.map((sc: { category_id: string }) => sc.category_id)
+        .filter((id: string) => id !== primaryCategoryId) || []
+    )
+  ]
+
   // Filter fetched categories to only include those in secondaryCategoryIds
   const secondaryCategories = allCategories?.filter((cat) =>
     secondaryCategoryIds.includes(cat.id)

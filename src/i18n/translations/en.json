@@ -2208,6 +2208,9 @@
       },
       "successToast": "Price list {{title}} was successfully created.",
       "products": {
+        "errors": {
+          "noProducts": "Please select at least one product."
+        },
         "list": {
           "noRecordsMessage": "Create a product first."
         }

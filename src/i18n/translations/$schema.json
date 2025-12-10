@@ -8206,6 +8206,16 @@
             "products": {
               "type": "object",
               "properties": {
+                "errors": {
+                  "type": "object",
+                  "properties": {
+                    "noProducts": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["noProducts"],
+                  "additionalProperties": false
+                },
                 "list": {
                   "type": "object",
                   "properties": {
@@ -8217,7 +8227,7 @@
                   "additionalProperties": false
                 }
               },
-              "required": ["list"],
+              "required": ["errors", "list"],
               "additionalProperties": false
             }
           },
@@ -10866,6 +10876,9 @@
         "priceTemplate": {
           "type": "string"
         },
+        "currentPriceTemplate": {
+          "type": "string"
+        },
         "stockTemplate": {
           "type": "string"
         },
@@ -11097,6 +11110,7 @@
         "expiryDate",
         "price",
         "priceTemplate",
+        "currentPriceTemplate",
         "stockTemplate",
         "height",
         "width",

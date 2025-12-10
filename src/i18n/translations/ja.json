@@ -2060,6 +2060,9 @@
       },
       "successToast": "価格リスト「{{title}}」が正常に作成されました。",
       "products": {
+        "errors": {
+          "noProducts": "少なくとも1つの商品を選択してください。"
+        },
         "list": {
           "noRecordsMessage": "最初に商品を作成してください。"
         }

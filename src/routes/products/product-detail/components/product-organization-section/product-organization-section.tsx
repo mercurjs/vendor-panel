@@ -27,8 +27,8 @@ export const ProductOrganizationSection = ({
   const secondaryCategoryIds = [
     ...new Set(
       product.secondary_categories
-        ?.map((sc: { category_id: string }) => sc.category_id)
-        .filter((id: string) => id !== primaryCategoryId) || []
+        ?.map((sc) => sc.category_id)
+        .filter((id) => id !== primaryCategoryId) || []
     )
   ]
 

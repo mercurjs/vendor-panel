@@ -2180,6 +2180,9 @@
       },
       "successToast": "تم إنشاء قائمة الأسعار {{title}} بنجاح.",
       "products": {
+        "errors": {
+          "noProducts": "الرجاء تحديد منتج واحد على الأقل."
+        },
         "list": {
           "noRecordsMessage": "أنشئ منتجًا أولاً."
         }

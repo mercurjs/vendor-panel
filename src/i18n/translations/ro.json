@@ -2158,6 +2158,9 @@
       },
       "successToast": "Lista de preturi {{title}} a fost creat cu succes.",
       "products": {
+        "errors": {
+          "noProducts": "Vă rugăm să selectați cel puțin un produs."
+        },
         "list": {
           "noRecordsMessage": "Creați mai întâi un produs."
         }

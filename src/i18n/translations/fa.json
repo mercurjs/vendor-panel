@@ -2158,6 +2158,9 @@
       },
       "successToast": "لیست قیمت {{title}} با موفقیت ایجاد شد.",
       "products": {
+        "errors": {
+          "noProducts": "لطفاً حداقل یک محصول را انتخاب کنید."
+        },
         "list": {
           "noRecordsMessage": "ابتدا یک محصول ایجاد کنید."
         }

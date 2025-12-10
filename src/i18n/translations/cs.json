@@ -2158,6 +2158,9 @@
       },
       "successToast": "Ceník {{title}} byl úspěšně vytvořen.",
       "products": {
+        "errors": {
+          "noProducts": "Prosím vyberte alespoň jeden produkt."
+        },
         "list": {
           "noRecordsMessage": "Nejprve vytvořte produkt."
         }

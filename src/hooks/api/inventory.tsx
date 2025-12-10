@@ -147,7 +147,10 @@ export const useDeleteInventoryItem = (
   >
 ) => {
   return useMutation({
-    mutationFn: () => sdk.admin.inventoryItem.delete(id),
+    mutationFn:  () =>
+      fetchQuery(`/vendor/inventory-items/${id}`, {
+        method: "DELETE",
+      }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
         queryKey: inventoryItemsQueryKeys.lists(),

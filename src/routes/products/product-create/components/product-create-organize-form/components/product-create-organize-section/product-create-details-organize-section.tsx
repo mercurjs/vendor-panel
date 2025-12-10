@@ -111,6 +111,7 @@ export const ProductCreateOrganizationSection = ({
                     searchValue={types.searchValue}
                     onSearchValueChange={types.onSearchValueChange}
                     fetchNextPage={types.fetchNextPage}
+                    allowClear
                   />
                 </Form.Control>
                 <Form.ErrorMessage />
@@ -172,6 +173,7 @@ export const ProductCreateOrganizationSection = ({
                     searchValue={collections.searchValue}
                     onSearchValueChange={collections.onSearchValueChange}
                     fetchNextPage={collections.fetchNextPage}
+                    allowClear
                   />
                 </Form.Control>
                 <Form.ErrorMessage />

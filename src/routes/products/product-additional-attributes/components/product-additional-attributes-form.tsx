@@ -45,6 +45,11 @@ export const ProductAdditionalAttributesForm = ({ product, attributes, id }: Pro
       },
       {
         onSuccess: () => {
+          toast.success(
+            t('products.edit.successToast', {
+              title: product.title
+            })
+          );
           handleSuccess(`/products/${id}`);
         },
         onError: error => {

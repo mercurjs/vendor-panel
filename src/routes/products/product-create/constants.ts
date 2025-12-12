@@ -50,6 +50,8 @@ export type ProductCreateVariantSchema = z.infer<
 const ProductCreateOptionSchema = z.object({
   title: z.string(),
   values: z.array(z.string()).min(1),
+  metadata: z.string().optional(),
+  useForVariants: z.boolean().optional(),
 })
 
 export type ProductCreateOptionSchema = z.infer<

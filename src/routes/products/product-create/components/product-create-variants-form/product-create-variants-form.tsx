@@ -65,6 +65,7 @@ export const ProductCreateVariantsForm = ({
       selectedValues: Array<{ id: string; value: string }>;
     }> = [];
 
+    // Add required multivalue attributes with "Use for Variants" enabled
     allAttributes.forEach((attr: any) => {
       if (attr.ui_component === 'multivalue') {
         const useForVariantsField = `${attr.handle}UseForVariants`;
@@ -92,6 +93,25 @@ export const ProductCreateVariantsForm = ({
             });
           }
         }
+      }
+    });
+
+    // Add user-created options with "Use for Variants" enabled
+    const options = (formValues as any)?.options || [];
+    options.forEach((option: any) => {
+      if (
+        option?.metadata === 'user-created' &&
+        option?.useForVariants === true &&
+        option?.title &&
+        option?.values &&
+        Array.isArray(option.values) &&
+        option.values.length > 0
+      ) {
+        result.push({
+          handle: `option-${option.title}`, // Use title as handle for user-created options
+          name: option.title,
+          selectedValues: option.values.map((value: string) => ({ id: value, value }))
+        });
       }
     });
 

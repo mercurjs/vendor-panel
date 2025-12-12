@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle } from 'react';
 
 import { Button, Divider, Heading, Text } from '@medusajs/ui';
-import { Path, UseFormReturn } from 'react-hook-form';
+import { Path, UseFormReturn, useFieldArray } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useAttributes } from '../../../../../hooks/api/attributes';
@@ -9,6 +9,7 @@ import { ProductCreateSchemaType } from '../../types';
 import { createAttributeValidationRules } from '../../utils/attribute-validation';
 import { processAttributes, type FormField } from '../../utils/process-attributes';
 import { RequiredAttributesList } from './required-attributes-list';
+import { UserCreatedOptionsList } from './user-created-options-list';
 
 export interface ProductCreateAttributesFormRef {
   validateAttributes: () => Promise<boolean>;
@@ -26,6 +27,12 @@ export const ProductCreateAttributesForm = forwardRef<
   const { t } = useTranslation();
 
   const primaryCategoryId = form.watch('categories')?.[0];
+
+  // Manage user-created options
+  const options = useFieldArray({
+    control: form.control,
+    name: 'options'
+  });
 
   const { attributes: allAttributes, isLoading: allAttributesLoading } = useAttributes({
     fields:
@@ -153,8 +160,12 @@ export const ProductCreateAttributesForm = forwardRef<
   return (
     <div className="flex flex-col items-center p-16">
       <div className="flex w-full max-w-[720px] flex-col gap-y-8">
-        <Header />
+        <Header options={options} />
         <div className="flex flex-col gap-y-8">
+          {/* User-created options */}
+          <UserCreatedOptionsList form={form} options={options} />
+
+          {/* Required attributes */}
           {requiredFormFields.length === 0 ? (
             <div className="py-8 text-center text-gray-500">
               {allAttributesLoading
@@ -194,7 +205,13 @@ export const ProductCreateAttributesForm = forwardRef<
 
 ProductCreateAttributesForm.displayName = 'ProductCreateAttributesForm';
 
-const Header = () => {
+type HeaderProps = {
+  options: {
+    append: (option: { title: string; values: string[]; metadata?: string }) => void;
+  };
+};
+
+const Header = ({ options }: HeaderProps) => {
   const { t } = useTranslation();
 
   return (
@@ -219,6 +236,14 @@ const Header = () => {
           variant="secondary"
           type="button"
           className="min-w-[100px]"
+          onClick={() => {
+            options.append({
+              title: '',
+              values: [],
+              metadata: 'user-created',
+              useForVariants: false
+            });
+          }}
         >
           {t('actions.add')} {t('products.create.attributes.buttonLabel')}
         </Button>

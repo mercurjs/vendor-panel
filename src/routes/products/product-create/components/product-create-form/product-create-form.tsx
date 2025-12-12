@@ -299,10 +299,18 @@ export const ProductCreateForm = ({
       );
     }
 
-    // Generate options from variant attributes
+    // Get user-created options (with metadata === 'user-created')
+    // Use values.options instead of finalPayload.options since finalPayload is defined later
+    const userCreatedOptions =
+      (rest as any).options?.filter(
+        (opt: any) => opt.metadata === 'user-created' && opt.title && opt.values?.length > 0
+      ) || [];
+
+    // Generate options from required multivalue attributes with "Use for Variants" enabled
     const variantAttributes: Array<{
       handle: string;
       name: string;
+      attributeId: string;
       selectedValues: Array<{ id: string; value: string }>;
     }> = [];
 
@@ -331,6 +339,7 @@ export const ProductCreateForm = ({
             variantAttributes.push({
               handle: attr.handle,
               name: attr.name,
+              attributeId: attr.id,
               selectedValues
             });
           }
@@ -338,11 +347,15 @@ export const ProductCreateForm = ({
       }
     });
 
-    // Generate options from variant attributes
-    const generatedOptions = variantAttributes.map(attr => ({
+    // Generate options from required multivalue attributes
+    const requiredAttributeOptions = variantAttributes.map(attr => ({
       title: attr.name,
-      values: attr.selectedValues.map(v => v.value)
+      values: attr.selectedValues.map(v => v.value),
+      metadata: 'required-attribute'
     }));
+
+    // Combine user-created options and required attribute options
+    const allOptions = [...userCreatedOptions, ...requiredAttributeOptions];
 
     dynamicAttributeFields.forEach(fieldName => {
       const value = form.getValues(fieldName as any);
@@ -454,16 +467,17 @@ export const ProductCreateForm = ({
     const mappedVariants = (finalPayload as any).variants.map((variant: any) => {
       const mappedOptions: Record<string, string> = {};
 
-      variantAttributes.forEach(attr => {
-        // Extract the value for this attribute from the variant title
+      // Map options from all options (user-created + required attributes)
+      allOptions.forEach(option => {
+        // Extract the value for this option from the variant title
         const variantTitle = variant.title || '';
-        const attrValues = attr.selectedValues.map(v => v.value);
+        const optionValues = option.values || [];
 
-        // Find which value this variant has for this attribute
-        const matchingValue = attrValues.find(value => variantTitle.includes(value));
+        // Find which value this variant has for this option
+        const matchingValue = optionValues.find((value: string) => variantTitle.includes(value));
 
         if (matchingValue) {
-          mappedOptions[attr.name] = matchingValue;
+          mappedOptions[option.title] = matchingValue;
         }
       });
 
@@ -492,8 +506,9 @@ export const ProductCreateForm = ({
       collection_id: (finalPayload as any).collection_id || undefined,
       shipping_profile_id: undefined,
       enable_variants: undefined,
-      // Use generated options if variant attributes exist, otherwise use default
-      options: generatedOptions.length > 0 ? generatedOptions : (finalPayload as any).options,
+      // Combine user-created options and required attribute options
+      // If no options exist, use default from payload
+      options: allOptions.length > 0 ? allOptions : (finalPayload as any).options,
       additional_data:
         additionalDataValues.length > 0
           ? {
@@ -502,98 +517,134 @@ export const ProductCreateForm = ({
           : undefined
     };
 
-    const productData = await mutateAsync(
-      {
-        ...finalPayloadWithAdditionalData,
-        categories: (finalPayload as any).categories.map((cat: any) => ({
-          id: cat
-        })),
-        variants: mappedVariants.map((variant: any) => {
-          // TODO: update when api is ready
-          // Exclude media and stock_locations fields from final API request
-          const { media, stock_locations, ...variantWithoutMedia } = variant;
+    // PAYLOAD INSPECTION MODE - Log payload to console instead of making request
+    // To restore normal API call: remove console.log lines and uncomment mutateAsync below
+    const payloadToSend = {
+      ...finalPayloadWithAdditionalData,
+      categories: (finalPayload as any).categories.map((cat: any) => ({
+        id: cat
+      })),
+      variants: mappedVariants.map((variant: any) => {
+        // TODO: update when api is ready
+        // Exclude media and stock_locations fields from final API request
+        const { media, stock_locations, ...variantWithoutMedia } = variant;
 
-          return {
-            ...variantWithoutMedia,
-            sku: variant.sku === '' ? undefined : variant.sku,
-            manage_inventory: true,
-            allow_backorder: false,
-            should_create: undefined,
-            is_default: undefined,
-            inventory_kit: undefined,
-            inventory: undefined,
-            prices: Object.keys(variant.prices || {}).map(key => ({
-              currency_code: key,
-              amount: parseFloat(variant.prices?.[key] as string)
-            }))
-          };
-        })
-      },
-      {
-        onError: error => {
-          toast.error(error.message);
-        }
-      }
-    );
-
-    // Assign inventory items to stock locations after product creation
-    if (productData?.product?.variants && stock_locations.length > 0) {
-      try {
-        for (const variant of productData.product.variants) {
-          if (variant.inventory_items && variant.inventory_items.length > 0) {
-            const inventoryItemId = variant.inventory_items[0].id;
-            // Get stock location data for this variant from the form
-            const variantIndex = mappedVariants.findIndex((v: any) => v.title === variant.title);
-            const variantStockLocations = mappedVariants[variantIndex]?.stock_locations;
-
-            if (variantStockLocations) {
-              const batchPayload: any = {
-                create: [],
-                update: [],
-                delete: [],
-                force: true
-              };
-
-              // Process each stock location for this variant
-              Object.entries(variantStockLocations).forEach(
-                ([locationId, locationData]: [string, any]) => {
-                  if (
-                    locationData.checked &&
-                    locationData.quantity !== '' &&
-                    locationData.quantity !== 0
-                  ) {
-                    batchPayload.create.push({
-                      location_id: locationId,
-                      stocked_quantity: parseFloat(locationData.quantity) || 0
-                    });
-                  }
-                }
-              );
-
-              // Only make the API call if there are locations to create
-              if (batchPayload.create.length > 0) {
-                const batchMutation = getBatchMutation(inventoryItemId);
-                await batchMutation.mutateAsync(batchPayload);
-              }
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error assigning stock locations:', error);
-        // Don't fail the entire product creation for stock location errors
-        toast.error(
-          'Product created successfully, but there was an issue assigning stock locations.'
-        );
-      }
-    }
-
-    toast.success(
-      t('products.create.successToast', {
-        title: productData.product.title
+        return {
+          ...variantWithoutMedia,
+          sku: variant.sku === '' ? undefined : variant.sku,
+          manage_inventory: true,
+          allow_backorder: false,
+          should_create: undefined,
+          is_default: undefined,
+          inventory_kit: undefined,
+          inventory: undefined,
+          prices: Object.keys(variant.prices || {}).map(key => ({
+            currency_code: key,
+            amount: parseFloat(variant.prices?.[key] as string)
+          }))
+        };
       })
-    );
+    };
 
-    handleSuccess(`../${productData.product.id}`);
+    console.log('=== PRODUCT CREATE PAYLOAD ===');
+    console.log(payloadToSend);
+    console.log('=== END PAYLOAD ===');
+    return; // Stop execution here when inspecting payload
+
+    // NORMAL MODE - Uncomment below and remove console.log + return above to restore API call
+    // const productData = await mutateAsync(
+    //   {
+    //     ...finalPayloadWithAdditionalData,
+    //     categories: (finalPayload as any).categories.map((cat: any) => ({
+    //       id: cat
+    //     })),
+    //     variants: mappedVariants.map((variant: any) => {
+    //       // TODO: update when api is ready
+    //       // Exclude media and stock_locations fields from final API request
+    //       const { media, stock_locations, ...variantWithoutMedia } = variant;
+
+    //       return {
+    //         ...variantWithoutMedia,
+    //         sku: variant.sku === '' ? undefined : variant.sku,
+    //         manage_inventory: true,
+    //         allow_backorder: false,
+    //         should_create: undefined,
+    //         is_default: undefined,
+    //         inventory_kit: undefined,
+    //         inventory: undefined,
+    //         prices: Object.keys(variant.prices || {}).map(key => ({
+    //           currency_code: key,
+    //           amount: parseFloat(variant.prices?.[key] as string)
+    //         }))
+    //       };
+    //     })
+    //   },
+    //   {
+    //     onError: error => {
+    //       toast.error(error.message);
+    //     }
+    //   }
+    // );
+
+    // NORMAL MODE - Code below runs after successful API call
+    // (Currently unreachable due to return above - will work when mutateAsync is uncommented)
+    // if (productData?.product?.variants && stock_locations.length > 0) {
+    //   try {
+    //     for (const variant of productData.product.variants) {
+    //       if (variant.inventory_items && variant.inventory_items.length > 0) {
+    //         const inventoryItemId = variant.inventory_items[0].id;
+    //         // Get stock location data for this variant from the form
+    //         const variantIndex = mappedVariants.findIndex((v: any) => v.title === variant.title);
+    //         const variantStockLocations = mappedVariants[variantIndex]?.stock_locations;
+
+    //         if (variantStockLocations) {
+    //           const batchPayload: any = {
+    //             create: [],
+    //             update: [],
+    //             delete: [],
+    //             force: true
+    //           };
+
+    //           // Process each stock location for this variant
+    //           Object.entries(variantStockLocations).forEach(
+    //             ([locationId, locationData]: [string, any]) => {
+    //               if (
+    //                 locationData.checked &&
+    //                 locationData.quantity !== '' &&
+    //                 locationData.quantity !== 0
+    //               ) {
+    //                 batchPayload.create.push({
+    //                   location_id: locationId,
+    //                   stocked_quantity: parseFloat(locationData.quantity) || 0
+    //                 });
+    //               }
+    //             }
+    //           );
+
+    //           // Only make the API call if there are locations to create
+    //           if (batchPayload.create.length > 0) {
+    //             const batchMutation = getBatchMutation(inventoryItemId);
+    //             await batchMutation.mutateAsync(batchPayload);
+    //           }
+    //         }
+    //       }
+    //     }
+    //   } catch (error) {
+    //     console.error('Error assigning stock locations:', error);
+    //     // Don't fail the entire product creation for stock location errors
+    //     toast.error(
+    //       'Product created successfully, but there was an issue assigning stock locations.'
+    //     );
+    //   }
+    // }
+
+    // toast.success(
+    //   t('products.create.successToast', {
+    //     title: productData.product.title
+    //   })
+    // );
+
+    // handleSuccess(`../${productData.product.id}`);
   });
 
   const onNext = async (currentTab: Tab) => {

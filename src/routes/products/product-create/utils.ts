@@ -40,7 +40,18 @@ export const normalizeProductFormValues = (
     length: values.length ? parseFloat(values.length) : undefined,
     height: values.height ? parseFloat(values.height) : undefined,
     weight: values.weight ? parseFloat(values.weight) : undefined,
-    options: values.options.filter(o => o.title), // clean temp. values
+    // All options (including required attributes with metadata="required-attribute")
+    // are saved to options for consistency
+    options: values.options
+      .filter(o => o.title) // clean temp. values
+      .map(option => ({
+        title: option.title,
+        values: option.values,
+        // metadata is optional and will be included if present
+        ...(option.metadata && { metadata: option.metadata }),
+        // useForVariants is optional and will be included if present
+        ...(option.useForVariants !== undefined && { useForVariants: option.useForVariants })
+      })),
     variants: normalizeVariants(
       values.variants.filter(variant => variant.should_create),
       values.regionsCurrencyMap

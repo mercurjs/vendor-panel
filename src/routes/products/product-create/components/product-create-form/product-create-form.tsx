@@ -306,53 +306,73 @@ export const ProductCreateForm = ({
         (opt: any) => opt.metadata === 'user-created' && opt.title && opt.values?.length > 0
       ) || [];
 
-    // Generate options from required multivalue attributes with "Use for Variants" enabled
-    const variantAttributes: Array<{
-      handle: string;
-      name: string;
-      attributeId: string;
-      selectedValues: Array<{ id: string; value: string }>;
+    // Generate options from ALL required attributes (single-value and multivalue)
+    // For consistency, all required attributes are saved as options with metadata="required-attribute"
+    const requiredAttributeOptions: Array<{
+      title: string;
+      values: string[];
+      metadata: string;
+      useForVariants: boolean;
     }> = [];
 
     allAttributes?.forEach((attr: any) => {
-      if (attr.ui_component === 'multivalue') {
-        const useForVariantsField = `${attr.handle}UseForVariants`;
-        const isUsedForVariants = form.getValues(useForVariantsField as any);
-        const selectedValueIds = form.getValues(attr.handle as any);
+      // Only process required attributes
+      if (!attr.is_required) {
+        return;
+      }
 
-        if (
-          isUsedForVariants &&
-          selectedValueIds &&
-          Array.isArray(selectedValueIds) &&
-          selectedValueIds.length > 0
-        ) {
-          const selectedValues = selectedValueIds
-            .map((valueId: string) => {
-              const possibleValue = (attr as any).possible_values?.find(
-                (pv: any) => pv.id === valueId
-              );
-              return possibleValue ? { id: valueId, value: possibleValue.value } : null;
-            })
-            .filter((item): item is { id: string; value: string } => item !== null);
+      const value = form.getValues(attr.handle as any);
 
-          if (selectedValues.length > 0) {
-            variantAttributes.push({
-              handle: attr.handle,
-              name: attr.name,
-              attributeId: attr.id,
-              selectedValues
-            });
-          }
+      if (value === undefined || value === null || value === '') {
+        return;
+      }
+
+      // Handle multivalue attributes
+      if (attr.ui_component === 'multivalue' && Array.isArray(value) && value.length > 0) {
+        const selectedValues = value
+          .map((valueId: string) => {
+            const possibleValue = (attr as any).possible_values?.find(
+              (pv: any) => pv.id === valueId
+            );
+            return possibleValue ? possibleValue.value : null;
+          })
+          .filter((item): item is string => item !== null);
+
+        if (selectedValues.length > 0) {
+          // Check if "Use for Variants" is enabled for this multivalue attribute
+          const useForVariantsField = `${attr.handle}UseForVariants`;
+          const useForVariants = form.getValues(useForVariantsField as any) || false;
+
+          requiredAttributeOptions.push({
+            title: attr.name,
+            values: selectedValues,
+            metadata: 'required-attribute',
+            useForVariants
+          });
         }
       }
-    });
+      // Handle single-value attributes (select, text, text_area, unit, toggle)
+      else if (!Array.isArray(value)) {
+        let actualValue = value;
 
-    // Generate options from required multivalue attributes
-    const requiredAttributeOptions = variantAttributes.map(attr => ({
-      title: attr.name,
-      values: attr.selectedValues.map(v => v.value),
-      metadata: 'required-attribute'
-    }));
+        // If it's a select value, convert ID to actual value
+        if ((attr as any).possible_values && typeof value === 'string') {
+          const possibleValue = (attr as any).possible_values.find((pv: any) => pv.id === value);
+          if (possibleValue) {
+            actualValue = possibleValue.value;
+          }
+        }
+
+        // Single-value attributes cannot create variants (they have only one value)
+        // Convert single value to array for consistency
+        requiredAttributeOptions.push({
+          title: attr.name,
+          values: [String(actualValue)],
+          metadata: 'required-attribute',
+          useForVariants: false
+        });
+      }
+    });
 
     // Combine user-created options and required attribute options
     const allOptions = [...userCreatedOptions, ...requiredAttributeOptions];

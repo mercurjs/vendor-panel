@@ -57,6 +57,7 @@ export const useProductCategories = (
     queryFn: () =>
       fetchQuery("/vendor/product-categories", {
         method: "GET",
+        query: query,
       }),
     ...options,
   })

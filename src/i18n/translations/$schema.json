@@ -1931,6 +1931,9 @@
             "invalidFileType": {
               "type": "string"
             },
+            "fileTooLarge": {
+              "type": "string"
+            },
             "failedToUpload": {
               "type": "string"
             },
@@ -1985,6 +1988,7 @@
             "uploadImagesLabel",
             "uploadImagesHint",
             "invalidFileType",
+            "fileTooLarge",
             "failedToUpload",
             "deleteWarning_one",
             "deleteWarning_other",

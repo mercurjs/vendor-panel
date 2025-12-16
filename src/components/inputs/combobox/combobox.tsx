@@ -15,7 +15,7 @@ import {
   TrianglesMini,
   XMarkMini,
 } from "@medusajs/icons"
-import { clx, Text } from "@medusajs/ui"
+import { clx, Text, Badge } from "@medusajs/ui"
 import { matchSorter } from "match-sorter"
 import {
   ComponentPropsWithoutRef,
@@ -25,6 +25,7 @@ import {
   ReactNode,
   useCallback,
   useDeferredValue,
+  useEffect,
   useImperativeHandle,
   useMemo,
   useRef,
@@ -86,6 +87,8 @@ const ComboboxImpl = <T extends Value = string>(
 
   const comboboxRef = useRef<HTMLInputElement>(null)
   const listboxRef = useRef<HTMLDivElement>(null)
+  const badgesContainerRef = useRef<HTMLDivElement>(null)
+  const [visibleBadgesCount, setVisibleBadgesCount] = useState(0)
 
   useImperativeHandle(ref, () => comboboxRef.current!)
 
@@ -208,6 +211,72 @@ const ComboboxImpl = <T extends Value = string>(
 
   const hidePlaceholder = showSelected || open
 
+  // Calculate how many badges can fit (similar to MultiSelect)
+  const calculateVisibleBadges = useCallback(() => {
+    if (!isArrayValue || !Array.isArray(selectedValues) || selectedValues.length === 0 || !badgesContainerRef.current) {
+      setVisibleBadgesCount(0)
+      return
+    }
+
+    const container = badgesContainerRef.current
+    if (!container || container.offsetWidth === 0) {
+      setVisibleBadgesCount(0)
+      return
+    }
+
+    const containerWidth = container.offsetWidth
+    const padding = 16 // px-2 on both sides
+    const gap = 8 // gap-2
+    const availableWidth = containerWidth - padding
+
+    // Estimate badge width based on option label length
+    const estimateBadgeWidth = (label: string) => {
+      const baseWidth = 32 // Base badge width (padding, icon, etc.)
+      const charWidth = 8 // Approximate character width
+      return baseWidth + Math.min(label.length * charWidth, 200) // Cap at 200px
+    }
+
+    let totalWidth = 0
+    let count = 0
+
+    for (let i = 0; i < selectedValues.length; i++) {
+      const option = options.find(opt => opt.value === selectedValues[i])
+      const optionLabel = option?.label || 'Unknown'
+      const badgeWidth = estimateBadgeWidth(optionLabel)
+
+      if (totalWidth + badgeWidth + (count > 0 ? gap : 0) <= availableWidth) {
+        totalWidth += badgeWidth + (count > 0 ? gap : 0)
+        count++
+      } else {
+        break
+      }
+    }
+
+    setVisibleBadgesCount(count)
+  }, [isArrayValue, selectedValues, options])
+
+  useEffect(() => {
+    // Use requestAnimationFrame to ensure DOM is ready
+    requestAnimationFrame(() => {
+      calculateVisibleBadges()
+    })
+  }, [calculateVisibleBadges])
+
+  // Handle resize events
+  useEffect(() => {
+    if (!badgesContainerRef.current) return
+
+    const resizeObserver = new ResizeObserver(() => {
+      calculateVisibleBadges()
+    })
+
+    resizeObserver.observe(badgesContainerRef.current)
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [calculateVisibleBadges])
+
   const tagWidth = useMemo(() => {
     if (!Array.isArray(selectedValues)) {
       return TAG_BASE_WIDTH + TABLUAR_NUM_WIDTH // There can only be a single digit
@@ -250,45 +319,52 @@ const ComboboxImpl = <T extends Value = string>(
           } as CSSProperties
         }
       >
-        {showTag && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault()
-              handleValueChange(isArrayValue ? ([] as unknown as T) : undefined)
-            }}
-            className="bg-ui-bg-base hover:bg-ui-bg-base-hover txt-compact-small-plus text-ui-fg-subtle focus-within:border-ui-fg-interactive transition-fg absolute start-0.5 top-0.5 z-[1] flex h-[28px] items-center rounded-[4px] border py-[3px] pe-1 ps-1.5 outline-none"
-          >
-            <span className="tabular-nums">{selectedValues.length}</span>
-            <XMarkMini className="text-ui-fg-muted" />
-          </button>
-        )}
-        <div className="relative flex size-full items-center">
-          {showSelected && (
-            <div
-              className={clx(
-                "pointer-events-none absolute inset-y-0 flex size-full items-center",
-                {
-                  "start-[calc(var(--tag-width)+8px)]": showTag,
-                  "start-2": !showTag,
-                }
+        <div ref={badgesContainerRef} className="relative flex items-center gap-2 px-2 flex-1 min-w-0 overflow-hidden h-full">
+          {isArrayValue && Array.isArray(selectedValues) && selectedValues.length > 0 ? (
+            <>
+              {selectedValues.slice(0, visibleBadgesCount).map((optionValue) => {
+                const option = options.find(opt => opt.value === optionValue)
+                return (
+                  <button
+                    key={optionValue}
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      const newValues = (selectedValues as string[]).filter(val => val !== optionValue)
+                      handleValueChange(newValues as T)
+                    }}
+                    className="flex-shrink-0 z-10 relative flex items-center self-center"
+                    disabled={inputProps.disabled}
+                  >
+                    <Badge size="2xsmall" className="w-fit flex items-center">
+                      <span className="text-ellipsis truncate max-w-[200px]">{option?.label || 'Unknown'}</span>
+                      <XMarkMini />
+                    </Badge>
+                  </button>
+                )
+              })}
+              {selectedValues.length > visibleBadgesCount && (
+                <Badge size="2xsmall" className="w-fit flex-shrink-0 bg-transparent border-none text-ui-fg-subtle px-0 txt-compact-small-plus z-10 relative flex items-center self-center">
+                  +{selectedValues.length - visibleBadgesCount}
+                </Badge>
               )}
+            </>
+          ) : showTag ? (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault()
+                handleValueChange(isArrayValue ? ([] as unknown as T) : undefined)
+              }}
+              className="bg-ui-bg-base hover:bg-ui-bg-base-hover txt-compact-small-plus text-ui-fg-subtle focus-within:border-ui-fg-interactive transition-fg flex h-[28px] items-center rounded-[4px] border py-[3px] pe-1 ps-1.5 outline-none"
             >
-              <Text size="small" leading="compact">
-                {t("general.selected")}
-              </Text>
-            </div>
-          )}
-          {hideInput && (
-            <div
-              className={clx(
-                "pointer-events-none absolute inset-y-0 flex size-full items-center overflow-hidden",
-                {
-                  "start-[calc(var(--tag-width)+8px)]": showTag,
-                  "start-2": !showTag,
-                }
-              )}
-            >
+              <span className="tabular-nums">{selectedValues.length}</span>
+              <XMarkMini className="text-ui-fg-muted" />
+            </button>
+          ) : null}
+          {hideInput && !isArrayValue && (
+            <div className="pointer-events-none flex size-full items-center overflow-hidden">
               <Text size="small" leading="compact" className="truncate">
                 {selectedLabel}
               </Text>
@@ -299,15 +375,15 @@ const ComboboxImpl = <T extends Value = string>(
             ref={comboboxRef}
             onFocus={() => setOpen(true)}
             className={clx(
-              "txt-compact-small text-ui-fg-base !placeholder:text-ui-fg-muted transition-fg size-full cursor-pointer bg-transparent pe-8 ps-2 outline-none focus:cursor-text",
+              "txt-compact-small text-ui-fg-base !placeholder:text-ui-fg-muted transition-fg size-full cursor-pointer bg-transparent pe-8 outline-none focus:cursor-text",
               "hover:bg-ui-bg-field-hover",
               {
-                "opacity-0": hideInput,
-                "ps-2": !showTag,
-                "ps-[calc(var(--tag-width)+8px)]": showTag,
+                "opacity-0": hideInput && !isArrayValue,
+                "ps-2": !showTag && !isArrayValue,
+                "absolute inset-0": isArrayValue && Array.isArray(selectedValues) && selectedValues.length > 0,
               }
             )}
-            placeholder={hidePlaceholder ? undefined : placeholder}
+            placeholder={isArrayValue && Array.isArray(selectedValues) && selectedValues.length > 0 ? undefined : (hidePlaceholder ? undefined : placeholder)}
             {...inputProps}
           />
         </div>

@@ -6,7 +6,7 @@ import {
   XMarkMini,
 } from "@medusajs/icons"
 import { AdminProductCategoryResponse } from "@medusajs/types"
-import { Divider, Text, clx } from "@medusajs/ui"
+import { Divider, Text, clx, Badge } from "@medusajs/ui"
 import { Popover as RadixPopover } from "radix-ui"
 import {
   CSSProperties,
@@ -48,6 +48,8 @@ export const CategoryCombobox = forwardRef<
   CategoryComboboxProps
 >(({ value, onChange, className, ...props }, ref) => {
   const innerRef = useRef<HTMLInputElement>(null)
+  const badgesContainerRef = useRef<HTMLDivElement>(null)
+  const [visibleBadgesCount, setVisibleBadgesCount] = useState(0)
 
   useImperativeHandle<HTMLInputElement | null, HTMLInputElement | null>(
     ref,
@@ -72,6 +74,12 @@ export const CategoryCombobox = forwardRef<
     useProductCategories(queryParams, {
       enabled: open,
     })
+
+  // Fetch all categories to map selected IDs to labels for badges
+  const { product_categories: allCategoriesData } = useProductCategories(
+    { include_descendants_tree: true },
+    { enabled: value.length > 0 }
+  )
 
   const [showLoading, setShowLoading] = useState(false)
 
@@ -156,6 +164,85 @@ export const CategoryCombobox = forwardRef<
   }
 
   const options = getOptions(product_categories || [])
+
+  // Get all categories recursively to map selected IDs to labels
+  const getAllCategoriesRecursive = useCallback((categories: AdminProductCategoryResponse["product_category"][]): ProductCategoryOption[] => {
+    const result: ProductCategoryOption[] = []
+    categories.forEach((cat) => {
+      result.push({
+        value: cat.id,
+        label: cat.name,
+        has_children: cat.category_children?.length > 0
+      })
+      if (cat.category_children && cat.category_children.length > 0) {
+        result.push(...getAllCategoriesRecursive(cat.category_children))
+      }
+    })
+    return result
+  }, [])
+
+  const allCategoriesOptions = useMemo(() => {
+    if (!allCategoriesData || !Array.isArray(allCategoriesData)) return []
+    return getAllCategoriesRecursive(allCategoriesData)
+  }, [allCategoriesData, getAllCategoriesRecursive])
+
+  // Calculate how many badges can fit
+  const calculateVisibleBadges = useCallback(() => {
+    if (!value || value.length === 0 || !badgesContainerRef.current) {
+      setVisibleBadgesCount(0)
+      return
+    }
+
+    const container = badgesContainerRef.current
+    const containerWidth = container.offsetWidth
+    const padding = 16 // px-2 on both sides
+    const gap = 8 // gap-2
+    const availableWidth = containerWidth - padding
+
+    // Estimate badge width based on category label length
+    const estimateBadgeWidth = (label: string) => {
+      const baseWidth = 32 // Base badge width (padding, icon, etc.)
+      const charWidth = 8 // Approximate character width
+      return baseWidth + Math.min(label.length * charWidth, 200) // Cap at 200px
+    }
+
+    let totalWidth = 0
+    let count = 0
+
+    for (let i = 0; i < value.length; i++) {
+      const category = allCategoriesOptions.find(opt => opt.value === value[i])
+      const categoryLabel = category?.label || 'Unknown'
+      const badgeWidth = estimateBadgeWidth(categoryLabel)
+
+      if (totalWidth + badgeWidth + (count > 0 ? gap : 0) <= availableWidth) {
+        totalWidth += badgeWidth + (count > 0 ? gap : 0)
+        count++
+      } else {
+        break
+      }
+    }
+
+    setVisibleBadgesCount(count)
+  }, [value, allCategoriesOptions])
+
+  useEffect(() => {
+    calculateVisibleBadges()
+  }, [calculateVisibleBadges])
+
+  // Handle resize events
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver(() => {
+      calculateVisibleBadges()
+    })
+
+    if (badgesContainerRef.current) {
+      resizeObserver.observe(badgesContainerRef.current)
+    }
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [calculateVisibleBadges])
 
   const showTag = value.length > 0
   const showSelected = !open && value.length > 0
@@ -269,44 +356,55 @@ export const CategoryCombobox = forwardRef<
         } as CSSProperties
       }
     >
-      {showTag && (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault()
-            onChange([])
-          }}
-          className="bg-ui-bg-base hover:bg-ui-bg-base-hover txt-compact-small-plus text-ui-fg-subtle focus-within:border-ui-fg-interactive transition-fg absolute left-0.5 top-0.5 flex h-[28px] items-center rounded-[4px] border py-[3px] pl-1.5 pr-1 outline-none"
-        >
-          <span className="tabular-nums">{value.length}</span>
-          <XMarkMini className="text-ui-fg-muted" />
-        </button>
-      )}
-      {showSelected && (
-        <div className="pointer-events-none absolute inset-y-0 left-[calc(var(--tag-width)+8px)] flex size-full items-center">
-          <Text size="small" leading="compact">
-            {t("general.selected")}
-          </Text>
-        </div>
-      )}
-      <input
-            ref={innerRef}
-            value={searchValue}
-            onChange={(e) => {
-              onSearchValueChange(e.target.value)
-            }}
-            className={clx(
-              "txt-compact-small size-full cursor-pointer appearance-none bg-transparent pr-8 outline-none",
-              "hover:bg-ui-bg-field-hover",
-              "focus:cursor-text",
-              "placeholder:text-ui-fg-muted",
-              {
-                "pl-2": !showTag,
-                "pl-[calc(var(--tag-width)+8px)]": showTag,
-              }
+      <div ref={badgesContainerRef} className="flex items-center gap-2 px-2 flex-1 min-w-0 overflow-hidden h-full">
+        {value.length > 0 ? (
+          <>
+            {value.slice(0, visibleBadgesCount).map((categoryId) => {
+              const category = allCategoriesOptions.find(opt => opt.value === categoryId)
+              return (
+                <button
+                  key={categoryId}
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    onChange(value.filter(id => id !== categoryId))
+                  }}
+                  className="flex-shrink-0 flex items-center self-center"
+                  disabled={props.disabled}
+                >
+                  <Badge size="2xsmall" className="w-fit flex items-center">
+                    <span className="text-ellipsis truncate max-w-[200px]">{category?.label || 'Unknown'}</span>
+                    <XMarkMini />
+                  </Badge>
+                </button>
+              )
+            })}
+            {value.length > visibleBadgesCount && (
+              <Badge size="2xsmall" className="w-fit flex-shrink-0 bg-transparent border-none text-ui-fg-subtle px-0 txt-compact-small-plus flex items-center self-center">
+                +{value.length - visibleBadgesCount}
+              </Badge>
             )}
-            {...props}
-          />
+          </>
+        ) : null}
+        <input
+          ref={innerRef}
+          value={searchValue}
+          onChange={(e) => {
+            onSearchValueChange(e.target.value)
+          }}
+          className={clx(
+            "txt-compact-small size-full cursor-pointer appearance-none bg-transparent pr-8 outline-none",
+            "hover:bg-ui-bg-field-hover",
+            "focus:cursor-text",
+            "placeholder:text-ui-fg-muted",
+            {
+              "opacity-0": value.length > 0 && !open,
+            }
+          )}
+          {...props}
+        />
+      </div>
           <button
             type="button"
             onClick={() => handleOpenChange(true)}

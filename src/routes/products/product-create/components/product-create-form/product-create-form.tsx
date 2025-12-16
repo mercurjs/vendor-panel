@@ -216,7 +216,8 @@ export const ProductCreateForm = ({
     mode: 'onBlur'
   });
 
-  const { mutateAsync, isPending } = useCreateProduct();
+  // const { mutateAsync, isPending } = useCreateProduct();
+  const { isPending } = useCreateProduct();
 
   // Create a function to get the batch mutation for a specific inventory item
   const getBatchMutation = (inventoryItemId: string) => {
@@ -363,13 +364,13 @@ export const ProductCreateForm = ({
           }
         }
 
-        // Single-value attributes cannot create variants (they have only one value)
+        // Single-value attributes - default to useForVariants: true
         // Convert single value to array for consistency
         requiredAttributeOptions.push({
           title: attr.name,
           values: [String(actualValue)],
           metadata: 'required-attribute',
-          useForVariants: false
+          useForVariants: true
         });
       }
     });
@@ -484,20 +485,45 @@ export const ProductCreateForm = ({
       }
     }
 
-    const mappedVariants = (finalPayload as any).variants.map((variant: any) => {
+    // Filter variants to only include those with should_create === true
+    const variantsToCreate = (finalPayload as any).variants.filter(
+      (variant: any) => variant.should_create === true
+    );
+
+    const mappedVariants = variantsToCreate.map((variant: any) => {
       const mappedOptions: Record<string, string> = {};
 
-      // Map options from all options (user-created + required attributes)
+      // Map options from ALL options (both useForVariants: true and false)
+      // Backend requires that variants have values for ALL options sent to API
       allOptions.forEach(option => {
-        // Extract the value for this option from the variant title
-        const variantTitle = variant.title || '';
-        const optionValues = option.values || [];
+        // First, check if variant already has this option value set (from variant generation)
+        if (variant.options && variant.options[option.title]) {
+          mappedOptions[option.title] = variant.options[option.title];
+        }
+        // For options used for variants, try to extract value from variant title
+        else if (option.useForVariants === true) {
+          const variantTitle = variant.title || '';
+          const optionValues = option.values || [];
 
-        // Find which value this variant has for this option
-        const matchingValue = optionValues.find((value: string) => variantTitle.includes(value));
+          // Find which value this variant has for this option
+          const matchingValue = optionValues.find((value: string) => variantTitle.includes(value));
 
-        if (matchingValue) {
-          mappedOptions[option.title] = matchingValue;
+          if (matchingValue) {
+            mappedOptions[option.title] = matchingValue;
+          } else {
+            // If not found in title (e.g., single value options), use the first value
+            // This ensures all variants have a value for all options used for variants
+            if (optionValues.length > 0) {
+              mappedOptions[option.title] = optionValues[0];
+            }
+          }
+        } else {
+          // For options NOT used for variants, use the first value (or default)
+          // This ensures all variants have a value for all options
+          const optionValues = option.values || [];
+          if (optionValues.length > 0) {
+            mappedOptions[option.title] = optionValues[0];
+          }
         }
       });
 
@@ -526,7 +552,8 @@ export const ProductCreateForm = ({
       collection_id: (finalPayload as any).collection_id || undefined,
       shipping_profile_id: undefined,
       enable_variants: undefined,
-      // Combine user-created options and required attribute options
+      // Send all options (both useForVariants: true and false)
+      // Variants will have values for all options (first value for non-variant options)
       // If no options exist, use default from payload
       options: allOptions.length > 0 ? allOptions : (finalPayload as any).options,
       additional_data:
@@ -537,8 +564,6 @@ export const ProductCreateForm = ({
           : undefined
     };
 
-    // PAYLOAD INSPECTION MODE - Log payload to console instead of making request
-    // To restore normal API call: remove console.log lines and uncomment mutateAsync below
     const payloadToSend = {
       ...finalPayloadWithAdditionalData,
       categories: (finalPayload as any).categories.map((cat: any) => ({
@@ -566,39 +591,11 @@ export const ProductCreateForm = ({
       })
     };
 
-    console.log('=== PRODUCT CREATE PAYLOAD ===');
-    console.log(payloadToSend);
-    console.log('=== END PAYLOAD ===');
-    return; // Stop execution here when inspecting payload
+    console.log('Payload to send:', payloadToSend);
+    return;
 
-    // NORMAL MODE - Uncomment below and remove console.log + return above to restore API call
     // const productData = await mutateAsync(
-    //   {
-    //     ...finalPayloadWithAdditionalData,
-    //     categories: (finalPayload as any).categories.map((cat: any) => ({
-    //       id: cat
-    //     })),
-    //     variants: mappedVariants.map((variant: any) => {
-    //       // TODO: update when api is ready
-    //       // Exclude media and stock_locations fields from final API request
-    //       const { media, stock_locations, ...variantWithoutMedia } = variant;
-
-    //       return {
-    //         ...variantWithoutMedia,
-    //         sku: variant.sku === '' ? undefined : variant.sku,
-    //         manage_inventory: true,
-    //         allow_backorder: false,
-    //         should_create: undefined,
-    //         is_default: undefined,
-    //         inventory_kit: undefined,
-    //         inventory: undefined,
-    //         prices: Object.keys(variant.prices || {}).map(key => ({
-    //           currency_code: key,
-    //           amount: parseFloat(variant.prices?.[key] as string)
-    //         }))
-    //       };
-    //     })
-    //   },
+    //   payloadToSend,
     //   {
     //     onError: error => {
     //       toast.error(error.message);
@@ -606,9 +603,21 @@ export const ProductCreateForm = ({
     //   }
     // );
 
-    // NORMAL MODE - Code below runs after successful API call
-    // (Currently unreachable due to return above - will work when mutateAsync is uncommented)
-    // if (productData?.product?.variants && stock_locations.length > 0) {
+    // Assign stock locations to inventory items after product creation
+    // Get stock locations from form values (they were removed from finalPayload)
+    const stockLocationFieldNames = allFieldNames.filter(fieldName =>
+      fieldName.startsWith('stock_locations.')
+    );
+    const stockLocationsData: Record<string, any> = {};
+    stockLocationFieldNames.forEach(fieldName => {
+      const locationData = form.getValues(fieldName as any);
+      if (locationData) {
+        const locationId = fieldName.replace('stock_locations.', '');
+        stockLocationsData[locationId] = locationData;
+      }
+    });
+
+    // if (productData?.product?.variants && Object.keys(stockLocationsData).length > 0) {
     //   try {
     //     for (const variant of productData.product.variants) {
     //       if (variant.inventory_items && variant.inventory_items.length > 0) {

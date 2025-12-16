@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { HttpTypes } from '@medusajs/types';
+import { Checkbox } from '@medusajs/ui';
 import { UseFormReturn, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -65,7 +66,33 @@ export const ProductCreateVariantsForm = ({
       selectedValues: Array<{ id: string; value: string }>;
     }> = [];
 
-    // Add required multivalue attributes with "Use for Variants" enabled
+    // First, add required single-value attributes (default useForVariants: true)
+    allAttributes.forEach((attr: any) => {
+      if (attr.is_required && attr.ui_component !== 'multivalue') {
+        const value = (formValues as any)?.[attr.handle];
+
+        if (value !== undefined && value !== null && value !== '') {
+          let actualValue = value;
+
+          // If it's a select value, convert ID to actual value
+          if (attr.possible_values && typeof value === 'string') {
+            const possibleValue = attr.possible_values.find((pv: any) => pv.id === value);
+            if (possibleValue) {
+              actualValue = possibleValue.value;
+            }
+          }
+
+          // Single-value attributes default to useForVariants: true
+          result.push({
+            handle: attr.handle,
+            name: attr.name,
+            selectedValues: [{ id: String(value), value: String(actualValue) }]
+          });
+        }
+      }
+    });
+
+    // Then, add required multivalue attributes with "Use for Variants" enabled
     allAttributes.forEach((attr: any) => {
       if (attr.ui_component === 'multivalue') {
         const useForVariantsField = `${attr.handle}UseForVariants`;
@@ -96,19 +123,19 @@ export const ProductCreateVariantsForm = ({
       }
     });
 
-    // Add user-created options with "Use for Variants" enabled
+    // Finally, add user-created options with "Use for Variants" enabled
     const options = (formValues as any)?.options || [];
     options.forEach((option: any) => {
       if (
-        option?.metadata === 'user-created' &&
         option?.useForVariants === true &&
         option?.title &&
         option?.values &&
         Array.isArray(option.values) &&
         option.values.length > 0
       ) {
+        // Include both user-created and required-attribute options
         result.push({
-          handle: `option-${option.title}`, // Use title as handle for user-created options
+          handle: `option-${option.title}`, // Use title as handle for options
           name: option.title,
           selectedValues: option.values.map((value: string) => ({ id: value, value }))
         });
@@ -127,7 +154,8 @@ export const ProductCreateVariantsForm = ({
     regions,
     pricePreferences,
     stockLocations: stock_locations,
-    onOpenMediaModal
+    onOpenMediaModal,
+    form
   });
 
   const variantData = useMemo(() => {
@@ -140,48 +168,35 @@ export const ProductCreateVariantsForm = ({
       );
 
       for (let i = 0; i < totalCombinations; i++) {
-        // Generate automatic title based on variant attributes
-        const autoTitle = variantAttributes
-          .map(attr => {
-            let valueIndex = 0;
-            let divisor = 1;
+        // Build options object for this variant based on variantAttributes
+        const variantOptions: Record<string, string> = {};
+        variantAttributes.forEach(attr => {
+          let valueIndex = 0;
+          let divisor = 1;
 
-            for (let j = variantAttributes.length - 1; j >= 0; j--) {
-              if (variantAttributes[j].handle === attr.handle) {
-                valueIndex = Math.floor(i / divisor) % attr.selectedValues.length;
-                break;
-              }
-              divisor *= variantAttributes[j].selectedValues.length;
+          for (let j = variantAttributes.length - 1; j >= 0; j--) {
+            if (variantAttributes[j].handle === attr.handle) {
+              valueIndex = Math.floor(i / divisor) % attr.selectedValues.length;
+              break;
             }
+            divisor *= variantAttributes[j].selectedValues.length;
+          }
 
-            return attr.selectedValues[valueIndex]?.value || '';
-          })
+          variantOptions[attr.name] = attr.selectedValues[valueIndex]?.value || '';
+        });
+
+        // Generate automatic title based on variant attributes (after building options)
+        const autoTitle = variantAttributes
+          .map(attr => variantOptions[attr.name])
           .filter(Boolean)
           .join(' / ');
 
-        // Check if this variant already exists in the form
-        const existingVariant = variants.find((v, index) => {
-          if (v.should_create) {
-            const existingTitle = variantAttributes
-              .map(attr => {
-                let valueIndex = 0;
-                let divisor = 1;
-
-                for (let j = variantAttributes.length - 1; j >= 0; j--) {
-                  if (variantAttributes[j].handle === attr.handle) {
-                    valueIndex = Math.floor(index / divisor) % attr.selectedValues.length;
-                    break;
-                  }
-                  divisor *= variantAttributes[j].selectedValues.length;
-                }
-
-                return attr.selectedValues[valueIndex]?.value || '';
-              })
-              .filter(Boolean)
-              .join(' / ');
-            return existingTitle === autoTitle;
-          }
-          return false;
+        // Check if this variant already exists in the form - match by options, not title
+        const existingVariant = variants.find(v => {
+          if (!v.options) return false;
+          return variantAttributes.every(attr => {
+            return v.options[attr.name] === variantOptions[attr.name];
+          });
         });
 
         const stockLocationsData: Record<string, any> = {};
@@ -195,14 +210,14 @@ export const ProductCreateVariantsForm = ({
         });
 
         ret.push({
-          title: autoTitle,
-          should_create: true,
+          title: autoTitle, // Always use autoTitle to ensure it includes all current variantAttributes
+          should_create: existingVariant?.should_create ?? true,
           variant_rank: i,
-          options: {},
-          sku: '',
-          prices: {},
-          manage_inventory: true,
-          allow_backorder: false,
+          options: variantOptions, // Always use variantOptions to ensure it includes all current variantAttributes
+          sku: existingVariant?.sku || '',
+          prices: existingVariant?.prices || {},
+          manage_inventory: existingVariant?.manage_inventory ?? true,
+          allow_backorder: existingVariant?.allow_backorder ?? false,
           is_default: i === 0,
           originalIndex: existingVariant ? variants.indexOf(existingVariant) : i,
           autoGeneratedTitle: autoTitle,
@@ -262,26 +277,37 @@ export const ProductCreateVariantsForm = ({
       const newVariants = [];
 
       for (let i = 0; i < totalCombinations; i++) {
-        const autoTitle = variantAttributes
-          .map(attr => {
-            let valueIndex = 0;
-            let divisor = 1;
+        // Build options object for this variant based on variantAttributes
+        const variantOptions: Record<string, string> = {};
+        variantAttributes.forEach(attr => {
+          let valueIndex = 0;
+          let divisor = 1;
 
-            for (let j = variantAttributes.length - 1; j >= 0; j--) {
-              if (variantAttributes[j].handle === attr.handle) {
-                valueIndex = Math.floor(i / divisor) % attr.selectedValues.length;
-                break;
-              }
-              divisor *= variantAttributes[j].selectedValues.length;
+          for (let j = variantAttributes.length - 1; j >= 0; j--) {
+            if (variantAttributes[j].handle === attr.handle) {
+              valueIndex = Math.floor(i / divisor) % attr.selectedValues.length;
+              break;
             }
+            divisor *= variantAttributes[j].selectedValues.length;
+          }
 
-            return attr.selectedValues[valueIndex]?.value || '';
-          })
+          variantOptions[attr.name] = attr.selectedValues[valueIndex]?.value || '';
+        });
+
+        // Generate automatic title based on variant attributes (after building options)
+        const autoTitle = variantAttributes
+          .map(attr => variantOptions[attr.name])
           .filter(Boolean)
           .join(' / ');
 
         // Check if this variant already exists and preserve its state
-        const existingVariant = currentVariants.find(v => v.title === autoTitle);
+        // Match by comparing options instead of title
+        const existingVariant = currentVariants.find(v => {
+          if (!v.options) return false;
+          return variantAttributes.every(attr => {
+            return v.options[attr.name] === variantOptions[attr.name];
+          });
+        });
 
         const stockLocationsData: Record<string, any> = {};
         stock_locations.forEach((location: any) => {
@@ -294,10 +320,10 @@ export const ProductCreateVariantsForm = ({
         });
 
         newVariants.push({
-          title: autoTitle,
-          should_create: existingVariant ? existingVariant.should_create : true,
+          title: autoTitle, // Always use autoTitle to ensure it includes all current variantAttributes
+          should_create: existingVariant?.should_create ?? true,
           variant_rank: i,
-          options: existingVariant?.options || {},
+          options: variantOptions, // Always use variantOptions to ensure it includes all current variantAttributes
           sku: existingVariant?.sku || '',
           prices: existingVariant?.prices || {},
           manage_inventory: existingVariant?.manage_inventory ?? true,
@@ -346,7 +372,8 @@ const useColumns = ({
   regions = [],
   pricePreferences = [],
   stockLocations = [],
-  onOpenMediaModal
+  onOpenMediaModal,
+  form
 }: {
   variantAttributes?: Array<{
     handle: string;
@@ -358,15 +385,44 @@ const useColumns = ({
   pricePreferences?: HttpTypes.AdminPricePreference[];
   stockLocations?: HttpTypes.AdminStockLocation[];
   onOpenMediaModal?: () => void;
+  form: UseFormReturn<ProductCreateSchemaType>;
 }) => {
   const { t } = useTranslation();
+
+  const variants = useWatch({
+    control: form.control,
+    name: 'variants',
+    defaultValue: []
+  });
+
+  const allSelected = variants.length > 0 && variants.every((v: any) => v.should_create);
+  const someSelected = variants.some((v: any) => v.should_create) && !allSelected;
+
+  const handleSelectAll = useCallback(
+    (checked: boolean) => {
+      const currentVariants = form.getValues('variants') || [];
+      const updatedVariants = currentVariants.map((v: any) => ({
+        ...v,
+        should_create: checked
+      }));
+      form.setValue('variants', updatedVariants);
+    },
+    [form]
+  );
 
   return useMemo(
     () => [
       // Checkbox column
       columnHelper.column({
         id: 'checkbox',
-        header: () => null,
+        header: () => {
+          return (
+            <Checkbox
+              checked={allSelected ? true : someSelected ? 'indeterminate' : false}
+              onCheckedChange={handleSelectAll}
+            />
+          );
+        },
         field: context => {
           const rowData = context.row.original as any;
           return `variants.${rowData.originalIndex}.should_create`;
@@ -379,6 +435,31 @@ const useColumns = ({
         size: 52,
         pin: 'left'
       }),
+      // Single readonly column showing all option values combined (e.g., "Color / Material") - first
+      ...(variantAttributes.length > 0
+        ? [
+            columnHelper.column({
+              id: 'options_combined',
+              name: variantAttributes.map(attr => attr.name).join(' / '),
+              header: variantAttributes.map(attr => attr.name).join(' / '),
+              field: () => null, // Not a form field, just for display
+              type: 'text',
+              cell: context => {
+                const rowData = context.row.original as any;
+                const combinedValue = variantAttributes
+                  .map(attr => rowData.options?.[attr.name] || '')
+                  .filter(Boolean)
+                  .join(' / ');
+                return (
+                  <DataGrid.ReadonlyCell context={context}>{combinedValue}</DataGrid.ReadonlyCell>
+                );
+              },
+              disableHiding: true,
+              pin: 'left'
+            })
+          ]
+        : []),
+      // Title column (editable) - second
       columnHelper.column({
         id: 'title',
         name: t('fields.title'),
@@ -389,15 +470,30 @@ const useColumns = ({
         },
         type: 'text',
         cell: context => {
-          const rowData = context.row.original as any;
-          return (
-            <DataGrid.ReadonlyCell context={context}>
-              {rowData.autoGeneratedTitle}
-            </DataGrid.ReadonlyCell>
-          );
+          return <DataGrid.TextCell context={context} />;
         },
         disableHiding: true,
         pin: 'left'
+      }),
+      // Media column - third
+      columnHelper.column({
+        id: 'media',
+        name: t('products.create.variants.productVariants.media'),
+        header: t('products.create.variants.productVariants.media'),
+        field: context => {
+          const rowData = context.row.original as any;
+          return `variants.${rowData.originalIndex}.media`;
+        },
+        type: 'media',
+        cell: context => {
+          return (
+            <DataGridMediaCell
+              context={context}
+              onOpenMediaModal={onOpenMediaModal}
+              disabled
+            />
+          );
+        }
       }),
       columnHelper.column({
         id: 'sku',
@@ -422,25 +518,6 @@ const useColumns = ({
         },
         t
       }),
-      columnHelper.column({
-        id: 'media',
-        name: t('products.create.variants.productVariants.media'),
-        header: t('products.create.variants.productVariants.media'),
-        field: context => {
-          const rowData = context.row.original as any;
-          return `variants.${rowData.originalIndex}.media`;
-        },
-        type: 'media',
-        cell: context => {
-          return (
-            <DataGridMediaCell
-              context={context}
-              onOpenMediaModal={onOpenMediaModal}
-              disabled
-            />
-          );
-        }
-      }),
       ...stockLocations.map(location =>
         columnHelper.column({
           id: `stock_location_${location.id}`,
@@ -462,6 +539,17 @@ const useColumns = ({
         })
       )
     ],
-    [variantAttributes, t, store, regions, pricePreferences, stockLocations, onOpenMediaModal]
+    [
+      variantAttributes,
+      t,
+      store,
+      regions,
+      pricePreferences,
+      stockLocations,
+      onOpenMediaModal,
+      allSelected,
+      someSelected,
+      handleSelectAll
+    ]
   );
 };

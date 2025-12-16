@@ -122,16 +122,15 @@ const Inner = ({
         onChange(localValue, value)
     }
 
-    // TODO: Add uploaded media display
-
-    // Get the primary thumbnail for display
-    const thumbnailMedia = localValue.find(media => media.isThumbnail) || localValue[0]
+    // Display all media items as small thumbnails
+    const hasMedia = localValue && localValue.length > 0
+    const MAX_VISIBLE_THUMBNAILS = 4 // Show max 4 thumbnails, then show count
 
     return (
         <div className={`flex size-full items-center gap-x-2 ${disabled ? 'opacity-50' : ''}`} {...fieldProps}>
             <div
                 ref={combinedRefs}
-                className={`flex items-center gap-2 justify-between h-full py-2.5 flex-1 ${disabled ? 'cursor-not-allowed' : 'cursor-default'}`}
+                className={`flex items-center gap-1.5 h-full py-2.5 flex-1 overflow-hidden ${disabled ? 'cursor-not-allowed' : 'cursor-default'}`}
                 onFocus={disabled ? undefined : onFocus}
                 onBlur={disabled ? undefined : () => {
                     onBlur()
@@ -140,10 +139,26 @@ const Inner = ({
                 }}
                 tabIndex={disabled ? -1 : -1}
             >
-                <Thumbnail
-                    src={thumbnailMedia?.url}
-                    alt={thumbnailMedia?.url ? "Product image" : undefined}
-                />
+                {hasMedia ? (
+                    <>
+                        {localValue.slice(0, MAX_VISIBLE_THUMBNAILS).map((media, index) => (
+                            <div key={media.id || `media-${index}`} className="shrink-0">
+                                <Thumbnail
+                                    src={media.url}
+                                    alt={media.url ? `Product image ${index + 1}` : undefined}
+                                    size="small"
+                                />
+                            </div>
+                        ))}
+                        {localValue.length > MAX_VISIBLE_THUMBNAILS && (
+                            <div className="shrink-0 flex items-center justify-center h-5 w-4 bg-ui-bg-component border-ui-border-base rounded border text-ui-fg-subtle text-[10px] font-medium">
+                                +{localValue.length - MAX_VISIBLE_THUMBNAILS}
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <Thumbnail size="small" />
+                )}
             </div>
         </div>
     )

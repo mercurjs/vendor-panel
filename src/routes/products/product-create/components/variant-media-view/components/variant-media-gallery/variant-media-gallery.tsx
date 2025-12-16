@@ -14,14 +14,27 @@ type VariantMediaGalleryProps = {
     variantId: string
     variantTitle?: string
     goToEdit: () => void
+    variantMedia?: any[]
+    productMedia?: any[]
 }
 
-export const VariantMediaGallery = ({ variantId, variantTitle, goToEdit }: VariantMediaGalleryProps) => {
+export const VariantMediaGallery = ({ variantId, variantTitle, goToEdit, variantMedia = [], productMedia = [] }: VariantMediaGalleryProps) => {
     const [curr, setCurr] = useState<number>(0)
     const { t } = useTranslation()
 
-    // For new variants during product creation, there won't be any media yet
-    const media: any[] = []
+    // Combine product media and variant-specific media
+    // Product media comes first, then variant-specific media
+    // Ensure each media item has a unique id (use url as fallback)
+    const media: any[] = [
+        ...(productMedia || []).map((m: any, idx: number) => ({
+            ...m,
+            id: m.id || `product-${idx}-${m.url}`
+        })),
+        ...(variantMedia || []).map((m: any, idx: number) => ({
+            ...m,
+            id: m.id || `variant-${idx}-${m.url}`
+        }))
+    ]
 
     const next = useCallback(() => {
         setCurr((prev) => (prev + 1) % media.length)

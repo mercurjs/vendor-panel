@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { HttpTypes } from '@medusajs/types';
 import { Button, ProgressStatus, ProgressTabs, toast } from '@medusajs/ui';
@@ -53,13 +53,17 @@ type ProductCreateFormProps = {
   defaultChannel?: HttpTypes.AdminSalesChannel;
   store?: HttpTypes.AdminStore;
   pricePreferences?: HttpTypes.AdminPricePreference[];
-  onOpenMediaModal?: () => void;
+  onOpenMediaModal?: (variantIndex: number, variantTitle?: string, initialMedia?: any[]) => void;
+  onSaveVariantMediaRef?: React.MutableRefObject<((variantIndex: number, media: any[]) => void) | null>;
+  onGetProductMediaRef?: React.MutableRefObject<(() => any[]) | null>;
 };
 
 export const ProductCreateForm = ({
   defaultChannel,
   store,
-  onOpenMediaModal
+  onOpenMediaModal,
+  onSaveVariantMediaRef,
+  onGetProductMediaRef
 }: ProductCreateFormProps) => {
   const [tab, setTab] = useState<Tab>(Tab.DETAILS);
   const [maxReachedTab, setMaxReachedTab] = useState<Tab>(Tab.DETAILS);
@@ -241,6 +245,37 @@ export const ProductCreateForm = ({
     () => watchedVariants.some((v: any) => v.manage_inventory && v.inventory_kit),
     [watchedVariants]
   );
+
+  // Handler to update variant media in the form
+  const handleSaveVariantMedia = useCallback((variantIndex: number, media: any[]) => {
+    const currentVariants = form.getValues('variants') || [];
+    if (currentVariants[variantIndex]) {
+      const updatedVariants = [...currentVariants];
+      updatedVariants[variantIndex] = {
+        ...updatedVariants[variantIndex],
+        media
+      };
+      form.setValue('variants', updatedVariants, { shouldDirty: true });
+    }
+  }, [form]);
+
+  // Expose handler via ref if provided
+  useEffect(() => {
+    if (onSaveVariantMediaRef) {
+      onSaveVariantMediaRef.current = handleSaveVariantMedia;
+    }
+  }, [handleSaveVariantMedia, onSaveVariantMediaRef]);
+
+  // Expose function to get product media
+  const getProductMedia = useCallback(() => {
+    return form.getValues('media') || [];
+  }, [form]);
+
+  useEffect(() => {
+    if (onGetProductMediaRef) {
+      onGetProductMediaRef.current = getProductMedia;
+    }
+  }, [getProductMedia, onGetProductMediaRef]);
 
   const handleSubmit = form.handleSubmit(async (values, e) => {
     let isDraftSubmission = false;

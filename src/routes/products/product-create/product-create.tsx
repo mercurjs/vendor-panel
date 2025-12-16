@@ -1,3 +1,4 @@
+import React from "react"
 import { useTranslation } from "react-i18next"
 import { RouteFocusModal, StackedFocusModal, useStackedModal } from "../../../components/modals"
 import { useSalesChannels } from "../../../hooks/api"
@@ -43,13 +44,48 @@ const ProductCreateFormWithModal = ({
   store: any
 }) => {
   const { setIsOpen } = useStackedModal()
+  const [selectedVariantIndex, setSelectedVariantIndex] = React.useState<number | null>(null)
+  const [selectedVariantTitle, setSelectedVariantTitle] = React.useState<string | undefined>(undefined)
+  const [selectedVariantMedia, setSelectedVariantMedia] = React.useState<any[] | undefined>(undefined)
+  const saveVariantMediaRef = React.useRef<((variantIndex: number, media: any[]) => void) | null>(null)
+
+  const [productMedia, setProductMedia] = React.useState<any[]>([])
+  const getProductMediaRef = React.useRef<(() => any[]) | null>(null)
+
+  const handleOpenMediaModal = React.useCallback((variantIndex: number, variantTitle?: string, initialMedia?: any[]) => {
+    setSelectedVariantIndex(variantIndex)
+    setSelectedVariantTitle(variantTitle)
+    setSelectedVariantMedia(initialMedia)
+    // Get current product media - always get fresh data
+    if (getProductMediaRef.current) {
+      const currentProductMedia = getProductMediaRef.current()
+      setProductMedia(currentProductMedia)
+    }
+    setIsOpen("variant-media-modal", true)
+  }, [])
+
+  const handleCloseModal = () => {
+    setIsOpen("variant-media-modal", false)
+    setSelectedVariantIndex(null)
+    setSelectedVariantTitle(undefined)
+    setSelectedVariantMedia(undefined)
+  }
+
+  const handleSaveMedia = React.useCallback((variantIndex: number, media: any[]) => {
+    if (saveVariantMediaRef.current) {
+      saveVariantMediaRef.current(variantIndex, media)
+    }
+    handleCloseModal()
+  }, [])
 
   return (
     <>
       <ProductCreateForm
         defaultChannel={defaultChannel}
         store={store}
-        onOpenMediaModal={() => setIsOpen("variant-media-modal", true)}
+        onOpenMediaModal={handleOpenMediaModal}
+        onSaveVariantMediaRef={saveVariantMediaRef}
+        onGetProductMediaRef={getProductMediaRef}
       />
 
       {/* Always render modal, but control visibility */}
@@ -57,16 +93,21 @@ const ProductCreateFormWithModal = ({
         id="variant-media-modal"
         onOpenChangeCallback={(open) => {
           if (!open) {
-            setIsOpen("variant-media-modal", false)
+            handleCloseModal()
           }
         }}
       >
-        <VariantMediaView
-          variantId="new-variant"
-          variantTitle="Sample Variant"
-          onClose={() => setIsOpen("variant-media-modal", false)}
-          onSubmit={() => setIsOpen("variant-media-modal", false)}
-        />
+        {selectedVariantIndex !== null && (
+          <VariantMediaView
+            variantIndex={selectedVariantIndex}
+            variantTitle={selectedVariantTitle}
+            onClose={handleCloseModal}
+            onSubmit={handleCloseModal}
+            onSaveMedia={handleSaveMedia}
+            initialMedia={selectedVariantMedia}
+            productMedia={productMedia}
+          />
+        )}
       </StackedFocusModal>
     </>
   )

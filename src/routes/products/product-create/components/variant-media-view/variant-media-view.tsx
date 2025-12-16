@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { Button } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import { StackedFocusModal } from "../../../../../components/modals"
@@ -7,10 +7,13 @@ import { VariantMediaGallery } from "./components/variant-media-gallery/variant-
 import { VariantMediaViewContext } from "./variant-media-view-context"
 
 type VariantMediaViewProps = {
-    variantId: string
+    variantIndex: number
     variantTitle?: string
     onSubmit?: () => void
     onClose?: () => void
+    onSaveMedia?: (variantIndex: number, media: any[]) => void
+    initialMedia?: any[]
+    productMedia?: any[]
 }
 
 enum View {
@@ -25,7 +28,7 @@ const getView = (currentView: string | undefined) => {
     return View.GALLERY
 }
 
-export const VariantMediaView = ({ variantId, variantTitle, onSubmit, onClose }: VariantMediaViewProps) => {
+export const VariantMediaView = ({ variantIndex, variantTitle, onSubmit, onClose, onSaveMedia, initialMedia, productMedia = [] }: VariantMediaViewProps) => {
     const [currentView, setCurrentView] = useState<string | undefined>(View.EDIT)
     const view = getView(currentView)
     const { t } = useTranslation()
@@ -59,30 +62,41 @@ export const VariantMediaView = ({ variantId, variantTitle, onSubmit, onClose }:
                     )}
                 </StackedFocusModal.Header>
                 <StackedFocusModal.Body className="flex flex-col overflow-hidden">
-                    {renderView(view, variantId, variantTitle, contextValue)}
+                    {renderView(view, variantIndex, variantTitle, contextValue, onSaveMedia, initialMedia, productMedia)}
                 </StackedFocusModal.Body>
                 {view === View.EDIT && (
-                    <StackedFocusModal.Footer>
-                        <div className="flex justify-end gap-x-2">
-                            <Button variant="secondary" size="small" onClick={contextValue.onCancel}>
-                                {t("actions.cancel")}
-                            </Button>
-                            <Button size="small" onClick={contextValue.onSubmit}>
-                                {t("actions.save")}
-                            </Button>
-                        </div>
-                    </StackedFocusModal.Footer>
+                    <FooterButtons />
                 )}
             </StackedFocusModal.Content>
         </VariantMediaViewContext.Provider>
     )
 }
 
-const renderView = (view: View, variantId: string, variantTitle?: string, contextValue?: any) => {
+const FooterButtons = () => {
+    const { t } = useTranslation()
+    const context = useContext(VariantMediaViewContext)
+    
+    if (!context) return null
+    
+    return (
+        <StackedFocusModal.Footer>
+            <div className="flex justify-end gap-x-2">
+                <Button variant="secondary" size="small" onClick={context.onCancel}>
+                    {t("actions.cancel")}
+                </Button>
+                <Button size="small" onClick={context.onSubmit}>
+                    {t("actions.save")}
+                </Button>
+            </div>
+        </StackedFocusModal.Footer>
+    )
+}
+
+const renderView = (view: View, variantIndex: number, variantTitle?: string, contextValue?: any, onSaveMedia?: (variantIndex: number, media: any[]) => void, initialMedia?: any[], productMedia?: any[]) => {
     switch (view) {
         case View.GALLERY:
-            return <VariantMediaGallery variantId={variantId} variantTitle={variantTitle} goToEdit={contextValue?.goToEdit} />
+            return <VariantMediaGallery variantId={`variant-${variantIndex}`} variantTitle={variantTitle} goToEdit={contextValue?.goToEdit} variantMedia={initialMedia} productMedia={productMedia} />
         case View.EDIT:
-            return <EditVariantMediaForm variantId={variantId} variantTitle={variantTitle} onSubmit={contextValue?.onSubmit} onCancel={contextValue?.onCancel} />
+            return <EditVariantMediaForm variantIndex={variantIndex} variantTitle={variantTitle} onSubmit={contextValue?.onSubmit} onCancel={contextValue?.onCancel} onSaveMedia={onSaveMedia} initialMedia={initialMedia} productMedia={productMedia} />
     }
 }

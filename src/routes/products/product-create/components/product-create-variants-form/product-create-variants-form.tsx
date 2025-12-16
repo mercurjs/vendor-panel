@@ -17,6 +17,7 @@ import { useAttributes } from '../../../../../hooks/api/attributes';
 import { useStockLocations } from '../../../../../hooks/api/stock-locations';
 import { ProductCreateVariantSchema } from '../../constants';
 import { ProductCreateSchemaType } from '../../types';
+import { decorateVariantsWithDefaultValues } from '../../utils';
 
 type ProductCreateVariantsFormProps = {
   form: UseFormReturn<ProductCreateSchemaType>;
@@ -336,6 +337,39 @@ export const ProductCreateVariantsForm = ({
       }
 
       form.setValue('variants', newVariants);
+    } else {
+      // Create default variant when no variant attributes are selected
+      const currentVariants = form.getValues('variants') || [];
+      // Try to preserve existing variant data if there's a single variant
+      const existingVariant = currentVariants.length === 1 ? currentVariants[0] : null;
+
+      const stockLocationsData: Record<string, any> = {};
+      stock_locations.forEach((location: any) => {
+        stockLocationsData[location.id] = {
+          id: undefined,
+          quantity: '',
+          checked: false,
+          disabledToggle: false
+        };
+      });
+
+      const defaultVariant = decorateVariantsWithDefaultValues([
+        {
+          title: existingVariant?.title || 'Default variant',
+          should_create: existingVariant?.should_create ?? true,
+          variant_rank: 0,
+          options: existingVariant?.options || {},
+          sku: existingVariant?.sku || '',
+          prices: existingVariant?.prices || {},
+          manage_inventory: existingVariant?.manage_inventory ?? true,
+          allow_backorder: existingVariant?.allow_backorder ?? false,
+          is_default: true,
+          media: existingVariant?.media || [],
+          stock_locations: stockLocationsData
+        }
+      ]);
+
+      form.setValue('variants', defaultVariant);
     }
   }, [variantStructureKey, form, stock_locations]);
 

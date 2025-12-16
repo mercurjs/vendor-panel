@@ -244,6 +244,11 @@ export const ProductCreateForm = ({
     [watchedVariants]
   );
 
+  // Watch form values to detect changes
+  const formValues = useWatch({
+    control: form.control
+  });
+
   // Ensure all "Use for Variants" fields are always set to true (locked)
   useEffect(() => {
     allAttributes?.forEach((attr: any) => {
@@ -251,7 +256,7 @@ export const ProductCreateForm = ({
         const useForVariantsField = `${attr.handle}UseForVariants` as any;
         const currentValue = form.getValues(useForVariantsField);
         if (currentValue !== true) {
-          form.setValue(useForVariantsField, true);
+          form.setValue(useForVariantsField, true, { shouldDirty: false });
         }
       }
     });
@@ -260,10 +265,10 @@ export const ProductCreateForm = ({
     const options = form.getValues('options') || [];
     options.forEach((option: any, index: number) => {
       if (option?.useForVariants !== true) {
-        form.setValue(`options.${index}.useForVariants` as any, true);
+        form.setValue(`options.${index}.useForVariants` as any, true, { shouldDirty: false });
       }
     });
-  }, [allAttributes, form]);
+  }, [allAttributes, form, formValues]);
 
   // Handler to update variant media in the form
   const handleSaveVariantMedia = useCallback((variantIndex: number, media: any[]) => {

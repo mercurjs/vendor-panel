@@ -11,14 +11,10 @@ import {
 import { fetchQuery } from '../../lib/client';
 import { queryClient } from '../../lib/query-client';
 import { queryKeysFactory } from '../../lib/query-key-factory';
+import { VendorPromotionRuleValueParams } from '../../types/promotion';
 import { campaignsQueryKeys } from './campaigns';
 
 const PROMOTIONS_QUERY_KEY = 'promotions' as const;
-
-export type VendorPromotionRuleValueParams = HttpTypes.AdminGetPromotionsRuleValueParams & {
-  promotion_type?: string;
-  application_method_type?: string;
-};
 
 export const promotionsQueryKeys = {
   ...queryKeysFactory(PROMOTIONS_QUERY_KEY),

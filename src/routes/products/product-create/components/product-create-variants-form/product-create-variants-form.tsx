@@ -93,15 +93,12 @@ export const ProductCreateVariantsForm = ({
       }
     });
 
-    // Then, add required multivalue attributes with "Use for Variants" enabled
+    // Then, add required multivalue attributes (always use for variants - locked to true)
     allAttributes.forEach((attr: any) => {
       if (attr.ui_component === 'multivalue') {
-        const useForVariantsField = `${attr.handle}UseForVariants`;
-        const isUsedForVariants = (formValues as any)?.[useForVariantsField];
         const selectedValueIds = (formValues as any)?.[attr.handle];
 
         if (
-          isUsedForVariants &&
           selectedValueIds &&
           Array.isArray(selectedValueIds) &&
           selectedValueIds.length > 0
@@ -124,17 +121,18 @@ export const ProductCreateVariantsForm = ({
       }
     });
 
-    // Finally, add user-created options with "Use for Variants" enabled
+    // Finally, add user-created options (always use for variants - locked to true)
+    // Only include options with metadata === 'user-created' to exclude default options
     const options = (formValues as any)?.options || [];
     options.forEach((option: any) => {
       if (
-        option?.useForVariants === true &&
+        option?.metadata === 'user-created' &&
         option?.title &&
         option?.values &&
         Array.isArray(option.values) &&
         option.values.length > 0
       ) {
-        // Include both user-created and required-attribute options
+        // Only include user-created options (exclude default options)
         result.push({
           handle: `option-${option.title}`, // Use title as handle for options
           name: option.title,
@@ -338,38 +336,43 @@ export const ProductCreateVariantsForm = ({
 
       form.setValue('variants', newVariants);
     } else {
-      // Create default variant when no variant attributes are selected
+      // When no variant attributes are selected, only create default variant if variants are empty
+      // This prevents overwriting existing variants unnecessarily
       const currentVariants = form.getValues('variants') || [];
-      // Try to preserve existing variant data if there's a single variant
-      const existingVariant = currentVariants.length === 1 ? currentVariants[0] : null;
+      
+      // Only create default variant if there are no variants at all
+      if (currentVariants.length === 0) {
+        const stockLocationsData: Record<string, any> = {};
+        stock_locations.forEach((location: any) => {
+          stockLocationsData[location.id] = {
+            id: undefined,
+            quantity: '',
+            checked: false,
+            disabledToggle: false
+          };
+        });
 
-      const stockLocationsData: Record<string, any> = {};
-      stock_locations.forEach((location: any) => {
-        stockLocationsData[location.id] = {
-          id: undefined,
-          quantity: '',
-          checked: false,
-          disabledToggle: false
-        };
-      });
+        const defaultVariant = decorateVariantsWithDefaultValues([
+          {
+            title: 'Default variant',
+            should_create: true,
+            variant_rank: 0,
+            options: {},
+            sku: '',
+            prices: {},
+            manage_inventory: true,
+            allow_backorder: false,
+            is_default: true,
+            media: [],
+            stock_locations: stockLocationsData
+          }
+        ]);
 
-      const defaultVariant = decorateVariantsWithDefaultValues([
-        {
-          title: existingVariant?.title || 'Default variant',
-          should_create: existingVariant?.should_create ?? true,
-          variant_rank: 0,
-          options: existingVariant?.options || {},
-          sku: existingVariant?.sku || '',
-          prices: existingVariant?.prices || {},
-          manage_inventory: existingVariant?.manage_inventory ?? true,
-          allow_backorder: existingVariant?.allow_backorder ?? false,
-          is_default: true,
-          media: existingVariant?.media || [],
-          stock_locations: stockLocationsData
-        }
-      ]);
-
-      form.setValue('variants', defaultVariant);
+        form.setValue('variants', defaultVariant);
+      } else {
+        // If variants exist but no variant attributes, clear them (user unselected all variant attributes)
+        form.setValue('variants', []);
+      }
     }
   }, [variantStructureKey, form, stock_locations]);
 

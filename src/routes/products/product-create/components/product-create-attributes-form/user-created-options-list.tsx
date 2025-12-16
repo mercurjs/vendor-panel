@@ -100,6 +100,7 @@ export const UserCreatedOptionsList = ({ form, options }: UserCreatedOptionsList
               name={`options.${index}.useForVariants` as any}
               label={t('products.fields.attributes.useForVariants.label')}
               description={t('products.fields.attributes.useForVariants.description')}
+              disabled={true}
             />
           </li>
         );

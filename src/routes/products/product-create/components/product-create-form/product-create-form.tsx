@@ -176,7 +176,7 @@ export const ProductCreateForm = ({
       switch (attr.ui_component) {
         case 'multivalue':
           defaults[attr.handle] = [];
-          defaults[`${attr.handle}UseForVariants`] = false;
+          defaults[`${attr.handle}UseForVariants`] = true; // Locked to true
           break;
         case 'select':
         case 'text':
@@ -243,6 +243,27 @@ export const ProductCreateForm = ({
     () => watchedVariants.some((v: any) => v.manage_inventory && v.inventory_kit),
     [watchedVariants]
   );
+
+  // Ensure all "Use for Variants" fields are always set to true (locked)
+  useEffect(() => {
+    allAttributes?.forEach((attr: any) => {
+      if (attr.ui_component === 'multivalue') {
+        const useForVariantsField = `${attr.handle}UseForVariants` as any;
+        const currentValue = form.getValues(useForVariantsField);
+        if (currentValue !== true) {
+          form.setValue(useForVariantsField, true);
+        }
+      }
+    });
+
+    // Also ensure all user-created options have useForVariants set to true
+    const options = form.getValues('options') || [];
+    options.forEach((option: any, index: number) => {
+      if (option?.useForVariants !== true) {
+        form.setValue(`options.${index}.useForVariants` as any, true);
+      }
+    });
+  }, [allAttributes, form]);
 
   // Handler to update variant media in the form
   const handleSaveVariantMedia = useCallback((variantIndex: number, media: any[]) => {
@@ -362,15 +383,12 @@ export const ProductCreateForm = ({
           .filter((item): item is string => item !== null);
 
         if (selectedValues.length > 0) {
-          // Check if "Use for Variants" is enabled for this multivalue attribute
-          const useForVariantsField = `${attr.handle}UseForVariants`;
-          const useForVariants = form.getValues(useForVariantsField as any) || false;
-
+          // Always use for variants (locked to true)
           requiredAttributeOptions.push({
             title: attr.name,
             values: selectedValues,
             metadata: 'required-attribute',
-            useForVariants
+            useForVariants: true // Locked to true
           });
         }
       }

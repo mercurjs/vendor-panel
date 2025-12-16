@@ -39,11 +39,13 @@ export const SwitchBox = forwardRef(<
   optional = false,
   tooltip,
   onCheckedChange,
+  disabled,
   ...props
 }: SwitchBoxProps<TFieldValues, TName>, _ref: any) => {
   return (
     <Form.Field
       {...props}
+      disabled={disabled}
       render={({ field: { value, onChange, ...field } }) => {
         return (
           <Form.Item>
@@ -52,9 +54,12 @@ export const SwitchBox = forwardRef(<
                 <Switch
                   {...field}
                   checked={value}
+                  disabled={disabled}
                   onCheckedChange={(e) => {
-                    onCheckedChange?.(e)
-                    onChange(e)
+                    if (!disabled) {
+                      onCheckedChange?.(e)
+                      onChange(e)
+                    }
                   }}
                 />
               </Form.Control>

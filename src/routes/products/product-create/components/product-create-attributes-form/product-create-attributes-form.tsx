@@ -241,7 +241,7 @@ const Header = ({ options }: HeaderProps) => {
               title: '',
               values: [],
               metadata: 'user-created',
-              useForVariants: false
+              useForVariants: true // Locked to true
             });
           }}
         >

@@ -13,7 +13,6 @@ type VariantMediaViewProps = {
     onClose?: () => void
     onSaveMedia?: (variantIndex: number, media: any[]) => void
     initialMedia?: any[]
-    productMedia?: any[]
 }
 
 enum View {
@@ -28,7 +27,7 @@ const getView = (currentView: string | undefined) => {
     return View.GALLERY
 }
 
-export const VariantMediaView = ({ variantIndex, variantTitle, onSubmit, onClose, onSaveMedia, initialMedia, productMedia = [] }: VariantMediaViewProps) => {
+export const VariantMediaView = ({ variantIndex, variantTitle, onSubmit, onClose, onSaveMedia, initialMedia }: VariantMediaViewProps) => {
     const [currentView, setCurrentView] = useState<string | undefined>(View.EDIT)
     const view = getView(currentView)
     const { t } = useTranslation()
@@ -62,7 +61,7 @@ export const VariantMediaView = ({ variantIndex, variantTitle, onSubmit, onClose
                     )}
                 </StackedFocusModal.Header>
                 <StackedFocusModal.Body className="flex flex-col overflow-hidden">
-                    {renderView(view, variantIndex, variantTitle, contextValue, onSaveMedia, initialMedia, productMedia)}
+                    {renderView(view, variantIndex, variantTitle, contextValue, onSaveMedia, initialMedia)}
                 </StackedFocusModal.Body>
                 {view === View.EDIT && (
                     <FooterButtons />
@@ -92,11 +91,11 @@ const FooterButtons = () => {
     )
 }
 
-const renderView = (view: View, variantIndex: number, variantTitle?: string, contextValue?: any, onSaveMedia?: (variantIndex: number, media: any[]) => void, initialMedia?: any[], productMedia?: any[]) => {
+const renderView = (view: View, variantIndex: number, variantTitle?: string, contextValue?: any, onSaveMedia?: (variantIndex: number, media: any[]) => void, initialMedia?: any[]) => {
     switch (view) {
         case View.GALLERY:
-            return <VariantMediaGallery variantId={`variant-${variantIndex}`} variantTitle={variantTitle} goToEdit={contextValue?.goToEdit} variantMedia={initialMedia} productMedia={productMedia} />
+            return <VariantMediaGallery variantId={`variant-${variantIndex}`} variantTitle={variantTitle} goToEdit={contextValue?.goToEdit} variantMedia={initialMedia} />
         case View.EDIT:
-            return <EditVariantMediaForm variantIndex={variantIndex} variantTitle={variantTitle} onSubmit={contextValue?.onSubmit} onCancel={contextValue?.onCancel} onSaveMedia={onSaveMedia} initialMedia={initialMedia} productMedia={productMedia} />
+            return <EditVariantMediaForm variantIndex={variantIndex} variantTitle={variantTitle} onSubmit={contextValue?.onSubmit} onCancel={contextValue?.onCancel} onSaveMedia={onSaveMedia} initialMedia={initialMedia} />
     }
 }

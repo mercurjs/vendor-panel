@@ -55,15 +55,13 @@ type ProductCreateFormProps = {
   pricePreferences?: HttpTypes.AdminPricePreference[];
   onOpenMediaModal?: (variantIndex: number, variantTitle?: string, initialMedia?: any[]) => void;
   onSaveVariantMediaRef?: React.MutableRefObject<((variantIndex: number, media: any[]) => void) | null>;
-  onGetProductMediaRef?: React.MutableRefObject<(() => any[]) | null>;
 };
 
 export const ProductCreateForm = ({
   defaultChannel,
   store,
   onOpenMediaModal,
-  onSaveVariantMediaRef,
-  onGetProductMediaRef
+  onSaveVariantMediaRef
 }: ProductCreateFormProps) => {
   const [tab, setTab] = useState<Tab>(Tab.DETAILS);
   const [maxReachedTab, setMaxReachedTab] = useState<Tab>(Tab.DETAILS);
@@ -265,17 +263,6 @@ export const ProductCreateForm = ({
       onSaveVariantMediaRef.current = handleSaveVariantMedia;
     }
   }, [handleSaveVariantMedia, onSaveVariantMediaRef]);
-
-  // Expose function to get product media
-  const getProductMedia = useCallback(() => {
-    return form.getValues('media') || [];
-  }, [form]);
-
-  useEffect(() => {
-    if (onGetProductMediaRef) {
-      onGetProductMediaRef.current = getProductMedia;
-    }
-  }, [getProductMedia, onGetProductMediaRef]);
 
   const handleSubmit = form.handleSubmit(async (values, e) => {
     let isDraftSubmission = false;

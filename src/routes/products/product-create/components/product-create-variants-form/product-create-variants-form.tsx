@@ -523,26 +523,27 @@ const useColumns = ({
         },
         t
       }),
-      ...stockLocations.map(location =>
-        columnHelper.column({
-          id: `stock_location_${location.id}`,
-          name: location.name,
-          header: location.name,
-          field: context => {
-            const rowData = context.row.original as any;
-            return `variants.${rowData.originalIndex}.stock_locations.${location.id}` as any;
-          },
-          type: 'togglable-number',
-          cell: context => {
-            return (
-              <DataGridTogglableNumberCell
-                context={context}
-                disabledToggleTooltip={t('inventory.stock.disabledToggleTooltip')}
-              />
-            );
-          }
-        })
-      )
+      // Stock location columns - commented out for now
+      // ...stockLocations.map(location =>
+      //   columnHelper.column({
+      //     id: `stock_location_${location.id}`,
+      //     name: location.name,
+      //     header: location.name,
+      //     field: context => {
+      //       const rowData = context.row.original as any;
+      //       return `variants.${rowData.originalIndex}.stock_locations.${location.id}` as any;
+      //     },
+      //     type: 'togglable-number',
+      //     cell: context => {
+      //       return (
+      //         <DataGridTogglableNumberCell
+      //           context={context}
+      //           disabledToggleTooltip={t('inventory.stock.disabledToggleTooltip')}
+      //         />
+      //       );
+      //     }
+      //   })
+      // )
     ],
     [
       variantAttributes,

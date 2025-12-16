@@ -530,6 +530,7 @@
       "uploadImagesLabel": "تحميل الصور",
       "uploadImagesHint": "اسحب وأفلت الصور هنا أو انقر للتحميل.",
       "invalidFileType": "'{{name}}' ليس نوع ملف مدعوم. الأنواع المدعومة هي: {{types}}.",
+      "fileTooLarge": "'{{name}}' يتجاوز الحد الأقصى لحجم الملف {{maxSize}}.",
       "failedToUpload": "فشل في تحميل الوسائط المضافة. يرجى المحاولة مرة أخرى.",
       "deleteWarning_one": "أنت على وشك حذف {{count}} صورة. لا يمكن التراجع عن هذا الإجراء.",
       "deleteWarning_other": "أنت على وشك حذف {{count}} صور. لا يمكن التراجع عن هذا الإجراء.",
@@ -2180,6 +2181,9 @@
       },
       "successToast": "تم إنشاء قائمة الأسعار {{title}} بنجاح.",
       "products": {
+        "errors": {
+          "noProducts": "الرجاء تحديد منتج واحد على الأقل."
+        },
         "list": {
           "noRecordsMessage": "أنشئ منتجًا أولاً."
         }

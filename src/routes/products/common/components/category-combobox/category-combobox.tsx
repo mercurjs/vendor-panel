@@ -3,6 +3,7 @@ import {
   EllipseMiniSolid,
   TriangleRightMini,
   TrianglesMini,
+  XMarkMini,
 } from "@medusajs/icons"
 import { AdminProductCategoryResponse } from "@medusajs/types"
 import { Divider, Text, clx } from "@medusajs/ui"
@@ -61,17 +62,16 @@ export const CategoryCombobox = forwardRef<
   const [level, setLevel] = useState<Level[]>([])
   const { searchValue, onSearchValueChange, query } = useDebouncedSearch()
 
+  const queryParams = {
+    q: query,
+    parent_category_id: !searchValue ? getParentId(level) : undefined,
+    include_descendants_tree: !searchValue ? true : false,
+  }
+
   const { product_categories, isPending, isError, error } =
-    useProductCategories(
-      {
-        q: query,
-        parent_category_id: !searchValue ? getParentId(level) : undefined,
-        include_descendants_tree: !searchValue ? true : false,
-      },
-      {
-        enabled: open,
-      }
-    )
+    useProductCategories(queryParams, {
+      enabled: open,
+    })
 
   const [showLoading, setShowLoading] = useState(false)
 
@@ -122,14 +122,23 @@ export const CategoryCombobox = forwardRef<
     }
   }
 
-  const handleSelect = (option: ProductCategoryOption) => {
-    handleOpenChange(false)
-    if (value.includes(option.value)) {
-      onChange([])
-    } else {
-      onChange([option.value])
-    }
-  }
+  const handleSelect = useCallback(
+    (option: ProductCategoryOption) => {
+      return (e: MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault()
+        e.stopPropagation()
+
+        if (isSelected(value, option.value)) {
+          onChange(value.filter((v) => v !== option.value))
+        } else {
+          onChange([...value, option.value])
+        }
+
+        innerRef.current?.focus()
+      }
+    },
+    [value, onChange]
+  )
 
   function handleOpenChange(open: boolean) {
     if (!open) {
@@ -209,7 +218,7 @@ export const CategoryCombobox = forwardRef<
 
         const index = showLevelUp ? focusedIndex - 1 : focusedIndex
 
-        handleSelect(options[index])
+        handleSelect(options[index])(e as unknown as MouseEvent<HTMLButtonElement>)
       }
     },
     [open, focusedIndex, options, level, handleSelect, searchValue, showLevelUp]
@@ -226,8 +235,6 @@ export const CategoryCombobox = forwardRef<
   if (isError) {
     throw error
   }
-
-  const selectedLabel = findCategory(product_categories, value[0])
 
   return (
     <RadixPopover.Root open={open} onOpenChange={handleOpenChange}>
@@ -258,18 +265,31 @@ export const CategoryCombobox = forwardRef<
           )}
           style={
             {
-              "--tag-width": `${tagWidth}px`,
-            } as CSSProperties
-          }
+          "--tag-width": `${tagWidth}px`,
+        } as CSSProperties
+      }
+    >
+      {showTag && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault()
+            onChange([])
+          }}
+          className="bg-ui-bg-base hover:bg-ui-bg-base-hover txt-compact-small-plus text-ui-fg-subtle focus-within:border-ui-fg-interactive transition-fg absolute left-0.5 top-0.5 flex h-[28px] items-center rounded-[4px] border py-[3px] pl-1.5 pr-1 outline-none"
         >
-          {showSelected && (
-            <div className="pointer-events-none absolute inset-y-0 left-2 flex size-full items-center">
-              <Text size="small" leading="compact">
-                {selectedLabel}
-              </Text>
-            </div>
-          )}
-          <input
+          <span className="tabular-nums">{value.length}</span>
+          <XMarkMini className="text-ui-fg-muted" />
+        </button>
+      )}
+      {showSelected && (
+        <div className="pointer-events-none absolute inset-y-0 left-[calc(var(--tag-width)+8px)] flex size-full items-center">
+          <Text size="small" leading="compact">
+            {t("general.selected")}
+          </Text>
+        </div>
+      )}
+      <input
             ref={innerRef}
             value={searchValue}
             onChange={(e) => {
@@ -368,7 +388,7 @@ export const CategoryCombobox = forwardRef<
                     "grid h-full w-full appearance-none grid-cols-[20px_1fr] items-center gap-2 overflow-hidden rounded-md px-2 py-1.5 text-left outline-none",
                     "data-[active=true]:bg-ui-bg-field-hover"
                   )}
-                  onClick={() => handleSelect(option)}
+                  onClick={handleSelect(option)}
                   onMouseEnter={() =>
                     setFocusedIndex(showLevelUp ? index + 1 : index)
                   }
@@ -475,23 +495,4 @@ function getOptions(
 
 function isSelected(values: string[], value: string): boolean {
   return values.includes(value)
-}
-
-function findCategory(
-  categories: AdminProductCategoryResponse["product_category"][] | undefined,
-  search: string
-): string | null {
-  if (categories?.length) {
-    for (const category of categories) {
-      if (category.id === search) {
-        return category.name
-      }
-      if (category.category_children && category.category_children.length > 0) {
-        const found = findCategory(category.category_children, search)
-        if (found) return found
-      }
-    }
-  }
-
-  return null
 }

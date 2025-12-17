@@ -218,8 +218,7 @@ export const ProductCreateForm = ({
     mode: 'onBlur'
   });
 
-  // const { mutateAsync, isPending } = useCreateProduct();
-  const { isPending } = useCreateProduct();
+  const { mutateAsync, isPending } = useCreateProduct();
 
   // Create a function to get the batch mutation for a specific inventory item
   const getBatchMutation = (inventoryItemId: string) => {
@@ -652,17 +651,14 @@ export const ProductCreateForm = ({
       })
     };
 
-    console.log('Payload to send:', payloadToSend);
-    return;
-
-    // const productData = await mutateAsync(
-    //   payloadToSend,
-    //   {
-    //     onError: error => {
-    //       toast.error(error.message);
-    //     }
-    //   }
-    // );
+    const productData = await mutateAsync(
+      payloadToSend,
+      {
+        onError: error => {
+          toast.error(error.message);
+        }
+      }
+    );
 
     // Assign stock locations to inventory items after product creation
     // Get stock locations from form values (they were removed from finalPayload)
@@ -734,7 +730,13 @@ export const ProductCreateForm = ({
     //   })
     // );
 
-    // handleSuccess(`../${productData.product.id}`);
+    toast.success(
+      t('products.create.successToast', {
+        title: productData.product.title
+      })
+    );
+
+    handleSuccess(`../${productData.product.id}`);
   });
 
   const onNext = async (currentTab: Tab) => {

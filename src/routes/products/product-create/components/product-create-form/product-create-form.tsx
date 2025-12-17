@@ -601,12 +601,28 @@ export const ProductCreateForm = ({
       // Variants will have values for all options (first value for non-variant options)
       // If no options exist, use default from payload
       options: allOptions.length > 0 ? allOptions : (finalPayload as any).options,
-      additional_data:
-        additionalDataValues.length > 0
-          ? {
-              values: additionalDataValues
+      additional_data: (() => {
+        const additionalData: Record<string, any> = {};
+        
+        // Add dynamic attribute values if any
+        if (additionalDataValues.length > 0) {
+          additionalData.values = additionalDataValues;
+        }
+        
+        // Add secondary categories if any
+        if (secondary_categories && Array.isArray(secondary_categories) && secondary_categories.length > 0) {
+          const productHandle = values.handle || '';
+          additionalData.secondary_categories = [
+            {
+              handle: productHandle,
+              secondary_categories_ids: secondary_categories
             }
-          : undefined
+          ];
+        }
+        
+        // Return undefined if empty, otherwise return the object
+        return Object.keys(additionalData).length > 0 ? additionalData : undefined;
+      })()
     };
 
     const payloadToSend = {

@@ -507,6 +507,7 @@
       "uploadImagesLabel": "Поставете слики",
       "uploadImagesHint": "Повлечете и испуштете ги сликите овде или кликнете за да ги поставите.",
       "invalidFileType": "'{{name}}' не е поддржан тип на датотека.  {{types}}.",
+      "fileTooLarge": "'{{name}}' ја надминува максималната големина на датотека од {{maxSize}}.",
       "failedToUpload": "Не успеа да се постави додадениот медиум. ",
       "deleteWarning_one": "Ќе бришете {{count}} слика. ",
       "deleteWarning_other": "Ќе бришете {{count}} слики. ",
@@ -2158,6 +2159,9 @@
       },
       "successToast": "Ценовник {{title}} беше успешно создаден.",
       "products": {
+        "errors": {
+          "noProducts": "Ве молиме изберете барем еден производ."
+        },
         "list": {
           "noRecordsMessage": "Прво креирајте производ."
         }

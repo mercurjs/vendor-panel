@@ -495,6 +495,7 @@
       "uploadImagesLabel": "Prześlij obrazy",
       "uploadImagesHint": "Przeciągnij i upuść obrazy tutaj lub kliknij, aby przesłać.",
       "invalidFileType": "'{{name}}' nie jest obsługiwanym typem pliku. Obsługiwane typy plików to: {{types}}.",
+      "fileTooLarge": "'{{name}}' przekracza maksymalny rozmiar pliku {{maxSize}}.",
       "failedToUpload": "Nie udało się przesłać dodanych mediów. Spróbuj ponownie.",
       "deleteWarning_one": "Zamierzasz usunąć {{count}} obraz. Ta akcja nie może zostać cofnięta.",
       "deleteWarning_other": "Zamierzasz usunąć {{count}} obrazów. Ta akcja nie może zostać cofnięta.",
@@ -2034,6 +2035,9 @@
       },
       "successToast": "Cennik {{title}} został pomyślnie utworzony.",
       "products": {
+        "errors": {
+          "noProducts": "Wybierz co najmniej jeden produkt."
+        },
         "list": {
           "noRecordsMessage": "Najpierw utwórz produkt."
         }

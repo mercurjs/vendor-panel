@@ -93,7 +93,13 @@
   },
   "validation": {
     "mustBeInt": "مقدار باید یک عدد صحیح باشد.",
-    "mustBePositive": "مقدار باید یک عدد مثبت باشد."
+    "mustBePositive": "مقدار باید یک عدد مثبت باشد.",
+    "rules": {
+      "lower": "یک حرف کوچک",
+      "upper": "یک حرف بزرگ",
+      "8chars": "حداقل 8 کاراکتر",
+      "symbolOrDigit": "یک عدد یا نماد"
+    }
   },
   "actions": {
     "save": "ذخیره",

@@ -495,6 +495,7 @@
       "uploadImagesLabel": "Bilder hochladen",
       "uploadImagesHint": "Ziehen Sie Bilder per Drag-and-Drop hierher oder klicken Sie zum Hochladen.",
       "invalidFileType": "{{name}}' ist kein unterstützter Dateityp. Unterstützte Dateitypen sind: {{types}}.",
+      "fileTooLarge": "'{{name}}' überschreitet die maximale Dateigröße von {{maxSize}}.",
       "failedToUpload": "Das Hochladen der hinzugefügten Medien ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
       "deleteWarning_one": "Sie sind dabei, {{count}} Bild zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.",
       "deleteWarning_other": "Sie sind dabei, {{count}} Bilder zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.",
@@ -2034,6 +2035,9 @@
       },
       "successToast": "Die Preisliste {{title}} wurde erfolgreich erstellt.",
       "products": {
+        "errors": {
+          "noProducts": "Bitte wählen Sie mindestens ein Produkt aus."
+        },
         "list": {
           "noRecordsMessage": "Erstellen Sie zuerst ein Produkt."
         }

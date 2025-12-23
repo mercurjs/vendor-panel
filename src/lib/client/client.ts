@@ -87,9 +87,22 @@ export const fetchQuery = async (
   const bearer = (await window.localStorage.getItem('medusa_auth_token')) || '';
   const params = Object.entries(query || {}).reduce((acc, [key, value]) => {
     if (value !== null && value !== undefined && value !== '') {
-      const separator = acc ? '&' : '';
-      const serializedValue = typeof value === 'object' ? JSON.stringify(value) : value;
-      acc += `${separator}${encodeURIComponent(key)}=${encodeURIComponent(serializedValue)}`;
+      if (Array.isArray(value)) {
+        // Send arrays as multiple query parameters with bracket notation
+        // This allows backends to parse them as arrays: status[]=draft&status[]=published
+        const arrayParams = value
+          .map((item) => `${encodeURIComponent(key)}[]=${encodeURIComponent(item)}`)
+          .join('&');
+        if (acc) {
+          acc += '&' + arrayParams;
+        } else {
+          acc = arrayParams;
+        }
+      } else {
+        const separator = acc ? '&' : '';
+        const serializedValue = typeof value === 'object' ? JSON.stringify(value) : value;
+        acc += `${separator}${encodeURIComponent(key)}=${encodeURIComponent(serializedValue)}`;
+      }
     }
     return acc;
   }, '');

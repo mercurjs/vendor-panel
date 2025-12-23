@@ -507,6 +507,7 @@
       "uploadImagesLabel": "Încărcați imagini",
       "uploadImagesHint": "Trageți și plasați imaginile aici sau faceți clic pentru a încărca.",
       "invalidFileType": "'{{name}}' nu este un tip de fișier acceptat.  {{types}}.",
+      "fileTooLarge": "'{{name}}' depășește dimensiunea maximă a fișierului de {{maxSize}}.",
       "failedToUpload": "Nu s-a putut încărca conținutul media adăugat. ",
       "thumbnailTooltip": "Miniatură",
       "galleryLabel": "Galerie",
@@ -2158,6 +2159,9 @@
       },
       "successToast": "Lista de preturi {{title}} a fost creat cu succes.",
       "products": {
+        "errors": {
+          "noProducts": "Vă rugăm să selectați cel puțin un produs."
+        },
         "list": {
           "noRecordsMessage": "Creați mai întâi un produs."
         }

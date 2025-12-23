@@ -507,6 +507,7 @@
       "uploadImagesLabel": "上传图片",
       "uploadImagesHint": "将图片拖放到此处或点击上传。",
       "invalidFileType": "'{{name}}' 不是支持的文件类型。支持的文件类型有：{{types}}。",
+      "fileTooLarge": "'{{name}}' 超出了最大文件大小 {{maxSize}}。",
       "failedToUpload": "添加的媒体上传失败。请重试。",
       "deleteWarning_one": "您即将删除 {{count}} 张图片。此操作无法撤销。",
       "deleteWarning_other": "您即将删除 {{count}} 张图片。此操作无法撤销。",
@@ -2158,6 +2159,9 @@
       },
       "successToast": "价格列表 {{title}} 创建成功。",
       "products": {
+        "errors": {
+          "noProducts": "请至少选择一个产品。"
+        },
         "list": {
           "noRecordsMessage": "首先创建产品。"
         }

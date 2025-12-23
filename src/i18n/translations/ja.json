@@ -496,6 +496,7 @@
       "uploadImagesLabel": "画像をアップロード",
       "uploadImagesHint": "ここに画像をドラッグ＆ドロップするか、クリックしてアップロードします。",
       "invalidFileType": "「{{name}}」はサポートされていないファイルタイプです。サポートされているファイルタイプは次のとおりです：{{types}}。",
+      "fileTooLarge": "「{{name}}」は最大ファイルサイズ{{maxSize}}を超えています。",
       "failedToUpload": "追加されたメディアのアップロードに失敗しました。もう一度お試しください。",
       "deleteWarning_one": "{{count}}枚の画像を削除しようとしています。この操作は元に戻せません。",
       "deleteWarning_other": "{{count}}枚の画像を削除しようとしています。この操作は元に戻せません。",
@@ -2060,6 +2061,9 @@
       },
       "successToast": "価格リスト「{{title}}」が正常に作成されました。",
       "products": {
+        "errors": {
+          "noProducts": "少なくとも1つの商品を選択してください。"
+        },
         "list": {
           "noRecordsMessage": "最初に商品を作成してください。"
         }

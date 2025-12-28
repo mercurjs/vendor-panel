@@ -16,6 +16,10 @@ export const ProductOrganizationSection = ({
 }: ProductOrganizationSectionProps) => {
   const { t } = useTranslation()
   const { getDisplays } = useDashboardExtension()
+  const petTypeTags =
+    (product.custom_tags || []).filter((ct) => ct.type === "pet_type") || []
+  const brandTags =
+    (product.custom_tags || []).filter((ct) => ct.type === "brand") || []
 
   return (
     <Container className="divide-y p-0">
@@ -35,7 +39,6 @@ export const ProductOrganizationSection = ({
           ]}
         />
       </div>
-
 
       <SectionRow
         title={t("fields.collection")}
@@ -68,11 +71,11 @@ export const ProductOrganizationSection = ({
       <SectionRow
         title={t("products.fields.petType.label" as any)}
         value={
-          (product.custom_tags || [])
-            .filter((ct) => ct.type === "pet_type")
-            .map((ct) => (
-              <OrganizationTag key={ct.id} label={ct.value} to={`/custom-tags`} />
-            )) || undefined
+          petTypeTags.length
+            ? petTypeTags.map((ct) => (
+                <OrganizationTag key={ct.id} label={ct.value} to={`/custom-tags`} />
+              ))
+            : undefined
         }
       />
 
@@ -80,11 +83,11 @@ export const ProductOrganizationSection = ({
       <SectionRow
         title={t("products.fields.brand.label" as any)}
         value={
-          (product.custom_tags || [])
-            .filter((ct) => ct.type === "brand")
-            .map((ct) => (
-              <OrganizationTag key={ct.id} label={ct.value} to={`/custom-tags`} />
-            )) || undefined
+          brandTags.length
+            ? brandTags.map((ct) => (
+                <OrganizationTag key={ct.id} label={ct.value} to={`/custom-tags`} />
+              ))
+            : undefined
         }
       />
 

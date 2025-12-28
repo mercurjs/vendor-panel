@@ -12,9 +12,10 @@ import {
   useDashboardExtension,
   useExtendableForm,
 } from "../../../../../extensions"
-import { useUpdateProduct } from "../../../../../hooks/api/products"
+import { productsQueryKeys, useUpdateProduct } from "../../../../../hooks/api/products"
 import { useComboboxData } from "../../../../../hooks/use-combobox-data"
 import { fetchQuery } from "../../../../../lib/client"
+import { queryClient } from "../../../../../lib/query-client"
 
 type ProductOrganizationFormProps = {
   product: ExtendedAdminProduct
@@ -115,6 +116,13 @@ export const ProductOrganizationForm = ({
   const handleSubmit = form.handleSubmit(async (data) => {
     const selectedTagIds = [data.custom_tag_1, data.custom_tag_2]
       .filter((v): v is string => !!v)
+    const existingTagIds =
+      (product.custom_tags || [])
+        .filter((ct) => ct.type === "pet_type" || ct.type === "brand")
+        .map((ct) => ct.id) || []
+    const hasTagChanges =
+      selectedTagIds.length !== existingTagIds.length ||
+      selectedTagIds.some((id) => !existingTagIds.includes(id))
 
     try {
       await mutateAsync({
@@ -122,12 +130,23 @@ export const ProductOrganizationForm = ({
         categories: data.category_ids ? [{ id: data.category_ids }] : [],
       })
 
+      if (hasTagChanges && existingTagIds.length) {
+        await fetchQuery(`/vendor/products/${product.id}/custom-tags`, {
+          method: "DELETE",
+          body: { tag_ids: existingTagIds },
+        })
+      }
+
       if (selectedTagIds.length) {
         await fetchQuery(`/vendor/products/${product.id}/custom-tags`, {
           method: "POST",
           body: { tag_ids: selectedTagIds },
         })
       }
+
+      await queryClient.invalidateQueries({
+        queryKey: productsQueryKeys.detail(product.id),
+      })
 
       toast.success(
         t("products.organization.edit.toasts.success", {

@@ -172,6 +172,9 @@
         },
         "noMoreData": {
           "type": "string"
+        },
+        "somethingWentWrong": {
+          "type": "string"
         }
       },
       "required": [
@@ -229,7 +232,8 @@
         "unsavedChangesDescription",
         "includesTaxTooltip",
         "excludesTaxTooltip",
-        "noMoreData"
+        "noMoreData",
+        "somethingWentWrong"
       ],
       "additionalProperties": false
     },
@@ -2155,6 +2159,71 @@
               "required": ["label"],
               "additionalProperties": false
             },
+            "petType": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "option": {
+                  "type": "object",
+                  "properties": {
+                    "dog": {
+                      "type": "string"
+                    },
+                    "cat": {
+                      "type": "string"
+                    },
+                    "bird": {
+                      "type": "string"
+                    },
+                    "rabbit": {
+                      "type": "string"
+                    },
+                    "hamster": {
+                      "type": "string"
+                    },
+                    "fish": {
+                      "type": "string"
+                    },
+                    "other": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "required": ["label", "option"],
+              "additionalProperties": false
+            },
+            "brand": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "option": {
+                  "type": "object",
+                  "properties": {
+                    "brand1": {
+                      "type": "string"
+                    },
+                    "brand2": {
+                      "type": "string"
+                    },
+                    "brand3": {
+                      "type": "string"
+                    },
+                    "brand4": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "required": ["label", "option"],
+              "additionalProperties": false
+            },
             "sales_channels": {
               "type": "object",
               "properties": {
@@ -2309,6 +2378,8 @@
             "collection",
             "categories",
             "tags",
+            "petType",
+            "brand",
             "sales_channels",
             "countryOrigin",
             "material",
@@ -11272,9 +11343,12 @@
             },
             "valuePlaceholder": {
               "type": "string"
+            },
+            "createdAt": {
+              "type": "string"
             }
           },
-          "required": ["type", "value", "valuePlaceholder"],
+          "required": ["type", "value", "valuePlaceholder", "createdAt"],
           "additionalProperties": false
         }
       },

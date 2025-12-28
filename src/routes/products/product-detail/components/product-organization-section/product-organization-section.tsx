@@ -36,31 +36,6 @@ export const ProductOrganizationSection = ({
         />
       </div>
 
-      <SectionRow
-        title={t("fields.tags")}
-        value={
-          product.tags?.length
-            ? product.tags.map((tag) => (
-                <OrganizationTag
-                  key={tag.id}
-                  label={tag.value}
-                  to={`/settings/product-tags/${tag.id}`}
-                />
-              ))
-            : undefined
-        }
-      />
-      <SectionRow
-        title={t("fields.type")}
-        value={
-          product.type ? (
-            <OrganizationTag
-              label={product.type.value}
-              to={`/settings/product-types/${product.type_id}`}
-            />
-          ) : undefined
-        }
-      />
 
       <SectionRow
         title={t("fields.collection")}
@@ -86,6 +61,30 @@ export const ProductOrganizationSection = ({
                 />
               ))
             : undefined
+        }
+      />
+
+      {/* Custom Tags: Pet Type */}
+      <SectionRow
+        title={t("products.fields.petType.label" as any)}
+        value={
+          (product.custom_tags || [])
+            .filter((ct) => ct.type === "pet_type")
+            .map((ct) => (
+              <OrganizationTag key={ct.id} label={ct.value} to={`/custom-tags`} />
+            )) || undefined
+        }
+      />
+
+      {/* Custom Tags: Brand */}
+      <SectionRow
+        title={t("products.fields.brand.label" as any)}
+        value={
+          (product.custom_tags || [])
+            .filter((ct) => ct.type === "brand")
+            .map((ct) => (
+              <OrganizationTag key={ct.id} label={ct.value} to={`/custom-tags`} />
+            )) || undefined
         }
       />
 

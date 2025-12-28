@@ -359,19 +359,46 @@ export const useProduct = (
     "queryFn" | "queryKey"
   >
 ) => {
+  const { fields, ...restQuery } = query || {}
+  const sanitizedFields = typeof fields === "string"
+    ? fields
+        .split(",")
+        .map((f) => f.trim())
+        .filter((f) => f && f !== "+custom_tags" && f !== "custom_tags")
+        .join(",")
+    : fields
+
+  const finalQuery = {
+    ...restQuery,
+    ...(sanitizedFields ? { fields: sanitizedFields } : {}),
+  }
+
   const { data, ...rest } = useQuery({
     queryFn: async () => {
-      const response = await fetchQuery(`/vendor/products/${id}`, {
-        method: "GET",
-        query: query as { [key: string]: string | number },
-      })
+      const [productRes, tagsRes] = await Promise.all([
+        fetchQuery(`/vendor/products/${id}`, {
+          method: "GET",
+          query: finalQuery as { [key: string]: string | number },
+        }),
+        fetchQuery(`/vendor/products/${id}/custom-tags`, {
+          method: "GET",
+        }).catch(() => null),
+      ])
+
+      const product = (productRes as any)?.product ?? (productRes as any)
+      if (tagsRes && (tagsRes as any).custom_tags) {
+        product.custom_tags = (tagsRes as any).custom_tags
+      }
 
       return {
-        ...response,
-        product: productsImagesFormatter(response.product),
+        ...productRes,
+        product: productsImagesFormatter(product),
       }
     },
-    queryKey: productsQueryKeys.detail(id, query),
+    queryKey: productsQueryKeys.detail(id, {
+      ...query,
+      ...(sanitizedFields ? { fields: sanitizedFields } : {}),
+    }),
     ...options,
   })
 

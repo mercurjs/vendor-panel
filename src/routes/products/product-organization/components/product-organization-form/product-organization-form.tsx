@@ -1,5 +1,5 @@
 import { ExtendedAdminProduct } from "../../../../../types/products"
-import { Button, toast } from "@medusajs/ui"
+import { Button, Select, toast } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import * as zod from "zod"
 
@@ -21,11 +21,11 @@ type ProductOrganizationFormProps = {
 }
 
 const ProductOrganizationSchema = zod.object({
-  type_id: zod.string().nullable(),
   collection_id: zod.string().nullable(),
   category_ids: zod.string().nullable(),
   // category_ids: zod.array(zod.string()),
-  tag_ids: zod.array(zod.string()),
+  custom_tag_1: zod.string().nullable().optional(), // pet_type
+  custom_tag_2: zod.string().nullable().optional(), // brand
 })
 
 export const ProductOrganizationForm = ({
@@ -66,40 +66,44 @@ export const ProductOrganizationForm = ({
       })),
   })
 
-  const types = useComboboxData({
-    queryKey: ["product_types"],
+  // Fetch custom tags (pet types)
+  const petTypesData = useComboboxData({
+    queryKey: ["custom_tags", "pet_type"],
     queryFn: (params) =>
-      fetchQuery("/vendor/product-types", {
+      fetchQuery("/vendor/custom-tags", {
         method: "GET",
-        query: params as { [key: string]: string | number },
+        query: { ...(params as Record<string, any>), type: "pet_type" },
       }),
     getOptions: (data) =>
-      data.product_types.map((type: any) => ({
-        label: type.value,
-        value: type.id,
-      })),
-  })
-
-  const tags = useComboboxData({
-    queryKey: ["product_tags"],
-    queryFn: (params) =>
-      fetchQuery("/vendor/product-tags", {
-        method: "GET",
-        query: params as { [key: string]: string | number },
-      }),
-    getOptions: (data) =>
-      data.product_tags.map((tag: any) => ({
+      data.tags?.map((tag: any) => ({
         label: tag.value,
         value: tag.id,
-      })),
+      })) || [],
+  })
+
+  // Fetch custom tags (brands)
+  const brandsData = useComboboxData({
+    queryKey: ["custom_tags", "brand"],
+    queryFn: (params) =>
+      fetchQuery("/vendor/custom-tags", {
+        method: "GET",
+        query: { ...(params as Record<string, any>), type: "brand" },
+      }),
+    getOptions: (data) =>
+      data.tags?.map((tag: any) => ({
+        label: tag.value,
+        value: tag.id,
+      })) || [],
   })
 
   const form = useExtendableForm({
     defaultValues: {
-      type_id: product.type_id ?? "",
       collection_id: product.collection_id ?? "",
       category_ids: product.categories?.[0]?.id || "",
-      tag_ids: product.tags?.map((t) => t.id) || [],
+      custom_tag_1:
+        (product.custom_tags || []).find((ct) => ct.type === "pet_type")?.id || "",
+      custom_tag_2:
+        (product.custom_tags || []).find((ct) => ct.type === "brand")?.id || "",
     },
     schema: ProductOrganizationSchema,
     configs: configs,
@@ -109,27 +113,31 @@ export const ProductOrganizationForm = ({
   const { mutateAsync, isPending } = useUpdateProduct(product.id)
 
   const handleSubmit = form.handleSubmit(async (data) => {
-    await mutateAsync(
-      {
-        type_id: data.type_id ? data.type_id : undefined,
+    const selectedTagIds = [data.custom_tag_1, data.custom_tag_2]
+      .filter((v): v is string => !!v)
+
+    try {
+      await mutateAsync({
         collection_id: data.collection_id ? data.collection_id : undefined,
         categories: data.category_ids ? [{ id: data.category_ids }] : [],
-        tags: data.tag_ids?.map((t) => ({ id: t })) ?? [],
-      },
-      {
-        onSuccess: ({ product }) => {
-          toast.success(
-            t("products.organization.edit.toasts.success", {
-              title: product.title,
-            })
-          )
-          handleSuccess()
-        },
-        onError: (error) => {
-          toast.error(error.message)
-        },
+      })
+
+      if (selectedTagIds.length) {
+        await fetchQuery(`/vendor/products/${product.id}/custom-tags`, {
+          method: "POST",
+          body: { tag_ids: selectedTagIds },
+        })
       }
-    )
+
+      toast.success(
+        t("products.organization.edit.toasts.success", {
+          title: product.title,
+        })
+      )
+      handleSuccess()
+    } catch (error: any) {
+      toast.error(error.message)
+    }
   })
 
   return (
@@ -137,29 +145,7 @@ export const ProductOrganizationForm = ({
       <KeyboundForm onSubmit={handleSubmit} className="flex h-full flex-col">
         <RouteDrawer.Body>
           <div className="flex h-full flex-col gap-y-4">
-            <Form.Field
-              control={form.control}
-              name="type_id"
-              render={({ field }) => {
-                return (
-                  <Form.Item>
-                    <Form.Label optional>
-                      {t("products.fields.type.label")}
-                    </Form.Label>
-                    <Form.Control>
-                      <Combobox
-                        {...field}
-                        options={types.options}
-                        searchValue={types.searchValue}
-                        onSearchValueChange={types.onSearchValueChange}
-                        fetchNextPage={types.fetchNextPage}
-                      />
-                    </Form.Control>
-                    <Form.ErrorMessage />
-                  </Form.Item>
-                )
-              }}
-            />
+            {/* Removed type field */}
             <Form.Field
               control={form.control}
               name="collection_id"
@@ -207,23 +193,58 @@ export const ProductOrganizationForm = ({
                 )
               }}
             />
+            {/* Custom Tags: Pet Type */}
             <Form.Field
               control={form.control}
-              name="tag_ids"
+              name="custom_tag_1"
               render={({ field }) => {
                 return (
                   <Form.Item>
                     <Form.Label optional>
-                      {t("products.fields.tags.label")}
+                      {t("products.fields.petType.label" as any)}
                     </Form.Label>
                     <Form.Control>
-                      <Combobox
-                        {...field}
-                        multiple
-                        options={tags.options}
-                        onSearchValueChange={tags.onSearchValueChange}
-                        searchValue={tags.searchValue}
-                      />
+                      <Select value={field.value ?? undefined} onValueChange={field.onChange}>
+                        <Select.Trigger>
+                          <Select.Value />
+                        </Select.Trigger>
+                        <Select.Content>
+                          {petTypesData.options.map((option) => (
+                            <Select.Item key={option.value} value={option.value}>
+                              {option.label}
+                            </Select.Item>
+                          ))}
+                        </Select.Content>
+                      </Select>
+                    </Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                )
+              }}
+            />
+            {/* Custom Tags: Brand */}
+            <Form.Field
+              control={form.control}
+              name="custom_tag_2"
+              render={({ field }) => {
+                return (
+                  <Form.Item>
+                    <Form.Label optional>
+                      {t("products.fields.brand.label" as any)}
+                    </Form.Label>
+                    <Form.Control>
+                      <Select value={field.value ?? undefined} onValueChange={field.onChange}>
+                        <Select.Trigger>
+                          <Select.Value />
+                        </Select.Trigger>
+                        <Select.Content>
+                          {brandsData.options.map((option) => (
+                            <Select.Item key={option.value} value={option.value}>
+                              {option.label}
+                            </Select.Item>
+                          ))}
+                        </Select.Content>
+                      </Select>
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>

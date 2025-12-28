@@ -146,6 +146,14 @@ export const ProductCreateForm = ({
       }
     }
 
+    const customAdditionalDataValues: Record<string, string>[] = []
+    if (payload.custom_tag_1) {
+      customAdditionalDataValues.push({ custom_tag_1: payload.custom_tag_1 })
+    }
+    if (payload.custom_tag_2) {
+      customAdditionalDataValues.push({ custom_tag_2: payload.custom_tag_2 })
+    }
+
     await mutateAsync(
       {
         ...payload,
@@ -162,8 +170,11 @@ export const ProductCreateForm = ({
           })) || [],
         collection_id: payload.collection_id || undefined,
         shipping_profile_id: undefined,
+        additional_data:
+          customAdditionalDataValues.length > 0
+            ? { values: customAdditionalDataValues }
+            : undefined,
         enable_variants: undefined,
-        additional_data: undefined,
         categories: payload.categories.map((cat) => ({
           id: cat,
         })),

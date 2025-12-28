@@ -1,4 +1,4 @@
-import { Heading } from "@medusajs/ui"
+import { Heading, Select } from "@medusajs/ui"
 import { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
@@ -33,33 +33,38 @@ export const ProductCreateOrganizationSection = ({
       })),
   })
 
-  const types = useComboboxData({
-    queryKey: ["product_types", "creating"],
+  // Fetch pet types from backend
+  const petTypesData = useComboboxData({
+    queryKey: ["custom_tags", "pet_type"],
     queryFn: (params) =>
-      fetchQuery("/vendor/product-types", {
+      fetchQuery("/vendor/custom-tags", {
         method: "GET",
-        query: params,
+        query: { ...params, type: "pet_type" },
       }),
     getOptions: (data) =>
-      data.product_types.map((type: any) => ({
-        label: type.value,
-        value: type.id,
-      })),
-  })
-
-  const tags = useComboboxData({
-    queryKey: ["product_tags", "creating"],
-    queryFn: (params) =>
-      fetchQuery("/vendor/product-tags", {
-        method: "GET",
-        query: params,
-      }),
-    getOptions: (data) =>
-      data.product_tags.map((tag: any) => ({
+      data.tags?.map((tag: any) => ({
         label: tag.value,
         value: tag.id,
-      })),
+      })) || [],
   })
+
+  // Fetch brands from backend
+  const brandsData = useComboboxData({
+    queryKey: ["custom_tags", "brand"],
+    queryFn: (params) =>
+      fetchQuery("/vendor/custom-tags", {
+        method: "GET",
+        query: { ...params, type: "brand" },
+      }),
+    getOptions: (data) =>
+      data.tags?.map((tag: any) => ({
+        label: tag.value,
+        value: tag.id,
+      })) || [],
+  })
+
+  const petTypeOptions = petTypesData.options
+  const brandOptions = brandsData.options
 
   return (
     <div id="organize" className="flex flex-col gap-y-8">
@@ -72,30 +77,6 @@ export const ProductCreateOrganizationSection = ({
         optional
       />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <Form.Field
-          control={form.control}
-          name="type_id"
-          render={({ field }) => {
-            return (
-              <Form.Item>
-                <Form.Label optional>
-                  {t("products.fields.type.label")}
-                </Form.Label>
-                <Form.Control>
-                  <Combobox
-                    {...field}
-                    options={types.options}
-                    searchValue={types.searchValue}
-                    onSearchValueChange={types.onSearchValueChange}
-                    fetchNextPage={types.fetchNextPage}
-                    allowClear
-                  />
-                </Form.Control>
-                <Form.ErrorMessage />
-              </Form.Item>
-            )
-          }}
-        />
         <Form.Field
           control={form.control}
           name="collection_id"
@@ -120,6 +101,7 @@ export const ProductCreateOrganizationSection = ({
             )
           }}
         />
+        {/* Removed type field as requested */}
       </div>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Form.Field
@@ -133,7 +115,6 @@ export const ProductCreateOrganizationSection = ({
                 </Form.Label>
                 <Form.Control>
                   <CategoryCombobox {...field} />
-                  {/* <CategorySelect  /> */}
                 </Form.Control>
                 <Form.ErrorMessage />
               </Form.Item>
@@ -142,21 +123,54 @@ export const ProductCreateOrganizationSection = ({
         />
         <Form.Field
           control={form.control}
-          name="tags"
+          name="custom_tag_1"
           render={({ field }) => {
             return (
               <Form.Item>
                 <Form.Label optional>
-                  {t("products.fields.tags.label")}
+                  {t("products.fields.petType.label" as any)}
                 </Form.Label>
                 <Form.Control>
-                  <Combobox
-                    {...field}
-                    options={tags.options}
-                    searchValue={tags.searchValue}
-                    onSearchValueChange={tags.onSearchValueChange}
-                    fetchNextPage={tags.fetchNextPage}
-                  />
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <Select.Trigger>
+                      <Select.Value />
+                    </Select.Trigger>
+                    <Select.Content>
+                      {petTypeOptions.map((option) => (
+                        <Select.Item key={option.value} value={option.value}>
+                          {option.label}
+                        </Select.Item>
+                      ))}
+                    </Select.Content>
+                  </Select>
+                </Form.Control>
+                <Form.ErrorMessage />
+              </Form.Item>
+            )
+          }}
+        />
+        <Form.Field
+          control={form.control}
+          name="custom_tag_2"
+          render={({ field }) => {
+            return (
+              <Form.Item>
+                <Form.Label optional>
+                  {t("products.fields.brand.label" as any)}
+                </Form.Label>
+                <Form.Control>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <Select.Trigger>
+                      <Select.Value />
+                    </Select.Trigger>
+                    <Select.Content>
+                      {brandOptions.map((option) => (
+                        <Select.Item key={option.value} value={option.value}>
+                          {option.label}
+                        </Select.Item>
+                      ))}
+                    </Select.Content>
+                  </Select>
                 </Form.Control>
                 <Form.ErrorMessage />
               </Form.Item>

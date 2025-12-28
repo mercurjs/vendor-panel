@@ -55,7 +55,8 @@
     "unsavedChangesDescription": "You have unsaved changes that will be lost if you exit this form.",
     "includesTaxTooltip": "Prices in this column are tax inclusive.",
     "excludesTaxTooltip": "Prices in this column are tax exclusive.",
-    "noMoreData": "No more data"
+    "noMoreData": "No more data",
+    "somethingWentWrong": "Something went wrong"
   },
   "json": {
     "header": "JSON",
@@ -576,6 +577,27 @@
       },
       "tags": {
         "label": "Tags"
+      },
+      "petType": {
+        "label": "Pet Type",
+        "option": {
+          "dog": "Dog",
+          "cat": "Cat",
+          "bird": "Bird",
+          "rabbit": "Rabbit",
+          "hamster": "Hamster",
+          "fish": "Fish",
+          "other": "Other"
+        }
+      },
+      "brand": {
+        "label": "Brand",
+        "option": {
+          "brand1": "Brand 1",
+          "brand2": "Brand 2",
+          "brand3": "Brand 3",
+          "brand4": "Brand 4"
+        }
       },
       "sales_channels": {
         "label": "Sales channels",
@@ -3000,5 +3022,32 @@
     "minutes_other": "Minutes",
     "seconds_one": "Second",
     "seconds_other": "Seconds"
+  },
+  "customTags": {
+    "domain": "Custom Tags",
+    "requestNewTag": "Request New Tag",
+    "loading": "Loading...",
+    "noPetTypesFound": "No pet types found",
+    "noBrandsFound": "No brands found",
+    "name": "Name",
+    "status": "Status",
+    "create": {
+      "title": "Request Custom Tag",
+      "subtitle": "Request a new pet type or brand tag for your products.",
+      "action": "Request",
+      "successToast": "Custom tag requested successfully"
+    },
+    "fields": {
+      "type": "Tag Type",
+      "value": "Tag Name",
+      "valuePlaceholder": "Enter tag name",
+      "createdAt": "Created"
+    }
+  },
+  "petTypes": {
+    "domain": "Pet Types"
+  },
+  "brands": {
+    "domain": "Brands"
   }
 }

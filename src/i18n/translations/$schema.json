@@ -11217,6 +11217,89 @@
         "seconds_other"
       ],
       "additionalProperties": false
+    },
+    "customTags": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string"
+        },
+        "requestNewTag": {
+          "type": "string"
+        },
+        "loading": {
+          "type": "string"
+        },
+        "noPetTypesFound": {
+          "type": "string"
+        },
+        "noBrandsFound": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "create": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "subtitle": {
+              "type": "string"
+            },
+            "action": {
+              "type": "string"
+            },
+            "successToast": {
+              "type": "string"
+            }
+          },
+          "required": ["title", "subtitle", "action", "successToast"],
+          "additionalProperties": false
+        },
+        "fields": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "value": {
+              "type": "string"
+            },
+            "valuePlaceholder": {
+              "type": "string"
+            }
+          },
+          "required": ["type", "value", "valuePlaceholder"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["domain", "requestNewTag", "loading", "noPetTypesFound", "noBrandsFound", "name", "status", "create", "fields"],
+      "additionalProperties": false
+    },
+    "petTypes": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string"
+        }
+      },
+      "required": ["domain"],
+      "additionalProperties": false
+    },
+    "brands": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string"
+        }
+      },
+      "required": ["domain"],
+      "additionalProperties": false
     }
   },
   "required": [
@@ -11272,7 +11355,10 @@
     "statuses",
     "labels",
     "fields",
-    "dateTime"
+    "dateTime",
+    "customTags",
+    "petTypes",
+    "brands"
   ],
   "additionalProperties": false
 }

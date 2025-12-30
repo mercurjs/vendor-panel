@@ -67,6 +67,8 @@ export const ProductCreateSchema = z
     shipping_profile_id: z.string().optional(),
     categories: z.array(z.string()),
     tags: z.array(z.string()).optional(),
+    custom_tag_1: z.string().optional(),
+    custom_tag_2: z.string().optional(),
     sales_channels: z
       .array(
         z.object({
@@ -123,6 +125,8 @@ export const PRODUCT_CREATE_FORM_DEFAULTS: Partial<
 > = {
   discountable: true,
   tags: [],
+  custom_tag_1: "",
+  custom_tag_2: "",
   sales_channels: [],
   options: [
     {

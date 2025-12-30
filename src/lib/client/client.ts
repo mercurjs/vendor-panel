@@ -136,5 +136,9 @@ export const fetchQuery = async (
     throw new Error(errorData.message || 'Server error');
   }
 
+  if (response.status === 204) {
+    return null;
+  }
+
   return response.json();
 };

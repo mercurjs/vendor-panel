@@ -33,13 +33,17 @@ const useSettingRoutes = (): INavItem[] => {
         to: "/settings/users",
       },
       {
-        label: t("productTypes.domain"),
-        to: "/settings/product-types",
+        label: t("customTags.domain"),
+        to: "/settings/custom-tags",
       },
-      {
-        label: t("productTags.domain"),
-        to: "/settings/product-tags",
-      },
+      // {
+      //   label: t("productTypes.domain"),
+      //   to: "/settings/product-types",
+      // },
+      // {
+      //   label: t("productTags.domain"),
+      //   to: "/settings/product-tags",
+      // },
       {
         label: t("stockLocations.domain"),
         to: "/settings/locations",

@@ -1089,6 +1089,20 @@ export const RouteMap: RouteObject[] = [
             ],
           },
           {
+            path: "custom-tags",
+            errorElement: <ErrorBoundary />,
+            lazy: () => import("../../routes/custom-tags/custom-tag-list"),
+            handle: {
+              breadcrumb: () => t("customTags.domain"),
+            },
+            children: [
+              {
+                path: "create",
+                lazy: () => import("../../routes/custom-tags/custom-tag-create"),
+              },
+            ],
+          },
+          {
             path: "store",
             errorElement: <ErrorBoundary />,
             lazy: () => import("../../routes/store/store-detail"),

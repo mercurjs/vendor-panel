@@ -6,6 +6,12 @@ export type ExtendedAdminProduct = Omit<HttpTypes.AdminProduct, "variants"> & {
   attribute_values?: ExtendedAdminProductAttributeValues[]
   variants?: ExtendedAdminProductVariant[]
   shipping_profile: HttpTypes.AdminShippingProfile
+  // Linked custom tags (via Product <-> CustomTag link)
+  custom_tags?: Array<{
+    id: string
+    value: string
+    type: "pet_type" | "brand"
+  }>
 }
 
 export type ExtendedAdminProductAttributValuesAttribute = {

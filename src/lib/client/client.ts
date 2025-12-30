@@ -58,13 +58,31 @@ export const uploadFilesQuery = async (files: any[]) => {
     formData.append('files', file);
   }
 
-  return await fetch(`${backendUrl}/vendor/uploads`, {
+  return await fetch(`${backendUrl}/vendor/media`, {
     method: 'POST',
     body: formData,
     headers: {
       authorization: `Bearer ${token}`,
       'x-publishable-api-key': publishableApiKey
     }
+  })
+    .then(res => res.json())
+    .catch(() => null);
+};
+
+export const deleteFilesQuery = async (fileIds: string[]) => {
+  if (!fileIds || fileIds.length === 0) {
+    return;
+  }
+
+  return await fetch(`${backendUrl}/vendor/media`, {
+    method: 'DELETE',
+    headers: {
+      authorization: `Bearer ${token}`,
+      'x-publishable-api-key': publishableApiKey,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ ids: fileIds })
   })
     .then(res => res.json())
     .catch(() => null);

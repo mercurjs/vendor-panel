@@ -36,7 +36,7 @@ import {
 } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useUpdateProduct } from "../../../../../hooks/api/products"
-import { uploadFilesQuery } from "../../../../../lib/client"
+import { uploadFilesQuery, deleteFilesQuery } from "../../../../../lib/client"
 import { UploadMediaFormItem } from "../../../common/components/upload-media-form-item"
 import {
   EditProductMediaSchema,
@@ -169,9 +169,25 @@ export const EditProductMediaForm = ({ product }: ProductMediaViewProps) => {
     [selection]
   )
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     const ids = Object.keys(selection)
     const indices = ids.map((id) => fields.findIndex((m) => m.id === id))
+    
+    // Get file IDs from selected media items (only for existing images, not new uploads)
+    const fileIdsToDelete = fields
+      .filter((_, index) => indices.includes(index))
+      .map((field) => field.id)
+      .filter((id): id is string => !!id && typeof id === 'string') // Only existing file IDs
+
+    // Delete from storage if there are file IDs
+    if (fileIdsToDelete.length > 0) {
+      try {
+        await deleteFilesQuery(fileIdsToDelete)
+      } catch (error) {
+        // Log error but continue with form removal
+        console.error("Failed to delete files from storage:", error)
+      }
+    }
 
     remove(indices)
     setSelection({})

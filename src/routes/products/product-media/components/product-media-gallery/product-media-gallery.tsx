@@ -14,6 +14,7 @@ import { Link, useLocation } from "react-router-dom"
 import { ExtendedAdminProduct } from "../../../../../types/products"
 import { RouteFocusModal } from "../../../../../components/modals"
 import { useUpdateProduct } from "../../../../../hooks/api/products"
+import { deleteFilesQuery } from "../../../../../lib/client"
 
 type ProductMediaGalleryProps = {
   product: ExtendedAdminProduct
@@ -86,6 +87,16 @@ export const ProductMediaGallery = ({ product }: ProductMediaGalleryProps) => {
 
     if (!res) {
       return
+    }
+
+    // Delete from storage if file ID exists
+    if (current.id && current.id !== "thumbnail_only") {
+      try {
+        await deleteFilesQuery([current.id])
+      } catch (error) {
+        // Log error but continue with product update
+        console.error("Failed to delete file from storage:", error)
+      }
     }
 
     const mediaToKeep =

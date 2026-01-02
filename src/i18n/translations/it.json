@@ -496,6 +496,7 @@
       "uploadImagesLabel": "Carica immagini",
       "uploadImagesHint": "Trascina e rilascia le immagini qui o fai clic per caricare.",
       "invalidFileType": "'{{name}}' non è un tipo di file supportato. I tipi di file supportati sono: {{types}}.",
+      "fileTooLarge": "'{{name}}' supera la dimensione massima del file di {{maxSize}}.",
       "failedToUpload": "Impossibile caricare il media aggiunto. Riprova.",
       "deleteWarning_one": "Stai per eliminare {{count}} immagine. Questa azione non può essere annullata.",
       "deleteWarning_other": "Stai per eliminare {{count}} immagini. Questa azione non può essere annullata.",
@@ -2036,6 +2037,9 @@
       },
       "successToast": "Lista prezzi {{title}} creata con successo.",
       "products": {
+        "errors": {
+          "noProducts": "Seleziona almeno un prodotto."
+        },
         "list": {
           "noRecordsMessage": "Crea prima un prodotto."
         }

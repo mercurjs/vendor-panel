@@ -507,6 +507,7 @@
       "uploadImagesLabel": "Resimleri yükle",
       "uploadImagesHint": "Resimleri buraya sürükleyip bırakın veya yüklemek için tıklayın.",
       "invalidFileType": "'{{name}}' desteklenmeyen bir dosya türüdür. Desteklenen dosya türleri: {{types}}.",
+      "fileTooLarge": "'{{name}}' maksimum dosya boyutu olan {{maxSize}} değerini aşıyor.",
       "failedToUpload": "Eklenen medya yüklenemedi. Lütfen tekrar deneyin.",
       "deleteWarning_one": "{{count}} resmi silmek üzeresiniz. Bu işlem geri alınamaz.",
       "deleteWarning_other": "{{count}} resmi silmek üzeresiniz. Bu işlem geri alınamaz.",
@@ -2180,6 +2181,9 @@
       },
       "successToast": "{{title}} fiyat listesi başarıyla oluşturuldu.",
       "products": {
+        "errors": {
+          "noProducts": "Lütfen en az bir ürün seçin."
+        },
         "list": {
           "noRecordsMessage": "Önce bir ürün oluşturun."
         }

@@ -1,18 +1,21 @@
-import { HttpTypes } from "@medusajs/types"
-import { FetchError } from "@medusajs/js-sdk"
+import { FetchError } from '@medusajs/js-sdk';
+import { HttpTypes } from '@medusajs/types';
 import {
   QueryKey,
   useMutation,
   UseMutationOptions,
   useQuery,
-  UseQueryOptions,
-} from "@tanstack/react-query"
-import { fetchQuery } from "../../lib/client"
-import { queryClient } from "../../lib/query-client"
-import { queryKeysFactory } from "../../lib/query-key-factory"
-import { campaignsQueryKeys } from "./campaigns"
+  UseQueryOptions
+} from '@tanstack/react-query';
 
-const PROMOTIONS_QUERY_KEY = "promotions" as const
+import { fetchQuery } from '../../lib/client';
+import { queryClient } from '../../lib/query-client';
+import { queryKeysFactory } from '../../lib/query-key-factory';
+import { VendorPromotionRuleValueParams } from '../../types/promotion';
+import { campaignsQueryKeys } from './campaigns';
+
+const PROMOTIONS_QUERY_KEY = 'promotions' as const;
+
 export const promotionsQueryKeys = {
   ...queryKeysFactory(PROMOTIONS_QUERY_KEY),
   // TODO: handle invalidations properly
@@ -24,14 +27,15 @@ export const promotionsQueryKeys = {
   listRuleAttributes: (ruleType: string, promotionType?: string) => [
     PROMOTIONS_QUERY_KEY,
     ruleType,
-    promotionType,
+    promotionType
   ],
-  listRuleValues: (
-    ruleType: string,
-    ruleValue: string,
-    query: HttpTypes.AdminGetPromotionsRuleValueParams
-  ) => [PROMOTIONS_QUERY_KEY, ruleType, ruleValue, query],
-}
+  listRuleValues: (ruleType: string, ruleValue: string, query: VendorPromotionRuleValueParams) => [
+    PROMOTIONS_QUERY_KEY,
+    ruleType,
+    ruleValue,
+    query
+  ]
+};
 
 export const usePromotion = (
   id: string,
@@ -42,21 +46,21 @@ export const usePromotion = (
       HttpTypes.AdminPromotionResponse,
       QueryKey
     >,
-    "queryFn" | "queryKey"
+    'queryFn' | 'queryKey'
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryKey: promotionsQueryKeys.detail(id),
     queryFn: async () =>
       fetchQuery(`/vendor/promotions/${id}`, {
-        method: "GET",
-        query: { fields: "+status" },
+        method: 'GET',
+        query: { fields: '+status' }
       }),
-    ...options,
-  })
+    ...options
+  });
 
-  return { ...data, ...rest }
-}
+  return { ...data, ...rest };
+};
 
 export const usePromotionRules = (
   id: string | null,
@@ -69,30 +73,30 @@ export const usePromotionRules = (
       HttpTypes.AdminPromotionRuleListResponse,
       QueryKey
     >,
-    "queryFn" | "queryKey"
+    'queryFn' | 'queryKey'
   >
 ) => {
   if (!id) {
     return {
       rules: [],
-      isLoading: false,
-    }
+      isLoading: false
+    };
   }
 
   const { data, ...rest } = useQuery({
     queryKey: promotionsQueryKeys.listRules(id, ruleType, query),
     queryFn: async () =>
       fetchQuery(`/vendor/promotions/${id}/${ruleType}`, {
-        method: "GET",
+        method: 'GET',
         query: query as {
-          [key: string]: string | number
-        },
+          [key: string]: string | number;
+        }
       }),
-    ...options,
-  })
+    ...options
+  });
 
-  return { ...data, ...rest }
-}
+  return { ...data, ...rest };
+};
 
 export const usePromotions = (
   query?: HttpTypes.AdminGetPromotionsParams,
@@ -103,21 +107,21 @@ export const usePromotions = (
       HttpTypes.AdminPromotionListResponse,
       QueryKey
     >,
-    "queryFn" | "queryKey"
+    'queryFn' | 'queryKey'
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryKey: promotionsQueryKeys.list(query),
     queryFn: async () =>
-      fetchQuery("/vendor/promotions", {
-        method: "GET",
-        query: query as { [key: string]: string | number },
+      fetchQuery('/vendor/promotions', {
+        method: 'GET',
+        query: query as { [key: string]: string | number }
       }),
-    ...options,
-  })
+    ...options
+  });
 
-  return { ...data, ...rest }
-}
+  return { ...data, ...rest };
+};
 
 export const usePromotionRuleAttributes = (
   ruleType: string,
@@ -129,28 +133,28 @@ export const usePromotionRuleAttributes = (
       HttpTypes.AdminRuleAttributeOptionsListResponse,
       QueryKey
     >,
-    "queryFn" | "queryKey"
+    'queryFn' | 'queryKey'
   >
 ) => {
   const { data, ...rest } = useQuery({
     queryKey: promotionsQueryKeys.listRuleAttributes(ruleType, promotionType),
     queryFn: async () =>
       fetchQuery(`/vendor/promotions/rule-attribute-options/${ruleType}`, {
-        method: "GET",
+        method: 'GET',
         query: {
-          promotion_type: promotionType as string,
-        },
+          promotion_type: promotionType as string
+        }
       }),
-    ...options,
-  })
+    ...options
+  });
 
-  return { ...data, ...rest }
-}
+  return { ...data, ...rest };
+};
 
 export const usePromotionRuleValues = (
   ruleType: string,
   ruleValue: string,
-  query?: HttpTypes.AdminGetPromotionsRuleValueParams,
+  query?: VendorPromotionRuleValueParams,
   options?: Omit<
     UseQueryOptions<
       HttpTypes.AdminRuleValueOptionsListResponse,
@@ -158,85 +162,74 @@ export const usePromotionRuleValues = (
       HttpTypes.AdminRuleValueOptionsListResponse,
       QueryKey
     >,
-    "queryFn" | "queryKey"
+    'queryFn' | 'queryKey'
   >
 ) => {
   const { data, ...rest } = useQuery({
-    queryKey: promotionsQueryKeys.listRuleValues(
-      ruleType,
-      ruleValue,
-      query || {}
-    ),
+    queryKey: promotionsQueryKeys.listRuleValues(ruleType, ruleValue, query || {}),
     queryFn: async () =>
-      await fetchQuery(
-        `/vendor/promotions/rule-value-options/${ruleType}/${ruleValue}`,
-        {
-          method: "GET",
-          query: {
-            ...(query as {
-              [key: string]: string | number
-            }),
-          },
+      await fetchQuery(`/vendor/promotions/rule-value-options/${ruleType}/${ruleValue}`, {
+        method: 'GET',
+        query: {
+          ...(query as {
+            [key: string]: string | number;
+          })
         }
-      ),
-    ...options,
-  })
+      }),
+    ...options
+  });
 
-  return { ...data, ...rest }
-}
+  return { ...data, ...rest };
+};
 
 export const useDeletePromotion = (
   id: string,
-  options?: UseMutationOptions<
-    HttpTypes.DeleteResponse<"promotion">,
-    FetchError,
-    void
-  >
+  options?: UseMutationOptions<HttpTypes.DeleteResponse<'promotion'>, FetchError, void>
 ) => {
   return useMutation({
     mutationFn: () =>
       fetchQuery(`/vendor/promotions/${id}`, {
-        method: "DELETE",
+        method: 'DELETE'
       }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: promotionsQueryKeys.lists(),
-      })
+        queryKey: promotionsQueryKeys.lists()
+      });
       queryClient.invalidateQueries({
-        queryKey: promotionsQueryKeys.detail(id),
-      })
+        queryKey: promotionsQueryKeys.detail(id)
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
-    ...options,
-  })
-}
+    ...options
+  });
+};
 
 export const useCreatePromotion = (
   options?: UseMutationOptions<
     HttpTypes.AdminPromotionResponse,
     FetchError,
-    HttpTypes.AdminCreatePromotion & { status: "active" | "draft" | "inactive" }
+    HttpTypes.AdminCreatePromotion & { status: 'active' | 'draft' | 'inactive' }
   >
 ) => {
   return useMutation({
-    mutationFn: (payload) =>
-      fetchQuery("/vendor/promotions", {
-        method: "POST",
-        body: payload,
+    mutationFn: payload =>
+      fetchQuery('/vendor/promotions', {
+        method: 'POST',
+        body: payload
       }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: promotionsQueryKeys.lists(),
-      })
+        queryKey: promotionsQueryKeys.lists()
+      });
       queryClient.invalidateQueries({
-        queryKey: campaignsQueryKeys.lists(),
-      })
-      options?.onSuccess?.(data, variables, context)
+        queryKey: campaignsQueryKeys.lists()
+      });
+      options?.onSuccess?.(data, variables, context);
     },
-    ...options,
-  })
-}
+    ...options
+  });
+};
 
 export const useUpdatePromotion = (
   id: string,
@@ -247,52 +240,54 @@ export const useUpdatePromotion = (
   >
 ) => {
   return useMutation({
-    mutationFn: (payload) =>
+    mutationFn: payload =>
       fetchQuery(`/vendor/promotions/${id}`, {
-        method: "POST",
-        body: payload,
+        method: 'POST',
+        body: payload
       }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: promotionsQueryKeys.all,
-      })
+        queryKey: promotionsQueryKeys.all
+      });
+      queryClient.invalidateQueries({
+        queryKey: campaignsQueryKeys.details()
+      });
+      queryClient.invalidateQueries({
+        queryKey: campaignsQueryKeys.lists()
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
-    ...options,
-  })
-}
+    ...options
+  });
+};
 
 export const useRemovePromotionFromCampaign = (
   promotionId: string,
-  options?: UseMutationOptions<
-    HttpTypes.AdminPromotionResponse,
-    FetchError,
-    void
-  >
+  options?: UseMutationOptions<HttpTypes.AdminPromotionResponse, FetchError, void>
 ) => {
   return useMutation({
     mutationFn: () =>
       fetchQuery(`/vendor/promotions/${promotionId}`, {
-        method: "POST",
-        body: { campaign_id: null },
+        method: 'POST',
+        body: { campaign_id: null }
       }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: promotionsQueryKeys.all,
-      })
+        queryKey: promotionsQueryKeys.all
+      });
       queryClient.invalidateQueries({
-        queryKey: campaignsQueryKeys.details(),
-      })
+        queryKey: campaignsQueryKeys.details()
+      });
       queryClient.invalidateQueries({
-        queryKey: campaignsQueryKeys.lists(),
-      })
+        queryKey: campaignsQueryKeys.lists()
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
-    ...options,
-  })
-}
+    ...options
+  });
+};
 
 export const usePromotionAddRules = (
   id: string,
@@ -304,25 +299,25 @@ export const usePromotionAddRules = (
   >
 ) => {
   return useMutation({
-    mutationFn: (payload) =>
+    mutationFn: payload =>
       fetchQuery(`/vendor/promotions/${id}/${ruleType}/batch`, {
-        method: "POST",
-        body: { create: payload.rules },
+        method: 'POST',
+        body: { create: payload.rules }
       }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: promotionsQueryKeys.all,
-      })
+        queryKey: promotionsQueryKeys.all
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
-    ...options,
-  })
-}
+    ...options
+  });
+};
 
 type BatchRemovePromotionRulesReq = {
-  rules: string[]
-}
+  rules: string[];
+};
 
 export const usePromotionRemoveRules = (
   id: string,
@@ -334,21 +329,21 @@ export const usePromotionRemoveRules = (
   >
 ) => {
   return useMutation({
-    mutationFn: (payload) =>
+    mutationFn: payload =>
       fetchQuery(`/vendor/promotions/${id}/${ruleType}/batch`, {
-        method: "POST",
-        body: { delete: payload.rules },
+        method: 'POST',
+        body: { delete: payload.rules }
       }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: promotionsQueryKeys.all,
-      })
+        queryKey: promotionsQueryKeys.all
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
-    ...options,
-  })
-}
+    ...options
+  });
+};
 
 export const usePromotionUpdateRules = (
   id: string,
@@ -360,38 +355,35 @@ export const usePromotionUpdateRules = (
   >
 ) => {
   return useMutation({
-    mutationFn: async (payload) => {
-      const { rules } = await fetchQuery(
-        `/vendor/promotions/${id}/${ruleType}`,
-        {
-          method: "GET",
-        }
-      )
+    mutationFn: async payload => {
+      const { rules } = await fetchQuery(`/vendor/promotions/${id}/${ruleType}`, {
+        method: 'GET'
+      });
 
-      const rulesIds = rules.map((rule: any) => rule.id)
+      const rulesIds = rules.map((rule: any) => rule.id);
       await fetchQuery(`/vendor/promotions/${id}/${ruleType}/batch`, {
-        method: "POST",
-        body: { delete: rulesIds },
-      })
+        method: 'POST',
+        body: { delete: rulesIds }
+      });
 
       return fetchQuery(`/vendor/promotions/${id}/${ruleType}/batch`, {
-        method: "POST",
+        method: 'POST',
         body: {
-          create: payload.rules.map((rule) => ({
+          create: payload.rules.map(rule => ({
             attribute: rule.attribute,
             operator: rule.operator,
-            values: rule.values,
-          })),
-        },
-      })
+            values: rule.values
+          }))
+        }
+      });
     },
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: promotionsQueryKeys.all,
-      })
+        queryKey: promotionsQueryKeys.all
+      });
 
-      options?.onSuccess?.(data, variables, context)
+      options?.onSuccess?.(data, variables, context);
     },
-    ...options,
-  })
-}
+    ...options
+  });
+};

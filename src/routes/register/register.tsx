@@ -14,9 +14,9 @@ import { useState } from "react"
 const RegisterSchema = z.object({
   name: z.string().min(2, { message: "Name should be a string" }),
   email: z.string().email({ message: "Invalid email" }),
-  password: z.string().min(2, { message: "Password should be a string" }),
-  confirmPassword: z.string().min(2, {
-    message: "Confirm Password should be a string",
+  password: z.string().min(8, { message: "Password should have at least 8 characters" }),
+  confirmPassword: z.string().min(8, {
+    message: "Confirm Password should have at least 8 characters",
   }),
 })
 
@@ -41,11 +41,11 @@ export const Register = () => {
       if (password !== confirmPassword) {
         form.setError("password", {
           type: "manual",
-          message: "Password and Confirm Password not matched",
+          message: "Password and Confirm Password don't match",
         })
         form.setError("confirmPassword", {
           type: "manual",
-          message: "Password and Confirm Password not matched",
+          message: "Password and Confirm Password don't match",
         })
 
         return null

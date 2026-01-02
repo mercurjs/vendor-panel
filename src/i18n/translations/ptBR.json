@@ -495,6 +495,7 @@
       "uploadImagesLabel": "Enviar imagens",
       "uploadImagesHint": "Arraste e solte as imagens aqui ou clique para enviar.",
       "invalidFileType": "'{{name}}' não é um tipo de arquivo suportado. Os tipos de arquivos suportados são: {{types}}.",
+      "fileTooLarge": "'{{name}}' excede o tamanho máximo de arquivo de {{maxSize}}.",
       "failedToUpload": "Falha ao enviar a mídia adicionada. Tente novamente.",
       "deleteWarning_one": "Você está prestes a excluir {{count}} imagem. Esta ação não pode ser desfeita.",
       "deleteWarning_other": "Você está prestes a excluir {{count}} imagens. Esta ação não pode ser desfeita.",
@@ -2034,6 +2035,9 @@
       },
       "successToast": "Lista de preços {{title}} foi criada com sucesso.",
       "products": {
+        "errors": {
+          "noProducts": "Por favor, selecione pelo menos um produto."
+        },
         "list": {
           "noRecordsMessage": "Crie um produto primeiro."
         }

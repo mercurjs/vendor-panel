@@ -507,6 +507,7 @@
       "uploadImagesLabel": "Nahrát obrázky",
       "uploadImagesHint": "Přetáhněte obrázky sem nebo klikněte pro nahrání.",
       "invalidFileType": "'{{name}}' není podporovaný typ souboru. Podporované typy souborů jsou: {{types}}.",
+      "fileTooLarge": "'{{name}}' překračuje maximální velikost souboru {{maxSize}}.",
       "failedToUpload": "Nepodařilo se nahrát přidaná média. Zkuste to prosím znovu.",
       "deleteWarning_one": "Chystáte se smazat {{count}} obrázek. Tuto akci nelze vrátit zpět.",
       "deleteWarning_other": "Chystáte se smazat {{count}} obrázků. Tuto akci nelze vrátit zpět.",
@@ -2158,6 +2159,9 @@
       },
       "successToast": "Ceník {{title}} byl úspěšně vytvořen.",
       "products": {
+        "errors": {
+          "noProducts": "Prosím vyberte alespoň jeden produkt."
+        },
         "list": {
           "noRecordsMessage": "Nejprve vytvořte produkt."
         }

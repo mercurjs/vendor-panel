@@ -16,6 +16,7 @@ import {
 import { useUpdateProduct } from '../../../../../hooks/api/products';
 import { useComboboxData } from '../../../../../hooks/use-combobox-data';
 import { fetchQuery } from '../../../../../lib/client';
+import { ExtendedAdminProduct } from '../../../../../types/products';
 
 type ProductOrganizationFormProps = {
   product: ExtendedAdminProduct;

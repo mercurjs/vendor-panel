@@ -841,7 +841,7 @@
     },
     "groups": {
       "label": "Kundengruppen",
-      "remove": "Sind Sie sicher, dass Sie den Kunden aus der Kundengruppe \"„{{name}}“\" entfernen möchten?",
+      "remove": "Sind Sie sicher, dass Sie den Kunden aus der Kundengruppe \"{{name}}\" entfernen möchten?",
       "removeMany": "Sind Sie sicher, dass Sie Kunden aus den folgenden Kundengruppen gewinnen möchten: {{groups}}?",
       "alreadyAddedTooltip": "Der Kunde ist bereits in dieser Kundengruppe.",
       "list": {

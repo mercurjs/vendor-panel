@@ -93,7 +93,13 @@
   },
   "validation": {
     "mustBeInt": "Wartość musi być liczbą całkowitą.",
-    "mustBePositive": "Wartość musi być liczbą dodatnią."
+    "mustBePositive": "Wartość musi być liczbą dodatnią.",
+    "rules": {
+      "lower": "Jedna mała litera",
+      "upper": "Jedna wielka litera",
+      "8chars": "Co najmniej 8 znaków",
+      "symbolOrDigit": "Jedna cyfra lub symbol"
+    }
   },
   "actions": {
     "save": "Zapisz",

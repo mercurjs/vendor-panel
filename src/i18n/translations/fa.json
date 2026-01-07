@@ -570,6 +570,12 @@
       "categories": {
         "label": "دسته‌بندی‌ها"
       },
+      "primaryCategory": {
+        "label": "دسته‌بندی اصلی"
+      },
+      "secondaryCategories": {
+        "label": "دسته‌بندی‌های فرعی"
+      },
       "tags": {
         "label": "برچسب‌ها"
       },

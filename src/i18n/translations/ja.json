@@ -559,6 +559,12 @@
       "categories": {
         "label": "カテゴリー"
       },
+      "primaryCategory": {
+        "label": "メインカテゴリー"
+      },
+      "secondaryCategories": {
+        "label": "サブカテゴリー"
+      },
       "tags": {
         "label": "タグ"
       },

@@ -570,6 +570,12 @@
       "categories": {
         "label": "Категории"
       },
+      "primaryCategory": {
+        "label": "Основна категорија"
+      },
+      "secondaryCategories": {
+        "label": "Секундарни категории"
+      },
       "tags": {
         "label": "Тагови"
       },

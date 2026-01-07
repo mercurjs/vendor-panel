@@ -570,6 +570,12 @@
       "categories": {
         "label": "Ангиллууд"
       },
+      "primaryCategory": {
+        "label": "Үндсэн ангилал"
+      },
+      "secondaryCategories": {
+        "label": "Дэд ангилал"
+      },
       "tags": {
         "label": "Шошго"
       },

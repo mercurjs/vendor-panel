@@ -574,6 +574,12 @@
       "categories": {
         "label": "Κατηγορίες"
       },
+      "primaryCategory": {
+        "label": "Κύρια κατηγορία"
+      },
+      "secondaryCategories": {
+        "label": "Δευτερεύουσες κατηγορίες"
+      },
       "tags": {
         "label": "Ετικέτες"
       },

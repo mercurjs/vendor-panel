@@ -570,6 +570,12 @@
       "categories": {
         "label": "Kategoriler"
       },
+      "primaryCategory": {
+        "label": "Ana kategori"
+      },
+      "secondaryCategories": {
+        "label": "İkincil kategoriler"
+      },
       "tags": {
         "label": "Etiketler"
       },

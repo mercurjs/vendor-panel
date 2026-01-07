@@ -558,6 +558,12 @@
       "categories": {
         "label": "Kategorien"
       },
+      "primaryCategory": {
+        "label": "Hauptkategorie"
+      },
+      "secondaryCategories": {
+        "label": "Nebenkategorien"
+      },
       "tags": {
         "label": "Schlagworte"
       },

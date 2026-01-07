@@ -559,6 +559,12 @@
       "categories": {
         "label": "Категорії"
       },
+      "primaryCategory": {
+        "label": "Основна категорія"
+      },
+      "secondaryCategories": {
+        "label": "Вторинні категорії"
+      },
       "tags": {
         "label": "Теги"
       },

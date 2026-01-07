@@ -2164,6 +2164,26 @@
               "required": ["label"],
               "additionalProperties": false
             },
+            "primaryCategory": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                }
+              },
+              "required": ["label"],
+              "additionalProperties": false
+            },
+            "secondaryCategories": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                }
+              },
+              "required": ["label"],
+              "additionalProperties": false
+            },
             "tags": {
               "type": "object",
               "properties": {
@@ -2327,6 +2347,8 @@
             "type",
             "collection",
             "categories",
+            "primaryCategory",
+            "secondaryCategories",
             "tags",
             "sales_channels",
             "countryOrigin",

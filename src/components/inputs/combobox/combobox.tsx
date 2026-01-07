@@ -1,23 +1,4 @@
 import {
-  Combobox as PrimitiveCombobox,
-  ComboboxDisclosure as PrimitiveComboboxDisclosure,
-  ComboboxItem as PrimitiveComboboxItem,
-  ComboboxItemCheck as PrimitiveComboboxItemCheck,
-  ComboboxItemValue as PrimitiveComboboxItemValue,
-  ComboboxPopover as PrimitiveComboboxPopover,
-  ComboboxProvider as PrimitiveComboboxProvider,
-  Separator as PrimitiveSeparator,
-} from "@ariakit/react"
-import {
-  CheckMini,
-  EllipseMiniSolid,
-  PlusMini,
-  TrianglesMini,
-  XMarkMini,
-} from "@medusajs/icons"
-import { clx, Text } from "@medusajs/ui"
-import { matchSorter } from "match-sorter"
-import {
   ComponentPropsWithoutRef,
   CSSProperties,
   ForwardedRef,
@@ -25,40 +6,55 @@ import {
   ReactNode,
   useCallback,
   useDeferredValue,
+  useEffect,
   useImperativeHandle,
   useMemo,
   useRef,
   useState,
-  useTransition,
-} from "react"
-import { useTranslation } from "react-i18next"
+  useTransition
+} from 'react';
 
-import { genericForwardRef } from "../../utilities/generic-forward-ref"
+import {
+  Combobox as PrimitiveCombobox,
+  ComboboxDisclosure as PrimitiveComboboxDisclosure,
+  ComboboxItem as PrimitiveComboboxItem,
+  ComboboxItemCheck as PrimitiveComboboxItemCheck,
+  ComboboxItemValue as PrimitiveComboboxItemValue,
+  ComboboxPopover as PrimitiveComboboxPopover,
+  ComboboxProvider as PrimitiveComboboxProvider,
+  Separator as PrimitiveSeparator
+} from '@ariakit/react';
+import { CheckMini, EllipseMiniSolid, PlusMini, TrianglesMini, XMarkMini } from '@medusajs/icons';
+import { Badge, clx, Text } from '@medusajs/ui';
+import { matchSorter } from 'match-sorter';
+import { useTranslation } from 'react-i18next';
+
+import { genericForwardRef } from '../../utilities/generic-forward-ref';
 
 type ComboboxOption = {
-  value: string
-  label: string
-  disabled?: boolean
-}
+  value: string;
+  label: string;
+  disabled?: boolean;
+};
 
-type Value = string[] | string
+type Value = string[] | string;
 
-const TABLUAR_NUM_WIDTH = 8
-const TAG_BASE_WIDTH = 28
+const TABLUAR_NUM_WIDTH = 8;
+const TAG_BASE_WIDTH = 28;
 
 interface ComboboxProps<T extends Value = Value>
-  extends Omit<ComponentPropsWithoutRef<"input">, "onChange" | "value"> {
-  value?: T
-  onChange?: (value?: T) => void
-  searchValue?: string
-  onSearchValueChange?: (value: string) => void
-  options: ComboboxOption[]
-  fetchNextPage?: () => void
-  isFetchingNextPage?: boolean
-  onCreateOption?: (value: string) => void
-  noResultsPlaceholder?: ReactNode
-  allowClear?: boolean
-  forceHideInput?: boolean
+  extends Omit<ComponentPropsWithoutRef<'input'>, 'onChange' | 'value'> {
+  value?: T;
+  onChange?: (value?: T) => void;
+  searchValue?: string;
+  onSearchValueChange?: (value: string) => void;
+  options: ComboboxOption[];
+  fetchNextPage?: () => void;
+  isFetchingNextPage?: boolean;
+  onCreateOption?: (value: string) => void;
+  noResultsPlaceholder?: ReactNode;
+  allowClear?: boolean;
+  forceHideInput?: boolean;
 }
 
 const ComboboxImpl = <T extends Value = string>(
@@ -80,68 +76,68 @@ const ComboboxImpl = <T extends Value = string>(
   }: ComboboxProps<T>,
   ref: ForwardedRef<HTMLInputElement>
 ) => {
-  const [open, setOpen] = useState(false)
-  const [isPending, startTransition] = useTransition()
-  const { t } = useTranslation()
+  const [open, setOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const { t } = useTranslation();
 
-  const comboboxRef = useRef<HTMLInputElement>(null)
-  const listboxRef = useRef<HTMLDivElement>(null)
+  const comboboxRef = useRef<HTMLInputElement>(null);
+  const listboxRef = useRef<HTMLDivElement>(null);
+  const badgesContainerRef = useRef<HTMLDivElement>(null);
+  const [visibleBadgesCount, setVisibleBadgesCount] = useState(0);
 
-  useImperativeHandle(ref, () => comboboxRef.current!)
+  useImperativeHandle(ref, () => comboboxRef.current!);
 
-  const isValueControlled = controlledValue !== undefined
-  const isSearchControlled = controlledSearchValue !== undefined
+  const isValueControlled = controlledValue !== undefined;
+  const isSearchControlled = controlledSearchValue !== undefined;
 
-  const isArrayValue = Array.isArray(controlledValue)
-  const emptyState = (isArrayValue ? [] : "") as T
+  const isArrayValue = Array.isArray(controlledValue);
+  const emptyState = (isArrayValue ? [] : '') as T;
 
   const [uncontrolledSearchValue, setUncontrolledSearchValue] = useState(
-    controlledSearchValue || ""
-  )
-  const defferedSearchValue = useDeferredValue(uncontrolledSearchValue)
+    controlledSearchValue || ''
+  );
+  const defferedSearchValue = useDeferredValue(uncontrolledSearchValue);
 
-  const [uncontrolledValue, setUncontrolledValue] = useState<T>(emptyState)
+  const [uncontrolledValue, setUncontrolledValue] = useState<T>(emptyState);
 
-  const searchValue = isSearchControlled
-    ? controlledSearchValue
-    : uncontrolledSearchValue
-  const selectedValues = isValueControlled ? controlledValue : uncontrolledValue
+  const searchValue = isSearchControlled ? controlledSearchValue : uncontrolledSearchValue;
+  const selectedValues = isValueControlled ? controlledValue : uncontrolledValue;
 
   const handleValueChange = (newValues?: T) => {
     // check if the value already exists in options
     const exists = options
-      .filter((o) => !o.disabled)
-      .find((o) => {
+      .filter(o => !o.disabled)
+      .find(o => {
         if (isArrayValue) {
-          return newValues?.includes(o.value)
+          return newValues?.includes(o.value);
         }
-        return o.value === newValues
-      })
+        return o.value === newValues;
+      });
 
     // If the value does not exist in the options, and the component has a handler
     // for creating new options, call it.
     if (!exists && onCreateOption && newValues) {
-      onCreateOption(newValues as string)
+      onCreateOption(newValues as string);
     }
 
     if (!isValueControlled) {
-      setUncontrolledValue(newValues || emptyState)
+      setUncontrolledValue(newValues || emptyState);
     }
 
     if (onChange) {
-      onChange(newValues)
+      onChange(newValues);
     }
 
-    setUncontrolledSearchValue("")
-  }
+    setUncontrolledSearchValue('');
+  };
 
   const handleSearchChange = (query: string) => {
-    setUncontrolledSearchValue(query)
+    setUncontrolledSearchValue(query);
 
     if (onSearchValueChange) {
-      onSearchValueChange(query)
+      onSearchValueChange(query);
     }
-  }
+  };
 
   /**
    * Filter and sort the options based on the search value,
@@ -151,145 +147,238 @@ const ComboboxImpl = <T extends Value = string>(
    */
   const matches = useMemo(() => {
     if (isSearchControlled) {
-      return []
+      return [];
     }
 
     if (forceHideInput) {
-      return options
+      return options;
     }
 
     return matchSorter(options, defferedSearchValue, {
-      keys: ["label"],
-    })
-  }, [options, defferedSearchValue, isSearchControlled, forceHideInput])
+      keys: ['label']
+    });
+  }, [options, defferedSearchValue, isSearchControlled, forceHideInput]);
 
   const observer = useRef(
     new IntersectionObserver(
-      (entries) => {
-        const first = entries[0]
+      entries => {
+        const first = entries[0];
         if (first.isIntersecting) {
-          fetchNextPage?.()
+          fetchNextPage?.();
         }
       },
       { threshold: 1 }
     )
-  )
+  );
 
   const lastOptionRef = useCallback(
     (node: HTMLDivElement) => {
       if (isFetchingNextPage) {
-        return
+        return;
       }
       if (observer.current) {
-        observer.current.disconnect()
+        observer.current.disconnect();
       }
       if (node) {
-        observer.current.observe(node)
+        observer.current.observe(node);
       }
     },
     [isFetchingNextPage]
-  )
+  );
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
-      setUncontrolledSearchValue("")
+      setUncontrolledSearchValue('');
     }
 
-    setOpen(open)
-  }
+    setOpen(open);
+  };
 
-  const hasValue = selectedValues?.length > 0
+  const hasValue = selectedValues?.length > 0;
 
-  const showTag = hasValue && isArrayValue
-  const showSelected = showTag && !searchValue && !open
+  const showTag = hasValue && isArrayValue;
+  const showSelected = showTag && !searchValue && !open;
 
-  const hideInput = forceHideInput || (!isArrayValue && hasValue && !open)
-  const selectedLabel = options.find((o) => o.value === selectedValues)?.label
+  const hideInput = forceHideInput || (!isArrayValue && hasValue && !open);
+  const selectedLabel = options.find(o => o.value === selectedValues)?.label;
 
-  const hidePlaceholder = showSelected || open
+  const hidePlaceholder = showSelected || open;
+
+  const calculateVisibleBadges = useCallback(() => {
+    if (
+      !isArrayValue ||
+      !Array.isArray(selectedValues) ||
+      selectedValues.length === 0 ||
+      !badgesContainerRef.current
+    ) {
+      setVisibleBadgesCount(0);
+      return;
+    }
+
+    const container = badgesContainerRef.current;
+    if (!container || container.offsetWidth === 0) {
+      setVisibleBadgesCount(0);
+      return;
+    }
+
+    const containerWidth = container.offsetWidth;
+    const padding = 16;
+    const gap = 8;
+    const availableWidth = containerWidth - padding;
+
+    const estimateBadgeWidth = (label: string) => {
+      const baseWidth = 32; // Base badge width (padding, icon, etc.)
+      const charWidth = 8; // Approximate character width
+      return baseWidth + Math.min(label.length * charWidth, 200); // Cap at 200px
+    };
+
+    let totalWidth = 0;
+    let count = 0;
+
+    for (let i = 0; i < selectedValues.length; i++) {
+      const option = options.find(opt => opt.value === selectedValues[i]);
+      const optionLabel = option?.label || 'Unknown';
+      const badgeWidth = estimateBadgeWidth(optionLabel);
+
+      if (totalWidth + badgeWidth + (count > 0 ? gap : 0) <= availableWidth) {
+        totalWidth += badgeWidth + (count > 0 ? gap : 0);
+        count++;
+      } else {
+        break;
+      }
+    }
+
+    setVisibleBadgesCount(count);
+  }, [isArrayValue, selectedValues, options]);
+
+  useEffect(() => {
+    // Use requestAnimationFrame to ensure DOM is ready
+    requestAnimationFrame(() => {
+      calculateVisibleBadges();
+    });
+  }, [calculateVisibleBadges]);
+
+  // Handle resize events
+  useEffect(() => {
+    if (!badgesContainerRef.current) return;
+
+    const resizeObserver = new ResizeObserver(() => {
+      calculateVisibleBadges();
+    });
+
+    resizeObserver.observe(badgesContainerRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [calculateVisibleBadges]);
 
   const tagWidth = useMemo(() => {
     if (!Array.isArray(selectedValues)) {
-      return TAG_BASE_WIDTH + TABLUAR_NUM_WIDTH // There can only be a single digit
+      return TAG_BASE_WIDTH + TABLUAR_NUM_WIDTH; // There can only be a single digit
     }
 
-    const count = selectedValues.length
-    const digits = count.toString().length
+    const count = selectedValues.length;
+    const digits = count.toString().length;
 
-    return TAG_BASE_WIDTH + digits * TABLUAR_NUM_WIDTH
-  }, [selectedValues])
+    return TAG_BASE_WIDTH + digits * TABLUAR_NUM_WIDTH;
+  }, [selectedValues]);
 
   const results = useMemo(() => {
-    return isSearchControlled ? options : matches
-  }, [matches, options, isSearchControlled])
+    return isSearchControlled ? options : matches;
+  }, [matches, options, isSearchControlled]);
 
   return (
     <PrimitiveComboboxProvider
       open={open}
       setOpen={handleOpenChange}
       selectedValue={selectedValues}
-      setSelectedValue={(value) => handleValueChange(value as T)}
+      setSelectedValue={value => handleValueChange(value as T)}
       value={uncontrolledSearchValue}
-      setValue={(query) => {
-        startTransition(() => handleSearchChange(query))
+      setValue={query => {
+        startTransition(() => handleSearchChange(query));
       }}
     >
       <div
         className={clx(
-          "relative flex cursor-pointer items-center gap-x-2 overflow-hidden",
-          "h-8 w-full rounded-md",
-          "bg-ui-bg-field transition-fg shadow-borders-base",
-          "has-[input:focus]:shadow-borders-interactive-with-active",
-          "has-[:invalid]:shadow-borders-error has-[[aria-invalid=true]]:shadow-borders-error",
-          "has-[:disabled]:bg-ui-bg-disabled has-[:disabled]:text-ui-fg-disabled has-[:disabled]:cursor-not-allowed",
+          'relative flex cursor-pointer items-center gap-x-2 overflow-hidden',
+          'h-8 w-full rounded-md',
+          'bg-ui-bg-field shadow-borders-base transition-fg',
+          'has-[input:focus]:shadow-borders-interactive-with-active',
+          'has-[:invalid]:shadow-borders-error has-[[aria-invalid=true]]:shadow-borders-error',
+          'has-[:disabled]:cursor-not-allowed has-[:disabled]:bg-ui-bg-disabled has-[:disabled]:text-ui-fg-disabled',
           className
         )}
         style={
           {
-            "--tag-width": `${tagWidth}px`,
+            '--tag-width': `${tagWidth}px`
           } as CSSProperties
         }
       >
-        {showTag && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault()
-              handleValueChange(isArrayValue ? ([] as unknown as T) : undefined)
-            }}
-            className="bg-ui-bg-base hover:bg-ui-bg-base-hover txt-compact-small-plus text-ui-fg-subtle focus-within:border-ui-fg-interactive transition-fg absolute start-0.5 top-0.5 z-[1] flex h-[28px] items-center rounded-[4px] border py-[3px] pe-1 ps-1.5 outline-none"
-          >
-            <span className="tabular-nums">{selectedValues.length}</span>
-            <XMarkMini className="text-ui-fg-muted" />
-          </button>
-        )}
-        <div className="relative flex size-full items-center">
-          {showSelected && (
-            <div
-              className={clx(
-                "pointer-events-none absolute inset-y-0 flex size-full items-center",
-                {
-                  "start-[calc(var(--tag-width)+8px)]": showTag,
-                  "start-2": !showTag,
-                }
+        <div
+          ref={badgesContainerRef}
+          className="relative flex h-full min-w-0 flex-1 items-center gap-2 overflow-hidden px-2"
+        >
+          {isArrayValue && Array.isArray(selectedValues) && selectedValues.length > 0 ? (
+            <>
+              {selectedValues.slice(0, visibleBadgesCount).map(optionValue => {
+                const option = options.find(opt => opt.value === optionValue);
+                return (
+                  <button
+                    key={optionValue}
+                    type="button"
+                    onClick={e => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      const newValues = (selectedValues as string[]).filter(
+                        val => val !== optionValue
+                      );
+                      handleValueChange(newValues as T);
+                    }}
+                    className="relative z-10 flex flex-shrink-0 items-center self-center"
+                    disabled={inputProps.disabled}
+                  >
+                    <Badge
+                      size="2xsmall"
+                      className="flex w-fit items-center"
+                    >
+                      <span className="max-w-[200px] truncate text-ellipsis">
+                        {option?.label || 'Unknown'}
+                      </span>
+                      <XMarkMini />
+                    </Badge>
+                  </button>
+                );
+              })}
+              {selectedValues.length > visibleBadgesCount && (
+                <Badge
+                  size="2xsmall"
+                  className="txt-compact-small-plus relative z-10 flex w-fit flex-shrink-0 items-center self-center border-none bg-transparent px-0 text-ui-fg-subtle"
+                >
+                  +{selectedValues.length - visibleBadgesCount}
+                </Badge>
               )}
+            </>
+          ) : showTag ? (
+            <button
+              type="button"
+              onClick={e => {
+                e.preventDefault();
+                handleValueChange(isArrayValue ? emptyState : undefined);
+              }}
+              className="txt-compact-small-plus flex h-[28px] items-center rounded-[4px] border bg-ui-bg-base py-[3px] pe-1 ps-1.5 text-ui-fg-subtle outline-none transition-fg focus-within:border-ui-fg-interactive hover:bg-ui-bg-base-hover"
             >
-              <Text size="small" leading="compact">
-                {t("general.selected")}
-              </Text>
-            </div>
-          )}
-          {hideInput && (
-            <div
-              className={clx(
-                "pointer-events-none absolute inset-y-0 flex size-full items-center overflow-hidden",
-                {
-                  "start-[calc(var(--tag-width)+8px)]": showTag,
-                  "start-2": !showTag,
-                }
-              )}
-            >
-              <Text size="small" leading="compact" className="truncate">
+              <span className="tabular-nums">{selectedValues.length}</span>
+              <XMarkMini className="text-ui-fg-muted" />
+            </button>
+          ) : null}
+          {hideInput && !isArrayValue && (
+            <div className="pointer-events-none flex size-full items-center overflow-hidden">
+              <Text
+                size="small"
+                leading="compact"
+                className="truncate"
+              >
                 {selectedLabel}
               </Text>
             </div>
@@ -299,41 +388,48 @@ const ComboboxImpl = <T extends Value = string>(
             ref={comboboxRef}
             onFocus={() => setOpen(true)}
             className={clx(
-              "txt-compact-small text-ui-fg-base !placeholder:text-ui-fg-muted transition-fg size-full cursor-pointer bg-transparent pe-8 ps-2 outline-none focus:cursor-text",
-              "hover:bg-ui-bg-field-hover",
+              '!placeholder:text-ui-fg-muted txt-compact-small size-full cursor-pointer bg-transparent pe-8 text-ui-fg-base outline-none transition-fg focus:cursor-text',
+              'hover:bg-ui-bg-field-hover',
               {
-                "opacity-0": hideInput,
-                "ps-2": !showTag,
-                "ps-[calc(var(--tag-width)+8px)]": showTag,
+                'opacity-0': hideInput && !isArrayValue,
+                'ps-2': !showTag && !isArrayValue,
+                'absolute inset-0':
+                  isArrayValue && Array.isArray(selectedValues) && selectedValues.length > 0
               }
             )}
-            placeholder={hidePlaceholder ? undefined : placeholder}
+            placeholder={
+              isArrayValue && Array.isArray(selectedValues) && selectedValues.length > 0
+                ? undefined
+                : hidePlaceholder
+                  ? undefined
+                  : placeholder
+            }
             {...inputProps}
           />
         </div>
         {allowClear && controlledValue && (
           <button
             type="button"
-            onClick={(e) => {
-              e.preventDefault()
-              handleValueChange(undefined)
+            onClick={e => {
+              e.preventDefault();
+              handleValueChange(undefined);
             }}
-            className="bg-ui-bg-base hover:bg-ui-bg-base-hover txt-compact-small-plus text-ui-fg-subtle focus-within:border-ui-fg-interactive transition-fg absolute end-[28px] top-0.5 z-[1] flex h-[28px] items-center rounded-[4px] border px-1.5 py-[2px] outline-none"
+            className="txt-compact-small-plus absolute end-[28px] top-0.5 z-[1] flex h-[28px] items-center rounded-[4px] border bg-ui-bg-base px-1.5 py-[2px] text-ui-fg-subtle outline-none transition-fg focus-within:border-ui-fg-interactive hover:bg-ui-bg-base-hover"
           >
             <XMarkMini className="text-ui-fg-muted" />
           </button>
         )}
         <PrimitiveComboboxDisclosure
-          render={(props) => {
+          render={props => {
             return (
               <button
                 {...props}
                 type="button"
-                className="text-ui-fg-muted transition-fg hover:bg-ui-bg-field-hover absolute end-0 flex size-8 items-center justify-center rounded-r outline-none"
+                className="absolute end-0 flex size-8 items-center justify-center rounded-r text-ui-fg-muted outline-none transition-fg hover:bg-ui-bg-field-hover"
               >
                 <TrianglesMini />
               </button>
-            )
+            );
           }}
         />
       </div>
@@ -343,14 +439,14 @@ const ComboboxImpl = <T extends Value = string>(
         ref={listboxRef}
         role="listbox"
         className={clx(
-          "shadow-elevation-flyout bg-ui-bg-base z-50 rounded-[8px] p-1",
-          "max-h-[200px] overflow-y-auto",
-          "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
-          "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
-          "data-[side=bottom]:slide-in-from-top-2 data-[side=start]:slide-in-from-end-2 data-[side=end]:slide-in-from-start-2 data-[side=top]:slide-in-from-bottom-2"
+          'z-50 rounded-[8px] bg-ui-bg-base p-1 shadow-elevation-flyout',
+          'max-h-[200px] overflow-y-auto',
+          'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
+          'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
+          'data-[side=start]:slide-in-from-end-2 data-[side=end]:slide-in-from-start-2 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2'
         )}
         style={{
-          pointerEvents: open ? "auto" : "none",
+          pointerEvents: open ? 'auto' : 'none'
         }}
         aria-busy={isPending}
       >
@@ -362,10 +458,10 @@ const ComboboxImpl = <T extends Value = string>(
             setValueOnClick={false}
             disabled={disabled}
             className={clx(
-              "transition-fg bg-ui-bg-base data-[active-item=true]:bg-ui-bg-base-hover group flex cursor-pointer items-center gap-x-2 rounded-[4px] px-2 py-1",
+              'group flex cursor-pointer items-center gap-x-2 rounded-[4px] bg-ui-bg-base px-2 py-1 transition-fg data-[active-item=true]:bg-ui-bg-base-hover',
               {
-                "text-ui-fg-disabled": disabled,
-                "bg-ui-bg-component": disabled,
+                'text-ui-fg-disabled': disabled,
+                'bg-ui-bg-component': disabled
               }
             )}
           >
@@ -377,10 +473,15 @@ const ComboboxImpl = <T extends Value = string>(
             </PrimitiveComboboxItemValue>
           </PrimitiveComboboxItem>
         ))}
-        {!!fetchNextPage && <div ref={lastOptionRef} className="w-px" />}
+        {!!fetchNextPage && (
+          <div
+            ref={lastOptionRef}
+            className="w-px"
+          />
+        )}
         {isFetchingNextPage && (
-          <div className="transition-fg bg-ui-bg-base flex items-center rounded-[4px] px-2 py-1.5">
-            <div className="bg-ui-bg-component size-full h-5 w-full animate-pulse rounded-[4px]" />
+          <div className="flex items-center rounded-[4px] bg-ui-bg-base px-2 py-1.5 transition-fg">
+            <div className="size-full h-5 w-full animate-pulse rounded-[4px] bg-ui-bg-component" />
           </div>
         )}
         {!results.length &&
@@ -393,29 +494,32 @@ const ComboboxImpl = <T extends Value = string>(
                 leading="compact"
                 className="text-ui-fg-subtle"
               >
-                {t("general.noResultsTitle")}
+                {t('general.noResultsTitle')}
               </Text>
             </div>
           ))}
         {!results.length && onCreateOption && (
           <Fragment>
-            <PrimitiveSeparator className="bg-ui-border-base -mx-1" />
+            <PrimitiveSeparator className="-mx-1 bg-ui-border-base" />
             <PrimitiveComboboxItem
               value={uncontrolledSearchValue}
               focusOnHover
               setValueOnClick={false}
-              className="transition-fg bg-ui-bg-base data-[active-item=true]:bg-ui-bg-base-hover group mt-1 flex cursor-pointer items-center gap-x-2 rounded-[4px] px-2 py-1.5"
+              className="group mt-1 flex cursor-pointer items-center gap-x-2 rounded-[4px] bg-ui-bg-base px-2 py-1.5 transition-fg data-[active-item=true]:bg-ui-bg-base-hover"
             >
               <PlusMini className="text-ui-fg-subtle" />
-              <Text size="small" leading="compact">
-                {t("actions.create")} &quot;{searchValue}&quot;
+              <Text
+                size="small"
+                leading="compact"
+              >
+                {t('actions.create')} &quot;{searchValue}&quot;
               </Text>
             </PrimitiveComboboxItem>
           </Fragment>
         )}
       </PrimitiveComboboxPopover>
     </PrimitiveComboboxProvider>
-  )
-}
+  );
+};
 
-export const Combobox = genericForwardRef(ComboboxImpl)
+export const Combobox = genericForwardRef(ComboboxImpl);

@@ -11,6 +11,13 @@
     "apply": "Uygula",
     "range": "Aralık",
     "search": "Ara",
+    "searchOptions": "Seçeneklerde ara",
+    "noOptionsFound": "Seçenek bulunamadı.",
+    "noOptionsAvailable": "Kullanılabilir seçenek yok.",
+    "yes": "Evet",
+    "no": "Hayır",
+    "true": "Doğru",
+    "false": "Yanlış",
     "of": "arasında",
     "results": "sonuçlar",
     "pages": "sayfalar",
@@ -23,6 +30,7 @@
     "tip": "İpucu",
     "error": "Hata",
     "select": "Seç",
+    "selectValues": "Değer/değerleri seçin",
     "selected": "Seçildi",
     "enabled": "Etkin",
     "disabled": "Devre Dışı",
@@ -417,12 +425,15 @@
         "details": "Detaylar",
         "organize": "Organize Et",
         "variants": "Varyantlar",
-        "inventory": "Envanter Kitleri"
+        "inventory": "Envanter Kitleri",
+        "attributes": "Öznitelikler"
       },
       "errors": {
         "variants": "Lütfen en az bir varyant seçin.",
         "options": "Lütfen en az bir seçenek oluşturun.",
-        "uniqueSku": "SKU benzersiz olmalıdır."
+        "uniqueSku": "SKU benzersiz olmalıdır.",
+        "titleRequired": "Lütfen başlık girin",
+        "primaryCategoryRequired": "Lütfen birincil kategoriyi seçin"
       },
       "inventory": {
         "heading": "Envanter Kitleri",
@@ -588,6 +599,40 @@
       },
       "material": {
         "label": "Malzeme"
+      },
+      "attributes": {
+        "size": {
+          "label": "Beden",
+          "tooltip": "Bu ürün için mevcut bedenleri seçin",
+          "placeholder": "Değer/değerleri seçin"
+        },
+        "brand": {
+          "label": "Marka",
+          "tooltip": "Bu ürün için markayı seçin",
+          "placeholder": "Değer seçin"
+        },
+        "articleNumber": {
+          "label": "Makale numarası",
+          "tooltip": "Bu ürün için makale numarasını girin",
+          "placeholder": "Değer girin"
+        },
+        "color": {
+          "label": "Renk (isteğe bağlı)",
+          "tooltip": "Bu ürün için mevcut renkleri seçin",
+          "placeholder": "Değer/değerleri seçin"
+        },
+        "useForVariants": {
+          "label": "Varyantlar için kullan",
+          "description": "İşaretlendiğinde, bu özellikle varyantlar oluşturacağız"
+        },
+        "requiredTooltip": "Bu özellik yönetici tarafından zorunlu kılınmıştır. Bunun için değer/değerler eklemeniz gerekir.",
+        "enterValuePlaceholder": "Değer girin",
+        "validation": {
+          "required": "{{name}} gereklidir",
+          "requiredSelect": "Bu özellik yönetici tarafından zorunlu kılınmıştır. Lütfen bir değer seçin.",
+          "requiredSelectMultiple": "Bu özellik yönetici tarafından zorunlu kılınmıştır. Lütfen değer/değerler seçin.",
+          "requiredEnter": "Bu özellik yönetici tarafından zorunlu kılınmıştır. Lütfen bir değer girin."
+        }
       },
       "width": {
         "label": "Genişlik"

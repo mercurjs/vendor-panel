@@ -11,6 +11,13 @@
     "apply": "تطبيق",
     "range": "نطاق",
     "search": "بحث",
+    "searchOptions": "البحث في الخيارات",
+    "noOptionsFound": "لم يتم العثور على خيارات.",
+    "noOptionsAvailable": "لا توجد خيارات متاحة.",
+    "yes": "نعم",
+    "no": "لا",
+    "true": "صحيح",
+    "false": "خطأ",
     "of": "من",
     "results": "نتائج",
     "pages": "صفحات",
@@ -23,7 +30,10 @@
     "tip": "نصيحة",
     "error": "خطأ",
     "select": "اختر",
+    "selectValues": "اختر القيمة/القيم",
     "selected": "محدد",
+    "increment": "زيادة",
+    "decrement": "تقليل",
     "enabled": "ممكّن",
     "disabled": "معطل",
     "expired": "منتهي الصلاحية",
@@ -440,12 +450,15 @@
         "details": "التفاصيل",
         "organize": "تنظيم",
         "variants": "البدائل",
-        "inventory": "مجموعات المخزون"
+        "inventory": "مجموعات المخزون",
+        "attributes": "السمات"
       },
       "errors": {
         "variants": "يرجى تحديد بديل واحد على الأقل.",
         "options": "يرجى إنشاء خيار واحد على الأقل.",
-        "uniqueSku": "يجب أن يكون SKU فريدًا."
+        "uniqueSku": "يجب أن يكون SKU فريدًا.",
+        "titleRequired": "يرجى إدخال عنوان",
+        "primaryCategoryRequired": "يرجى تحديد الفئة الأساسية"
       },
       "inventory": {
         "heading": "مجموعات المخزون",
@@ -615,6 +628,40 @@
       },
       "material": {
         "label": "المادة"
+      },
+      "attributes": {
+        "size": {
+          "label": "الحجم",
+          "tooltip": "اختر الأحجام المتاحة لهذا المنتج",
+          "placeholder": "اختر القيمة/القيم"
+        },
+        "brand": {
+          "label": "العلامة التجارية",
+          "tooltip": "اختر العلامة التجارية لهذا المنتج",
+          "placeholder": "اختر القيمة"
+        },
+        "articleNumber": {
+          "label": "رقم المقال",
+          "tooltip": "أدخل رقم المقال لهذا المنتج",
+          "placeholder": "أدخل القيمة"
+        },
+        "color": {
+          "label": "اللون (اختياري)",
+          "tooltip": "اختر الألوان المتاحة لهذا المنتج",
+          "placeholder": "اختر القيمة/القيم"
+        },
+        "useForVariants": {
+          "label": "استخدم للتنويعات",
+          "description": "عند التحديد، سنقوم بإنشاء تنويعات بهذه الخاصية"
+        },
+        "requiredTooltip": "هذه الخاصية مطلوبة من قبل المدير. يجب عليك إضافة قيمة/قيم لها.",
+        "enterValuePlaceholder": "أدخل القيمة",
+        "validation": {
+          "required": "{{name}} مطلوب",
+          "requiredSelect": "هذه الخاصية مطلوبة من قبل المدير. يرجى اختيار قيمة.",
+          "requiredSelectMultiple": "هذه الخاصية مطلوبة من قبل المدير. يرجى اختيار قيمة/قيم.",
+          "requiredEnter": "هذه الخاصية مطلوبة من قبل المدير. يرجى إدخال قيمة."
+        }
       },
       "width": {
         "label": "العرض"

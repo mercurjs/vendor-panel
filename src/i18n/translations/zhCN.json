@@ -11,6 +11,13 @@
     "apply": "应用",
     "range": "范围",
     "search": "搜索",
+    "searchOptions": "搜索选项",
+    "noOptionsFound": "未找到选项。",
+    "noOptionsAvailable": "没有可用选项。",
+    "yes": "是",
+    "no": "否",
+    "true": "真",
+    "false": "假",
     "of": "之",
     "results": "结果",
     "pages": "页",
@@ -23,6 +30,7 @@
     "tip": "提示",
     "error": "错误",
     "select": "选择",
+    "selectValues": "选择值",
     "selected": "已选择",
     "enabled": "已启用",
     "disabled": "已禁用",
@@ -417,7 +425,8 @@
         "details": "详情",
         "organize": "组织",
         "variants": "变体",
-        "inventory": "库存套件"
+        "inventory": "库存套件",
+        "attributes": "属性"
       },
       "errors": {
         "variants": "请至少选择一个变体。",
@@ -588,6 +597,40 @@
       },
       "material": {
         "label": "材料"
+      },
+      "attributes": {
+        "size": {
+          "label": "尺寸",
+          "tooltip": "选择此产品的可用尺寸",
+          "placeholder": "选择值"
+        },
+        "brand": {
+          "label": "品牌",
+          "tooltip": "选择此产品的品牌",
+          "placeholder": "选择值"
+        },
+        "articleNumber": {
+          "label": "文章编号",
+          "tooltip": "输入此产品的文章编号",
+          "placeholder": "输入值"
+        },
+        "color": {
+          "label": "颜色（可选）",
+          "tooltip": "选择此产品的可用颜色",
+          "placeholder": "选择值"
+        },
+        "useForVariants": {
+          "label": "用于变体",
+          "description": "选中时，我们将使用此属性创建变体"
+        },
+        "requiredTooltip": "此属性由管理员要求。您必须为其添加值。",
+        "enterValuePlaceholder": "输入值",
+        "validation": {
+          "required": "{{name}} 是必需的",
+          "requiredSelect": "此属性由管理员要求。请选择一个值。",
+          "requiredSelectMultiple": "此属性由管理员要求。请选择值。",
+          "requiredEnter": "此属性由管理员要求。请输入一个值。"
+        }
       },
       "width": {
         "label": "宽度"

@@ -11,6 +11,13 @@
     "apply": "Použít",
     "range": "Rozsah",
     "search": "Hledat",
+    "searchOptions": "Hledat v možnostech",
+    "noOptionsFound": "Žádné možnosti nenalezeny.",
+    "noOptionsAvailable": "Žádné možnosti nejsou k dispozici.",
+    "yes": "Ano",
+    "no": "Ne",
+    "true": "Pravda",
+    "false": "Nepravda",
     "of": "z",
     "results": "výsledky",
     "pages": "stránky",
@@ -23,6 +30,7 @@
     "tip": "Tip",
     "error": "Chyba",
     "select": "Vybrat",
+    "selectValues": "Vyberte hodnotu/hodnoty",
     "selected": "Vybráno",
     "enabled": "Povoleno",
     "disabled": "Zakázáno",
@@ -335,8 +343,10 @@
       "dateDesc": "Nejstarší první"
     },
     "radio": {
-      "yes": "Ano",
-      "no": "Ne",
+    "yes": "Ano",
+    "no": "Ne",
+    "true": "Pravda",
+    "false": "Nepravda",
       "true": "Pravda",
       "false": "Nepravda"
     },
@@ -417,7 +427,8 @@
         "details": "Detaily",
         "organize": "Organizovat",
         "variants": "Varianty",
-        "inventory": "Sady inventáře"
+        "inventory": "Sady inventáře",
+        "attributes": "Atributy"
       },
       "errors": {
         "variants": "Prosím vyberte alespoň jednu variantu.",
@@ -588,6 +599,40 @@
       },
       "material": {
         "label": "Materiál"
+      },
+      "attributes": {
+        "size": {
+          "label": "Velikost",
+          "tooltip": "Vyberte dostupné velikosti pro tento produkt",
+          "placeholder": "Vyberte hodnotu/hodnoty"
+        },
+        "brand": {
+          "label": "Značka",
+          "tooltip": "Vyberte značku pro tento produkt",
+          "placeholder": "Vyberte hodnotu"
+        },
+        "articleNumber": {
+          "label": "Číslo článku",
+          "tooltip": "Zadejte číslo článku pro tento produkt",
+          "placeholder": "Zadejte hodnotu"
+        },
+        "color": {
+          "label": "Barva (volitelné)",
+          "tooltip": "Vyberte dostupné barvy pro tento produkt",
+          "placeholder": "Vyberte hodnotu/hodnoty"
+        },
+        "useForVariants": {
+          "label": "Použít pro varianty",
+          "description": "Když je zaškrtnuto, vytvoříme varianty s tímto atributem"
+        },
+        "requiredTooltip": "Tento atribut je vyžadován administrátorem. Musíte pro něj přidat hodnotu/hodnoty.",
+        "enterValuePlaceholder": "Zadejte hodnotu",
+        "validation": {
+          "required": "{{name}} je povinné",
+          "requiredSelect": "Tento atribut je vyžadován administrátorem. Prosím vyberte hodnotu.",
+          "requiredSelectMultiple": "Tento atribut je vyžadován administrátorem. Prosím vyberte hodnotu/hodnoty.",
+          "requiredEnter": "Tento atribut je vyžadován administrátorem. Prosím zadejte hodnotu."
+        }
       },
       "width": {
         "label": "Šířka"

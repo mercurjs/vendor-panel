@@ -1,159 +1,151 @@
-import get from "lodash/get"
-import set from "lodash/set"
-import { useCallback } from "react"
-import { FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form"
+import { useCallback } from 'react';
 
-import { DataGridMatrix } from "../models"
-import {
-  DataGridColumnType,
-  DataGridCoordinates,
-  DataGridToggleableNumber,
-} from "../types"
+import get from 'lodash/get';
+import set from 'lodash/set';
+import { FieldValues, Path, PathValue, UseFormReturn } from 'react-hook-form';
+
+import { DataGridMatrix } from '../models';
+import { DataGridColumnType, DataGridCoordinates, DataGridToggleableNumber } from '../types';
 
 type UseDataGridFormHandlersOptions<TData, TFieldValues extends FieldValues> = {
-  matrix: DataGridMatrix<TData, TFieldValues>
-  form: UseFormReturn<TFieldValues>
-  anchor: DataGridCoordinates | null
-}
+  matrix: DataGridMatrix<TData, TFieldValues>;
+  form: UseFormReturn<TFieldValues>;
+  anchor: DataGridCoordinates | null;
+};
 
-export const useDataGridFormHandlers = <
-  TData,
-  TFieldValues extends FieldValues,
->({
+export const useDataGridFormHandlers = <TData, TFieldValues extends FieldValues>({
   matrix,
   form,
-  anchor,
+  anchor
 }: UseDataGridFormHandlersOptions<TData, TFieldValues>) => {
-  const { getValues, reset } = form
+  const { getValues, reset } = form;
 
   const getSelectionValues = useCallback(
     (fields: string[]): PathValue<TFieldValues, Path<TFieldValues>>[] => {
       if (!fields.length) {
-        return []
+        return [];
       }
 
-      const allValues = getValues()
+      const allValues = getValues();
 
-      return fields.map((field) => {
-        return field.split(".").reduce((obj, key) => obj?.[key], allValues)
-      }) as PathValue<TFieldValues, Path<TFieldValues>>[]
+      return fields.map(field => {
+        return field.split('.').reduce((obj, key) => obj?.[key], allValues);
+      }) as PathValue<TFieldValues, Path<TFieldValues>>[];
     },
     [getValues]
-  )
+  );
 
   const setSelectionValues = useCallback(
     async (fields: string[], values: string[], isHistory?: boolean) => {
       if (!fields.length || !anchor) {
-        return
+        return;
       }
 
-      const type = matrix.getCellType(anchor)
+      const type = matrix.getCellType(anchor);
       if (!type) {
-        return
+        return;
       }
 
-      const convertedValues = convertArrayToPrimitive(values, type)
-      const currentValues = getValues()
+      const convertedValues = convertArrayToPrimitive(values, type);
+      const currentValues = getValues();
 
       fields.forEach((field, index) => {
         if (!field) {
-          return
+          return;
         }
 
-        const valueIndex = index % values.length
-        const newValue = convertedValues[valueIndex]
+        const valueIndex = index % values.length;
+        const newValue = convertedValues[valueIndex];
 
-        setValue(currentValues, field, newValue, type, isHistory)
-      })
+        setValue(currentValues, field, newValue, type, isHistory);
+      });
 
       reset(currentValues, {
         keepDirty: true,
         keepTouched: true,
-        keepDefaultValues: true,
-      })
+        keepDefaultValues: true
+      });
     },
     [matrix, anchor, getValues, reset]
-  )
+  );
 
   return {
     getSelectionValues,
-    setSelectionValues,
-  }
-}
+    setSelectionValues
+  };
+};
 
 function convertToNumber(value: string | number): number {
-  if (typeof value === "number") {
-    return value
+  if (typeof value === 'number') {
+    return value;
   }
 
-  const converted = Number(value)
+  const converted = Number(value);
 
   if (isNaN(converted)) {
-    throw new Error(`String "${value}" cannot be converted to number.`)
+    throw new Error(`String "${value}" cannot be converted to number.`);
   }
 
-  return converted
+  return converted;
 }
 
 function convertToBoolean(value: string | boolean): boolean {
-  if (typeof value === "boolean") {
-    return value
+  if (typeof value === 'boolean') {
+    return value;
   }
 
-  if (typeof value === "undefined" || value === null) {
-    return false
+  if (typeof value === 'undefined' || value === null) {
+    return false;
   }
 
-  const lowerValue = value.toLowerCase()
+  const lowerValue = value.toLowerCase();
 
-  if (lowerValue === "true" || lowerValue === "false") {
-    return lowerValue === "true"
+  if (lowerValue === 'true' || lowerValue === 'false') {
+    return lowerValue === 'true';
   }
 
-  throw new Error(`String "${value}" cannot be converted to boolean.`)
+  throw new Error(`String "${value}" cannot be converted to boolean.`);
 }
 
 function covertToString(value: any): string {
-  if (typeof value === "undefined" || value === null) {
-    return ""
+  if (typeof value === 'undefined' || value === null) {
+    return '';
   }
 
-  return String(value)
+  return String(value);
 }
 
 function convertToggleableNumber(value: any): {
-  quantity: number
-  checked: boolean
-  disabledToggle: boolean
+  quantity: number;
+  checked: boolean;
+  disabledToggle: boolean;
 } {
-  let obj = value
+  let obj = value;
 
-  if (typeof obj === "string") {
+  if (typeof obj === 'string') {
     try {
-      obj = JSON.parse(obj)
+      obj = JSON.parse(obj);
     } catch (error) {
-      throw new Error(`String "${value}" cannot be converted to object.`)
+      throw new Error(`String "${value}" cannot be converted to object.`);
     }
   }
 
-  return obj
+  return obj;
 }
 
-function setValue<
-  T extends DataGridToggleableNumber = DataGridToggleableNumber,
->(
+function setValue<T extends DataGridToggleableNumber = DataGridToggleableNumber>(
   currentValues: any,
   field: string,
   newValue: T,
   type: string,
   isHistory?: boolean
 ) {
-  if (type !== "togglable-number") {
-    set(currentValues, field, newValue)
-    return
+  if (type !== 'togglable-number') {
+    set(currentValues, field, newValue);
+    return;
   }
 
-  setValueToggleableNumber(currentValues, field, newValue, isHistory)
+  setValueToggleableNumber(currentValues, field, newValue, isHistory);
 }
 
 function setValueToggleableNumber(
@@ -162,61 +154,60 @@ function setValueToggleableNumber(
   newValue: DataGridToggleableNumber,
   isHistory?: boolean
 ) {
-  const currentValue = get(currentValues, field)
-  const { disabledToggle } = currentValue
+  const currentValue = get(currentValues, field);
+  const { disabledToggle } = currentValue;
 
   const normalizeQuantity = (value: number | string | null | undefined) => {
-    if (disabledToggle && value === "") {
-      return 0
+    if (disabledToggle && value === '') {
+      return 0;
     }
-    return value
-  }
+    return value;
+  };
 
   const determineChecked = (quantity: number | string | null | undefined) => {
     if (disabledToggle) {
-      return true
+      return true;
     }
-    return quantity !== "" && quantity != null
-  }
+    return quantity !== '' && quantity != null;
+  };
 
-  const quantity = normalizeQuantity(newValue.quantity)
+  const quantity = normalizeQuantity(newValue.quantity);
   const checked = isHistory
     ? disabledToggle
       ? true
       : newValue.checked
-    : determineChecked(quantity)
+    : determineChecked(quantity);
 
   set(currentValues, field, {
     ...currentValue,
     quantity,
-    checked,
-  })
+    checked
+  });
 }
 
-export function convertArrayToPrimitive(
-  values: any[],
-  type: DataGridColumnType
-): any[] {
+export function convertArrayToPrimitive(values: any[], type: DataGridColumnType): any[] {
   switch (type) {
-    case "number":
-      return values.map((v) => {
-        if (v === "") {
-          return v
+    case 'number':
+      return values.map(v => {
+        if (v === '') {
+          return v;
         }
 
         if (v == null) {
-          return ""
+          return '';
         }
 
-        return convertToNumber(v)
-      })
-    case "togglable-number":
-      return values.map(convertToggleableNumber)
-    case "boolean":
-      return values.map(convertToBoolean)
-    case "text":
-      return values.map(covertToString)
+        return convertToNumber(v);
+      });
+    case 'togglable-number':
+      return values.map(convertToggleableNumber);
+    case 'boolean':
+      return values.map(convertToBoolean);
+    case 'text':
+      return values.map(covertToString);
+    case 'media':
+      return values;
     default:
-      throw new Error(`Unsupported target type "${type}".`)
+      throw new Error(`Unsupported target type "${type}".`);
   }
 }

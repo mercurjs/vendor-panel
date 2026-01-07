@@ -11,6 +11,13 @@
     "apply": "Aplicar",
     "range": "Rango",
     "search": "Buscar",
+    "searchOptions": "Buscar opciones",
+    "noOptionsFound": "No se encontraron opciones.",
+    "noOptionsAvailable": "No hay opciones disponibles.",
+    "yes": "Sí",
+    "no": "No",
+    "true": "Verdadero",
+    "false": "Falso",
     "of": "de",
     "results": "resultados",
     "pages": "páginas",
@@ -23,7 +30,10 @@
     "tip": "Consejo",
     "error": "Error",
     "select": "Seleccionar",
+    "selectValues": "Seleccionar valor(es)",
     "selected": "Seleccionado",
+    "increment": "Incrementar",
+    "decrement": "Decrementar",
     "enabled": "Habilitado",
     "disabled": "Deshabilitado",
     "expired": "Expirado",
@@ -323,8 +333,10 @@
       "andLabel": "y"
     },
     "radio": {
-      "yes": "Sí",
-      "no": "No",
+    "yes": "Sí",
+    "no": "No",
+    "true": "Verdadero",
+    "false": "Falso",
       "true": "Verdadero",
       "false": "Falso"
     },
@@ -405,12 +417,15 @@
         "details": "Detalles",
         "organize": "Organizar",
         "variants": "Variantes",
-        "inventory": "Kits de inventario"
+        "inventory": "Kits de inventario",
+        "attributes": "Atributos"
       },
       "errors": {
         "variants": "Por favor, selecciona al menos una variante.",
         "options": "Por favor, crea al menos una opción.",
-        "uniqueSku": "El SKU debe ser único."
+        "uniqueSku": "El SKU debe ser único.",
+        "titleRequired": "Por favor ingresa un título",
+        "primaryCategoryRequired": "Por favor, selecciona la categoría principal"
       },
       "inventory": {
         "heading": "Kits de inventario",
@@ -432,7 +447,9 @@
           "label": "Variantes de producto",
           "hint": "Este orden afectará el orden de las variantes en tu tienda.",
           "alert": "Agrega opciones para crear variantes.",
-          "tip": "Las variantes sin marcar no serán creadas. Siempre puedes crear y editar variantes después, pero esta lista se adapta a las variaciones en tus opciones de producto."
+          "tip": "Las variantes sin marcar no serán creadas. Siempre puedes crear y editar variantes después, pero esta lista se adapta a las variaciones en tus opciones de producto.",
+          "media": "Medios",
+          "searchPlaceholder": "Buscar en tabla"
         },
         "productOptions": {
           "label": "Opciones de producto",
@@ -509,6 +526,7 @@
       "deleteWarningWithThumbnail_other": "Estás a punto de eliminar {{count}} imágenes incluyendo la miniatura. Esta acción no puede deshacerse.",
       "thumbnailTooltip": "Miniatura",
       "galleryLabel": "Galería",
+      "editLabel": "Editar",
       "downloadImageLabel": "Descargar imagen actual",
       "deleteImageLabel": "Eliminar imagen actual",
       "emptyState": {
@@ -576,6 +594,40 @@
       },
       "material": {
         "label": "Material"
+      },
+      "attributes": {
+        "size": {
+          "label": "Talla",
+          "tooltip": "Seleccione las tallas disponibles para este producto",
+          "placeholder": "Seleccionar valor(es)"
+        },
+        "brand": {
+          "label": "Marca",
+          "tooltip": "Seleccione la marca para este producto",
+          "placeholder": "Seleccionar valor"
+        },
+        "articleNumber": {
+          "label": "Número de artículo",
+          "tooltip": "Ingrese el número de artículo para este producto",
+          "placeholder": "Ingresar valor"
+        },
+        "color": {
+          "label": "Color (opcional)",
+          "tooltip": "Seleccione los colores disponibles para este producto",
+          "placeholder": "Seleccionar valor(es)"
+        },
+        "useForVariants": {
+          "label": "Usar para variantes",
+          "description": "Cuando esté marcado, crearemos variantes con este atributo"
+        },
+        "requiredTooltip": "Este atributo es requerido por el administrador. Debes agregar valor(es) para él.",
+        "enterValuePlaceholder": "Ingresar valor",
+        "validation": {
+          "required": "{{name}} es requerido",
+          "requiredSelect": "Este atributo es requerido por el administrador. Por favor, selecciona un valor.",
+          "requiredSelectMultiple": "Este atributo es requerido por el administrador. Por favor, selecciona valor(es).",
+          "requiredEnter": "Este atributo es requerido por el administrador. Por favor, ingresa un valor."
+        }
       },
       "width": {
         "label": "Ancho"

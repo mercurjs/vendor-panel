@@ -3,7 +3,7 @@ import {
   AdjustmentsDone,
   ExclamationCircle,
 } from "@medusajs/icons"
-import { Button, DropdownMenu, clx } from "@medusajs/ui"
+import { Button, DropdownMenu, clx, Input } from "@medusajs/ui"
 import {
   Cell,
   CellContext,
@@ -59,6 +59,9 @@ export interface DataGridRootProps<
   onEditingChange?: (isEditing: boolean) => void
   disableInteractions?: boolean
   multiColumnSelection?: boolean
+  searchValue?: string
+  onSearchChange?: (value: string) => void
+  searchPlaceholder?: string
 }
 
 const ROW_HEIGHT = 40
@@ -105,6 +108,9 @@ export const DataGridRoot = <
   onEditingChange,
   disableInteractions,
   multiColumnSelection = false,
+  searchValue,
+  onSearchChange,
+  searchPlaceholder,
 }: DataGridRootProps<TData, TFieldValues>) => {
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -133,10 +139,35 @@ export const DataGridRoot = <
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowVisibility, setRowVisibility] = useState<VisibilityState>({})
 
+  // Dynamically configure column pinning based on column definitions
+  const columnPinningConfig = useMemo(() => {
+    const leftColumns: string[] = []
+    const rightColumns: string[] = []
+
+    columns.forEach((column) => {
+      const pin = (column as any).meta?.pin
+      const columnId = column.id
+
+      if (pin === 'left' && columnId) {
+        leftColumns.push(columnId)
+      } else if (pin === 'right' && columnId) {
+        rightColumns.push(columnId)
+      }
+    })
+
+    return {
+      left: leftColumns.length > 0 ? leftColumns : undefined,
+      right: rightColumns.length > 0 ? rightColumns : undefined,
+    }
+  }, [columns])
+
   const grid = useReactTable({
     data: data,
     columns,
-    initialState: {
+    initialState: columnPinningConfig.left || columnPinningConfig.right ? {
+      columnPinning: columnPinningConfig,
+    } : {
+      // Default behavior: pin the first column to the left
       columnPinning: {
         left: [columns[0].id!],
       },
@@ -559,6 +590,9 @@ export const DataGridRoot = <
           onResetColumns={handleResetColumns}
           isHighlighted={isHighlighted}
           onHeaderInteractionChange={handleHeaderInteractionChange}
+          searchValue={searchValue}
+          onSearchChange={onSearchChange}
+          searchPlaceholder={searchPlaceholder}
         />
         <div className="size-full overflow-hidden">
           <div
@@ -620,9 +654,9 @@ export const DataGridRoot = <
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                         </div>
                       )
 
@@ -685,6 +719,9 @@ type DataGridHeaderProps = {
   errorCount: number
   onToggleErrorHighlighting: () => void
   onHeaderInteractionChange: (isActive: boolean) => void
+  searchValue?: string
+  onSearchChange?: (value: string) => void
+  searchPlaceholder?: string
 }
 
 const DataGridHeader = ({
@@ -696,6 +733,9 @@ const DataGridHeader = ({
   errorCount,
   onToggleErrorHighlighting,
   onHeaderInteractionChange,
+  searchValue,
+  onSearchChange,
+  searchPlaceholder,
 }: DataGridHeaderProps) => {
   const [shortcutsOpen, setShortcutsOpen] = useState(false)
   const [columnsOpen, setColumnsOpen] = useState(false)
@@ -763,6 +803,19 @@ const DataGridHeader = ({
         )}
       </div>
       <div className="flex items-center gap-x-2">
+        {searchValue !== undefined && onSearchChange && searchPlaceholder && (
+          <Input
+            placeholder={searchPlaceholder}
+            value={searchValue}
+            type="search"
+            onChange={(e) => onSearchChange(e.target.value)}
+            onKeyDown={(e) => {
+              // Stop event propagation to prevent DataGrid keyboard handlers from interfering
+              e.stopPropagation()
+            }}
+            className="w-48"
+          />
+        )}
         {errorCount > 0 && (
           <Button
             size="small"

@@ -28,8 +28,8 @@ export const ProductCreateDetailsForm = ({ form }: ProductAttributesProps) => {
           <FormExtensionZone fields={fields} form={form} />
           <ProductCreateMediaSection form={form} />
         </div>
-        <Divider />
-        <ProductCreateVariantsSection form={form} />
+        {/* <Divider />
+        <ProductCreateVariantsSection form={form} /> */}
       </div>
     </div>
   )
@@ -40,7 +40,7 @@ const Header = () => {
 
   return (
     <div className="flex flex-col">
-      <Heading>{t("products.create.header")}</Heading>
+      <Heading>{t("products.create.tabs.details")}</Heading>
     </div>
   )
 }

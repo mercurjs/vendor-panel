@@ -11,6 +11,13 @@
     "apply": "Applica",
     "range": "Intervallo",
     "search": "Cerca",
+    "searchOptions": "Cerca nelle opzioni",
+    "noOptionsFound": "Nessuna opzione trovata.",
+    "noOptionsAvailable": "Nessuna opzione disponibile.",
+    "yes": "Sì",
+    "no": "No",
+    "true": "Vero",
+    "false": "Falso",
     "of": "di",
     "results": "risultati",
     "pages": "pagine",
@@ -23,6 +30,7 @@
     "tip": "Suggerimento",
     "error": "Errore",
     "select": "Seleziona",
+    "selectValues": "Seleziona valore/i",
     "selected": "Selezionato",
     "enabled": "Abilitato",
     "disabled": "Disabilitato",
@@ -406,12 +414,15 @@
         "details": "Dettagli",
         "organize": "Organizza",
         "variants": "Varianti",
-        "inventory": "Kit di inventario"
+        "inventory": "Kit di inventario",
+        "attributes": "Attributi"
       },
       "errors": {
         "variants": "Seleziona almeno una variante.",
         "options": "Crea almeno un'opzione.",
-        "uniqueSku": "SKU deve essere unico."
+        "uniqueSku": "SKU deve essere unico.",
+        "titleRequired": "Inserisci un titolo",
+        "primaryCategoryRequired": "Seleziona la categoria principale"
       },
       "inventory": {
         "heading": "Kit di inventario",
@@ -577,6 +588,40 @@
       },
       "material": {
         "label": "Materiale"
+      },
+      "attributes": {
+        "size": {
+          "label": "Taglia",
+          "tooltip": "Seleziona le taglie disponibili per questo prodotto",
+          "placeholder": "Seleziona valore/i"
+        },
+        "brand": {
+          "label": "Marca",
+          "tooltip": "Seleziona la marca per questo prodotto",
+          "placeholder": "Seleziona valore"
+        },
+        "articleNumber": {
+          "label": "Numero articolo",
+          "tooltip": "Inserisci il numero articolo per questo prodotto",
+          "placeholder": "Inserisci valore"
+        },
+        "color": {
+          "label": "Colore (opzionale)",
+          "tooltip": "Seleziona i colori disponibili per questo prodotto",
+          "placeholder": "Seleziona valore/i"
+        },
+        "useForVariants": {
+          "label": "Usa per varianti",
+          "description": "Quando selezionato, creeremo varianti con questo attributo"
+        },
+        "requiredTooltip": "Questo attributo è richiesto dall'amministratore. Devi aggiungere valore/i per esso.",
+        "enterValuePlaceholder": "Inserisci valore",
+        "validation": {
+          "required": "{{name}} è richiesto",
+          "requiredSelect": "Questo attributo è richiesto dall'amministratore. Si prega di selezionare un valore.",
+          "requiredSelectMultiple": "Questo attributo è richiesto dall'amministratore. Si prega di selezionare valore/i.",
+          "requiredEnter": "Questo attributo è richiesto dall'amministratore. Si prega di inserire un valore."
+        }
       },
       "width": {
         "label": "Larghezza"

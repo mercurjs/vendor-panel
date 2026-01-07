@@ -101,7 +101,13 @@
   },
   "validation": {
     "mustBeInt": "値は数値でなければなりません。",
-    "mustBePositive": "値は正の数値でなければなりません。"
+    "mustBePositive": "値は正の数値でなければなりません。",
+    "rules": {
+      "lower": "小文字1文字",
+      "upper": "大文字1文字",
+      "8chars": "8文字以上",
+      "symbolOrDigit": "数字または記号1文字"
+    }
   },
   "actions": {
     "save": "保存",
@@ -565,11 +571,10 @@
         "label": "カテゴリー"
       },
       "primaryCategory": {
-        "label": "プライマリカテゴリー",
-        "tooltip": "プライマリカテゴリーは、この商品に適用される属性を定義できます。"
+        "label": "メインカテゴリー"
       },
       "secondaryCategories": {
-        "label": "セカンダリカテゴリー"
+        "label": "サブカテゴリー"
       },
       "tags": {
         "label": "タグ"

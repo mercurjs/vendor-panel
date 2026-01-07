@@ -101,7 +101,13 @@
   },
   "validation": {
     "mustBeInt": "Hodnota musí být celé číslo.",
-    "mustBePositive": "Hodnota musí být kladné číslo."
+    "mustBePositive": "Hodnota musí být kladné číslo.",
+    "rules": {
+      "lower": "Jedno malé písmeno",
+      "upper": "Jedno velké písmeno",
+      "8chars": "Alespoň 8 znaků",
+      "symbolOrDigit": "Jedno číslo nebo symbol"
+    }
   },
   "actions": {
     "save": "Uložit",
@@ -574,6 +580,12 @@
       },
       "categories": {
         "label": "Kategorie"
+      },
+      "primaryCategory": {
+        "label": "Hlavní kategorie"
+      },
+      "secondaryCategories": {
+        "label": "Vedlejší kategorie"
       },
       "tags": {
         "label": "Štítky"

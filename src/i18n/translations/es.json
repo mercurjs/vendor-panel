@@ -103,7 +103,13 @@
   },
   "validation": {
     "mustBeInt": "El valor debe ser un número entero.",
-    "mustBePositive": "El valor debe ser un número positivo."
+    "mustBePositive": "El valor debe ser un número positivo.",
+    "rules": {
+      "lower": "Una letra minúscula",
+      "upper": "Una letra mayúscula",
+      "8chars": "Al menos 8 caracteres",
+      "symbolOrDigit": "Un número o símbolo"
+    }
   },
   "actions": {
     "save": "Guardar",
@@ -571,8 +577,7 @@
         "label": "Categorías"
       },
       "primaryCategory": {
-        "label": "Categoría principal",
-        "tooltip": "La categoría principal puede definir atributos que se aplican a este producto."
+        "label": "Categoría principal"
       },
       "secondaryCategories": {
         "label": "Categorías secundarias"

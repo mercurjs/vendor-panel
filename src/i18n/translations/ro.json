@@ -101,7 +101,13 @@
   },
   "validation": {
     "mustBeInt": "Valoarea trebuie să fie un număr întreg.",
-    "mustBePositive": "Valoarea trebuie să fie un număr pozitiv."
+    "mustBePositive": "Valoarea trebuie să fie un număr pozitiv.",
+    "rules": {
+      "lower": "O literă mică",
+      "upper": "O literă mare",
+      "8chars": "Cel puțin 8 caractere",
+      "symbolOrDigit": "Un număr sau simbol"
+    }
   },
   "actions": {
     "save": "Salva",
@@ -574,8 +580,7 @@
         "label": "Categorii"
       },
       "primaryCategory": {
-        "label": "Categoria principală",
-        "tooltip": "Categoria principală poate defini atribute care se aplică acestui produs."
+        "label": "Categoria principală"
       },
       "secondaryCategories": {
         "label": "Categorii secundare"

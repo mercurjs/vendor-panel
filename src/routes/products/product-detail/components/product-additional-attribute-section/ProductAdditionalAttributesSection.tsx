@@ -1,53 +1,56 @@
-import { Container, Heading } from "@medusajs/ui"
-import { ExtendedAdminProduct } from "../../../../../types/products"
-import { PencilSquare } from "@medusajs/icons"
-import { ActionMenu } from "../../../../../components/common/action-menu"
-import { useProductAttributes } from "../../../../../hooks/api/products"
-import { SectionRow } from "../../../../../components/common/section"
-import { useMemo } from "react"
+import { useMemo } from 'react';
+
+import { PencilSquare } from '@medusajs/icons';
+import { Container, Heading } from '@medusajs/ui';
+import { useTranslation } from 'react-i18next';
+
+import { ActionMenu } from '../../../../../components/common/action-menu';
+import { SectionRow } from '../../../../../components/common/section';
+import { useProductAttributes } from '../../../../../hooks/api/products';
+import { ExtendedAdminProduct } from '../../../../../types/products';
 
 type ProductAttributeSectionProps = {
-  product: ExtendedAdminProduct
-}
+  product: ExtendedAdminProduct;
+};
 
-export const ProductAdditionalAttributesSection = ({
-  product,
-}: ProductAttributeSectionProps) => {
-  const { attributes, isLoading } = useProductAttributes(product.id)
+export const ProductAdditionalAttributesSection = ({ product }: ProductAttributeSectionProps) => {
+  const { t } = useTranslation();
+
+  const { attributes, isLoading } = useProductAttributes(product.id);
 
   const attributeList = useMemo(() => {
-    return attributes?.map((attribute) => {
+    return attributes?.map(attribute => {
       const value =
-        product.attribute_values?.find((av) => av && av.attribute_id === attribute.id)
-          ?.value || "-"
+        product.attribute_values?.filter(Boolean).find(av => av.attribute_id === attribute.id)
+          ?.value || '-';
       return {
         ...attribute,
-        value,
-      }
-    })
-  }, [attributes, product.attribute_values])
+        value
+      };
+    });
+  }, [attributes, product.attribute_values]);
 
-  if (isLoading) return
+  if (isLoading) return;
 
   return (
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
-        <Heading level="h2">Attributes</Heading>
+        <Heading>{t('products.attributes')}</Heading>
         <ActionMenu
           groups={[
             {
               actions: [
                 {
-                  label: "Edit",
-                  to: "additional-attributes",
-                  icon: <PencilSquare />,
-                },
-              ],
-            },
+                  label: 'Edit',
+                  to: 'additional-attributes',
+                  icon: <PencilSquare />
+                }
+              ]
+            }
           ]}
         />
       </div>
-      {attributeList?.map((attribute) => (
+      {attributeList?.filter(Boolean).map(attribute => (
         <SectionRow
           key={attribute.id}
           title={attribute.name}
@@ -56,5 +59,5 @@ export const ProductAdditionalAttributesSection = ({
         />
       ))}
     </Container>
-  )
-}
+  );
+};

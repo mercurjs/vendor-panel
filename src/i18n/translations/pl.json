@@ -101,7 +101,13 @@
   },
   "validation": {
     "mustBeInt": "Wartość musi być liczbą całkowitą.",
-    "mustBePositive": "Wartość musi być liczbą dodatnią."
+    "mustBePositive": "Wartość musi być liczbą dodatnią.",
+    "rules": {
+      "lower": "Jedna mała litera",
+      "upper": "Jedna wielka litera",
+      "8chars": "Co najmniej 8 znaków",
+      "symbolOrDigit": "Jedna cyfra lub symbol"
+    }
   },
   "actions": {
     "save": "Zapisz",
@@ -564,8 +570,7 @@
         "label": "Kategorie"
       },
       "primaryCategory": {
-        "label": "Główna kategoria",
-        "tooltip": "Główna kategoria może definiować atrybuty, które mają zastosowanie do tego produktu."
+        "label": "Główna kategoria"
       },
       "secondaryCategories": {
         "label": "Kategorie drugorzędne"

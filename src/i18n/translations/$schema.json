@@ -390,9 +390,28 @@
         },
         "mustBePositive": {
           "type": "string"
+        },
+        "rules": {
+          "type": "object",
+          "properties": {
+            "lower": {
+              "type": "string"
+            },
+            "upper": {
+              "type": "string"
+            },
+            "8chars": {
+              "type": "string"
+            },
+            "symbolOrDigit": {
+              "type": "string"
+            }
+          },
+          "required": ["lower", "upper", "8chars", "symbolOrDigit"],
+          "additionalProperties": false
         }
       },
-      "required": ["mustBeInt", "mustBePositive"],
+      "required": ["mustBeInt", "mustBePositive", "rules"],
       "additionalProperties": false
     },
     "actions": {
@@ -2183,12 +2202,9 @@
               "properties": {
                 "label": {
                   "type": "string"
-                },
-                "tooltip": {
-                  "type": "string"
                 }
               },
-              "required": ["label", "tooltip"],
+              "required": ["label"],
               "additionalProperties": false
             },
             "secondaryCategories": {
@@ -2491,6 +2507,8 @@
             "type",
             "collection",
             "categories",
+            "primaryCategory",
+            "secondaryCategories",
             "tags",
             "sales_channels",
             "countryOrigin",

@@ -101,7 +101,13 @@
   },
   "validation": {
     "mustBeInt": "Değer tam sayı olmalıdır.",
-    "mustBePositive": "Değer pozitif bir sayı olmalıdır."
+    "mustBePositive": "Değer pozitif bir sayı olmalıdır.",
+    "rules": {
+      "lower": "Bir küçük harf",
+      "upper": "Bir büyük harf",
+      "8chars": "En az 8 karakter",
+      "symbolOrDigit": "Bir sayı veya sembol"
+    }
   },
   "actions": {
     "save": "Kaydet",
@@ -576,8 +582,7 @@
         "label": "Kategoriler"
       },
       "primaryCategory": {
-        "label": "Birincil kategori",
-        "tooltip": "Birincil kategori bu ürüne uygulanan öznitelikleri tanımlayabilir."
+        "label": "Ana kategori"
       },
       "secondaryCategories": {
         "label": "İkincil kategoriler"

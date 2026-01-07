@@ -101,7 +101,13 @@
   },
   "validation": {
     "mustBeInt": "值必须是整数。",
-    "mustBePositive": "值必须是正数。"
+    "mustBePositive": "值必须是正数。",
+    "rules": {
+      "lower": "一个小写字母",
+      "upper": "一个大写字母",
+      "8chars": "至少8个字符",
+      "symbolOrDigit": "一个数字或符号"
+    }
   },
   "actions": {
     "save": "保存",
@@ -572,6 +578,12 @@
       },
       "categories": {
         "label": "分类"
+      },
+      "primaryCategory": {
+        "label": "主要分类"
+      },
+      "secondaryCategories": {
+        "label": "次要分类"
       },
       "tags": {
         "label": "标签"

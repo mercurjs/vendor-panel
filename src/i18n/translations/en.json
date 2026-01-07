@@ -103,7 +103,13 @@
   },
   "validation": {
     "mustBeInt": "The value must be a whole number.",
-    "mustBePositive": "The value must be a positive number."
+    "mustBePositive": "The value must be a positive number.",
+    "rules": {
+      "lower": "One lowercase letter",
+      "upper": "One uppercase letter",
+      "8chars": "At least 8 characters",
+      "symbolOrDigit": "One number or symbol"
+    }
   },
   "actions": {
     "save": "Save",
@@ -597,8 +603,7 @@
         "label": "Categories"
       },
       "primaryCategory": {
-        "label": "Primary category",
-        "tooltip": "Primary category could define attributes that apply to this product."
+        "label": "Primary category"
       },
       "secondaryCategories": {
         "label": "Secondary categories"

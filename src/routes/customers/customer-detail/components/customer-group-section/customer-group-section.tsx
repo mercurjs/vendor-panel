@@ -17,12 +17,15 @@ import { Link } from "react-router-dom"
 
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { _DataTable } from "../../../../../components/table/data-table"
+import {
+  TextCell,
+  TextHeader,
+} from "../../../../../components/table/table-cells/common/text-cell"
 import { useBatchCustomerCustomerGroups } from "../../../../../hooks/api"
 import {
   useCustomerGroups,
   useRemoveCustomersFromGroup,
 } from "../../../../../hooks/api/customer-groups"
-import { useCustomerGroupTableColumns } from "../../../../../hooks/table/columns/use-customer-group-table-columns"
 import { useCustomerGroupTableFilters } from "../../../../../hooks/table/filters/use-customer-group-table-filters"
 import { useCustomerGroupTableQuery } from "../../../../../hooks/table/query/use-customer-group-table-query"
 import { useDataTable } from "../../../../../hooks/use-data-table"
@@ -44,10 +47,9 @@ export const CustomerGroupSection = ({
     pageSize: PAGE_SIZE,
     prefix: PREFIX,
   })
-
+  
   const {
     customer_groups: customerGroups,
-    count,
     isLoading,
     isError,
     error,
@@ -64,9 +66,13 @@ export const CustomerGroupSection = ({
     }
   )
 
-  const customer_groups = customerGroups?.filter((cg) =>
+  const filteredCustomerGroups = customerGroups?.filter((cg) =>
     customer.groups?.some((g) => g.id === cg.customer_group_id)
   )
+
+  const flatCustomerGroups = filteredCustomerGroups?.map((cg) => ({
+    ...cg.customer_group
+  }))
 
   const { mutateAsync: batchCustomerCustomerGroups } =
     useBatchCustomerCustomerGroups(customer.id)
@@ -75,10 +81,10 @@ export const CustomerGroupSection = ({
   const columns = useColumns(customer.id)
 
   const { table } = useDataTable({
-    data: customer_groups ?? [],
+    data: flatCustomerGroups ?? [],
     columns,
-    count: customer_groups?.length ?? 0,
-    getRowId: (row) => row.customer_group_id,
+    count: flatCustomerGroups?.length ?? 0,
+    getRowId: (row) => row.id,
     enablePagination: true,
     enableRowSelection: true,
     pageSize: PAGE_SIZE,
@@ -90,13 +96,13 @@ export const CustomerGroupSection = ({
   })
 
   const handleRemove = async () => {
-    const customerGroupIds = Object.keys(rowSelection)
+    const selectedIds = Object.keys(rowSelection)
 
     const res = await prompt({
       title: t("general.areYouSure"),
       description: t("customers.groups.removeMany", {
-        groups: customer_groups
-          ?.filter((g) => customerGroupIds.includes(g.id))
+        groups: flatCustomerGroups
+          ?.filter((g) => selectedIds.includes(g.id))
           .map((g) => g.name)
           .join(","),
       }),
@@ -108,15 +114,19 @@ export const CustomerGroupSection = ({
       return
     }
 
+    const customerGroupIds = flatCustomerGroups
+      ?.filter((g) => selectedIds.includes(g.id))
+      .map((g) => g.id) ?? []
+
     await batchCustomerCustomerGroups(
       { remove: customerGroupIds, add: [] },
       {
         onSuccess: () => {
           toast.success(
             t("customers.groups.removed.success", {
-              groups: customer_groups!
-                .filter((cg) => customerGroupIds.includes(cg.id))
-                .map((cg) => cg?.name),
+              groups: flatCustomerGroups
+                ?.filter((g) => selectedIds.includes(g.id))
+                .map((g) => g.name),
             })
           )
         },
@@ -146,22 +156,16 @@ export const CustomerGroupSection = ({
         columns={columns}
         pageSize={PAGE_SIZE}
         isLoading={isLoading}
-        count={customer_groups?.length ?? 0}
+        count={flatCustomerGroups?.length ?? 0}
         prefix={PREFIX}
-        navigateTo={(row) => `/customer-groups/${row.id}`}
+        navigateTo={(row) => `/customer-groups/${row.original.id}`}
         filters={filters}
         search
         pagination
         orderBy={[
           { key: "name", label: t("fields.name") },
-          {
-            key: "created_at",
-            label: t("fields.createdAt"),
-          },
-          {
-            key: "updated_at",
-            label: t("fields.updatedAt"),
-          },
+          { key: "created_at", label: t("fields.createdAt") },
+          { key: "updated_at", label: t("fields.updatedAt") },
         ]}
         commands={[
           {
@@ -189,7 +193,7 @@ const CustomerGroupRowActions = ({
   const prompt = usePrompt()
   const { t } = useTranslation()
 
-  const { mutateAsync } = useRemoveCustomersFromGroup(group.customer_group_id)
+  const { mutateAsync } = useRemoveCustomersFromGroup(group.id)
 
   const onRemove = async () => {
     const res = await prompt({
@@ -237,7 +241,7 @@ const CustomerGroupRowActions = ({
 const columnHelper = createColumnHelper<HttpTypes.AdminCustomerGroup>()
 
 const useColumns = (customerId: string) => {
-  const columns = useCustomerGroupTableColumns()
+  const { t } = useTranslation()
 
   return useMemo(
     () => [
@@ -269,7 +273,12 @@ const useColumns = (customerId: string) => {
           )
         },
       }),
-      ...columns,
+      columnHelper.accessor("name", {
+        header: () => <TextHeader text={t("fields.name")} />,
+        cell: ({ row }) => {
+          return <TextCell text={row.original?.name || "-"} />
+        },
+      }),
       columnHelper.display({
         id: "actions",
         cell: ({ row }) => (
@@ -280,6 +289,6 @@ const useColumns = (customerId: string) => {
         ),
       }),
     ],
-    [columns, customerId]
+    [customerId, t]
   )
 }

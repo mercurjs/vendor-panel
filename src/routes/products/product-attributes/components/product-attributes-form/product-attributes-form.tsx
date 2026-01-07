@@ -1,4 +1,4 @@
-import { HttpTypes } from "@medusajs/types"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 import { Button, Input } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import * as zod from "zod"
@@ -14,7 +14,7 @@ import {
 import { useUpdateProduct } from "../../../../../hooks/api/products"
 
 type ProductAttributesFormProps = {
-  product: HttpTypes.AdminProduct
+  product: ExtendedAdminProduct
 }
 
 const dimension = zod

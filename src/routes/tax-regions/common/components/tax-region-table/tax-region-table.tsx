@@ -1,7 +1,8 @@
 import { HttpTypes } from "@medusajs/types"
 import { Button } from "@medusajs/ui"
 import { Table } from "@tanstack/react-table"
-import { ReactNode } from "react"
+import { ReactNode, useMemo } from "react"
+import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 import {
   NoRecords,
@@ -33,6 +34,16 @@ export const TaxRegionTable = ({
   prefix,
   children,
 }: TaxRegionTableProps) => {
+  const { t } = useTranslation()
+
+  const orderByKeys = useMemo(
+    () => [
+      { key: "updated_at", label: t("fields.updatedAt") },
+      { key: "created_at", label: t("fields.createdAt") },
+    ],
+    [t]
+  )
+
   if (isPending) {
     return (
       <div className="flex flex-col divide-y">
@@ -68,7 +79,7 @@ export const TaxRegionTable = ({
                 <DataTableSearch prefix={prefix} />
               </div> */}
               <DataTableOrderBy
-                keys={["updated_at", "created_at"]}
+                keys={orderByKeys}
                 prefix={prefix}
               />
             </div>

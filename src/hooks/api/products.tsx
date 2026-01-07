@@ -12,14 +12,11 @@ import { fetchQuery, importProductsQuery, sdk } from "../../lib/client"
 import { queryClient } from "../../lib/query-client"
 import { queryKeysFactory } from "../../lib/query-key-factory"
 import { inventoryItemsQueryKeys } from "./inventory.tsx"
-import {
-  checkCategoryMatch,
-  checkCollectionMatch,
-  checkTagMatch,
-  checkTypeMatch,
-  checkStatusMatch,
-} from "./helpers/productFilters"
 import productsImagesFormatter from "../../utils/products-images-formatter"
+import {
+  ExtendedAdminProductResponse,
+  ExtendedAdminProductListResponse,
+} from "../../types/products"
 
 const PRODUCTS_QUERY_KEY = "products" as const
 export const productsQueryKeys = queryKeysFactory(PRODUCTS_QUERY_KEY)
@@ -341,6 +338,7 @@ export const useProductAttributes = (id: string) => {
     queryFn: () =>
       fetchQuery(`/vendor/products/${id}/applicable-attributes`, {
         method: "GET",
+        query: { fields: "+is_required" }
       }),
     queryKey: productAttributesQueryKey(id),
   })
@@ -353,55 +351,51 @@ export const useProduct = (
   query?: Record<string, any>,
   options?: Omit<
     UseQueryOptions<
-      HttpTypes.AdminProductResponse,
+      ExtendedAdminProductResponse,
       FetchError,
-      HttpTypes.AdminProductResponse,
+      ExtendedAdminProductResponse,
       QueryKey
     >,
     "queryFn" | "queryKey"
   >
 ) => {
   const { data, ...rest } = useQuery({
-    queryFn: () =>
-      fetchQuery(`/vendor/products/${id}`, {
+    queryFn: async () => {
+      const response = await fetchQuery(`/vendor/products/${id}`, {
         method: "GET",
         query: query as { [key: string]: string | number },
-      }),
-    queryKey: productsQueryKeys.detail(id),
+      })
+
+      return {
+        ...response,
+        product: productsImagesFormatter(response.product),
+      }
+    },
+    queryKey: productsQueryKeys.detail(id, query),
     ...options,
   })
 
   return {
     ...data,
-    product: productsImagesFormatter(data?.product),
     ...rest,
   }
 }
 
 export const useProducts = (
-  query?: HttpTypes.AdminProductListParams,
+  query?: HttpTypes.AdminProductListParams & { tag_id?: string | string[] },
   options?: Omit<
     UseQueryOptions<
-      HttpTypes.AdminProductListResponse,
+      ExtendedAdminProductListResponse,
       FetchError,
-      HttpTypes.AdminProductListResponse,
+      ExtendedAdminProductListResponse,
       QueryKey
     >,
     "queryFn" | "queryKey"
-  >,
-  filter?: HttpTypes.AdminProductListParams & {
-    tagId?: string | string[]
-    categoryId?: string | string[]
-    collectionId?: string | string[]
-    typeId?: string | string[]
-    status?: string | string[]
-    q?: string
-    sort?: string
-  }
+  >
 ) => {
   const { data, ...rest } = useQuery({
-    queryFn: () =>
-      fetchQuery("/vendor/products", {
+    queryFn: () => 
+     fetchQuery("/vendor/products", {
         method: "GET",
         query: query as Record<string, string | number>,
       }),
@@ -409,66 +403,7 @@ export const useProducts = (
     ...options,
   })
 
-  let products = data?.products || []
-
-  // Apply filters if any exist
-  if (
-    filter?.q ||
-    filter?.categoryId ||
-    filter?.tagId ||
-    filter?.collectionId ||
-    filter?.typeId ||
-    filter?.status
-  ) {
-    products = products.filter((item) => {
-      if (filter.q) {
-        return item.title.toLowerCase().includes(filter.q.toLowerCase())
-      }
-
-      return (
-        (filter.categoryId &&
-          checkCategoryMatch(item?.categories, filter.categoryId)) ||
-        (filter.tagId && checkTagMatch(item?.tags, filter.tagId)) ||
-        (filter.collectionId &&
-          checkCollectionMatch(item?.collection, filter.collectionId)) ||
-        (filter.typeId && checkTypeMatch(item?.type_id, filter.typeId)) ||
-        (filter.status && checkStatusMatch(item?.status, filter.status))
-      )
-    })
-  }
-
-  // Apply sorting if specified
-  if (filter?.sort) {
-    const isDescending = filter.sort.startsWith("-")
-    const field = isDescending ? filter.sort.slice(1) : filter.sort
-
-    if (["title", "created_at", "updated_at"].includes(field)) {
-      products = [...products].sort((a, b) => {
-        const aValue = a[field as keyof HttpTypes.AdminProduct]
-        const bValue = b[field as keyof HttpTypes.AdminProduct]
-
-        if (field === "title") {
-          const titleA = String(aValue || "")
-          const titleB = String(bValue || "")
-          return isDescending
-            ? titleB.localeCompare(titleA)
-            : titleA.localeCompare(titleB)
-        }
-
-        // For dates
-        const dateA = new Date((aValue as string) || new Date()).getTime()
-        const dateB = new Date((bValue as string) || new Date()).getTime()
-        return isDescending ? dateB - dateA : dateA - dateB
-      })
-    }
-  }
-
-  return {
-    ...data,
-    products: productsImagesFormatter(products?.slice(0, filter?.limit)) || [],
-    count: products?.length || 0,
-    ...rest,
-  }
+  return { ...data, ...rest }
 }
 
 export const useCreateProduct = (
@@ -498,7 +433,7 @@ export const useUpdateProduct = (
   options?: UseMutationOptions<
     HttpTypes.AdminProductResponse,
     FetchError,
-    HttpTypes.AdminUpdateProduct
+    HttpTypes.AdminUpdateProduct & { additional_data?: { values: Record<string, string>[] } }
   >
 ) => {
   return useMutation({

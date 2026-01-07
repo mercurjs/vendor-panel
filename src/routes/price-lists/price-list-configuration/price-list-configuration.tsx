@@ -18,14 +18,15 @@ export const PriceListConfiguration = () => {
     )?.value || ([] as string[])
 
   const {
-    customer_groups,
+    customer_groups: customerGroupsData,
     isPending: isCustomerGroupsPending,
     isError: isCustomerGroupsError,
     error: customerGroupsError,
   } = useCustomerGroups(undefined, { enabled: !!customerGroupIds?.length })
 
-  const initialCustomerGroups = (customer_groups || [])
-    .map(({ customer_group }) => customer_group)
+  const customerGroups = customerGroupsData?.map((item) => item.customer_group)
+
+  const initialCustomerGroups = (customerGroups || [])
     .filter((group) => customerGroupIds.includes(group.id))
 
   const isCustomerGroupsReady = isPending

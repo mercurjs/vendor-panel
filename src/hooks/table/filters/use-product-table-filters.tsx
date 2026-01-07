@@ -8,6 +8,7 @@ const excludeableFields = [
   "categories",
   "product_types",
   "product_tags",
+  "sales_channel_id",
 ] as const
 
 export const useProductTableFilters = (
@@ -78,7 +79,7 @@ export const useProductTableFilters = (
 
   if (product_tags && !isProductTagExcluded) {
     const tagFilter: Filter = {
-      key: "tagId",
+      key: "tag_id",
       label: t("fields.tag"),
       type: "select",
       multiple: true,
@@ -112,7 +113,7 @@ export const useProductTableFilters = (
       label: t("fields.collection"),
       type: "select",
       multiple: true,
-      options: collections.map((c) => ({
+      options: (Array.isArray(collections) ? collections : []).map((c) => ({
         label: c.title,
         value: c.id,
       })),

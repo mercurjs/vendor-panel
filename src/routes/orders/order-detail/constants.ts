@@ -19,6 +19,7 @@ const DEFAULT_PROPERTIES = [
   "tax_total",
   "refundable_total",
   "order_change",
+  "commission_value",
 ]
 
 const DEFAULT_RELATIONS = [

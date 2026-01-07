@@ -18,6 +18,7 @@ import { useDataTable } from "../../../../../hooks/use-data-table"
 import { PriceListCreateProductsSchema } from "../../../common/schemas"
 import { PriceListPricesAddSchema } from "./schema"
 import { usePriceListProducts } from "../../../../../hooks/api"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 
 type PriceListPricesAddProductIdsFormProps = {
   form: UseFormReturn<PriceListPricesAddSchema>
@@ -170,7 +171,7 @@ export const PriceListPricesAddProductIdsForm = ({
   )
 }
 
-const columnHelper = createColumnHelper<HttpTypes.AdminProduct>()
+const columnHelper = createColumnHelper<ExtendedAdminProduct>()
 
 const useColumns = () => {
   const base = useProductTableColumns()

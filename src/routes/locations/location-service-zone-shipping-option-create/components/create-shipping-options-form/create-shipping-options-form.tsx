@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { HttpTypes } from "@medusajs/types"
+import { VendorExtendedAdminServiceZone } from "../../../../../types/stock-location"
 import { Button, ProgressStatus, ProgressTabs, toast } from "@medusajs/ui"
 import { useForm, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -30,7 +30,7 @@ enum Tab {
 }
 
 type CreateShippingOptionFormProps = {
-  zone: HttpTypes.AdminServiceZone
+  zone: VendorExtendedAdminServiceZone
   locationId: string
   isReturn?: boolean
   type: FulfillmentSetType
@@ -93,6 +93,19 @@ export function CreateShippingOptionsForm({
       })
       .filter((p): p is { currency_code: string; amount: number } => !!p)
 
+    const regionPrices = Object.entries(data.region_prices)
+      .map(([region, value]) => {
+        if (!value) {
+          return undefined
+        }
+
+        return {
+          region_id: region,
+          amount: castNumber(value),
+        }
+      })
+      .filter((p): p is { region_id: string; amount: number } => !!p)
+
     const fulfillmentOptionData = fulfillmentProviderOptions?.find(
       (fo) => fo.id === data.fulfillment_option_id
     )!
@@ -103,7 +116,7 @@ export function CreateShippingOptionsForm({
         service_zone_id: zone.id,
         shipping_profile_id: data.shipping_profile_id,
         provider_id: data.provider_id,
-        prices: currencyPrices,
+        prices: [...currencyPrices, ...regionPrices],
         data: fulfillmentOptionData as unknown as Record<string, unknown>,
         rules: [
           {
@@ -265,9 +278,6 @@ export function CreateShippingOptionsForm({
                 zone={zone}
                 isReturn={isReturn}
                 type={type}
-                locationId={locationId}
-                fulfillmentProviderOptions={fulfillmentProviderOptions || []}
-                selectedProviderId={selectedProviderId}
               />
             </ProgressTabs.Content>
             <ProgressTabs.Content value={Tab.PRICING} className="size-full">

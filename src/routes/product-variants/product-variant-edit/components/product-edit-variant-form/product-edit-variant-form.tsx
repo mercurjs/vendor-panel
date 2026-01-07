@@ -1,10 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Button, Divider, Heading, Input, Switch, toast } from "@medusajs/ui"
+import { Button, Divider, Heading, Input, toast } from "@medusajs/ui"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod"
 
-import { HttpTypes } from "@medusajs/types"
 import { Form } from "../../../../../components/common/form"
 import { Combobox } from "../../../../../components/inputs/combobox"
 import { CountrySelect } from "../../../../../components/inputs/country-select"
@@ -16,10 +15,11 @@ import {
   transformNullableFormNumber,
 } from "../../../../../lib/form-helpers"
 import { optionalInt } from "../../../../../lib/validation"
+import { ExtendedAdminProduct, ExtendedAdminProductVariant } from "../../../../../types/products"
 
 type ProductEditVariantFormProps = {
-  product: HttpTypes.AdminProduct
-  variant?: HttpTypes.AdminProductVariant
+  product: ExtendedAdminProduct
+  variant?: ExtendedAdminProductVariant
 }
 
 const ProductEditVariantSchema = z.object({
@@ -98,7 +98,6 @@ export const ProductEditVariantForm = ({
 
     await mutateAsync(
       {
-        id: variant?.id!,
         weight: transformNullableFormNumber(weight),
         height: transformNullableFormNumber(height),
         width: transformNullableFormNumber(width),

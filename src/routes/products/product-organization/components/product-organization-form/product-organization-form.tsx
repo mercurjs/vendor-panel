@@ -1,4 +1,4 @@
-import { HttpTypes } from "@medusajs/types"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 import { Button, toast } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import * as zod from "zod"
@@ -17,7 +17,7 @@ import { useComboboxData } from "../../../../../hooks/use-combobox-data"
 import { fetchQuery } from "../../../../../lib/client"
 
 type ProductOrganizationFormProps = {
-  product: HttpTypes.AdminProduct
+  product: ExtendedAdminProduct
 }
 
 const ProductOrganizationSchema = zod.object({
@@ -111,10 +111,10 @@ export const ProductOrganizationForm = ({
   const handleSubmit = form.handleSubmit(async (data) => {
     await mutateAsync(
       {
-        type_id: data.type_id || null,
-        collection_id: data.collection_id || null,
-        categories: [{ id: data.category_ids || "" }],
-        tags: data.tag_ids?.map((t) => ({ id: t })),
+        type_id: data.type_id ? data.type_id : undefined,
+        collection_id: data.collection_id ? data.collection_id : undefined,
+        categories: data.category_ids ? [{ id: data.category_ids }] : [],
+        tags: data.tag_ids?.map((t) => ({ id: t })) ?? [],
       },
       {
         onSuccess: ({ product }) => {

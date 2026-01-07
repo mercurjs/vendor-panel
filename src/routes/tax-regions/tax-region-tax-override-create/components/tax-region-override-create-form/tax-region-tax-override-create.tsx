@@ -201,6 +201,8 @@ export const TaxRegionCreateTaxOverrideForm = ({
       //   return productTags
       // case TaxRateRuleReferenceType.CUSTOMER_GROUP:
       //   return customerGroups
+      default:
+        return products
     }
   }
 
@@ -227,31 +229,32 @@ export const TaxRegionCreateTaxOverrideForm = ({
     // },
   ]
 
-  const searchPlaceholders = {
+  const searchPlaceholders: Record<TaxRateRuleReferenceType, string> = {
     [TaxRateRuleReferenceType.PRODUCT]: t(
       "taxRegions.fields.targets.placeholders.product"
     ),
     [TaxRateRuleReferenceType.PRODUCT_TYPE]: t(
       "taxRegions.fields.targets.placeholders.productType"
     ),
-    // [TaxRateRuleReferenceType.PRODUCT_COLLECTION]: t(
-    //   "taxRegions.fields.targets.placeholders.productCollection"
-    // ),
-    // [TaxRateRuleReferenceType.PRODUCT_TAG]: t(
-    //   "taxRegions.fields.targets.placeholders.productTag"
-    // ),
-    // [TaxRateRuleReferenceType.CUSTOMER_GROUP]: t(
-    //   "taxRegions.fields.targets.placeholders.customerGroup"
-    // ),
+    [TaxRateRuleReferenceType.PRODUCT_COLLECTION]: t(
+      "taxRegions.fields.targets.placeholders.product"
+    ),
+    [TaxRateRuleReferenceType.PRODUCT_TAG]: t(
+      "taxRegions.fields.targets.placeholders.product"
+    ),
+    [TaxRateRuleReferenceType.CUSTOMER_GROUP]: t(
+      "taxRegions.fields.targets.placeholders.product"
+    ),
   }
 
   const getFieldHandler = (type: TaxRateRuleReferenceType) => {
-    const { fields, remove, append } = getControls(type)
+    const controls = getControls(type)
+    const { fields, remove, append } = controls
     const modalId = getStackedModalId(type)
 
     return (references: TaxRateRuleReference[]) => {
       if (!references.length) {
-        form.setValue(type, [], {
+        form.setValue(type as "product" | "product_type", [], {
           shouldDirty: true,
         })
         setIsOpen(modalId, false)
@@ -280,10 +283,11 @@ export const TaxRegionCreateTaxOverrideForm = ({
   ])
 
   const disableRule = (type: TaxRateRuleReferenceType) => {
-    form.setValue(type, [], {
+    form.setValue(type as "product" | "product_type", [], {
       shouldDirty: true,
     })
-    form.setValue(`enabled_rules.${type}`, false, {
+
+    form.setValue(`enabled_rules.${type}` as "enabled_rules.product" | "enabled_rules.product_type", false, {
       shouldDirty: true,
     })
 
@@ -291,10 +295,10 @@ export const TaxRegionCreateTaxOverrideForm = ({
   }
 
   const enableRule = (type: TaxRateRuleReferenceType) => {
-    form.setValue(`enabled_rules.${type}`, true, {
+    form.setValue(`enabled_rules.${type}` as "enabled_rules.product" | "enabled_rules.product_type", true, {
       shouldDirty: true,
     })
-    form.setValue(type, [], {
+    form.setValue(type as "product" | "product_type", [], {
       shouldDirty: true,
     })
 
@@ -308,7 +312,7 @@ export const TaxRegionCreateTaxOverrideForm = ({
 
   const addRule = () => {
     const firstDisabledRule = Object.keys(watchedEnabledRules).find(
-      (key) => !watchedEnabledRules[key as TaxRateRuleReferenceType]
+      (key) => !watchedEnabledRules[key as keyof typeof watchedEnabledRules]
     )
 
     if (firstDisabledRule) {
@@ -317,7 +321,7 @@ export const TaxRegionCreateTaxOverrideForm = ({
   }
 
   const visibleRuleTypes = referenceTypeOptions
-    .filter((option) => watchedEnabledRules[option.value])
+    .filter((option) => watchedEnabledRules[option.value as keyof typeof watchedEnabledRules])
     .sort((a, b) => {
       const orderArray = Array.from(displayOrder)
       return orderArray.indexOf(b.value) - orderArray.indexOf(a.value)
@@ -498,7 +502,7 @@ export const TaxRegionCreateTaxOverrideForm = ({
                       <div key={type}>
                         <Form.Field
                           control={form.control}
-                          name={ruleType.value}
+                          name={ruleType.value as "product" | "product_type"}
                           render={({
                             field: {
                               value: _value,

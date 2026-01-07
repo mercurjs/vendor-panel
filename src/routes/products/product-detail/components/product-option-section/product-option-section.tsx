@@ -4,13 +4,14 @@ import { useTranslation } from "react-i18next"
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { SectionRow } from "../../../../../components/common/section"
 import { useDeleteProductOption } from "../../../../../hooks/api/products"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 import { HttpTypes } from "@medusajs/types"
 
 const OptionActions = ({
   product,
   option,
 }: {
-  product: HttpTypes.AdminProduct
+  product: ExtendedAdminProduct
   option: HttpTypes.AdminProductOption
 }) => {
   const { t } = useTranslation()
@@ -61,7 +62,7 @@ const OptionActions = ({
 }
 
 type ProductOptionSectionProps = {
-  product: HttpTypes.AdminProduct
+  product: ExtendedAdminProduct
 }
 
 export const ProductOptionSection = ({

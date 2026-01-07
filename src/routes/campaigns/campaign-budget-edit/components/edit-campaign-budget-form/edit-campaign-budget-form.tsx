@@ -56,7 +56,7 @@ export const EditCampaignBudgetForm = ({
       }
     )
   })
-
+  
   return (
     <RouteDrawer.Form form={form}>
       <KeyboundForm onSubmit={handleSubmit} className="flex flex-1 flex-col">
@@ -95,7 +95,7 @@ export const EditCampaignBudgetForm = ({
                           key="usage"
                           min={0}
                           {...field}
-                          value={value}
+                          value={value || undefined}
                           onChange={(e) => {
                             onChange(
                               e.target.value === ""

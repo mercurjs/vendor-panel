@@ -1,18 +1,21 @@
 import { InlineTip, Input, Switch } from "@medusajs/ui"
 import { ComponentType } from "react"
-import { ControllerRenderProps, UseFormReturn } from "react-hook-form"
+import { ControllerRenderProps, FieldPath, FieldValues, UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { Form } from "../../../components/common/form"
 import { FormField } from "../../types"
 import { FormFieldType } from "./types"
 import { getFieldType } from "./utils"
 
-type FormExtensionZoneProps = {
+type FormExtensionZoneProps<TFieldValues extends FieldValues = FieldValues> = {
   fields: FormField[]
-  form: UseFormReturn<any>
+  form: UseFormReturn<TFieldValues>
 }
 
-export const FormExtensionZone = ({ fields, form }: FormExtensionZoneProps) => {
+export const FormExtensionZone = <TFieldValues extends FieldValues = FieldValues>({ 
+  fields, 
+  form 
+}: FormExtensionZoneProps<TFieldValues>) => {
   return (
     <div>
       {fields.map((field, index) => (
@@ -33,12 +36,15 @@ function getFieldLabel(field: FormField) {
     .join(" ")
 }
 
-type FormExtensionFieldProps = {
+type FormExtensionFieldProps<TFieldValues extends FieldValues = FieldValues> = {
   field: FormField
-  form: UseFormReturn<any>
+  form: UseFormReturn<TFieldValues>
 }
 
-const FormExtensionField = ({ field, form }: FormExtensionFieldProps) => {
+const FormExtensionField = <TFieldValues extends FieldValues = FieldValues>({ 
+  field, 
+  form 
+}: FormExtensionFieldProps<TFieldValues>) => {
   const label = getFieldLabel(field)
   const description = field.description
   const placeholder = field.placeholder
@@ -51,7 +57,7 @@ const FormExtensionField = ({ field, form }: FormExtensionFieldProps) => {
   return (
     <Form.Field
       control={control}
-      name={`additional_data.${field.name}`}
+      name={`additional_data.${field.name}` as FieldPath<TFieldValues>}
       render={({ field }) => {
         return (
           <Form.Item>
@@ -73,19 +79,25 @@ const FormExtensionField = ({ field, form }: FormExtensionFieldProps) => {
   )
 }
 
-type FormExtensionFieldComponentProps = {
-  field: ControllerRenderProps
+type FormExtensionFieldComponentProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+> = {
+  field: ControllerRenderProps<TFieldValues, TName>
   type: FormFieldType
-  component?: ComponentType<any>
+  component?: ComponentType<ControllerRenderProps<TFieldValues, TName> & { placeholder?: string }>
   placeholder?: string
 }
 
-const FormExtensionFieldComponent = ({
+const FormExtensionFieldComponent = <
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+>({
   field,
   type,
   component,
   placeholder,
-}: FormExtensionFieldComponentProps) => {
+}: FormExtensionFieldComponentProps<TFieldValues, TName>) => {
   const { t } = useTranslation()
 
   if (component) {

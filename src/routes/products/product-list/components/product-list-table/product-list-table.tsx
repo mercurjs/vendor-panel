@@ -15,9 +15,9 @@ import {
 } from "@tanstack/react-table"
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Link, Outlet, useLoaderData } from "react-router-dom"
+import { Link, Outlet } from "react-router-dom"
 
-import { HttpTypes } from "@medusajs/types"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { _DataTable } from "../../../../../components/table/data-table"
 import {
@@ -29,9 +29,8 @@ import { useProductTableColumns } from "../../../../../hooks/table/columns/use-p
 import { useProductTableFilters } from "../../../../../hooks/table/filters/use-product-table-filters"
 import { useProductTableQuery } from "../../../../../hooks/table/query/use-product-table-query"
 import { useDataTable } from "../../../../../hooks/use-data-table"
-import { productsLoader } from "../../loader"
 
-export const PAGE_SIZE = 5
+export const PAGE_SIZE = 10
 
 export const ProductListTable = () => {
   const { t } = useTranslation()
@@ -47,57 +46,26 @@ export const ProductListTable = () => {
     setRowSelection(update)
   }
 
-  const initialData = useLoaderData() as Awaited<
-    ReturnType<ReturnType<typeof productsLoader>>
-  >
-
   const { searchParams, raw } = useProductTableQuery({
     pageSize: PAGE_SIZE,
   })
 
-  const query = {
-    limit: 100,
-    offset: 0,
-    fields: "+thumbnail,*categories,+status",
-  }
-
   const options = {
-    initialData,
     placeholderData: keepPreviousData,
   }
 
-  const filter = {
-    collectionId: searchParams.collection_id,
-    categoryId: searchParams.category_id,
-    typeId: searchParams.type_id,
-    tagId: searchParams.tagId,
-    status: searchParams.status,
-    q: searchParams.q,
-    sort: searchParams.order,
-  }
-
   const { products, count, isLoading, isError, error } = useProducts(
-    query,
-    options,
-    filter
+    searchParams,
+    options
   )
-
-  const offset = searchParams.offset || 0
-
-  const processedProducts = (products as HttpTypes.AdminProduct[])?.slice(
-    offset,
-    offset + PAGE_SIZE
-  )
-  const processedCount =
-    count < (products?.length || 0) ? count : products?.length || 0
 
   const filters = useProductTableFilters()
   const columns = useColumns()
 
   const { table } = useDataTable({
-    data: processedProducts,
+    data: products,
     columns,
-    count: processedCount,
+    count,
     enablePagination: true,
     enableRowSelection: true,
     pageSize: PAGE_SIZE,
@@ -147,7 +115,7 @@ export const ProductListTable = () => {
       },
     })
   }
-
+  
   if (isError) {
     throw error
   }
@@ -171,7 +139,7 @@ export const ProductListTable = () => {
       <_DataTable
         table={table}
         columns={columns}
-        count={processedCount}
+        count={count}
         pageSize={PAGE_SIZE}
         filters={filters}
         search
@@ -211,7 +179,7 @@ export const ProductListTable = () => {
   )
 }
 
-const ProductActions = ({ product }: { product: HttpTypes.AdminProduct }) => {
+const ProductActions = ({ product }: { product: ExtendedAdminProduct }) => {
   const { t } = useTranslation()
   const prompt = usePrompt()
   const { mutateAsync } = useDeleteProduct(product.id)
@@ -263,7 +231,7 @@ const ProductActions = ({ product }: { product: HttpTypes.AdminProduct }) => {
   )
 }
 
-const columnHelper = createColumnHelper<HttpTypes.AdminProduct>()
+const columnHelper = createColumnHelper<ExtendedAdminProduct>()
 
 const useColumns = () => {
   const { t } = useTranslation()

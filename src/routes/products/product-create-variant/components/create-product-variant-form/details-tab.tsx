@@ -3,14 +3,14 @@ import { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod"
 
-import { HttpTypes } from "@medusajs/types"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 
 import { Form } from "../../../../../components/common/form"
 import { Combobox } from "../../../../../components/inputs/combobox"
 import { CreateProductVariantSchema } from "./constants"
 
 type DetailsTabProps = {
-  product: HttpTypes.AdminProduct
+  product: ExtendedAdminProduct
   form: UseFormReturn<z.infer<typeof CreateProductVariantSchema>>
 }
 

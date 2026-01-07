@@ -2,8 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import * as zod from "zod"
-
-import { AdminOrder, InventoryItemDTO, OrderLineItemDTO } from "@medusajs/types"
 import { Alert, Button, Heading, Input, Select, toast } from "@medusajs/ui"
 import { useForm, useWatch } from "react-hook-form"
 
@@ -19,9 +17,11 @@ import { useStockLocations } from "../../../../../hooks/api/stock-locations"
 import { queryClient } from "../../../../../lib/query-client"
 import { AllocateItemsSchema } from "./constants"
 import { OrderAllocateItemsItem } from "./order-allocate-items-item"
+import { FetchError } from "@medusajs/js-sdk"
+import { ExtendedAdminOrder, ExtendedAdminOrderLineItemWithInventory, ExtendedAdminProductVariantInventory } from "../../../../../types/order"
 
 type OrderAllocateItemsFormProps = {
-  order: AdminOrder
+  order: ExtendedAdminOrder
 }
 
 export function OrderAllocateItemsForm({ order }: OrderAllocateItemsFormProps) {
@@ -39,8 +39,8 @@ export function OrderAllocateItemsForm({ order }: OrderAllocateItemsFormProps) {
       order.items.filter(
         (item) =>
           item.variant?.manage_inventory &&
-          item.variant?.inventory.length &&
-          item.quantity - item.detail.fulfilled_quantity > 0
+          !!item.variant.inventory?.length &&
+          item?.quantity - item.detail?.fulfilled_quantity > 0
       ),
     [order.items]
   )
@@ -48,13 +48,12 @@ export function OrderAllocateItemsForm({ order }: OrderAllocateItemsFormProps) {
   const filteredItems = useMemo(() => {
     return itemsToAllocate.filter(
       (i) =>
-        i.variant_title.toLowerCase().includes(filterTerm) ||
-        i.product_title.toLowerCase().includes(filterTerm)
+        i.variant_title?.toLowerCase().includes(filterTerm) ||
+        i.product_title?.toLowerCase().includes(filterTerm)
     )
   }, [itemsToAllocate, filterTerm])
 
   // TODO - empty state UI
-  const noItemsToAllocate = !itemsToAllocate.length
 
   const form = useForm<zod.infer<typeof AllocateItemsSchema>>({
     defaultValues: {
@@ -84,9 +83,9 @@ export function OrderAllocateItemsForm({ order }: OrderAllocateItemsFormProps) {
       const promises = payload.map(([itemId, inventoryId, quantity]) =>
         allocateItems({
           location_id: data.location_id,
-          inventory_item_id: inventoryId,
-          line_item_id: itemId,
-          quantity,
+          inventory_item_id: String(inventoryId),
+          line_item_id: String(itemId),
+          quantity: typeof quantity === 'string' ? Number(quantity) : quantity,
         })
       )
 
@@ -104,19 +103,17 @@ export function OrderAllocateItemsForm({ order }: OrderAllocateItemsFormProps) {
 
       toast.success(t("general.success"), {
         description: t("orders.allocateItems.toast.created"),
-        dismissLabel: t("actions.close"),
       })
     } catch (e) {
       toast.error(t("general.error"), {
-        description: e.message,
-        dismissLabel: t("actions.close"),
+        description: e instanceof FetchError ? e.message : "An unknown error occurred",
       })
     }
   })
 
   const onQuantityChange = (
-    inventoryItem: InventoryItemDTO,
-    lineItem: OrderLineItemDTO,
+    inventoryItem: ExtendedAdminProductVariantInventory,
+    lineItem: ExtendedAdminOrderLineItemWithInventory,
     hasInventoryKit: boolean,
     value: number | null,
     isRoot?: boolean
@@ -128,9 +125,9 @@ export function OrderAllocateItemsForm({ order }: OrderAllocateItemsFormProps) {
         ? `quantity.${lineItem.id}-`
         : `quantity.${lineItem.id}-${inventoryItem.id}`
 
-    form.setValue(key, value)
+    form.setValue(key as `quantity.${string}`, value ?? "")
 
-    if (value) {
+    if (value && inventoryItem.location_levels) {
       const location = inventoryItem.location_levels.find(
         (l) => l.location_id === selectedLocationId
       )
@@ -143,7 +140,7 @@ export function OrderAllocateItemsForm({ order }: OrderAllocateItemsFormProps) {
 
     if (hasInventoryKit && !isRoot) {
       // changed subitem in the kit -> we need to set parent to "-"
-      form.resetField(`quantity.${lineItem.id}-`, { defaultValue: "" })
+      form.resetField(`quantity.${lineItem.id}-` as `quantity.${string}`, { defaultValue: "" })
     }
 
     if (hasInventoryKit && isRoot) {
@@ -151,17 +148,21 @@ export function OrderAllocateItemsForm({ order }: OrderAllocateItemsFormProps) {
 
       const item = itemsToAllocate.find((i) => i.id === lineItem.id)
 
-      item.variant?.inventory_items.forEach((ii, ind) => {
+      if (!item || !item.variant) return
+
+      item.variant.inventory_items?.forEach((ii, ind) => {
         const num = value || 0
-        const inventory = item.variant?.inventory[ind]
+        const inventory = item.variant?.inventory?.[ind]
+
+        if (!inventory) return
 
         form.setValue(
-          `quantity.${lineItem.id}-${inventory.id}`,
+          `quantity.${lineItem.id}-${inventory.id}` as `quantity.${string}`,
           num * ii.required_quantity
         )
 
-        if (value) {
-          const location = inventory?.location_levels.find(
+        if (value && inventory.location_levels) {
+          const location = inventory.location_levels.find(
             (l) => l.location_id === selectedLocationId
           )
           if (location) {
@@ -309,20 +310,20 @@ export function OrderAllocateItemsForm({ order }: OrderAllocateItemsFormProps) {
   )
 }
 
-function defaultAllocations(items: OrderLineItemDTO) {
-  const ret = {}
+function defaultAllocations(items: ExtendedAdminOrderLineItemWithInventory[]) {
+  const ret: Record<string, string | number> = {}
 
   items.forEach((item) => {
-    const hasInventoryKit = item.variant?.inventory_items.length > 1
+    const hasInventoryKit = (item.variant?.inventory_items?.length || 0) > 1
 
     ret[
       hasInventoryKit
         ? `${item.id}-`
-        : `${item.id}-${item.variant?.inventory[0].id}`
+        : `${item.id}-${item.variant?.inventory?.[0]?.id || ''}`
     ] = ""
 
-    if (hasInventoryKit) {
-      item.variant?.inventory.forEach((i) => {
+    if (hasInventoryKit && item.variant?.inventory) {
+      item.variant.inventory.forEach((i) => {
         ret[`${item.id}-${i.id}`] = ""
       })
     }

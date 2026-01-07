@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { HttpTypes } from "@medusajs/types"
 import { useTranslation } from "react-i18next"
 import { Button, toast } from "@medusajs/ui"
-import { useEffect } from "react"
 import { castNumber } from "../../../../lib/cast-number"
 import { RouteFocusModal } from "../../../../components/modals"
 import { KeyboundForm } from "../../../../components/utilities/keybound-form"
@@ -142,23 +141,10 @@ export const StocksAndPricesEdit = ({
   onRefresh,
 }: StocksAndPricesEditProps) => {
   const { t } = useTranslation()
-
   const form = useForm<UpdateVariantStocksSchemaType>({
     defaultValues: createFormValues(product, stockLocations, inventoryItems),
     resolver: zodResolver(UpdateVariantStocksSchema, {}),
   })
-
-  useEffect(() => {
-    if (!isRefreshing) {
-      const data = createFormValues(product, stockLocations, inventoryItems)
-      if (data?.variants?.length) {
-        form.setValue(
-          "variants",
-          createFormValues(product, stockLocations, inventoryItems).variants
-        )
-      }
-    }
-  }, [product, stockLocations, inventoryItems, isRefreshing])
 
   const updateVariantsBatch = useUpdateProductVariantsBatch(productId)
   const updateInventoryLocationLevels = useBatchInventoryItemsLocationLevels()

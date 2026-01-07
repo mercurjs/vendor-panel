@@ -25,24 +25,25 @@ export const isSameAddress = (
 export const getFormattedAddress = ({
   address,
 }: {
-  address?: HttpTypes.AdminOrderAddress | null
+  address?: HttpTypes.AdminOrderAddress | HttpTypes.AdminStockLocationAddress | null
 }) => {
   if (!address) {
     return []
   }
 
   const {
-    first_name,
-    last_name,
     company,
     address_1,
     address_2,
     city,
     postal_code,
     province,
-    country,
     country_code,
   } = address
+
+  const first_name = 'first_name' in address ? address.first_name : undefined
+  const last_name = 'last_name' in address ? address.last_name : undefined
+  const country = 'country' in address ? address.country : undefined
 
   const name = [first_name, last_name].filter(Boolean).join(" ")
 
@@ -75,10 +76,10 @@ export const getFormattedAddress = ({
   if (country) {
     formattedAddress.push(country.display_name!)
   } else if (country_code) {
-    const country = getCountryByIso2(country_code)
+    const countryData = getCountryByIso2(country_code)
 
-    if (country) {
-      formattedAddress.push(country.display_name)
+    if (countryData) {
+      formattedAddress.push(countryData.display_name)
     } else {
       formattedAddress.push(country_code.toUpperCase())
     }

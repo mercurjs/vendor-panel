@@ -29,12 +29,7 @@ export const ProductTagProductSection = ({
     {
       ...searchParams,
       fields: "*tags",
-      limit: 9999,
-    },
-    undefined,
-    {
-      ...searchParams,
-      tagId: productTag.id!,
+      tag_id: productTag.id!,
     }
   )
 

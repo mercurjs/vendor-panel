@@ -5,10 +5,10 @@ import { useCollection, useUpdateCollection } from "../../../hooks/api"
 export const CollectionMetadata = () => {
   const { id } = useParams()
 
-  const { collection, isPending, isError, error } = useCollection(id!)
+  const { product_collection, isPending, isError, error } = useCollection(id!)
 
   const { mutateAsync, isPending: isMutating } = useUpdateCollection(
-    collection?.id!
+    product_collection?.id!
   )
 
   if (isError) {
@@ -17,7 +17,7 @@ export const CollectionMetadata = () => {
 
   return (
     <MetadataForm
-      metadata={collection?.metadata}
+      metadata={product_collection?.metadata}
       hook={mutateAsync}
       isPending={isPending}
       isMutating={isMutating}

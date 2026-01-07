@@ -93,7 +93,13 @@
   },
   "validation": {
     "mustBeInt": "The value must be a whole number.",
-    "mustBePositive": "The value must be a positive number."
+    "mustBePositive": "The value must be a positive number.",
+    "rules": {
+      "lower": "One lowercase letter",
+      "upper": "One uppercase letter",
+      "8chars": "At least 8 characters",
+      "symbolOrDigit": "One number or symbol"
+    }
   },
   "actions": {
     "save": "Save",
@@ -513,6 +519,7 @@
       "uploadImagesLabel": "Upload images",
       "uploadImagesHint": "Drag and drop images here or click to upload.",
       "invalidFileType": "'{{name}}' is not a supported file type. Supported file types are: {{types}}.",
+      "fileTooLarge": "'{{name}}' exceeds the maximum file size of {{maxSize}}.",
       "failedToUpload": "Failed to upload the added media. Please try again.",
       "deleteWarning_one": "You are about to delete {{count}} image. This action cannot be undone.",
       "deleteWarning_other": "You are about to delete {{count}} images. This action cannot be undone.",
@@ -2214,6 +2221,9 @@
       },
       "successToast": "Price list {{title}} was successfully created.",
       "products": {
+        "errors": {
+          "noProducts": "Please select at least one product."
+        },
         "list": {
           "noRecordsMessage": "Create a product first."
         }

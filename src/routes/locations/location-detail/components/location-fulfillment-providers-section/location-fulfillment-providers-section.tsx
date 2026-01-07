@@ -7,12 +7,12 @@ import { ActionMenu } from "../../../../../components/common/action-menu"
 import { NoRecords } from "../../../../../components/common/empty-table-content"
 import { IconAvatar } from "../../../../../components/common/icon-avatar"
 import { formatProvider } from "../../../../../lib/format-provider"
-import { HttpTypes } from "@medusajs/types"
+import { VendorExtendedAdminStockLocation } from "../../../../../types/stock-location"
 
 function LocationsFulfillmentProvidersSection({
   location,
 }: {
-  location: HttpTypes.AdminStockLocation
+  location: VendorExtendedAdminStockLocation
 }) {
   const { t } = useTranslation()
 

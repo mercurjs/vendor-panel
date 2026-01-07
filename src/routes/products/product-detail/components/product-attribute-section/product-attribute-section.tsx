@@ -1,5 +1,5 @@
 import { PencilSquare } from "@medusajs/icons"
-import { HttpTypes } from "@medusajs/types"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 import { Container, Heading } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import { ActionMenu } from "../../../../../components/common/action-menu"
@@ -8,7 +8,7 @@ import { useDashboardExtension } from "../../../../../extensions"
 import { getFormattedCountry } from "../../../../../lib/addresses"
 
 type ProductAttributeSectionProps = {
-  product: HttpTypes.AdminProduct
+  product: ExtendedAdminProduct
 }
 
 export const ProductAttributeSection = ({

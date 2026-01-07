@@ -65,9 +65,6 @@ export const RuleValueFormField = ({
   useEffect(() => {
     const hasDirtyRules = Object.keys(form.formState.dirtyFields).length > 0;
 
-    /**
-     * Don't reset values if fileds didn't change - this is to prevent reset of form on initial render when editing an existing rule
-     */
     if (!hasDirtyRules) {
       return;
     }

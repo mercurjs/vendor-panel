@@ -93,7 +93,13 @@
   },
   "validation": {
     "mustBeInt": "値は数値でなければなりません。",
-    "mustBePositive": "値は正の数値でなければなりません。"
+    "mustBePositive": "値は正の数値でなければなりません。",
+    "rules": {
+      "lower": "小文字1文字",
+      "upper": "大文字1文字",
+      "8chars": "8文字以上",
+      "symbolOrDigit": "数字または記号1文字"
+    }
   },
   "actions": {
     "save": "保存",

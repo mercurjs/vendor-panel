@@ -93,7 +93,13 @@
   },
   "validation": {
     "mustBeInt": "The value must be a whole number.",
-    "mustBePositive": "The value must be a positive number."
+    "mustBePositive": "The value must be a positive number.",
+    "rules": {
+      "lower": "One lowercase letter",
+      "upper": "One uppercase letter",
+      "8chars": "At least 8 characters",
+      "symbolOrDigit": "One number or symbol"
+    }
   },
   "actions": {
     "save": "Save",

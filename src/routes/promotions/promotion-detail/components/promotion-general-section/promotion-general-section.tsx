@@ -105,7 +105,7 @@ export const PromotionGeneralSection = ({
 
       <div className="text-ui-fg-subtle grid grid-cols-2 items-start px-6 py-4">
         <Text size="small" weight="plus" leading="compact">
-          {t("promotions.fields.campaign")}
+          {t("promotions.fields.method")}
         </Text>
 
         <Text size="small" leading="compact" className="text-pretty">

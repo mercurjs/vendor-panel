@@ -362,9 +362,28 @@
         },
         "mustBePositive": {
           "type": "string"
+        },
+        "rules": {
+          "type": "object",
+          "properties": {
+            "lower": {
+              "type": "string"
+            },
+            "upper": {
+              "type": "string"
+            },
+            "8chars": {
+              "type": "string"
+            },
+            "symbolOrDigit": {
+              "type": "string"
+            }
+          },
+          "required": ["lower", "upper", "8chars", "symbolOrDigit"],
+          "additionalProperties": false
         }
       },
-      "required": ["mustBeInt", "mustBePositive"],
+      "required": ["mustBeInt", "mustBePositive", "rules"],
       "additionalProperties": false
     },
     "actions": {
@@ -1931,6 +1950,9 @@
             "invalidFileType": {
               "type": "string"
             },
+            "fileTooLarge": {
+              "type": "string"
+            },
             "failedToUpload": {
               "type": "string"
             },
@@ -1985,6 +2007,7 @@
             "uploadImagesLabel",
             "uploadImagesHint",
             "invalidFileType",
+            "fileTooLarge",
             "failedToUpload",
             "deleteWarning_one",
             "deleteWarning_other",
@@ -8206,6 +8229,16 @@
             "products": {
               "type": "object",
               "properties": {
+                "errors": {
+                  "type": "object",
+                  "properties": {
+                    "noProducts": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["noProducts"],
+                  "additionalProperties": false
+                },
                 "list": {
                   "type": "object",
                   "properties": {
@@ -8217,7 +8250,7 @@
                   "additionalProperties": false
                 }
               },
-              "required": ["list"],
+              "required": ["errors", "list"],
               "additionalProperties": false
             }
           },
@@ -10866,6 +10899,9 @@
         "priceTemplate": {
           "type": "string"
         },
+        "currentPriceTemplate": {
+          "type": "string"
+        },
         "stockTemplate": {
           "type": "string"
         },
@@ -11097,6 +11133,7 @@
         "expiryDate",
         "price",
         "priceTemplate",
+        "currentPriceTemplate",
         "stockTemplate",
         "height",
         "width",

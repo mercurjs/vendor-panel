@@ -32,8 +32,9 @@ export const Register = () => {
     isValid: false,
     lower: false,
     upper: false,
-    '8chars': false,
-    symbolOrDigit: false
+    '12chars': false,
+    digit: false,
+    specialChar: false
   });
 
   const { mutateAsync, isPending } = useSignUpWithEmailPass();

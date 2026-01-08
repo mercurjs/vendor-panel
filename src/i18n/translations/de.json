@@ -97,8 +97,9 @@
     "rules": {
       "lower": "Ein Kleinbuchstabe",
       "upper": "Ein Großbuchstabe",
-      "8chars": "Mindestens 8 Zeichen",
-      "symbolOrDigit": "Eine Zahl oder ein Symbol"
+      "12chars": "Mindestens 12 Zeichen",
+      "digit": "Mindestens eine Ziffer",
+      "specialChar": "Mindestens ein Sonderzeichen"
     }
   },
   "actions": {

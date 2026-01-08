@@ -97,8 +97,9 @@
     "rules": {
       "lower": "Jedno malé písmeno",
       "upper": "Jedno velké písmeno",
-      "8chars": "Alespoň 8 znaků",
-      "symbolOrDigit": "Jedno číslo nebo symbol"
+      "12chars": "Alespoň 12 znaků",
+      "digit": "Alespoň jedna číslice",
+      "specialChar": "Alespoň jeden speciální znak"
     }
   },
   "actions": {

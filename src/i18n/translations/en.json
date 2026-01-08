@@ -97,8 +97,9 @@
     "rules": {
       "lower": "One lowercase letter",
       "upper": "One uppercase letter",
-      "8chars": "At least 8 characters",
-      "symbolOrDigit": "One number or symbol"
+      "12chars": "At least 12 characters",
+      "digit": "At least one digit",
+      "specialChar": "At least one special character"
     }
   },
   "actions": {

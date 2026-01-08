@@ -97,8 +97,9 @@
     "rules": {
       "lower": "一个小写字母",
       "upper": "一个大写字母",
-      "8chars": "至少8个字符",
-      "symbolOrDigit": "一个数字或符号"
+      "12chars": "至少12个字符",
+      "digit": "至少一个数字",
+      "specialChar": "至少一个特殊字符"
     }
   },
   "actions": {

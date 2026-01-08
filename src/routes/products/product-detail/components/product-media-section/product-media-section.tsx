@@ -1,119 +1,117 @@
-import { PencilSquare, ThumbnailBadge } from "@medusajs/icons"
+import { useState } from 'react';
+
+import { PencilSquare, ThumbnailBadge } from '@medusajs/icons';
 import {
   Button,
   Checkbox,
+  clx,
   CommandBar,
   Container,
   Heading,
   Text,
   Tooltip,
-  clx,
-  usePrompt,
-} from "@medusajs/ui"
-import { useState } from "react"
-import { useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
-import { ActionMenu } from "../../../../../components/common/action-menu"
-import { useUpdateProduct } from "../../../../../hooks/api/products"
-import { ExtendedAdminProduct } from "../../../../../types/products"
+  usePrompt
+} from '@medusajs/ui';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+
+import { ActionMenu } from '../../../../../components/common/action-menu';
+import { useUpdateProduct } from '../../../../../hooks/api/products';
+import { ExtendedAdminProduct } from '../../../../../types/products';
 
 type ProductMedisaSectionProps = {
-  product: ExtendedAdminProduct
-}
+  product: ExtendedAdminProduct;
+};
 
 export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
-  const { t } = useTranslation()
-  const prompt = usePrompt()
-  const [selection, setSelection] = useState<Record<string, boolean>>({})
+  const { t } = useTranslation();
+  const prompt = usePrompt();
+  const [selection, setSelection] = useState<Record<string, boolean>>({});
 
-  const media = getMedia(product)
+  const media = getMedia(product);
 
   const handleCheckedChange = (id: string) => {
-    setSelection((prev) => {
+    setSelection(prev => {
       if (prev[id]) {
-        const { [id]: _, ...rest } = prev
-        return rest
+        const { [id]: _, ...rest } = prev;
+        return rest;
       } else {
-        return { ...prev, [id]: true }
+        return { ...prev, [id]: true };
       }
-    })
-  }
+    });
+  };
 
-  const { mutateAsync } = useUpdateProduct(product.id)
+  const { mutateAsync } = useUpdateProduct(product.id);
 
   const handleDelete = async () => {
-    const ids = Object.keys(selection)
-    const includingThumbnail = ids.some(
-      (id) => media.find((m) => m.id === id)?.isThumbnail
-    )
+    const ids = Object.keys(selection);
+    const includingThumbnail = ids.some(id => media.find(m => m.id === id)?.isThumbnail);
 
     const res = await prompt({
-      title: t("general.areYouSure"),
+      title: t('general.areYouSure'),
       description: includingThumbnail
-        ? t("products.media.deleteWarningWithThumbnail", {
-            count: ids.length,
+        ? t('products.media.deleteWarningWithThumbnail', {
+            count: ids.length
           })
-        : t("products.media.deleteWarning", {
-            count: ids.length,
+        : t('products.media.deleteWarning', {
+            count: ids.length
           }),
-      confirmText: t("actions.delete"),
-      cancelText: t("actions.cancel"),
-    })
+      confirmText: t('actions.delete'),
+      cancelText: t('actions.cancel')
+    });
 
     if (!res) {
-      return
+      return;
     }
 
-    const mediaToKeep = product.images
-      ?.filter((i) => ids.includes(i.id))
-      .map((i) => ({ url: i.url }))
+    const mediaToKeep = product.images?.filter(i => !ids.includes(i.id)).map(i => ({ url: i.url }));
 
     await mutateAsync(
       {
         images: mediaToKeep,
-        thumbnail: includingThumbnail ? "" : undefined,
+        thumbnail: includingThumbnail ? '' : undefined
       },
       {
         onSuccess: () => {
-          setSelection({})
-        },
+          setSelection({});
+        }
       }
-    )
-  }
+    );
+  };
 
   return (
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
-        <Heading level="h2">{t("products.media.label")}</Heading>
+        <Heading level="h2">{t('products.media.label')}</Heading>
         <ActionMenu
           groups={[
             {
               actions: [
                 {
-                  label: t("actions.edit"),
-                  to: "media?view=edit",
-                  icon: <PencilSquare />,
-                },
-              ],
-            },
+                  label: t('actions.edit'),
+                  to: 'media?view=edit',
+                  icon: <PencilSquare />
+                }
+              ]
+            }
           ]}
         />
       </div>
       {media.length > 0 ? (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(96px,1fr))] gap-4 px-6 py-4">
           {media.map((i, index) => {
-            const isSelected = selection[i.id]
+            const isSelected = selection[i.id];
 
             return (
               <div
-                className="shadow-elevation-card-rest hover:shadow-elevation-card-hover transition-fg group relative aspect-square size-full cursor-pointer overflow-hidden rounded-[8px]"
+                className="group relative aspect-square size-full cursor-pointer overflow-hidden rounded-[8px] shadow-elevation-card-rest transition-fg hover:shadow-elevation-card-hover"
                 key={i.id}
               >
                 <div
                   className={clx(
-                    "transition-fg invisible absolute right-2 top-2 opacity-0 group-hover:visible group-hover:opacity-100",
+                    'invisible absolute right-2 top-2 opacity-0 transition-fg group-hover:visible group-hover:opacity-100',
                     {
-                      "visible opacity-100": isSelected,
+                      'visible opacity-100': isSelected
                     }
                   )}
                 >
@@ -124,12 +122,15 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
                 </div>
                 {i.isThumbnail && (
                   <div className="absolute left-2 top-2">
-                    <Tooltip content={t("fields.thumbnail")}>
+                    <Tooltip content={t('fields.thumbnail')}>
                       <ThumbnailBadge />
                     </Tooltip>
                   </div>
                 )}
-                <Link to={`media`} state={{ curr: index }}>
+                <Link
+                  to={`media`}
+                  state={{ curr: index }}
+                >
                   <img
                     src={i.url}
                     alt={`${product.title} image`}
@@ -137,7 +138,7 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
                   />
                 </Link>
               </div>
-            )
+            );
           })}
         </div>
       ) : (
@@ -149,60 +150,65 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
               weight="plus"
               className="text-ui-fg-subtle"
             >
-              {t("products.media.emptyState.header")}
+              {t('products.media.emptyState.header')}
             </Text>
-            <Text size="small" className="text-ui-fg-muted">
-              {t("products.media.emptyState.description")}
+            <Text
+              size="small"
+              className="text-ui-fg-muted"
+            >
+              {t('products.media.emptyState.description')}
             </Text>
           </div>
-          <Button size="small" variant="secondary" asChild>
-            <Link to="media?view=edit">
-              {t("products.media.emptyState.action")}
-            </Link>
+          <Button
+            size="small"
+            variant="secondary"
+            asChild
+          >
+            <Link to="media?view=edit">{t('products.media.emptyState.action')}</Link>
           </Button>
         </div>
       )}
       <CommandBar open={!!Object.keys(selection).length}>
         <CommandBar.Bar>
           <CommandBar.Value>
-            {t("general.countSelected", {
-              count: Object.keys(selection).length,
+            {t('general.countSelected', {
+              count: Object.keys(selection).length
             })}
           </CommandBar.Value>
           <CommandBar.Seperator />
           <CommandBar.Command
             action={handleDelete}
-            label={t("actions.delete")}
+            label={t('actions.delete')}
             shortcut="d"
           />
         </CommandBar.Bar>
       </CommandBar>
     </Container>
-  )
-}
+  );
+};
 
 type Media = {
-  id: string
-  url: string
-  isThumbnail: boolean
-}
+  id: string;
+  url: string;
+  isThumbnail: boolean;
+};
 
 const getMedia = (product: ExtendedAdminProduct) => {
-  const { images = [], thumbnail } = product
+  const { images = [], thumbnail } = product;
 
-  const media: Media[] = (images || []).map((image) => ({
+  const media: Media[] = (images || []).map(image => ({
     id: image.id,
     url: image.url,
-    isThumbnail: image.url === thumbnail,
-  }))
+    isThumbnail: image.url === thumbnail
+  }));
 
-  if (thumbnail && !media.some((mediaItem) => mediaItem.url === thumbnail)) {
+  if (thumbnail && !media.some(mediaItem => mediaItem.url === thumbnail)) {
     media.unshift({
-      id: "img_thumbnail",
+      id: 'img_thumbnail',
       url: thumbnail,
-      isThumbnail: true,
-    })
+      isThumbnail: true
+    });
   }
 
-  return media
-}
+  return media;
+};

@@ -13,7 +13,7 @@ import { Form } from "../../../../../../components/common/form"
 import {
   usePromotionRuleAttributes,
   usePromotionRules,
-} from "../../../../../../hooks/api/promotions"
+} from '../../../../../../hooks/api'
 import { CreatePromotionSchemaType } from "../../../../promotion-create/components/create-promotion-form/form-schema"
 import { generateRuleAttributes } from "../edit-rules-form/utils"
 import { RuleValueFormField } from "../rule-value-form-field"
@@ -35,13 +35,18 @@ export const RulesFormField = ({
   form,
   ruleType,
   setRulesToRemove,
-  rulesToRemove,
   scope = "rules",
   promotion,
 }: RulesFormFieldType) => {
   const { t } = useTranslation()
   const formData = form.getValues()
   const { attributes } = usePromotionRuleAttributes(ruleType, formData.type)
+
+  const filteredAttributes =
+    attributes?.filter(
+      ({ id }) =>
+        id === "customer_group" || id === "country" || id === "product"
+    ) || []
 
   const { fields, append, remove, update, replace } = useFieldArray({
     control: form.control,
@@ -155,14 +160,7 @@ export const RulesFormField = ({
                     const existingAttributes =
                       fields?.map((field: any) => field.attribute) || []
                     const attributeOptions =
-                      attributes
-                        ?.filter(
-                          ({ id }) =>
-                            id === "customer_group" ||
-                            id === "country" ||
-                            id === "product"
-                        )
-                        ?.filter((attr) => {
+                      filteredAttributes?.filter((attr) => {
                           if (attr.value === fieldRule.attribute) {
                             return true
                           }
@@ -382,6 +380,7 @@ export const RulesFormField = ({
           type="button"
           variant="secondary"
           className="inline-block"
+          disabled={fields.length >= filteredAttributes.length}
           onClick={() => {
             const newRule = {
               attribute: "",

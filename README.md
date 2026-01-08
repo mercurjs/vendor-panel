@@ -69,7 +69,7 @@ cd vendor-panel
 Install dependencies
 
 ```js
-npm install
+yarn install
 ```
 
 &nbsp;

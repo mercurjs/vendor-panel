@@ -2,12 +2,13 @@ import { useNavigate, useParams } from "react-router-dom"
 import {
   useOrderReturnRequest,
   useUpdateOrderReturnRequest,
-} from "../../../hooks/api/requests"
+} from '../../../hooks/api'
 import { RouteDrawer } from "../../../components/modals"
 import { Button, Select, Textarea, toast } from "@medusajs/ui"
 import { useForm } from "react-hook-form"
 import { Form } from "../../../components/common/form"
 import { useStockLocations } from "../../../hooks/api"
+import { useEffect } from "react"
 
 const STATUS_OPTIONS = ["refunded", "escalated"]
 
@@ -22,11 +23,21 @@ export function RequestOrderReturn() {
 
   const form = useForm({
     defaultValues: {
-      status: STATUS_OPTIONS[0],
+      status: order_return_request?.status || STATUS_OPTIONS[0],
       vendor_reviewer_note: order_return_request?.vendor_reviewer_note || "",
       location_id: undefined,
     },
   })
+
+  useEffect(() => {
+    if (order_return_request) {
+      form.reset({
+        status: order_return_request.status || STATUS_OPTIONS[0],
+        vendor_reviewer_note: order_return_request.vendor_reviewer_note || "",
+        location_id: undefined,
+      })
+    }
+  }, [order_return_request, form])
 
   const { mutate: updateOrderReturnRequest } = useUpdateOrderReturnRequest(id!)
 
@@ -65,8 +76,8 @@ export function RequestOrderReturn() {
                     <Form.Control>
                       <Select
                         {...field}
+                        value={value}
                         onValueChange={onChange}
-                        defaultValue={STATUS_OPTIONS[0]}
                       >
                         <Select.Trigger>
                           <Select.Value />

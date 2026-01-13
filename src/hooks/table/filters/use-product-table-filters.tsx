@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { Filter } from "../../../components/table/data-table"
 import { useCollections, useProductCategories, useProductTags } from "../../api"
+import { useSalesChannels } from "../../api/sales-channels"
 import { useProductTypes } from "../../api/product-types"
 
 const excludeableFields = [
@@ -57,6 +58,18 @@ export const useProductTableFilters = (
     },
     {
       enabled: !isCollectionExcluded,
+    }
+  )
+
+  const isSalesChannelExcluded = exclude?.includes("sales_channel_id")
+
+  const { sales_channels } = useSalesChannels(
+    {
+      limit: 1000,
+      fields: "id,name",
+    },
+    {
+      enabled: !isSalesChannelExcluded,
     }
   )
 
@@ -122,6 +135,21 @@ export const useProductTableFilters = (
     filters = [...filters, collectionFilter]
   }
 
+  if (sales_channels && !isSalesChannelExcluded) {
+    const salesChannelFilter: Filter = {
+      key: "sales_channel_id",
+      label: t("fields.salesChannel"),
+      type: "select",
+      multiple: true,
+      options: sales_channels.map((s) => ({
+        label: s.name,
+        value: s.id,
+      })),
+    }
+
+    filters = [...filters, salesChannelFilter]
+  }
+
   const statusFilter: Filter = {
     key: "status",
     label: t("fields.status"),
@@ -148,6 +176,20 @@ export const useProductTableFilters = (
   }
 
   filters = [...filters, statusFilter]
+
+  const createdAtFilter: Filter = {
+    key: "created_at",
+    label: t("fields.createdAt"),
+    type: "date",
+  }
+
+  const updatedAtFilter: Filter = {
+    key: "updated_at",
+    label: t("fields.updatedAt"),
+    type: "date",
+  }
+
+  filters = [...filters, createdAtFilter, updatedAtFilter]
 
   return filters
 }

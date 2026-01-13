@@ -6,6 +6,7 @@ import { Form } from '../../../../../../components/common/form';
 import { Combobox } from '../../../../../../components/inputs/combobox';
 import { usePromotionRuleValues } from '../../../../../../hooks/api/promotions';
 import { useStore } from '../../../../../../hooks/api/store';
+import { useEffect } from 'react';
 
 type RuleValueFormFieldType = {
   form: any;
@@ -56,6 +57,25 @@ export const RuleValueFormField = ({
     name: 'application_method.type'
   });
 
+  const watchOperator = useWatch({
+    control: form.control,
+    name: operator
+  });
+
+  useEffect(() => {
+    const hasDirtyRules = Object.keys(form.formState.dirtyFields).length > 0;
+
+    if (!hasDirtyRules) {
+      return;
+    }
+
+    if (watchOperator === "eq") {
+      form.setValue(name, "");
+    } else {
+      form.setValue(name, []);
+    }
+  }, [watchOperator]);
+
   const { values: options = [] } = usePromotionRuleValues(
     ruleType,
     attribute?.id!,
@@ -71,11 +91,6 @@ export const RuleValueFormField = ({
         !isStoreLoading
     }
   );
-
-  const watchOperator = useWatch({
-    control: form.control,
-    name: operator
-  });
 
   return (
     <Form.Field

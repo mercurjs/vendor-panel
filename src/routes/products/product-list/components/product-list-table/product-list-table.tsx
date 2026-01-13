@@ -41,7 +41,17 @@ export const ProductListTable = () => {
     placeholderData: keepPreviousData
   };
 
-  const { products, count, isLoading, isError, error } = useProducts(searchParams, options);
+  const {
+    products = [],
+    count: apiCount = 0,
+    isLoading,
+    isError,
+    error
+  } = useProducts(searchParams, options);
+
+  // When a query/filter yields no rows but the API still returns a count,
+  // force the table to treat it as empty so the "no results" state appears.
+  const count = products.length === 0 ? 0 : apiCount;
 
   const filters = useProductTableFilters();
   const columns = useColumns();

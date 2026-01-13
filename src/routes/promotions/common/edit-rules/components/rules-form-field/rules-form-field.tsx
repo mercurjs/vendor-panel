@@ -1,7 +1,7 @@
 import { XMarkMini } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import { Badge, Button, Heading, IconButton, Select, Text } from "@medusajs/ui"
-import { forwardRef, Fragment, useEffect } from "react"
+import { forwardRef, Fragment, useEffect, useRef } from "react"
 import {
   ControllerRenderProps,
   useFieldArray,
@@ -13,7 +13,7 @@ import { Form } from "../../../../../../components/common/form"
 import {
   usePromotionRuleAttributes,
   usePromotionRules,
-} from "../../../../../../hooks/api/promotions"
+} from '../../../../../../hooks/api'
 import { CreatePromotionSchemaType } from "../../../../promotion-create/components/create-promotion-form/form-schema"
 import { generateRuleAttributes } from "../edit-rules-form/utils"
 import { RuleValueFormField } from "../rule-value-form-field"
@@ -35,13 +35,18 @@ export const RulesFormField = ({
   form,
   ruleType,
   setRulesToRemove,
-  rulesToRemove,
   scope = "rules",
   promotion,
 }: RulesFormFieldType) => {
   const { t } = useTranslation()
   const formData = form.getValues()
   const { attributes } = usePromotionRuleAttributes(ruleType, formData.type)
+
+  const filteredAttributes =
+    attributes?.filter(
+      ({ id }) =>
+        id === "customer_group" || id === "country" || id === "product"
+    ) || []
 
   const { fields, append, remove, update, replace } = useFieldArray({
     control: form.control,
@@ -77,36 +82,47 @@ export const RulesFormField = ({
     }
   )
 
+  const rulesLoadedRef = useRef(false)
+
   useEffect(() => {
     if (isLoading) {
       return
     }
 
+    if (rulesLoadedRef.current) {
+      return
+    }
+
     if (ruleType === "rules" && !fields.length) {
       form.resetField("rules")
-      
+
       const formRules = generateRuleAttributes(rules)
       replace(formRules)
+      rulesLoadedRef.current = true
     }
 
     if (ruleType === "buy-rules" && !fields.length) {
       form.resetField("application_method.buy_rules")
-      const apiRules = promotion?.id || promotionType === "standard"
-        ? rules || []
-        : [...(rules || []), requiredProductRule]
-      
+      const apiRules =
+        promotion?.id || promotionType === "standard"
+          ? rules || []
+          : [...(rules || []), requiredProductRule]
+
       const formRules = generateRuleAttributes(apiRules)
       replace(formRules)
+      rulesLoadedRef.current = true
     }
 
     if (ruleType === "target-rules" && !fields.length) {
       form.resetField("application_method.target_rules")
-      const apiRules = promotion?.id || promotionType === "standard"
-        ? rules || []
-        : [...(rules || []), requiredProductRule]
-      
+      const apiRules =
+        promotion?.id || promotionType === "standard"
+          ? rules || []
+          : [...(rules || []), requiredProductRule]
+
       const formRules = generateRuleAttributes(apiRules)
       replace(formRules)
+      rulesLoadedRef.current = true
     }
   }, [
     promotionType,
@@ -144,14 +160,7 @@ export const RulesFormField = ({
                     const existingAttributes =
                       fields?.map((field: any) => field.attribute) || []
                     const attributeOptions =
-                      attributes
-                        ?.filter(
-                          ({ id }) =>
-                            id === "customer_group" ||
-                            id === "country" ||
-                            id === "product"
-                        )
-                        ?.filter((attr) => {
+                      filteredAttributes?.filter((attr) => {
                           if (attr.value === fieldRule.attribute) {
                             return true
                           }
@@ -316,8 +325,32 @@ export const RulesFormField = ({
                     type="button"
                     onClick={() => {
                       if (!fieldRule.required) {
-                        setRulesToRemove &&
-                          setRulesToRemove([...rulesToRemove, fieldRule])
+                        if (setRulesToRemove) {
+                          setRulesToRemove(
+                            (
+                              prev: {
+                                id: string
+                                disguised?: boolean
+                                attribute: string
+                              }[]
+                            ) => {
+                              if (
+                                fieldRule.id &&
+                                !prev.find((r) => r.id === fieldRule.id)
+                              ) {
+                                return [
+                                  ...(prev || []),
+                                  fieldRule as {
+                                    id: string
+                                    disguised?: boolean
+                                    attribute: string
+                                  },
+                                ]
+                              }
+                              return prev || []
+                            }
+                          )
+                        }
 
                         remove(index)
                       }
@@ -347,13 +380,15 @@ export const RulesFormField = ({
           type="button"
           variant="secondary"
           className="inline-block"
+          disabled={fields.length >= filteredAttributes.length}
           onClick={() => {
-            append({
+            const newRule = {
               attribute: "",
               operator: "",
               values: [],
               required: false,
-            } as any)
+            } as any
+            append(newRule)
           }}
         >
           {t("promotions.fields.addCondition")}
@@ -385,12 +420,30 @@ export const RulesFormField = ({
 type DisabledAttributeProps = {
   label: string
   field:
-    | ControllerRenderProps<CreatePromotionSchemaType, `rules.${number}.attribute`>
-    | ControllerRenderProps<CreatePromotionSchemaType, `rules.${number}.operator`>
-    | ControllerRenderProps<CreatePromotionSchemaType, `application_method.buy_rules.${number}.attribute`>
-    | ControllerRenderProps<CreatePromotionSchemaType, `application_method.buy_rules.${number}.operator`>
-    | ControllerRenderProps<CreatePromotionSchemaType, `application_method.target_rules.${number}.attribute`>
-    | ControllerRenderProps<CreatePromotionSchemaType, `application_method.target_rules.${number}.operator`>
+    | ControllerRenderProps<
+        CreatePromotionSchemaType,
+        `rules.${number}.attribute`
+      >
+    | ControllerRenderProps<
+        CreatePromotionSchemaType,
+        `rules.${number}.operator`
+      >
+    | ControllerRenderProps<
+        CreatePromotionSchemaType,
+        `application_method.buy_rules.${number}.attribute`
+      >
+    | ControllerRenderProps<
+        CreatePromotionSchemaType,
+        `application_method.buy_rules.${number}.operator`
+      >
+    | ControllerRenderProps<
+        CreatePromotionSchemaType,
+        `application_method.target_rules.${number}.attribute`
+      >
+    | ControllerRenderProps<
+        CreatePromotionSchemaType,
+        `application_method.target_rules.${number}.operator`
+      >
 }
 
 /**

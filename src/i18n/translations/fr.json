@@ -93,7 +93,13 @@
   },
   "validation": {
     "mustBeInt": "La valeur doit être un nombre entier.",
-    "mustBePositive": "La valeur doit être un nombre positif."
+    "mustBePositive": "La valeur doit être un nombre positif.",
+    "rules": {
+      "lower": "Une lettre minuscule",
+      "upper": "Une lettre majuscule",
+      "8chars": "Au moins 8 caractères",
+      "symbolOrDigit": "Un chiffre ou un symbole"
+    }
   },
   "actions": {
     "save": "Enregistrer",
@@ -496,6 +502,7 @@
       "uploadImagesLabel": "Télécharger des images",
       "uploadImagesHint": "Glisser-déposer des images ici ou cliquer pour télécharger.",
       "invalidFileType": "'{{name}}' n'est pas un type de fichier supporté. Les types de fichiers supportés sont : {{types}}.",
+      "fileTooLarge": "'{{name}}' dépasse la taille maximale de fichier de {{maxSize}}.",
       "failedToUpload": "Erreur lors du téléchargement des médias ajoutés. Veuillez réessayer.",
       "deleteWarning_one": "Vous êtes sur le point de supprimer {{count}} image. Cette action ne peut être annulée.",
       "deleteWarning_other": "Vous êtes sur le point de supprimer {{count}} images. Cette action ne peut être annulée.",
@@ -2036,6 +2043,9 @@
       },
       "successToast": "La liste de prix {{title}} a été créée avec succès.",
       "products": {
+        "errors": {
+          "noProducts": "Veuillez sélectionner au moins un produit."
+        },
         "list": {
           "noRecordsMessage": "Créer un produit d'abord."
         }

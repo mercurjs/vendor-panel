@@ -338,6 +338,7 @@ export const useProductAttributes = (id: string) => {
     queryFn: () =>
       fetchQuery(`/vendor/products/${id}/applicable-attributes`, {
         method: "GET",
+        query: { fields: "+is_required" }
       }),
     queryKey: productAttributesQueryKey(id),
   })
@@ -432,7 +433,7 @@ export const useUpdateProduct = (
   options?: UseMutationOptions<
     HttpTypes.AdminProductResponse,
     FetchError,
-    HttpTypes.AdminUpdateProduct
+    HttpTypes.AdminUpdateProduct & { additional_data?: { values: Record<string, string>[] } }
   >
 ) => {
   return useMutation({

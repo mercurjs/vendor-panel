@@ -165,7 +165,7 @@ export const DataTableOrderBy = <TData,>({ keys, prefix }: DataTableOrderByProps
             onSelect={event => event.preventDefault()}
           >
             {t('general.ascending')}
-            <DropdownMenu.Label>1 - 30</DropdownMenu.Label>
+            <DropdownMenu.Label>1 → 30</DropdownMenu.Label>
           </DropdownMenu.RadioItem>
           <DropdownMenu.RadioItem
             className="flex items-center justify-between"
@@ -173,7 +173,7 @@ export const DataTableOrderBy = <TData,>({ keys, prefix }: DataTableOrderByProps
             onSelect={event => event.preventDefault()}
           >
             {t('general.descending')}
-            <DropdownMenu.Label>30 - 1</DropdownMenu.Label>
+            <DropdownMenu.Label>30 ← 1</DropdownMenu.Label>
           </DropdownMenu.RadioItem>
         </DropdownMenu.RadioGroup>
       </DropdownMenu.Content>

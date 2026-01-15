@@ -2190,7 +2190,8 @@
       "header": "Производи",
       "actions": {
         "addProducts": "Додадете производи",
-        "editPrices": "Уредете ги цените"
+        "editPrices": "Уредете ги цените",
+        "editPricesDisabled": "Додадете производи пред уредување на цени"
       },
       "delete": {
         "confirmation_one": "Ќе ги избришете цените за {{count}} производ во ценовникот. ",

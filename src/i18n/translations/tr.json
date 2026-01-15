@@ -2212,7 +2212,8 @@
       "header": "Ürünler",
       "actions": {
         "addProducts": "Ürünleri ekle",
-        "editPrices": "Fiyatları düzenle"
+        "editPrices": "Fiyatları düzenle",
+        "editPricesDisabled": "Fiyatları düzenlemeden önce ürün ekleyin"
       },
       "delete": {
         "confirmation_one": "Fiyat listesindeki {{count}} ürün için fiyatları silmek üzeresiniz. Bu işlem geri alınamaz.",

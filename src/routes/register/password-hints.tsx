@@ -67,7 +67,6 @@ export const PasswordValidator = ({
   setError: (error: any) => void;
 }) => {
   const [newPasswordError, setNewPasswordError] = useState(rules);
-  ('test');
   useEffect(() => {
     const validation = validatePassword(password);
 

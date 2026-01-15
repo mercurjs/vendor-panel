@@ -2067,7 +2067,8 @@
       "header": "Produits",
       "actions": {
         "addProducts": "Ajouter des produits",
-        "editPrices": "Modifier les prix"
+        "editPrices": "Modifier les prix",
+        "editPricesDisabled": "Ajoutez des produits avant de modifier les prix"
       },
       "delete": {
         "confirmation_one": "Vous êtes sur le point de supprimer les prix pour {{count}} produit dans la liste de prix. Cette action ne peut être annulée.",

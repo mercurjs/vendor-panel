@@ -2239,7 +2239,8 @@
       "header": "Products",
       "actions": {
         "addProducts": "Add products",
-        "editPrices": "Edit prices"
+        "editPrices": "Edit prices",
+        "editPricesDisabled": "Add products before editing prices"
       },
       "delete": {
         "confirmation_one": "You are about to delete the prices for {{count}} product in the price list. This action cannot be undone.",

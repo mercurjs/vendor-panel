@@ -8316,9 +8316,12 @@
                 },
                 "editPrices": {
                   "type": "string"
+                },
+                "editPricesDisabled": {
+                  "type": "string"
                 }
               },
-              "required": ["addProducts", "editPrices"],
+              "required": ["addProducts", "editPrices", "editPricesDisabled"],
               "additionalProperties": false
             },
             "delete": {

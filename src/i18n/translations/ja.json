@@ -2091,7 +2091,8 @@
       "header": "商品",
       "actions": {
         "addProducts": "商品を追加",
-        "editPrices": "価格を編集"
+        "editPrices": "価格を編集",
+        "editPricesDisabled": "価格を編集する前に商品を追加してください"
       },
       "delete": {
         "confirmation_one": "{{count}}個の商品に対する価格をこの価格リストから削除しようとしています。この操作は取り消せません。",

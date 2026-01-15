@@ -2189,7 +2189,8 @@
       "header": "Produse",
       "actions": {
         "addProducts": "Adăugați produse",
-        "editPrices": "Editați prețurile"
+        "editPrices": "Editați prețurile",
+        "editPricesDisabled": "Adăugați produse înainte de a edita prețurile"
       },
       "delete": {
         "confirmation_one": "Sunteți pe cale să ștergeți prețurile pentru {{count}} produs în lista de prețuri. ",

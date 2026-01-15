@@ -14,8 +14,8 @@ export interface ExtendedPriceListPrice extends HttpTypes.AdminPriceListPrice {
 }
 
 export interface ExtendedPriceList extends Omit<HttpTypes.AdminPriceList, 'prices'> {
-  prices: ExtendedPriceListPrice[];
-  price_list_rules: Array<{
+  prices?: ExtendedPriceListPrice[];
+  price_list_rules?: Array<{
     value: string[];
     attribute: string;
   }>;
@@ -27,7 +27,7 @@ export interface PriceListData {
 }
 
 export interface PriceListListResponse {
-  price_lists: PriceListData[];
+  price_lists: ExtendedPriceList[];
   count: number;
   offset: number;
   limit: number;

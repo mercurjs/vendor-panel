@@ -77,11 +77,9 @@ export const usePriceLists = (
     ...options
   });
 
-  const price_lists: ExtendedPriceList[] = (data?.price_lists || [])
-    .filter(item => item.price_list)
-    .map(item => ({ ...item.price_list, id: item.price_list.id }));
+  const price_lists: ExtendedPriceList[] = data?.price_lists || [];
 
-  const count = price_lists?.length;
+  const count = data?.count || price_lists?.length;
 
   return { ...data, price_lists, count, ...rest };
 };

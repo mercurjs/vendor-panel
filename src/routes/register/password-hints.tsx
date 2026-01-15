@@ -25,6 +25,7 @@ function validatePassword(password: string) {
 }
 
 const rules = {
+  isValid: false,
   hasError: false,
   lower: false,
   upper: false,
@@ -39,9 +40,9 @@ const PasswordRule: FC<{ hasError: boolean; ruleName: keyof typeof rules }> = ({
 }) => {
 
   const { t } = useTranslation();
-  if (ruleName === "hasError") return
+  if (ruleName === "hasError" || ruleName === "isValid") return
 
-  const rulesText: Record<Exclude<keyof typeof rules, "hasError">, string> = {
+  const rulesText: Record<Exclude<keyof typeof rules, "hasError" | "isValid">, string> = {
     lower: t('validation.rules.lower'),
     upper: t('validation.rules.upper'),
     '12chars': t('validation.rules.12chars'),
@@ -74,6 +75,7 @@ export const PasswordValidator = ({
     const validation = validatePassword(password);
 
     const nextState = {
+      isValid: validation.isValid,
       hasError: !validation.isValid,
       lower: validation.errors.noLower,
       upper: validation.errors.noUpper,

@@ -11,10 +11,11 @@ import { useTranslation } from 'react-i18next';
 
 function validatePassword(password: string) {
   const errors = {
-    tooShort: password.length < 8,
+    tooShort: password.length < 12,
     noLower: !/[a-z]/.test(password),
     noUpper: !/[A-Z]/.test(password),
-    noDigitOrSymbol: !/[0-9!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/~`]/.test(password)
+    noDigit: !/[0-9]/.test(password),
+    noSpecialChar: !/[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/~`]/.test(password)
   };
 
   return {
@@ -24,30 +25,35 @@ function validatePassword(password: string) {
 }
 
 const rules = {
-  isValid: false,
+  hasError: false,
   lower: false,
   upper: false,
-  '8chars': false,
-  symbolOrDigit: false
+  "12chars": false,
+  digit: false,
+  specialChar: false,
 }
 
-const PasswordRule: FC<{ isValid: boolean; ruleName: keyof typeof rules }> = ({ ruleName, isValid }) => {
+const PasswordRule: FC<{ hasError: boolean; ruleName: keyof typeof rules }> = ({
+  ruleName,
+  hasError,
+}) => {
 
   const { t } = useTranslation();
-  if (ruleName === "isValid") return
+  if (ruleName === "hasError") return
 
-  const rulesText: Record<Exclude<keyof typeof rules, "isValid">,string> = {
+  const rulesText: Record<Exclude<keyof typeof rules, "hasError">, string> = {
     lower: t('validation.rules.lower'),
     upper: t('validation.rules.upper'),
-    '8chars': t('validation.rules.8chars'),
-    symbolOrDigit: t('validation.rules.symbolOrDigit')
+    '12chars': t('validation.rules.12chars'),
+    digit: t('validation.rules.digit'),
+    specialChar: t('validation.rules.specialChar')
   }
 
   return (
     <p
       className={clsx(
         'flex items-center gap-2 text-xs',
-        isValid ? 'text-red-700' : 'text-green-700'
+        hasError ? 'text-red-700' : 'text-green-700'
       )}
     >
       <CheckCircle /> {rulesText[ruleName]}
@@ -67,20 +73,17 @@ export const PasswordValidator = ({
   useEffect(() => {
     const validation = validatePassword(password);
 
-    setError({
-      isValid: validation.isValid,
+    const nextState = {
+      hasError: !validation.isValid,
       lower: validation.errors.noLower,
       upper: validation.errors.noUpper,
-      '8chars': validation.errors.tooShort,
-      symbolOrDigit: validation.errors.noDigitOrSymbol
-    });
-    setNewPasswordError({
-      isValid: validation.isValid,
-      lower: validation.errors.noLower,
-      upper: validation.errors.noUpper,
-      '8chars': validation.errors.tooShort,
-      symbolOrDigit: validation.errors.noDigitOrSymbol
-    });
+      '12chars': validation.errors.tooShort,
+      digit: validation.errors.noDigit,
+      specialChar: validation.errors.noSpecialChar,
+    }
+
+    setError(nextState);
+    setNewPasswordError(nextState);
   }, [password]);
 
 
@@ -88,7 +91,7 @@ export const PasswordValidator = ({
     <Container className="p-2 flex flex-col gap-y-1">
       {
         (Object.keys(newPasswordError) as (keyof typeof rules)[]).map(k => (
-          <PasswordRule key={k} ruleName={k} isValid={newPasswordError[k]} />
+          <PasswordRule key={k} ruleName={k} hasError={newPasswordError[k]} />
         ))
       }
     </Container>

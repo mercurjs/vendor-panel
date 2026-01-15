@@ -97,8 +97,9 @@
     "rules": {
       "lower": "Bir küçük harf",
       "upper": "Bir büyük harf",
-      "8chars": "En az 8 karakter",
-      "symbolOrDigit": "Bir sayı veya sembol"
+      "12chars": "En az 12 karakter",
+      "digit": "En az bir rakam",
+      "specialChar": "En az bir özel karakter"
     }
   },
   "actions": {

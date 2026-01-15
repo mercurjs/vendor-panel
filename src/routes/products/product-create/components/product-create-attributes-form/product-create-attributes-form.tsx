@@ -207,7 +207,7 @@ ProductCreateAttributesForm.displayName = 'ProductCreateAttributesForm';
 
 type HeaderProps = {
   options: {
-    append: (option: { title: string; values: string[]; metadata?: string }) => void;
+    append: (option: { title: string; values: string[]; metadata?: Record<string, unknown> }) => void;
   };
 };
 
@@ -240,7 +240,7 @@ const Header = ({ options }: HeaderProps) => {
             options.append({
               title: '',
               values: [],
-              metadata: 'user-created',
+              metadata: { author: 'vendor' },
               useForVariants: true // Locked to true
             });
           }}

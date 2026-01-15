@@ -122,11 +122,11 @@ export const ProductCreateVariantsForm = ({
     });
 
     // Finally, add user-created options (always use for variants - locked to true)
-    // Only include options with metadata === 'user-created' to exclude default options
+    // Only include options with metadata.author === 'vendor' to exclude default options
     const options = (formValues as any)?.options || [];
     options.forEach((option: any) => {
       if (
-        option?.metadata === 'user-created' &&
+        option?.metadata?.author === 'vendor' &&
         option?.title &&
         option?.values &&
         Array.isArray(option.values) &&

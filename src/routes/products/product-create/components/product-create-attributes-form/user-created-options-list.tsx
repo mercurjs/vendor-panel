@@ -11,7 +11,7 @@ type UserCreatedOptionsListProps = {
   form: UseFormReturn<ProductCreateSchemaType>;
   options: {
     fields: Array<{ id: string }>;
-    append: (option: { title: string; values: string[]; metadata?: string }) => void;
+    append: (option: { title: string; values: string[]; metadata?: Record<string, unknown> }) => void;
     remove: (index: number) => void;
   };
 };
@@ -26,12 +26,12 @@ export const UserCreatedOptionsList = ({ form, options }: UserCreatedOptionsList
     defaultValue: []
   });
 
-  // Filter only user-created options (with metadata === 'user-created')
+  // Filter only user-created options (with metadata.author === 'vendor')
   const userCreatedOptions = options.fields
     .map((field, index) => ({ field, index }))
     .filter(({ index }) => {
       const option = watchedOptions[index];
-      return option?.metadata === 'user-created';
+      return option?.metadata?.author === 'vendor';
     });
 
   if (userCreatedOptions.length === 0) {

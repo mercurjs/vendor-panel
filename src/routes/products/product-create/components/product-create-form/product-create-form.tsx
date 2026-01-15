@@ -11,7 +11,6 @@ import { KeyboundForm } from '../../../../../components/utilities/keybound-form'
 import { useDashboardExtension, useExtendableForm } from '../../../../../extensions';
 import { useRegions } from '../../../../../hooks/api';
 import { useAttributes } from '../../../../../hooks/api/attributes';
-import { useBatchInventoryItemLocationLevels } from '../../../../../hooks/api/inventory';
 import { usePricePreferences } from '../../../../../hooks/api/price-preferences';
 import { useCreateProduct } from '../../../../../hooks/api/products';
 import { useStockLocations } from '../../../../../hooks/api/stock-locations';
@@ -220,11 +219,6 @@ export const ProductCreateForm = ({
 
   const { mutateAsync, isPending } = useCreateProduct();
 
-  // Create a function to get the batch mutation for a specific inventory item
-  const getBatchMutation = (inventoryItemId: string) => {
-    return useBatchInventoryItemLocationLevels(inventoryItemId);
-  };
-
   // Ref for attributes form validation
   const attributesFormRef = useRef<ProductCreateAttributesFormRef>(null);
 
@@ -300,7 +294,18 @@ export const ProductCreateForm = ({
     const media = values.media || [];
     const { secondary_categories, ...rest } = values;
 
-    const additionalDataValues: Array<{ attribute_id: string; value: any }> = [];
+    const adminAttributes: Array<{
+      attribute_id: string;
+      values: string[];
+      use_for_variations: boolean;
+    }> = [];
+
+    const vendorAttributes: Array<{
+      name: string;
+      values: string[];
+      use_for_variations: boolean;
+      ui_component: string;
+    }> = [];
 
     // Get all form field names to identify dynamic attributes
     const allFieldNames = Object.keys(values);
@@ -347,11 +352,11 @@ export const ProductCreateForm = ({
       );
     }
 
-    // Get user-created options (with metadata === 'user-created')
+    // Get user-created options (with metadata.author === 'vendor')
     // Use values.options instead of finalPayload.options since finalPayload is defined later
     const userCreatedOptions =
       (rest as any).options?.filter(
-        (opt: any) => opt.metadata === 'user-created' && opt.title && opt.values?.length > 0
+        (opt: any) => opt.metadata?.author === 'vendor' && opt.title && opt.values?.length > 0
       ) || [];
 
     // Generate options from ALL required attributes (single-value and multivalue)
@@ -359,7 +364,7 @@ export const ProductCreateForm = ({
     const requiredAttributeOptions: Array<{
       title: string;
       values: string[];
-      metadata: string;
+      metadata: Record<string, unknown>;
       useForVariants: boolean;
     }> = [];
 
@@ -391,7 +396,7 @@ export const ProductCreateForm = ({
           requiredAttributeOptions.push({
             title: attr.name,
             values: selectedValues,
-            metadata: 'required-attribute',
+            metadata: { author: 'admin' },
             useForVariants: true // Locked to true
           });
         }
@@ -413,7 +418,7 @@ export const ProductCreateForm = ({
         requiredAttributeOptions.push({
           title: attr.name,
           values: [String(actualValue)],
-          metadata: 'required-attribute',
+          metadata: { author: 'admin' },
           useForVariants: true
         });
       }
@@ -435,22 +440,26 @@ export const ProductCreateForm = ({
       }
 
       if (Array.isArray(value) && value.length > 0) {
-        value.forEach((valueId: string) => {
-          const possibleValue = (attribute as any).possible_values?.find(
-            (pv: any) => pv.id === valueId
-          );
-          const actualValue = possibleValue ? possibleValue.value : valueId;
-          additionalDataValues.push({
+        const values = value
+          .map((valueId: string) => {
+            const possibleValue = (attribute as any).possible_values?.find(
+              (pv: any) => pv.id === valueId
+            );
+            return possibleValue ? possibleValue.value : valueId;
+          })
+          .filter((item): item is string => item !== null && item !== undefined);
+
+        if (values.length > 0) {
+          adminAttributes.push({
             attribute_id: attribute.id,
-            value: String(actualValue)
+            values: values.map(item => String(item)),
+            use_for_variations: true
           });
-        });
-      }
-      // For single values, convert value ID to actual value
-      else if (!Array.isArray(value)) {
+        }
+      } else if (!Array.isArray(value)) {
         let actualValue = value;
 
-        // If it's a select/multiselect value, convert ID to actual value
+        // If it's a select value, convert ID to actual value
         if ((attribute as any).possible_values && typeof value === 'string') {
           const possibleValue = (attribute as any).possible_values.find(
             (pv: any) => pv.id === value
@@ -460,11 +469,21 @@ export const ProductCreateForm = ({
           }
         }
 
-        additionalDataValues.push({
+        adminAttributes.push({
           attribute_id: attribute.id,
-          value: String(actualValue)
+          values: [String(actualValue)],
+          use_for_variations: true
         });
       }
+    });
+
+    userCreatedOptions.forEach((option: any) => {
+      vendorAttributes.push({
+        name: option.title,
+        values: option.values.map((value: any) => String(value)),
+        use_for_variations: true,
+        ui_component: 'multivalue'
+      });
     });
 
     // Remove dynamic attribute fields from payload
@@ -602,14 +621,21 @@ export const ProductCreateForm = ({
       options: allOptions.length > 0 ? allOptions : (finalPayload as any).options,
       additional_data: (() => {
         const additionalData: Record<string, any> = {};
-        
-        // Add dynamic attribute values if any
-        if (additionalDataValues.length > 0) {
-          additionalData.values = additionalDataValues;
+
+        if (adminAttributes.length > 0) {
+          additionalData.admin_attributes = adminAttributes;
         }
-        
+
+        if (vendorAttributes.length > 0) {
+          additionalData.vendor_attributes = vendorAttributes;
+        }
+
         // Add secondary categories if any
-        if (secondary_categories && Array.isArray(secondary_categories) && secondary_categories.length > 0) {
+        if (
+          secondary_categories &&
+          Array.isArray(secondary_categories) &&
+          secondary_categories.length > 0
+        ) {
           const productHandle = values.handle || '';
           additionalData.secondary_categories = [
             {
@@ -618,7 +644,7 @@ export const ProductCreateForm = ({
             }
           ];
         }
-        
+
         // Return undefined if empty, otherwise return the object
         return Object.keys(additionalData).length > 0 ? additionalData : undefined;
       })()
@@ -682,7 +708,7 @@ export const ProductCreateForm = ({
     //         // Get stock location data for this variant from the form
     //         const variantIndex = mappedVariants.findIndex((v: any) => v.title === variant.title);
     //         const variantStockLocations = mappedVariants[variantIndex]?.stock_locations;
-
+    //
     //         if (variantStockLocations) {
     //           const batchPayload: any = {
     //             create: [],
@@ -690,7 +716,7 @@ export const ProductCreateForm = ({
     //             delete: [],
     //             force: true
     //           };
-
+    //
     //           // Process each stock location for this variant
     //           Object.entries(variantStockLocations).forEach(
     //             ([locationId, locationData]: [string, any]) => {
@@ -706,7 +732,7 @@ export const ProductCreateForm = ({
     //               }
     //             }
     //           );
-
+    //
     //           // Only make the API call if there are locations to create
     //           if (batchPayload.create.length > 0) {
     //             const batchMutation = getBatchMutation(inventoryItemId);
@@ -724,12 +750,6 @@ export const ProductCreateForm = ({
     //   }
     // }
 
-    // toast.success(
-    //   t('products.create.successToast', {
-    //     title: productData.product.title
-    //   })
-    // );
-
     toast.success(
       t('products.create.successToast', {
         title: productData.product.title
@@ -737,6 +757,7 @@ export const ProductCreateForm = ({
     );
 
     handleSuccess(`../${productData.product.id}`);
+
   });
 
   const onNext = async (currentTab: Tab) => {

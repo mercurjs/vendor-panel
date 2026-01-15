@@ -1,9 +1,5 @@
 import Medusa from '@medusajs/js-sdk';
 
-
-
-
-
 export const backendUrl = __BACKEND_URL__ ?? '/';
 export const publishableApiKey = __PUBLISHABLE_API_KEY__ ?? '';
 
@@ -94,7 +90,7 @@ export const fetchQuery = async (
         // Send arrays as multiple query parameters with bracket notation
         // This allows backends to parse them as arrays: status[]=draft&status[]=published
         const arrayParams = value
-          .map((item) => `${encodeURIComponent(key)}[]=${encodeURIComponent(item)}`)
+          .map(item => `${encodeURIComponent(key)}[]=${encodeURIComponent(item)}`)
           .join('&');
         if (acc) {
           acc += '&' + arrayParams;

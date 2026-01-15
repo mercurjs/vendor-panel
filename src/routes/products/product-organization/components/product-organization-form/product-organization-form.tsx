@@ -1,140 +1,189 @@
-import { ExtendedAdminProduct } from "../../../../../types/products"
-import { Button, toast } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
-import * as zod from "zod"
+import { useEffect } from 'react';
 
-import { Form } from "../../../../../components/common/form"
-import { Combobox } from "../../../../../components/inputs/combobox"
-import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
-import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
+import { Button, toast } from '@medusajs/ui';
+import { useTranslation } from 'react-i18next';
+import * as zod from 'zod';
+
+import { Form } from '../../../../../components/common/form';
+import { Combobox } from '../../../../../components/inputs/combobox';
+import { RouteDrawer, useRouteModal } from '../../../../../components/modals';
+import { KeyboundForm } from '../../../../../components/utilities/keybound-form';
 import {
   FormExtensionZone,
   useDashboardExtension,
-  useExtendableForm,
-} from "../../../../../extensions"
-import { useUpdateProduct } from "../../../../../hooks/api/products"
-import { useComboboxData } from "../../../../../hooks/use-combobox-data"
-import { fetchQuery } from "../../../../../lib/client"
+  useExtendableForm
+} from '../../../../../extensions';
+import { useUpdateProduct } from '../../../../../hooks/api/products';
+import { useComboboxData } from '../../../../../hooks/use-combobox-data';
+import { fetchQuery } from '../../../../../lib/client';
+import { ExtendedAdminProduct } from '../../../../../types/products';
 
 type ProductOrganizationFormProps = {
-  product: ExtendedAdminProduct
-}
+  product: ExtendedAdminProduct;
+};
 
 const ProductOrganizationSchema = zod.object({
   type_id: zod.string().nullable(),
   collection_id: zod.string().nullable(),
-  category_ids: zod.string().nullable(),
-  // category_ids: zod.array(zod.string()),
-  tag_ids: zod.array(zod.string()),
-})
+  primary_category_id: zod.string().nullable(),
+  secondary_category_ids: zod.array(zod.string()),
+  tag_ids: zod.array(zod.string())
+});
 
-export const ProductOrganizationForm = ({
-  product,
-}: ProductOrganizationFormProps) => {
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
-  const { getFormConfigs, getFormFields } = useDashboardExtension()
+export const ProductOrganizationForm = ({ product }: ProductOrganizationFormProps) => {
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
+  const { getFormConfigs, getFormFields } = useDashboardExtension();
 
-  const configs = getFormConfigs("product", "organize")
-  const fields = getFormFields("product", "organize")
+  const configs = getFormConfigs('product', 'organize');
+  const fields = getFormFields('product', 'organize');
 
   const categories = useComboboxData({
-    queryKey: ["product_categories"],
-    queryFn: (params) =>
-      fetchQuery("/vendor/product-categories", {
-        method: "GET",
-        query: params as Record<string, string | number>,
+    queryKey: ['product_categories'],
+    queryFn: params =>
+      fetchQuery('/vendor/product-categories', {
+        method: 'GET',
+        query: params as Record<string, string | number>
       }),
-    getOptions: (data) =>
+    getOptions: data =>
       data.product_categories.map((category: any) => ({
         label: category.name!,
-        value: category.id!,
-      })),
-  })
+        value: category.id!
+      }))
+  });
 
   const collections = useComboboxData({
-    queryKey: ["product_collections"],
-    queryFn: (params) =>
-      fetchQuery("/vendor/product-collections", {
-        method: "GET",
-        query: params as Record<string, string | number>,
+    queryKey: ['product_collections'],
+    queryFn: params =>
+      fetchQuery('/vendor/product-collections', {
+        method: 'GET',
+        query: params as Record<string, string | number>
       }),
-    getOptions: (data) =>
+    getOptions: data =>
       data.product_collections.map((collection: any) => ({
         label: collection.title!,
-        value: collection.id!,
-      })),
-  })
+        value: collection.id!
+      }))
+  });
 
   const types = useComboboxData({
-    queryKey: ["product_types"],
-    queryFn: (params) =>
-      fetchQuery("/vendor/product-types", {
-        method: "GET",
-        query: params as { [key: string]: string | number },
+    queryKey: ['product_types'],
+    queryFn: params =>
+      fetchQuery('/vendor/product-types', {
+        method: 'GET',
+        query: params as { [key: string]: string | number }
       }),
-    getOptions: (data) =>
+    getOptions: data =>
       data.product_types.map((type: any) => ({
         label: type.value,
-        value: type.id,
-      })),
-  })
+        value: type.id
+      }))
+  });
 
   const tags = useComboboxData({
-    queryKey: ["product_tags"],
-    queryFn: (params) =>
-      fetchQuery("/vendor/product-tags", {
-        method: "GET",
-        query: params as { [key: string]: string | number },
+    queryKey: ['product_tags'],
+    queryFn: params =>
+      fetchQuery('/vendor/product-tags', {
+        method: 'GET',
+        query: params as { [key: string]: string | number }
       }),
-    getOptions: (data) =>
+    getOptions: data =>
       data.product_tags.map((tag: any) => ({
         label: tag.value,
-        value: tag.id,
-      })),
-  })
+        value: tag.id
+      }))
+  });
 
   const form = useExtendableForm({
     defaultValues: {
-      type_id: product.type_id ?? "",
-      collection_id: product.collection_id ?? "",
-      category_ids: product.categories?.[0]?.id || "",
-      tag_ids: product.tags?.map((t) => t.id) || [],
+      type_id: product.type_id ?? '',
+      collection_id: product.collection_id ?? '',
+      primary_category_id: product.categories?.[0]?.id || '',
+      secondary_category_ids: [
+        ...new Set(
+          product.secondary_categories
+            ?.map(sc => sc.category_id)
+            .filter(id => id !== product.categories?.[0]?.id) || []
+        )
+      ],
+      tag_ids: product.tags?.map(t => t.id) || []
     },
     schema: ProductOrganizationSchema,
     configs: configs,
-    data: product,
-  })
+    data: product
+  });
 
-  const { mutateAsync, isPending } = useUpdateProduct(product.id)
+  const { mutateAsync, isPending } = useUpdateProduct(product.id);
 
-  const handleSubmit = form.handleSubmit(async (data) => {
+  // Watch for changes in primary category and remove it from secondary categories
+  const primaryCategoryId = form.watch('primary_category_id');
+  useEffect(() => {
+    if (primaryCategoryId) {
+      const currentSecondaryIds = form.getValues('secondary_category_ids');
+      if (currentSecondaryIds?.includes(primaryCategoryId)) {
+        form.setValue(
+          'secondary_category_ids',
+          currentSecondaryIds.filter(id => id !== primaryCategoryId)
+        );
+      }
+    }
+  }, [primaryCategoryId, form]);
+
+  const handleSubmit = form.handleSubmit(async data => {
+    // Filter out primary category from secondary categories to avoid duplicates
+    const filteredSecondaryCategories = (data.secondary_category_ids || []).filter(
+      id => id !== data.primary_category_id
+    );
+
+    const originalSecondaryIds = [
+      ...new Set(
+        product.secondary_categories
+          ?.map(sc => sc.category_id)
+          .filter(id => id !== product.categories?.[0]?.id) || []
+      )
+    ];
+
+    const toAdd = filteredSecondaryCategories.filter(id => !originalSecondaryIds.includes(id));
+    const toRemove = originalSecondaryIds.filter(id => !filteredSecondaryCategories.includes(id));
+
     await mutateAsync(
       {
-        type_id: data.type_id ? data.type_id : undefined,
-        collection_id: data.collection_id ? data.collection_id : undefined,
-        categories: data.category_ids ? [{ id: data.category_ids }] : [],
-        tags: data.tag_ids?.map((t) => ({ id: t })) ?? [],
-      },
+        type_id: data.type_id || null,
+        collection_id: data.collection_id || null,
+        categories: data.primary_category_id ? [{ id: data.primary_category_id }] : [],
+        tags: data.tag_ids?.map(t => ({ id: t })),
+        additional_data: {
+          secondary_categories: [
+            {
+              product_id: product.id,
+              add: toAdd,
+              remove: toRemove
+            }
+          ]
+        }
+      } as any,
       {
         onSuccess: ({ product }) => {
           toast.success(
-            t("products.organization.edit.toasts.success", {
-              title: product.title,
+            t('products.organization.edit.toasts.success', {
+              title: product.title
             })
-          )
-          handleSuccess()
+          );
+          handleSuccess();
         },
-        onError: (error) => {
-          toast.error(error.message)
-        },
+        onError: error => {
+          toast.error(error.message);
+        }
       }
-    )
-  })
+    );
+  });
 
   return (
     <RouteDrawer.Form form={form}>
-      <KeyboundForm onSubmit={handleSubmit} className="flex h-full flex-col">
+      <KeyboundForm
+        onSubmit={handleSubmit}
+        className="flex h-full flex-col"
+      >
         <RouteDrawer.Body>
           <div className="flex h-full flex-col gap-y-4">
             <Form.Field
@@ -143,9 +192,7 @@ export const ProductOrganizationForm = ({
               render={({ field }) => {
                 return (
                   <Form.Item>
-                    <Form.Label optional>
-                      {t("products.fields.type.label")}
-                    </Form.Label>
+                    <Form.Label optional>{t('products.fields.type.label')}</Form.Label>
                     <Form.Control>
                       <Combobox
                         {...field}
@@ -157,7 +204,7 @@ export const ProductOrganizationForm = ({
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
             <Form.Field
@@ -166,9 +213,7 @@ export const ProductOrganizationForm = ({
               render={({ field }) => {
                 return (
                   <Form.Item>
-                    <Form.Label optional>
-                      {t("products.fields.collection.label")}
-                    </Form.Label>
+                    <Form.Label optional>{t('products.fields.collection.label')}</Form.Label>
                     <Form.Control>
                       <Combobox
                         {...field}
@@ -180,20 +225,17 @@ export const ProductOrganizationForm = ({
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
             <Form.Field
               control={form.control}
-              name="category_ids"
+              name="primary_category_id"
               render={({ field }) => {
                 return (
                   <Form.Item>
-                    <Form.Label optional>
-                      {t("products.fields.categories.label")}
-                    </Form.Label>
+                    <Form.Label optional>{t('products.fields.primaryCategory.label')}</Form.Label>
                     <Form.Control>
-                      {/* <CategoryCombobox {...field} /> */}
                       <Combobox
                         {...field}
                         multiple={false}
@@ -204,7 +246,35 @@ export const ProductOrganizationForm = ({
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
+              }}
+            />
+            <Form.Field
+              control={form.control}
+              name="secondary_category_ids"
+              render={({ field }) => {
+                // Filter out primary category from secondary categories options
+                const filteredOptions = categories.options.filter(
+                  option => option.value !== primaryCategoryId
+                );
+
+                return (
+                  <Form.Item>
+                    <Form.Label optional>
+                      {t('products.fields.secondaryCategories.label')}
+                    </Form.Label>
+                    <Form.Control>
+                      <Combobox
+                        {...field}
+                        multiple
+                        options={filteredOptions}
+                        onSearchValueChange={categories.onSearchValueChange}
+                        searchValue={categories.searchValue}
+                      />
+                    </Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                );
               }}
             />
             <Form.Field
@@ -213,9 +283,7 @@ export const ProductOrganizationForm = ({
               render={({ field }) => {
                 return (
                   <Form.Item>
-                    <Form.Label optional>
-                      {t("products.fields.tags.label")}
-                    </Form.Label>
+                    <Form.Label optional>{t('products.fields.tags.label')}</Form.Label>
                     <Form.Control>
                       <Combobox
                         {...field}
@@ -227,25 +295,35 @@ export const ProductOrganizationForm = ({
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
-            <FormExtensionZone fields={fields} form={form} />
+            <FormExtensionZone
+              fields={fields}
+              form={form}
+            />
           </div>
         </RouteDrawer.Body>
         <RouteDrawer.Footer>
           <div className="flex items-center justify-end gap-x-2">
             <RouteDrawer.Close asChild>
-              <Button size="small" variant="secondary">
-                {t("actions.cancel")}
+              <Button
+                size="small"
+                variant="secondary"
+              >
+                {t('actions.cancel')}
               </Button>
             </RouteDrawer.Close>
-            <Button size="small" type="submit" isLoading={isPending}>
-              {t("actions.save")}
+            <Button
+              size="small"
+              type="submit"
+              isLoading={isPending}
+            >
+              {t('actions.save')}
             </Button>
           </div>
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  )
-}
+  );
+};

@@ -97,8 +97,9 @@
     "rules": {
       "lower": "小文字1文字",
       "upper": "大文字1文字",
-      "8chars": "8文字以上",
-      "symbolOrDigit": "数字または記号1文字"
+      "12chars": "12文字以上",
+      "digit": "数字1文字以上",
+      "specialChar": "特殊文字1文字以上"
     }
   },
   "actions": {

@@ -2066,7 +2066,8 @@
       "header": "Produkty",
       "actions": {
         "addProducts": "Dodaj produkty",
-        "editPrices": "Edytuj ceny"
+        "editPrices": "Edytuj ceny",
+        "editPricesDisabled": "Dodaj produkty przed edycją cen"
       },
       "delete": {
         "confirmation_one": "Zamierzasz usunąć ceny dla produktu {{count}} z cennika. Tej akcji nie można cofnąć.",

@@ -35,9 +35,9 @@ const rules = {
 }
 
 const PasswordRule: FC<{ hasError: boolean; ruleName: keyof typeof rules }> = ({
-  ruleName,
-  hasError,
-}) => {
+                                                                                 ruleName,
+                                                                                 hasError,
+                                                                               }) => {
 
   const { t } = useTranslation();
   if (ruleName === "hasError" || ruleName === "isValid") return
@@ -63,9 +63,9 @@ const PasswordRule: FC<{ hasError: boolean; ruleName: keyof typeof rules }> = ({
 };
 
 export const PasswordValidator = ({
-  password,
-  setError
-}: {
+                                    password,
+                                    setError
+                                  }: {
   password: string;
   setError: (error: any) => void;
 }) => {

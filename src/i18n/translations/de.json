@@ -2066,7 +2066,8 @@
       "header": "Produkte",
       "actions": {
         "addProducts": "Produkte hinzufügen",
-        "editPrices": "Preise bearbeiten"
+        "editPrices": "Preise bearbeiten",
+        "editPricesDisabled": "Produkte hinzufügen, bevor Sie Preise bearbeiten"
       },
       "delete": {
         "confirmation_one": "Sie sind dabei, die Preise für {{count}} Produkt in der Preisliste zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.",

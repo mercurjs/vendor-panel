@@ -1,5 +1,9 @@
 import Medusa from '@medusajs/js-sdk';
 
+
+
+
+
 export const backendUrl = __BACKEND_URL__ ?? '/';
 export const publishableApiKey = __PUBLISHABLE_API_KEY__ ?? '';
 
@@ -8,9 +12,8 @@ const token = window.localStorage.getItem('medusa_auth_token') || '';
 const decodeJwt = (token: string) => {
   try {
     const payload = token.split('.')[1];
-    const decoded = JSON.parse(atob(payload));
 
-    return decoded;
+    return JSON.parse(atob(payload));
   } catch (err) {
     return null;
   }
@@ -133,7 +136,9 @@ export const fetchQuery = async (
       };
     }
 
-    throw new Error(errorData.message || 'Server error');
+    const error = new Error(errorData.message || 'Server error');
+    (error as Error & { status: number }).status = response.status;
+    throw error;
   }
 
   return response.json();

@@ -10,7 +10,6 @@ import * as z from 'zod';
 import { Form } from '../../components/common/form';
 import AvatarBox from '../../components/common/logo-box/avatar-box';
 import { useSignUpWithEmailPass } from '../../hooks/api';
-import { isFetchError } from '../../lib/is-fetch-error';
 import { PasswordValidator } from './password-hints.tsx';
 import { RegisterSchema } from './register-schema.ts';
 
@@ -65,15 +64,24 @@ export const Register = () => {
       },
       {
         onError: error => {
-          if (isFetchError(error)) {
-            if (error.status === 401) {
-              form.setError('email', {
-                type: 'manual',
-                message: error.message
-              });
+          const status = 'status' in error ? error.status : undefined;
 
-              return;
-            }
+          if (status === 401) {
+            form.setError('email', {
+              type: 'manual',
+              message: error.message
+            });
+
+            return;
+          }
+
+          if (status === 409) {
+            form.setError('email', {
+              type: 'manual',
+              message: 'Provided email is already taken'
+            });
+
+            return;
           }
 
           form.setError('root.serverError', {

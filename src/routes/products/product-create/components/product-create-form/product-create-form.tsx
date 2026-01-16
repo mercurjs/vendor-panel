@@ -53,7 +53,9 @@ type ProductCreateFormProps = {
   store?: HttpTypes.AdminStore;
   pricePreferences?: HttpTypes.AdminPricePreference[];
   onOpenMediaModal?: (variantIndex: number, variantTitle?: string, initialMedia?: any[]) => void;
-  onSaveVariantMediaRef?: React.MutableRefObject<((variantIndex: number, media: any[]) => void) | null>;
+  onSaveVariantMediaRef?: React.MutableRefObject<
+    ((variantIndex: number, media: any[]) => void) | null
+  >;
 };
 
 export const ProductCreateForm = ({
@@ -240,17 +242,20 @@ export const ProductCreateForm = ({
   // Note: useForVariants is now user-controlled
 
   // Handler to update variant media in the form
-  const handleSaveVariantMedia = useCallback((variantIndex: number, media: any[]) => {
-    const currentVariants = form.getValues('variants') || [];
-    if (currentVariants[variantIndex]) {
-      const updatedVariants = [...currentVariants];
-      updatedVariants[variantIndex] = {
-        ...updatedVariants[variantIndex],
-        media
-      };
-      form.setValue('variants', updatedVariants, { shouldDirty: true });
-    }
-  }, [form]);
+  const handleSaveVariantMedia = useCallback(
+    (variantIndex: number, media: any[]) => {
+      const currentVariants = form.getValues('variants') || [];
+      if (currentVariants[variantIndex]) {
+        const updatedVariants = [...currentVariants];
+        updatedVariants[variantIndex] = {
+          ...updatedVariants[variantIndex],
+          media
+        };
+        form.setValue('variants', updatedVariants, { shouldDirty: true });
+      }
+    },
+    [form]
+  );
 
   // Expose handler via ref if provided
   useEffect(() => {
@@ -507,12 +512,75 @@ export const ProductCreateForm = ({
       }
     }
 
+    const uploadVariantMedia = async (mediaItems: any[]) => {
+      const existingThumbnail = mediaItems.find((item: any) => item.isThumbnail && item.url)?.url;
+      const existingUrls = mediaItems
+        .filter((item: any) => !item.file && item.url)
+        .map((item: any) => item.url);
+
+      const thumbnailReq = mediaItems.filter((item: any) => item.file && item.isThumbnail);
+      const otherMediaReq = mediaItems.filter((item: any) => item.file && !item.isThumbnail);
+      const uploaded: Array<{ url: string; isThumbnail: boolean }> = [];
+
+      if (thumbnailReq.length > 0) {
+        const response = await uploadFilesQuery(thumbnailReq);
+        uploaded.push(
+          ...response.files.map((file: any) => ({
+            ...file,
+            isThumbnail: true
+          }))
+        );
+      }
+
+      if (otherMediaReq.length > 0) {
+        const response = await uploadFilesQuery(otherMediaReq);
+        uploaded.push(
+          ...response.files.map((file: any) => ({
+            ...file,
+            isThumbnail: false
+          }))
+        );
+      }
+
+      const uploadedUrls = uploaded.map(file => file.url);
+      const imageUrls = [...existingUrls, ...uploadedUrls].filter(Boolean);
+      const uploadedThumbnail = uploaded.find(file => file.isThumbnail)?.url;
+      const thumbnailUrl = uploadedThumbnail || existingThumbnail || imageUrls[0];
+
+      return { imageUrls, thumbnailUrl };
+    };
+
     // Filter variants to only include those with should_create === true
     const variantsToCreate = (finalPayload as any).variants.filter(
       (variant: any) => variant.should_create === true
     );
 
-    const mappedVariants = variantsToCreate.map((variant: any) => {
+    const variantImageKeyByIndex = new Map<number, string>();
+    const variantsImages = [];
+
+    for (let i = 0; i < variantsToCreate.length; i++) {
+      const variant = variantsToCreate[i];
+      const variantMedia = variant.media || [];
+      if (!variantMedia.length) {
+        continue;
+      }
+
+      const variantImageKey = `variant-${i}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      const { imageUrls, thumbnailUrl } = await uploadVariantMedia(variantMedia);
+
+      if (imageUrls.length === 0) {
+        continue;
+      }
+
+      variantImageKeyByIndex.set(i, variantImageKey);
+      variantsImages.push({
+        variant_image_key: variantImageKey,
+        image_urls: imageUrls,
+        thumbnail_url: thumbnailUrl
+      });
+    }
+
+    const mappedVariants = variantsToCreate.map((variant: any, index: number) => {
       const mappedOptions: Record<string, string> = {};
 
       // Map options from options used for variants
@@ -542,12 +610,19 @@ export const ProductCreateForm = ({
         }
       });
 
+      const variantImageKey = variantImageKeyByIndex.get(index);
+
       // Exclude media and stock_locations fields from API request
       const { media, stock_locations, ...variantWithoutMedia } = variant;
 
       return {
         ...variantWithoutMedia,
-        options: mappedOptions
+        options: mappedOptions,
+        ...(variantImageKey && {
+          metadata: {
+            variant_image_key: variantImageKey
+          }
+        })
       };
     });
 
@@ -626,17 +701,15 @@ export const ProductCreateForm = ({
             amount: parseFloat(variant.prices?.[key] as string)
           }))
         };
-      })
+      }),
+      ...(variantsImages.length > 0 && { variants_images: variantsImages })
     };
 
-    const productData = await mutateAsync(
-      payloadToSend,
-      {
-        onError: error => {
-          toast.error(error.message);
-        }
+    const productData = await mutateAsync(payloadToSend, {
+      onError: error => {
+        toast.error(error.message);
       }
-    );
+    });
 
     // Assign stock locations to inventory items after product creation
     // Get stock locations from form values (they were removed from finalPayload)
@@ -709,7 +782,6 @@ export const ProductCreateForm = ({
     );
 
     handleSuccess(`../${productData.product.id}`);
-
   });
 
   const onNext = async (currentTab: Tab) => {

@@ -175,7 +175,7 @@ export const ProductCreateForm = ({
       switch (attr.ui_component) {
         case 'multivalue':
           defaults[attr.handle] = [];
-          defaults[`${attr.handle}UseForVariants`] = true; // Locked to true
+          defaults[`${attr.handle}UseForVariants`] = true;
           break;
         case 'select':
         case 'text':
@@ -237,31 +237,7 @@ export const ProductCreateForm = ({
     [watchedVariants]
   );
 
-  // Watch form values to detect changes
-  const formValues = useWatch({
-    control: form.control
-  });
-
-  // Ensure all "Use for Variants" fields are always set to true (locked)
-  useEffect(() => {
-    allAttributes?.forEach((attr: any) => {
-      if (attr.ui_component === 'multivalue') {
-        const useForVariantsField = `${attr.handle}UseForVariants` as any;
-        const currentValue = form.getValues(useForVariantsField);
-        if (currentValue !== true) {
-          form.setValue(useForVariantsField, true, { shouldDirty: false });
-        }
-      }
-    });
-
-    // Also ensure all user-created options have useForVariants set to true
-    const options = form.getValues('options') || [];
-    options.forEach((option: any, index: number) => {
-      if (option?.useForVariants !== true) {
-        form.setValue(`options.${index}.useForVariants` as any, true, { shouldDirty: false });
-      }
-    });
-  }, [allAttributes, form, formValues]);
+  // Note: useForVariants is now user-controlled
 
   // Handler to update variant media in the form
   const handleSaveVariantMedia = useCallback((variantIndex: number, media: any[]) => {
@@ -354,13 +330,16 @@ export const ProductCreateForm = ({
 
     // Get user-created options (with metadata.author === 'vendor')
     // Use values.options instead of finalPayload.options since finalPayload is defined later
-    const userCreatedOptions =
+    const vendorOptions =
       (rest as any).options?.filter(
         (opt: any) => opt.metadata?.author === 'vendor' && opt.title && opt.values?.length > 0
       ) || [];
 
-    // Generate options from ALL required attributes (single-value and multivalue)
-    // For consistency, all required attributes are saved as options with metadata="required-attribute"
+    const vendorOptionsForVariants = vendorOptions.filter(
+      (opt: any) => opt.useForVariants === true
+    );
+
+    // Generate options from required multivalue attributes when useForVariants is enabled
     const requiredAttributeOptions: Array<{
       title: string;
       values: string[];
@@ -382,6 +361,7 @@ export const ProductCreateForm = ({
 
       // Handle multivalue attributes
       if (attr.ui_component === 'multivalue' && Array.isArray(value) && value.length > 0) {
+        const useForVariants = form.getValues(`${attr.handle}UseForVariants` as any);
         const selectedValues = value
           .map((valueId: string) => {
             const possibleValue = (attr as any).possible_values?.find(
@@ -391,41 +371,19 @@ export const ProductCreateForm = ({
           })
           .filter((item): item is string => item !== null);
 
-        if (selectedValues.length > 0) {
-          // Always use for variants (locked to true)
+        if (selectedValues.length > 0 && useForVariants === true) {
           requiredAttributeOptions.push({
             title: attr.name,
             values: selectedValues,
             metadata: { author: 'admin' },
-            useForVariants: true // Locked to true
+            useForVariants: true
           });
         }
       }
-      // Handle single-value attributes (select, text, text_area, unit, toggle)
-      else if (!Array.isArray(value)) {
-        let actualValue = value;
-
-        // If it's a select value, convert ID to actual value
-        if ((attr as any).possible_values && typeof value === 'string') {
-          const possibleValue = (attr as any).possible_values.find((pv: any) => pv.id === value);
-          if (possibleValue) {
-            actualValue = possibleValue.value;
-          }
-        }
-
-        // Single-value attributes - default to useForVariants: true
-        // Convert single value to array for consistency
-        requiredAttributeOptions.push({
-          title: attr.name,
-          values: [String(actualValue)],
-          metadata: { author: 'admin' },
-          useForVariants: true
-        });
-      }
     });
 
-    // Combine user-created options and required attribute options
-    const allOptions = [...userCreatedOptions, ...requiredAttributeOptions];
+    // Combine options used for variants only
+    const allOptions = [...vendorOptionsForVariants, ...requiredAttributeOptions];
 
     dynamicAttributeFields.forEach(fieldName => {
       const value = form.getValues(fieldName as any);
@@ -440,6 +398,7 @@ export const ProductCreateForm = ({
       }
 
       if (Array.isArray(value) && value.length > 0) {
+        const useForVariants = form.getValues(`${attribute.handle}UseForVariants` as any);
         const values = value
           .map((valueId: string) => {
             const possibleValue = (attribute as any).possible_values?.find(
@@ -453,7 +412,7 @@ export const ProductCreateForm = ({
           adminAttributes.push({
             attribute_id: attribute.id,
             values: values.map(item => String(item)),
-            use_for_variations: true
+            use_for_variations: useForVariants === true
           });
         }
       } else if (!Array.isArray(value)) {
@@ -472,16 +431,16 @@ export const ProductCreateForm = ({
         adminAttributes.push({
           attribute_id: attribute.id,
           values: [String(actualValue)],
-          use_for_variations: true
+          use_for_variations: false
         });
       }
     });
 
-    userCreatedOptions.forEach((option: any) => {
+    vendorOptions.forEach((option: any) => {
       vendorAttributes.push({
         name: option.title,
         values: option.values.map((value: any) => String(value)),
-        use_for_variations: true,
+        use_for_variations: option.useForVariants === true,
         ui_component: 'multivalue'
       });
     });
@@ -556,7 +515,7 @@ export const ProductCreateForm = ({
     const mappedVariants = variantsToCreate.map((variant: any) => {
       const mappedOptions: Record<string, string> = {};
 
-      // Map options from ALL options (both useForVariants: true and false)
+      // Map options from options used for variants
       // Backend requires that variants have values for ALL options sent to API
       allOptions.forEach(option => {
         // First, check if variant already has this option value set (from variant generation)
@@ -564,7 +523,7 @@ export const ProductCreateForm = ({
           mappedOptions[option.title] = variant.options[option.title];
         }
         // For options used for variants, try to extract value from variant title
-        else if (option.useForVariants === true) {
+        else {
           const variantTitle = variant.title || '';
           const optionValues = option.values || [];
 
@@ -579,13 +538,6 @@ export const ProductCreateForm = ({
             if (optionValues.length > 0) {
               mappedOptions[option.title] = optionValues[0];
             }
-          }
-        } else {
-          // For options NOT used for variants, use the first value (or default)
-          // This ensures all variants have a value for all options
-          const optionValues = option.values || [];
-          if (optionValues.length > 0) {
-            mappedOptions[option.title] = optionValues[0];
           }
         }
       });
@@ -615,8 +567,8 @@ export const ProductCreateForm = ({
       collection_id: (finalPayload as any).collection_id || undefined,
       shipping_profile_id: undefined,
       enable_variants: undefined,
-      // Send all options (both useForVariants: true and false)
-      // Variants will have values for all options (first value for non-variant options)
+      // Send options used for variants
+      // Variants will have values for all options
       // If no options exist, use default from payload
       options: allOptions.length > 0 ? allOptions : (finalPayload as any).options,
       additional_data: (() => {

@@ -67,35 +67,14 @@ export const ProductCreateVariantsForm = ({
       selectedValues: Array<{ id: string; value: string }>;
     }> = [];
 
-    // First, add required single-value attributes (default useForVariants: true)
-    allAttributes.forEach((attr: any) => {
-      if (attr.is_required && attr.ui_component !== 'multivalue') {
-        const value = (formValues as any)?.[attr.handle];
-
-        if (value !== undefined && value !== null && value !== '') {
-          let actualValue = value;
-
-          // If it's a select value, convert ID to actual value
-          if (attr.possible_values && typeof value === 'string') {
-            const possibleValue = attr.possible_values.find((pv: any) => pv.id === value);
-            if (possibleValue) {
-              actualValue = possibleValue.value;
-            }
-          }
-
-          // Single-value attributes default to useForVariants: true
-          result.push({
-            handle: attr.handle,
-            name: attr.name,
-            selectedValues: [{ id: String(value), value: String(actualValue) }]
-          });
-        }
-      }
-    });
-
-    // Then, add required multivalue attributes (always use for variants - locked to true)
+    // Add required multivalue attributes when useForVariants is enabled
     allAttributes.forEach((attr: any) => {
       if (attr.ui_component === 'multivalue') {
+        const useForVariants = (formValues as any)?.[`${attr.handle}UseForVariants`];
+        if (useForVariants === false) {
+          return;
+        }
+
         const selectedValueIds = (formValues as any)?.[attr.handle];
 
         if (
@@ -121,12 +100,13 @@ export const ProductCreateVariantsForm = ({
       }
     });
 
-    // Finally, add user-created options (always use for variants - locked to true)
+    // Finally, add user-created options when useForVariants is enabled
     // Only include options with metadata.author === 'vendor' to exclude default options
     const options = (formValues as any)?.options || [];
     options.forEach((option: any) => {
       if (
         option?.metadata?.author === 'vendor' &&
+        option?.useForVariants !== false &&
         option?.title &&
         option?.values &&
         Array.isArray(option.values) &&

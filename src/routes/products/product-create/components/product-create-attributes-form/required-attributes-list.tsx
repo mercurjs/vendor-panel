@@ -86,7 +86,6 @@ export const RequiredAttributesList = ({
                 name={`${field.handle}UseForVariants` as any}
                 label={t('products.fields.attributes.useForVariants.label')}
                 description={t('products.fields.attributes.useForVariants.description')}
-                disabled={true}
               />
             </>
           )}

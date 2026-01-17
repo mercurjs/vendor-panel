@@ -428,12 +428,27 @@ export const useCreateProduct = (
   })
 }
 
+type ProductAdditionalData = {
+  values?: Record<string, string>[]
+  vendor_attributes?: Array<{
+    name: string
+    values: string[]
+    use_for_variations: boolean
+    ui_component: string
+  }>
+  admin_attributes?: Array<{
+    attribute_id: string
+    values: string[]
+    use_for_variations: boolean
+  }>
+}
+
 export const useUpdateProduct = (
   id: string,
   options?: UseMutationOptions<
     HttpTypes.AdminProductResponse,
     FetchError,
-    HttpTypes.AdminUpdateProduct & { additional_data?: { values: Record<string, string>[] } }
+    HttpTypes.AdminUpdateProduct & { additional_data?: ProductAdditionalData }
   >
 ) => {
   return useMutation({

@@ -306,6 +306,11 @@ export const RouteMap: RouteObject[] = [
                           import("../../routes/products/product-attributes"),
                       },
                       {
+                        path: "attributes/add",
+                        lazy: () =>
+                          import("../../routes/products/product-add-attribute"),
+                      },
+                      {
                         path: "organization",
                         lazy: () =>
                           import("../../routes/products/product-organization"),

@@ -1,12 +1,9 @@
-import { useMemo } from 'react';
-
-import { PencilSquare } from '@medusajs/icons';
-import { Container, Heading } from '@medusajs/ui';
+import { Plus } from '@medusajs/icons';
+import { Badge, Container, Heading } from '@medusajs/ui';
 import { useTranslation } from 'react-i18next';
 
 import { ActionMenu } from '../../../../../components/common/action-menu';
 import { SectionRow } from '../../../../../components/common/section';
-import { useProductAttributes } from '../../../../../hooks/api/products';
 import { ExtendedAdminProduct } from '../../../../../types/products';
 
 type ProductAttributeSectionProps = {
@@ -16,21 +13,13 @@ type ProductAttributeSectionProps = {
 export const ProductAdditionalAttributesSection = ({ product }: ProductAttributeSectionProps) => {
   const { t } = useTranslation();
 
-  const { attributes, isLoading } = useProductAttributes(product.id);
+  const informationalAttributes =
+    product.informational_attributes?.filter(Boolean) ?? [];
+  const options = product.options?.filter(Boolean) ?? [];
 
-  const attributeList = useMemo(() => {
-    return attributes?.map(attribute => {
-      const value =
-        product.attribute_values?.filter(Boolean).find(av => av.attribute_id === attribute.id)
-          ?.value || '-';
-      return {
-        ...attribute,
-        value
-      };
-    });
-  }, [attributes, product.attribute_values]);
-
-  if (isLoading) return;
+  if (!informationalAttributes.length && !options.length) {
+    return null;
+  }
 
   return (
     <Container className="divide-y p-0">
@@ -41,23 +30,66 @@ export const ProductAdditionalAttributesSection = ({ product }: ProductAttribute
             {
               actions: [
                 {
-                  label: 'Edit',
-                  to: 'additional-attributes',
-                  icon: <PencilSquare />
+                  label: t('actions.add'),
+                  to: 'attributes/add',
+                  icon: <Plus />
                 }
               ]
             }
           ]}
         />
       </div>
-      {attributeList?.filter(Boolean).map(attribute => (
-        <SectionRow
-          key={attribute.id}
-          title={attribute.name}
-          value={attribute.value}
-          tooltip={attribute.description}
-        />
-      ))}
+      {informationalAttributes.length > 0 && (
+        <>
+          <div className="flex items-center justify-between px-6 py-4">
+            <Heading>Informational attributes</Heading>
+          </div>
+          {informationalAttributes.map(attribute => (
+            <SectionRow
+              key={`${attribute.attribute_id}-${attribute.source}`}
+              title={attribute.name}
+              value={
+                attribute.values?.length ? (
+                  attribute.values.map((value, index) => (
+                    <Badge
+                      key={`${attribute.attribute_id}-${value}-${index}`}
+                      size="2xsmall"
+                      className="flex min-w-[20px] items-center justify-center"
+                    >
+                      {value}
+                    </Badge>
+                  ))
+                ) : (
+                  '-'
+                )
+              }
+              tooltip={attribute.description ?? undefined}
+            />
+          ))}
+        </>
+      )}
+      {options.length > 0 && (
+        <>
+          <div className="flex items-center justify-between px-6 py-4">
+            <Heading>{t('products.options.header')}</Heading>
+          </div>
+          {options.map(option => (
+            <SectionRow
+              key={option.id}
+              title={option.title}
+              value={option.values?.map((value, index) => (
+                <Badge
+                  key={`${option.id}-${value.value}-${index}`}
+                  size="2xsmall"
+                  className="flex min-w-[20px] items-center justify-center"
+                >
+                  {value.value}
+                </Badge>
+              ))}
+            />
+          ))}
+        </>
+      )}
     </Container>
   );
 };

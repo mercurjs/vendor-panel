@@ -9,12 +9,12 @@ import { ProductGeneralSection } from './components/product-general-section';
 import { ProductMediaSection } from './components/product-media-section';
 import { ProductOrganizationSection } from './components/product-organization-section';
 import { ProductVariantSection } from './components/product-variant-section';
+import { PRODUCT_DETAIL_FIELDS } from './constants';
 
 export const ProductDetail = () => {
   const { id } = useParams();
   const { product, isLoading, isError, error } = useProduct(id!, {
-    fields:
-      '*variants.inventory_items,*variants.images,*categories,attribute_values.*,attribute_values.attribute.*'
+    fields: PRODUCT_DETAIL_FIELDS,
   });
 
   const { getWidgets } = useDashboardExtension();

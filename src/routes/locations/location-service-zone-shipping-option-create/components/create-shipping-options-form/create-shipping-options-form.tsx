@@ -54,7 +54,7 @@ export function CreateShippingOptionsForm({
       price_type: ShippingOptionPriceType.FlatRate,
       enabled_in_store: true,
       shipping_profile_id: "",
-      provider_id: "manual_manual",
+      provider_id: "",
       fulfillment_option_id: "",
       region_prices: {},
       currency_prices: {},
@@ -108,7 +108,7 @@ export function CreateShippingOptionsForm({
 
     const fulfillmentOptionData = fulfillmentProviderOptions?.find(
       (fo) => fo.id === data.fulfillment_option_id
-    )!
+    )
 
     await mutateAsync(
       {
@@ -278,6 +278,9 @@ export function CreateShippingOptionsForm({
                 zone={zone}
                 isReturn={isReturn}
                 type={type}
+                locationId={locationId}
+                fulfillmentProviderOptions={fulfillmentProviderOptions || []}
+                selectedProviderId={selectedProviderId}
               />
             </ProgressTabs.Content>
             <ProgressTabs.Content value={Tab.PRICING} className="size-full">

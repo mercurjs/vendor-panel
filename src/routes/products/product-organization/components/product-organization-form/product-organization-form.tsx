@@ -29,6 +29,24 @@ type ProductAdditionalData = {
   }>;
 };
 
+type ProductWithAdditionalData = ExtendedAdminProduct & {
+  additional_data?: ProductAdditionalData;
+  secondary_categories?: HttpTypes.AdminProductCategory[];
+};
+
+const getSecondaryCategoryIds = (product: ProductWithAdditionalData): string[] => {
+  if (product.secondary_categories?.length) {
+    return product.secondary_categories.map(cat => cat.id);
+  }
+
+  const additionalSecondaryCategories =
+    product.additional_data?.secondary_categories?.flatMap(
+      entry => entry.secondary_categories_ids ?? []
+    ) ?? [];
+
+  return Array.from(new Set(additionalSecondaryCategories));
+};
+
 const ProductOrganizationSchema = zod.object({
   type_id: zod.string().nullable(),
   collection_id: zod.string().nullable(),
@@ -92,13 +110,7 @@ export const ProductOrganizationForm = ({ product }: ProductOrganizationFormProp
       type_id: product.type_id ?? '',
       collection_id: product.collection_id ?? '',
       categories: product.categories?.map(cat => cat.id) || [],
-      secondary_categories: (
-        (
-          product as ExtendedAdminProduct & {
-            secondary_categories?: HttpTypes.AdminProductCategory[];
-          }
-        ).secondary_categories ?? []
-      ).map((cat: HttpTypes.AdminProductCategory) => cat.id),
+      secondary_categories: getSecondaryCategoryIds(product as ProductWithAdditionalData),
       tag_ids: product.tags?.map(t => t.id) || []
     },
     schema: ProductOrganizationSchema,
@@ -112,11 +124,7 @@ export const ProductOrganizationForm = ({ product }: ProductOrganizationFormProp
     const additionalData: ProductAdditionalData = {};
 
     // Add secondary categories if any
-    if (
-      data.secondary_categories &&
-      Array.isArray(data.secondary_categories) &&
-      data.secondary_categories.length > 0
-    ) {
+    if (Array.isArray(data.secondary_categories)) {
       additionalData.secondary_categories = [
         {
           handle: product.handle || '',

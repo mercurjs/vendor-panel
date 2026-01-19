@@ -93,7 +93,14 @@
   },
   "validation": {
     "mustBeInt": "Hodnota musí být celé číslo.",
-    "mustBePositive": "Hodnota musí být kladné číslo."
+    "mustBePositive": "Hodnota musí být kladné číslo.",
+    "rules": {
+      "lower": "Jedno malé písmeno",
+      "upper": "Jedno velké písmeno",
+      "12chars": "Alespoň 12 znaků",
+      "digit": "Alespoň jedna číslice",
+      "specialChar": "Alespoň jeden speciální znak"
+    }
   },
   "actions": {
     "save": "Uložit",
@@ -2183,7 +2190,8 @@
       "header": "Produkty",
       "actions": {
         "addProducts": "Přidat produkty",
-        "editPrices": "Upravit ceny"
+        "editPrices": "Upravit ceny",
+        "editPricesDisabled": "Přidejte produkty před úpravou cen"
       },
       "delete": {
         "confirmation_one": "Chystáte se smazat ceny pro {{count}} produkt v ceníku. Tuto akci nelze vrátit zpět.",

@@ -362,9 +362,31 @@
         },
         "mustBePositive": {
           "type": "string"
+        },
+        "rules": {
+          "type": "object",
+          "properties": {
+            "lower": {
+              "type": "string"
+            },
+            "upper": {
+              "type": "string"
+            },
+            "12chars": {
+              "type": "string"
+            },
+            "digit": {
+              "type": "string"
+            },
+            "specialChar": {
+              "type": "string"
+            }
+          },
+          "required": ["lower", "upper", "12chars", "digit", "specialChar"],
+          "additionalProperties": false
         }
       },
-      "required": ["mustBeInt", "mustBePositive"],
+      "required": ["mustBeInt", "mustBePositive", "rules"],
       "additionalProperties": false
     },
     "actions": {
@@ -8297,9 +8319,12 @@
                 },
                 "editPrices": {
                   "type": "string"
+                },
+                "editPricesDisabled": {
+                  "type": "string"
                 }
               },
-              "required": ["addProducts", "editPrices"],
+              "required": ["addProducts", "editPrices", "editPricesDisabled"],
               "additionalProperties": false
             },
             "delete": {

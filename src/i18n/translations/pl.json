@@ -93,7 +93,14 @@
   },
   "validation": {
     "mustBeInt": "Wartość musi być liczbą całkowitą.",
-    "mustBePositive": "Wartość musi być liczbą dodatnią."
+    "mustBePositive": "Wartość musi być liczbą dodatnią.",
+    "rules": {
+      "lower": "Jedna mała litera",
+      "upper": "Jedna wielka litera",
+      "12chars": "Co najmniej 12 znaków",
+      "digit": "Co najmniej jedna cyfra",
+      "specialChar": "Co najmniej jeden znak specjalny"
+    }
   },
   "actions": {
     "save": "Zapisz",
@@ -2059,7 +2066,8 @@
       "header": "Produkty",
       "actions": {
         "addProducts": "Dodaj produkty",
-        "editPrices": "Edytuj ceny"
+        "editPrices": "Edytuj ceny",
+        "editPricesDisabled": "Dodaj produkty przed edycją cen"
       },
       "delete": {
         "confirmation_one": "Zamierzasz usunąć ceny dla produktu {{count}} z cennika. Tej akcji nie można cofnąć.",

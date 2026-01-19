@@ -8,9 +8,8 @@ const token = window.localStorage.getItem('medusa_auth_token') || '';
 const decodeJwt = (token: string) => {
   try {
     const payload = token.split('.')[1];
-    const decoded = JSON.parse(atob(payload));
 
-    return decoded;
+    return JSON.parse(atob(payload));
   } catch (err) {
     return null;
   }
@@ -91,7 +90,7 @@ export const fetchQuery = async (
         // Send arrays as multiple query parameters with bracket notation
         // This allows backends to parse them as arrays: status[]=draft&status[]=published
         const arrayParams = value
-          .map((item) => `${encodeURIComponent(key)}[]=${encodeURIComponent(item)}`)
+          .map(item => `${encodeURIComponent(key)}[]=${encodeURIComponent(item)}`)
           .join('&');
         if (acc) {
           acc += '&' + arrayParams;
@@ -133,7 +132,9 @@ export const fetchQuery = async (
       };
     }
 
-    throw new Error(errorData.message || 'Server error');
+    const error = new Error(errorData.message || 'Server error');
+    (error as Error & { status: number }).status = response.status;
+    throw error;
   }
 
   return response.json();

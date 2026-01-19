@@ -36,13 +36,9 @@ export const createDataGridLocationStockColumns = <
 
   return [
     ...(stockLocations.map((stockLocation, index) => {
-      const translatedStockLocationName = t("fields.stockTemplate", {
-        stockLocation: index + 1,
-      })
-
       return columnHelper.column({
         id: `stock_locations.${stockLocation.id}`,
-        name: translatedStockLocationName,
+        name: stockLocation.name,
         field: (context) => {
           const isReadyOnlyValue = isReadyOnly?.(context)
           if (isReadyOnlyValue) {
@@ -53,8 +49,8 @@ export const createDataGridLocationStockColumns = <
         type: "togglable-number",
         header: () => (
           <div className="flex w-full items-center justify-between gap-3">
-            <span className="truncate" title={translatedStockLocationName}>
-              {translatedStockLocationName}
+            <span className="truncate" title={stockLocation.name}>
+              {stockLocation.name}
             </span>
           </div>
         ),

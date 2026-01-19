@@ -93,7 +93,14 @@
   },
   "validation": {
     "mustBeInt": "Değer tam sayı olmalıdır.",
-    "mustBePositive": "Değer pozitif bir sayı olmalıdır."
+    "mustBePositive": "Değer pozitif bir sayı olmalıdır.",
+    "rules": {
+      "lower": "Bir küçük harf",
+      "upper": "Bir büyük harf",
+      "12chars": "En az 12 karakter",
+      "digit": "En az bir rakam",
+      "specialChar": "En az bir özel karakter"
+    }
   },
   "actions": {
     "save": "Kaydet",
@@ -2205,7 +2212,8 @@
       "header": "Ürünler",
       "actions": {
         "addProducts": "Ürünleri ekle",
-        "editPrices": "Fiyatları düzenle"
+        "editPrices": "Fiyatları düzenle",
+        "editPricesDisabled": "Fiyatları düzenlemeden önce ürün ekleyin"
       },
       "delete": {
         "confirmation_one": "Fiyat listesindeki {{count}} ürün için fiyatları silmek üzeresiniz. Bu işlem geri alınamaz.",

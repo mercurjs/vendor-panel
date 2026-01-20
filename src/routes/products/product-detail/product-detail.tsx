@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom"
 
 import { TwoColumnPageSkeleton } from "../../../components/common/skeleton"
 import { TwoColumnPage } from "../../../components/layout/pages"
-import { useProduct } from "../../../hooks/api/products"
+import { useProduct } from '../../../hooks/api'
 import { ProductGeneralSection } from "./components/product-general-section"
 import { ProductMediaSection } from "./components/product-media-section"
 import { ProductOptionSection } from "./components/product-option-section"
@@ -16,7 +16,7 @@ export const ProductDetail = () => {
   const { id } = useParams()
   const { product, isLoading, isError, error } = useProduct(id!, {
     fields:
-      "*variants.inventory_items,*categories,attribute_values.*,attribute_values.attribute.*",
+      "*categories,attribute_values.*,attribute_values.attribute.*,*options",
   })
 
   const { getWidgets } = useDashboardExtension()

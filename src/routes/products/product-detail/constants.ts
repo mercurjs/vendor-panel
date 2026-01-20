@@ -6,9 +6,9 @@ const BASE_PRODUCT_DETAIL_FIELDS = [
   '*categories',
   'attribute_values.*',
   'attribute_values.attribute.*',
-  'informational_attributes.*',
-  'options.*',
-  'options.values.*'
+  'options.values.*',
+
+  
 ].join(',');
 
 export const PRODUCT_DETAIL_FIELDS = getLinkedFields('product', BASE_PRODUCT_DETAIL_FIELDS);

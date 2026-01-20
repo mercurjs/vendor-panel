@@ -36,6 +36,17 @@ enum Tab {
 
 type TabState = Record<Tab, ProgressStatus>;
 
+type MediaItem = {
+  file?: File;
+  url?: string;
+  isThumbnail?: boolean;
+  id?: string;
+};
+
+type UploadedMedia = HttpTypes.AdminFile & {
+  isThumbnail: boolean;
+};
+
 const SAVE_DRAFT_BUTTON = 'save-draft-button';
 
 // Tab order for determining navigation direction
@@ -52,9 +63,9 @@ type ProductCreateFormProps = {
   defaultChannel?: HttpTypes.AdminSalesChannel;
   store?: HttpTypes.AdminStore;
   pricePreferences?: HttpTypes.AdminPricePreference[];
-  onOpenMediaModal?: (variantIndex: number, variantTitle?: string, initialMedia?: any[]) => void;
+  onOpenMediaModal?: (variantIndex: number, variantTitle?: string, initialMedia?: MediaItem[]) => void;
   onSaveVariantMediaRef?: React.MutableRefObject<
-    ((variantIndex: number, media: any[]) => void) | null
+    ((variantIndex: number, media: MediaItem[]) => void) | null
   >;
 };
 
@@ -243,7 +254,7 @@ export const ProductCreateForm = ({
 
   // Handler to update variant media in the form
   const handleSaveVariantMedia = useCallback(
-    (variantIndex: number, media: any[]) => {
+    (variantIndex: number, media: MediaItem[]) => {
       const currentVariants = form.getValues('variants') || [];
       if (currentVariants[variantIndex]) {
         const updatedVariants = [...currentVariants];
@@ -474,19 +485,17 @@ export const ProductCreateForm = ({
 
     const finalPayload = { ...payload, media: undefined };
 
-    let uploadedMedia: (HttpTypes.AdminFile & {
-      isThumbnail: boolean;
-    })[] = [];
+    let uploadedMedia: UploadedMedia[] = [];
     try {
       if (media.length) {
-        const thumbnailReq = media.filter((m: any) => m.isThumbnail);
-        const otherMediaReq = media.filter((m: any) => !m.isThumbnail);
+        const thumbnailReq = media.filter((m: MediaItem) => m.isThumbnail && m.file);
+        const otherMediaReq = media.filter((m: MediaItem) => !m.isThumbnail && m.file);
 
-        const fileReqs = [];
+        const fileReqs: Array<Promise<UploadedMedia[]>> = [];
         if (thumbnailReq?.length) {
           fileReqs.push(
-            uploadFilesQuery(thumbnailReq).then((r: any) =>
-              r.files.map((f: any) => ({
+            uploadFilesQuery(thumbnailReq).then((r: { files?: HttpTypes.AdminFile[] }) =>
+              (Array.isArray(r?.files) ? r.files : []).map((f: HttpTypes.AdminFile) => ({
                 ...f,
                 isThumbnail: true
               }))
@@ -495,8 +504,8 @@ export const ProductCreateForm = ({
         }
         if (otherMediaReq?.length) {
           fileReqs.push(
-            uploadFilesQuery(otherMediaReq).then((r: any) =>
-              r.files.map((f: any) => ({
+            uploadFilesQuery(otherMediaReq).then((r: { files?: HttpTypes.AdminFile[] }) =>
+              (Array.isArray(r?.files) ? r.files : []).map((f: HttpTypes.AdminFile) => ({
                 ...f,
                 isThumbnail: false
               }))
@@ -512,33 +521,27 @@ export const ProductCreateForm = ({
       }
     }
 
-    const uploadVariantMedia = async (mediaItems: any[]) => {
-      const existingThumbnail = mediaItems.find((item: any) => item.isThumbnail && item.url)?.url;
+    const uploadVariantMedia = async (mediaItems: MediaItem[]) => {
+      const existingThumbnail = mediaItems.find((item) => item.isThumbnail && item.url)?.url;
       const existingUrls = mediaItems
-        .filter((item: any) => !item.file && item.url)
-        .map((item: any) => item.url);
+        .filter((item) => !item.file && item.url)
+        .map((item) => item.url);
 
-      const thumbnailReq = mediaItems.filter((item: any) => item.file && item.isThumbnail);
-      const otherMediaReq = mediaItems.filter((item: any) => item.file && !item.isThumbnail);
+      const thumbnailReq = mediaItems.filter((item) => item.file && item.isThumbnail);
+      const otherMediaReq = mediaItems.filter((item) => item.file && !item.isThumbnail);
       const uploaded: Array<{ url: string; isThumbnail: boolean }> = [];
 
       if (thumbnailReq.length > 0) {
         const response = await uploadFilesQuery(thumbnailReq);
-        uploaded.push(
-          ...response.files.map((file: any) => ({
-            ...file,
-            isThumbnail: true
-          }))
-        );
+        const files = Array.isArray(response?.files) ? response.files : [];
+        uploaded.push(...files.map((file: HttpTypes.AdminFile) => ({ ...file, isThumbnail: true })));
       }
 
       if (otherMediaReq.length > 0) {
         const response = await uploadFilesQuery(otherMediaReq);
+        const files = Array.isArray(response?.files) ? response.files : [];
         uploaded.push(
-          ...response.files.map((file: any) => ({
-            ...file,
-            isThumbnail: false
-          }))
+          ...files.map((file: HttpTypes.AdminFile) => ({ ...file, isThumbnail: false }))
         );
       }
 

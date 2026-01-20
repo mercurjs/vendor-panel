@@ -4,7 +4,10 @@ import { useTranslation } from 'react-i18next';
 
 import { ActionMenu } from '../../../../../components/common/action-menu';
 import { SectionRow } from '../../../../../components/common/section';
-import { ExtendedAdminProduct } from '../../../../../types/products';
+import {
+  ExtendedAdminProduct,
+  ProductInformationalAttributeValue,
+} from '../../../../../types/products';
 
 type ProductAttributeSectionProps = {
   product: ExtendedAdminProduct;
@@ -16,6 +19,34 @@ export const ProductAdditionalAttributesSection = ({ product }: ProductAttribute
   const informationalAttributes =
     product.informational_attributes?.filter(Boolean) ?? [];
   const options = product.options?.filter(Boolean) ?? [];
+
+  const getInformationalAttributeDisplayValue = (
+    v: string | ProductInformationalAttributeValue
+  ): string => {
+    if (typeof v === 'string') {
+      return v;
+    }
+
+    if (v && typeof v.value === 'string') {
+      return v.value;
+    }
+
+    return '-';
+  };
+
+  const getInformationalAttributeValueKey = (
+    attributeId: string,
+    v: string | ProductInformationalAttributeValue,
+    index: number
+  ) => {
+    if (typeof v === 'string') {
+      return `${attributeId}-${v}-${index}`;
+    }
+
+    const display = getInformationalAttributeDisplayValue(v);
+    const stable = v.attribute_value_id ?? `${v.source ?? 'unknown'}:${display}`;
+    return `${attributeId}-${stable}-${index}`;
+  };
 
   if (!informationalAttributes.length && !options.length) {
     return null;
@@ -52,11 +83,15 @@ export const ProductAdditionalAttributesSection = ({ product }: ProductAttribute
                 attribute.values?.length ? (
                   attribute.values.map((value, index) => (
                     <Badge
-                      key={`${attribute.attribute_id}-${value}-${index}`}
+                      key={getInformationalAttributeValueKey(
+                        attribute.attribute_id,
+                        value,
+                        index
+                      )}
                       size="2xsmall"
                       className="flex min-w-[20px] items-center justify-center"
                     >
-                      {value}
+                      {getInformationalAttributeDisplayValue(value)}
                     </Badge>
                   ))
                 ) : (

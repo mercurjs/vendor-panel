@@ -52,11 +52,23 @@ export interface ProductInformationalAttribute {
   name: string;
   source: string;
   ui_component: string;
-  values: string[];
+  /**
+   * Backend may return either plain strings (legacy) or richer objects
+   * describing the attribute value.
+   */
+  values: Array<string | ProductInformationalAttributeValue>;
   metadata?: Record<string, unknown> | null;
   created_at?: string;
   updated_at?: string;
   deleted_at?: string | null;
+}
+
+export interface ProductInformationalAttributeValue {
+  value: string;
+  source?: string;
+  attribute_value_id?: string;
+  is_filterable?: boolean;
+  is_editable?: boolean;
 }
 
 export type ExtendedAdminProductResponse = Omit<HttpTypes.AdminProductResponse, 'product'> & {

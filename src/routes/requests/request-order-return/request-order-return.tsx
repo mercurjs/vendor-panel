@@ -10,7 +10,7 @@ import { Form } from "../../../components/common/form"
 import { useStockLocations } from "../../../hooks/api"
 import { useEffect } from "react"
 
-const STATUS_OPTIONS = ["refunded", "escalated"]
+const STATUS_OPTIONS = ["pending", "refunded", "escalated"]
 
 export function RequestOrderReturn() {
   const { id } = useParams()

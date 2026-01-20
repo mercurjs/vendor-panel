@@ -50,7 +50,7 @@ export interface ProductInformationalAttribute {
   description?: string | null;
   is_filterable: boolean;
   name: string;
-  source: string;
+  source: 'vendor' | 'admin';
   ui_component: string;
   /**
    * Backend may return either plain strings (legacy) or richer objects
@@ -65,7 +65,7 @@ export interface ProductInformationalAttribute {
 
 export interface ProductInformationalAttributeValue {
   value: string;
-  source?: string;
+  source?: 'vendor' | 'admin';
   attribute_value_id?: string;
   is_filterable?: boolean;
   is_editable?: boolean;

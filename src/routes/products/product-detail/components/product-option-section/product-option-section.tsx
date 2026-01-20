@@ -18,6 +18,7 @@ const OptionActions = ({
   const { t } = useTranslation();
   const { mutateAsync } = useDeleteProductOption(product.id, option.id);
   const prompt = usePrompt();
+  const isVendor = (option as any)?.metadata?.author === 'vendor';
 
   const handleDelete = async () => {
     const res = await prompt({
@@ -48,15 +49,19 @@ const OptionActions = ({
             }
           ]
         },
-        {
-          actions: [
-            {
-              label: t('actions.delete'),
-              onClick: handleDelete,
-              icon: <Trash />
-            }
-          ]
-        }
+        ...(isVendor
+          ? [
+              {
+                actions: [
+                  {
+                    label: t('actions.delete'),
+                    onClick: handleDelete,
+                    icon: <Trash />
+                  }
+                ]
+              }
+            ]
+          : [])
       ]}
     />
   );

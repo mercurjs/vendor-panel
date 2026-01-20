@@ -1,16 +1,83 @@
-import { Plus } from '@medusajs/icons';
-import { Badge, Container, Heading } from '@medusajs/ui';
+import { PencilSquare, Plus, Trash } from '@medusajs/icons';
+import { Badge, Container, Heading, toast, usePrompt } from '@medusajs/ui';
 import { useTranslation } from 'react-i18next';
 
 import { ActionMenu } from '../../../../../components/common/action-menu';
 import { SectionRow } from '../../../../../components/common/section';
+import { useDeleteProductOption } from '../../../../../hooks/api/products';
 import {
   ExtendedAdminProduct,
+  ExtendedAdminProductOption,
   ProductInformationalAttributeValue,
 } from '../../../../../types/products';
 
 type ProductAttributeSectionProps = {
   product: ExtendedAdminProduct;
+};
+
+const OptionRowActions = ({
+  productId,
+  option,
+  comingSoon,
+}: {
+  productId: string;
+  option: ExtendedAdminProductOption;
+  comingSoon: string;
+}) => {
+  const { t } = useTranslation();
+  const prompt = usePrompt();
+  const { mutateAsync, isPending } = useDeleteProductOption(productId, option.id);
+
+  const isVendor = option.metadata?.author === 'vendor';
+
+  const handleDelete = async () => {
+    const res = await prompt({
+      title: t('general.areYouSure'),
+      description: t('products.options.deleteWarning', {
+        title: option.title
+      }),
+      confirmText: t('actions.delete'),
+      cancelText: t('actions.cancel')
+    });
+
+    if (!res) {
+      return;
+    }
+
+    await mutateAsync(undefined, {
+      onError: (err) => {
+        toast.error(err.message);
+      }
+    });
+  };
+
+  return (
+    <ActionMenu
+      groups={[
+        {
+          actions: [
+            {
+              icon: <PencilSquare />,
+              label: t('actions.edit'),
+              disabled: true,
+              disabledTooltip: comingSoon,
+              onClick: () => undefined
+            },
+            ...(isVendor
+              ? [
+                  {
+                    icon: <Trash />,
+                    label: t('actions.delete'),
+                    disabled: isPending,
+                    onClick: handleDelete
+                  }
+                ]
+              : [])
+          ]
+        }
+      ]}
+    />
+  );
 };
 
 export const ProductAdditionalAttributesSection = ({ product }: ProductAttributeSectionProps) => {
@@ -19,6 +86,7 @@ export const ProductAdditionalAttributesSection = ({ product }: ProductAttribute
   const informationalAttributes =
     product.informational_attributes?.filter(Boolean) ?? [];
   const options = product.options?.filter(Boolean) ?? [];
+  const comingSoon = t('general.comingSoon', 'Coming soon') as string;
 
   const getInformationalAttributeDisplayValue = (
     v: string | ProductInformationalAttributeValue
@@ -79,6 +147,34 @@ export const ProductAdditionalAttributesSection = ({ product }: ProductAttribute
             <SectionRow
               key={`${attribute.attribute_id}-${attribute.source}`}
               title={attribute.name}
+              actions={
+                <ActionMenu
+                  groups={[
+                    {
+                      actions: [
+                        {
+                          icon: <PencilSquare />,
+                          label: t('actions.edit'),
+                          disabled: true,
+                          disabledTooltip: comingSoon,
+                          onClick: () => undefined
+                        },
+                        ...(attribute.source === 'vendor'
+                          ? [
+                              {
+                                icon: <Trash />,
+                                label: t('actions.delete'),
+                                disabled: true,
+                                disabledTooltip: comingSoon,
+                                onClick: () => undefined
+                              }
+                            ]
+                          : [])
+                      ]
+                    }
+                  ]}
+                />
+              }
               value={
                 attribute.values?.length ? (
                   attribute.values.map((value, index) => (
@@ -112,6 +208,13 @@ export const ProductAdditionalAttributesSection = ({ product }: ProductAttribute
             <SectionRow
               key={option.id}
               title={option.title}
+              actions={
+                <OptionRowActions
+                  productId={product.id}
+                  option={option}
+                  comingSoon={comingSoon}
+                />
+              }
               value={option.values?.map((value, index) => (
                 <Badge
                   key={`${option.id}-${value.value}-${index}`}

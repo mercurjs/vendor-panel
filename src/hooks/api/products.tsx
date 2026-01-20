@@ -56,6 +56,36 @@ export const useCreateProductOption = (
   })
 }
 
+type AddProductAttributePayload = {
+  name: string
+  values: string[]
+  use_for_variations: boolean
+  ui_component?: string
+}
+
+export const useAddProductAttribute = (
+  productId: string,
+  options?: UseMutationOptions<any, FetchError, AddProductAttributePayload>
+) => {
+  return useMutation({
+    mutationFn: (payload) =>
+      fetchQuery(`/vendor/products/${productId}/attributes`, {
+        method: "POST",
+        body: payload,
+      }),
+    onSuccess: (data: any, variables: any, context: any) => {
+      queryClient.invalidateQueries({
+        queryKey: productsQueryKeys.detail(productId),
+      })
+      queryClient.invalidateQueries({
+        queryKey: productAttributesQueryKey(productId),
+      })
+      options?.onSuccess?.(data, variables, context)
+    },
+    ...options,
+  })
+}
+
 export const useUpdateProductOption = (
   productId: string,
   optionId: string,

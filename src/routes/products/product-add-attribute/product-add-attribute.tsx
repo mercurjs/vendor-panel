@@ -1,10 +1,11 @@
-import { Button, Heading } from '@medusajs/ui';
+import { Button, Heading, toast } from '@medusajs/ui';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { RouteDrawer } from '../../../components/modals';
 import { KeyboundForm } from '../../../components/utilities/keybound-form';
+import { useAddProductAttribute } from '../../../hooks/api/products';
 import { UserCreatedOptionsList } from '../product-create/components/product-create-attributes-form/user-created-options-list';
 
 type AddAttributeFormValues = {
@@ -18,7 +19,8 @@ type AddAttributeFormValues = {
 
 export const ProductAddAttribute = () => {
   const { t } = useTranslation();
-  useParams();
+  const navigate = useNavigate();
+  const { id } = useParams();
   const form = useForm<AddAttributeFormValues>({
     defaultValues: {
       options: [
@@ -37,9 +39,46 @@ export const ProductAddAttribute = () => {
     name: 'options'
   });
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-  };
+  const { mutateAsync, isPending } = useAddProductAttribute(id!);
+
+  const handleSubmit = form.handleSubmit(async (data) => {
+    const option = data.options?.[0];
+
+    const name = option?.title?.trim();
+    const values = (option?.values ?? []).map(v => v.trim()).filter(Boolean);
+    const use_for_variations = option?.useForVariants === true;
+
+    if (!name) {
+      toast.error(t('products.fields.options.optionTitlePlaceholder'));
+      return;
+    }
+
+    if (!values.length) {
+      toast.error(t('products.fields.options.variantionsPlaceholder'));
+      return;
+    }
+
+    await mutateAsync(
+      {
+        name,
+        values,
+        use_for_variations,
+        ui_component: 'multivalue',
+      },
+      {
+        onSuccess: () => {
+          toast.success(t('actions.save'));
+          navigate(`/products/${id}`, {
+            replace: true,
+            state: { isSubmitSuccessful: true },
+          });
+        },
+        onError: (err) => {
+          toast.error(err.message);
+        }
+      }
+    );
+  });
 
   return (
     <RouteDrawer>
@@ -59,6 +98,7 @@ export const ProductAddAttribute = () => {
             <UserCreatedOptionsList
               form={form as any}
               options={options as any}
+              allowRemove={false}
             />
           </RouteDrawer.Body>
           <RouteDrawer.Footer>
@@ -68,6 +108,7 @@ export const ProductAddAttribute = () => {
                   size="small"
                   variant="secondary"
                   type="button"
+                  disabled={isPending}
                 >
                   {t('actions.cancel')}
                 </Button>
@@ -75,6 +116,7 @@ export const ProductAddAttribute = () => {
               <Button
                 size="small"
                 type="submit"
+                isLoading={isPending}
               >
                 {t('actions.create')}
               </Button>

@@ -14,9 +14,18 @@ type UserCreatedOptionsListProps = {
     append: (option: { title: string; values: string[]; metadata?: Record<string, unknown> }) => void;
     remove: (index: number) => void;
   };
+  /**
+   * Whether the user can remove an option row (shows the X button).
+   * Defaults to true to preserve behavior in product create flows.
+   */
+  allowRemove?: boolean;
 };
 
-export const UserCreatedOptionsList = ({ form, options }: UserCreatedOptionsListProps) => {
+export const UserCreatedOptionsList = ({
+  form,
+  options,
+  allowRemove = true,
+}: UserCreatedOptionsListProps) => {
   const { t } = useTranslation();
 
   // Watch all options to filter user-created ones
@@ -85,15 +94,17 @@ export const UserCreatedOptionsList = ({ form, options }: UserCreatedOptionsList
                   }}
                 />
               </div>
-              <IconButton
-                type="button"
-                size="small"
-                variant="transparent"
-                className="text-ui-fg-muted"
-                onClick={() => options.remove(index)}
-              >
-                <XMarkMini />
-              </IconButton>
+              {allowRemove && (
+                <IconButton
+                  type="button"
+                  size="small"
+                  variant="transparent"
+                  className="text-ui-fg-muted"
+                  onClick={() => options.remove(index)}
+                >
+                  <XMarkMini />
+                </IconButton>
+              )}
             </div>
             <SwitchBox
               control={form.control as any}

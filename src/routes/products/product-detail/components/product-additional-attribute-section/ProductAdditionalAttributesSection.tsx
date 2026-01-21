@@ -4,10 +4,11 @@ import { useTranslation } from 'react-i18next';
 
 import { ActionMenu } from '../../../../../components/common/action-menu';
 import { SectionRow } from '../../../../../components/common/section';
-import { useDeleteProductOption } from '../../../../../hooks/api/products';
+import { useDeleteProductOption, useRemoveProductAttribute } from '../../../../../hooks/api/products';
 import {
   ExtendedAdminProduct,
   ExtendedAdminProductOption,
+  ProductInformationalAttribute,
   ProductInformationalAttributeValue,
 } from '../../../../../types/products';
 
@@ -80,6 +81,75 @@ const OptionRowActions = ({
   );
 };
 
+const InformationalAttributeRowActions = ({
+  productId,
+  attribute,
+  comingSoon,
+}: {
+  productId: string;
+  attribute: ProductInformationalAttribute;
+  comingSoon: string;
+}) => {
+  const { t } = useTranslation();
+  const prompt = usePrompt();
+  const { mutateAsync, isPending } = useRemoveProductAttribute(
+    productId,
+    attribute.attribute_id
+  );
+
+  const isVendorSource = attribute.attribute_source === 'vendor';
+
+  const handleDelete = async () => {
+    const res = await prompt({
+      title: t('general.areYouSure'),
+      description: (t(
+        'products.attributes.deleteWarning',
+        'You are about to remove this attribute from the product. This action cannot be undone.'
+      ) as string),
+      confirmText: t('actions.delete'),
+      cancelText: t('actions.cancel')
+    });
+
+    if (!res) {
+      return;
+    }
+
+    await mutateAsync(undefined, {
+      onError: (err) => {
+        toast.error(err.message);
+      }
+    });
+  };
+
+  return (
+    <ActionMenu
+      groups={[
+        {
+          actions: [
+            {
+              icon: <PencilSquare />,
+              label: t('actions.edit'),
+              disabled: true,
+              disabledTooltip: comingSoon,
+              onClick: () => undefined
+            },
+            ...(isVendorSource
+              ? [
+                  {
+                    icon: <Trash />,
+                    label: t('actions.delete'),
+                    disabled: isPending,
+                    onClick: handleDelete
+                  }
+                ]
+              : [])
+          ]
+        }
+      ]}
+    />
+  );
+};
+
 export const ProductAdditionalAttributesSection = ({ product }: ProductAttributeSectionProps) => {
   const { t } = useTranslation();
 
@@ -89,30 +159,18 @@ export const ProductAdditionalAttributesSection = ({ product }: ProductAttribute
   const comingSoon = t('general.comingSoon', 'Coming soon') as string;
 
   const getInformationalAttributeDisplayValue = (
-    v: string | ProductInformationalAttributeValue
+    v: ProductInformationalAttributeValue
   ): string => {
-    if (typeof v === 'string') {
-      return v;
-    }
-
-    if (v && typeof v.value === 'string') {
-      return v.value;
-    }
-
-    return '-';
+    return v.value;
   };
 
   const getInformationalAttributeValueKey = (
     attributeId: string,
-    v: string | ProductInformationalAttributeValue,
+    v: ProductInformationalAttributeValue,
     index: number
   ) => {
-    if (typeof v === 'string') {
-      return `${attributeId}-${v}-${index}`;
-    }
-
     const display = getInformationalAttributeDisplayValue(v);
-    const stable = v.attribute_value_id ?? `${v.source ?? 'unknown'}:${display}`;
+    const stable = v.attribute_value_id ?? `${v.source}:${display}`;
     return `${attributeId}-${stable}-${index}`;
   };
 
@@ -145,34 +203,13 @@ export const ProductAdditionalAttributesSection = ({ product }: ProductAttribute
           </div>
           {informationalAttributes.map(attribute => (
             <SectionRow
-              key={`${attribute.attribute_id}-${attribute.source}`}
+              key={`${attribute.attribute_id}-${attribute.attribute_source}`}
               title={attribute.name}
               actions={
-                <ActionMenu
-                  groups={[
-                    {
-                      actions: [
-                        {
-                          icon: <PencilSquare />,
-                          label: t('actions.edit'),
-                          disabled: true,
-                          disabledTooltip: comingSoon,
-                          onClick: () => undefined
-                        },
-                        ...(attribute.source === 'vendor'
-                          ? [
-                              {
-                                icon: <Trash />,
-                                label: t('actions.delete'),
-                                disabled: true,
-                                disabledTooltip: comingSoon,
-                                onClick: () => undefined
-                              }
-                            ]
-                          : [])
-                      ]
-                    }
-                  ]}
+                <InformationalAttributeRowActions
+                  productId={product.id}
+                  attribute={attribute}
+                  comingSoon={comingSoon}
                 />
               }
               value={

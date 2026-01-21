@@ -141,6 +141,36 @@ export const useDeleteProductOption = (
   })
 }
 
+type RemoveProductAttributeResponse = {
+  product_id: string
+  attribute_id: string
+  deleted: boolean
+  removed_values_count: number
+}
+
+export const useRemoveProductAttribute = (
+  productId: string,
+  attributeId: string,
+  options?: UseMutationOptions<RemoveProductAttributeResponse, FetchError, void>
+) => {
+  return useMutation({
+    mutationFn: () =>
+      fetchQuery(`/vendor/products/${productId}/attributes/${attributeId}`, {
+        method: "DELETE",
+      }),
+    onSuccess: (data, variables, context) => {
+      queryClient.invalidateQueries({
+        queryKey: productsQueryKeys.detail(productId),
+      })
+      queryClient.invalidateQueries({
+        queryKey: productAttributesQueryKey(productId),
+      })
+      options?.onSuccess?.(data, variables, context)
+    },
+    ...options,
+  })
+}
+
 export const useProductVariant = (
   productId: string,
   variantId: string,

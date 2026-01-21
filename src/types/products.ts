@@ -49,14 +49,23 @@ export interface ProductInformationalAttribute {
   attribute_id: string;
   description?: string | null;
   is_filterable: boolean;
-  name: string;
-  source: 'vendor' | 'admin';
-  ui_component: string;
+  is_required?: boolean;
   /**
-   * Backend may return either plain strings (legacy) or richer objects
-   * describing the attribute value.
+   * Backend field name (current): attribute_source
+   * Values are guaranteed to be either vendor/admin.
    */
-  values: Array<string | ProductInformationalAttributeValue>;
+  attribute_source: 'vendor' | 'admin';
+  /**
+   * Legacy field name (older backend): source
+   */
+  source?: 'vendor' | 'admin';
+  /**
+   * Whether the attribute definition (not values) can be edited.
+   */
+  is_definition_editable?: boolean;
+  name: string;
+  ui_component: string;
+  values: ProductInformationalAttributeValue[];
   metadata?: Record<string, unknown> | null;
   created_at?: string;
   updated_at?: string;
@@ -65,10 +74,10 @@ export interface ProductInformationalAttribute {
 
 export interface ProductInformationalAttributeValue {
   value: string;
-  source?: 'vendor' | 'admin';
-  attribute_value_id?: string;
-  is_filterable?: boolean;
-  is_editable?: boolean;
+  source: 'vendor' | 'admin';
+  attribute_value_id: string;
+  is_filterable: boolean;
+  is_editable: boolean;
 }
 
 export type ExtendedAdminProductResponse = Omit<HttpTypes.AdminProductResponse, 'product'> & {

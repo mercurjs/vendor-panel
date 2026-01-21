@@ -20,6 +20,7 @@ import { DataTable } from "../../../../../components/data-table"
 import { useDataTableDateColumns } from "../../../../../components/data-table/helpers/general/use-data-table-date-columns"
 import { useDataTableDateFilters } from "../../../../../components/data-table/helpers/general/use-data-table-date-filters"
 import { useDeleteVariantLazy } from "../../../../../hooks/api/products"
+import { useQueryParams } from "../../../../../hooks/use-query-params"
 import { PRODUCT_VARIANT_IDS_KEY } from "../../../common/constants"
 import { useInventoryItemLevels } from "../../../../../hooks/api"
 
@@ -34,18 +35,97 @@ export const ProductVariantSection = ({
 }: ProductVariantSectionProps) => {
   const { t } = useTranslation()
 
+  const { q, order, offset, allow_backorder, manage_inventory } = useQueryParams(
+    ["q", "order", "offset", "allow_backorder", "manage_inventory"]
+  )
+
   const columns = useColumns(product)
   const filters = useFilters()
   const commands = useCommands()
 
   const { variants } = product
 
-  const count = variants ? variants?.length : 0
+  const processedVariants = useMemo(() => {
+    const base = variants ?? []
+
+    const filterByBooleanParam = (
+      list: typeof base,
+      key: "allow_backorder" | "manage_inventory",
+      raw?: string
+    ) => {
+      if (!raw) {
+        return list
+      }
+
+      try {
+        const parsed = JSON.parse(raw)
+        const value = parsed?.value
+
+        if (value === undefined || value === null || value === "") {
+          return list
+        }
+
+        const expected = String(value)
+        return list.filter((v) => String((v as any)[key]) === expected)
+      } catch {
+        return list
+      }
+    }
+
+    let list = base
+
+    if (q) {
+      const needle = q.toLowerCase()
+      list = list.filter((v) => {
+        const title = (v.title ?? "").toLowerCase()
+        const sku = (v.sku ?? "").toLowerCase()
+        return title.includes(needle) || sku.includes(needle)
+      })
+    }
+
+    list = filterByBooleanParam(list, "allow_backorder", allow_backorder)
+    list = filterByBooleanParam(list, "manage_inventory", manage_inventory)
+
+    if (order) {
+      const desc = order.startsWith("-")
+      const key = desc ? order.slice(1) : order
+
+      const getSortable = (v: ExtendedAdminProductVariant) => {
+        switch (key) {
+          case "title":
+            return v.title ?? ""
+          case "sku":
+            return v.sku ?? ""
+          default:
+            return ""
+        }
+      }
+
+      list = [...list].sort((a, b) => {
+        const av = getSortable(a)
+        const bv = getSortable(b)
+        const cmp = String(av).localeCompare(String(bv), undefined, {
+          numeric: true,
+          sensitivity: "base",
+        })
+        return desc ? -cmp : cmp
+      })
+    }
+
+    return list
+  }, [variants, q, order, allow_backorder, manage_inventory])
+
+  const offsetValue = offset ? parseInt(offset) : 0
+  const count = processedVariants.length
+  const pagedVariants = processedVariants.slice(
+    offsetValue,
+    offsetValue + PAGE_SIZE
+  )
 
   return (
     <Container className="divide-y p-0">
       <DataTable
-        data={variants || undefined}
+        data={pagedVariants}
         columns={columns}
         filters={filters}
         disableBuiltInFilterBar

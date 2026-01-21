@@ -48,6 +48,7 @@ export const ProductVariantSection = ({
         data={variants || undefined}
         columns={columns}
         filters={filters}
+        disableBuiltInFilterBar
         rowCount={count}
         getRowId={(row) => row.id}
         pageSize={PAGE_SIZE}

@@ -80,6 +80,12 @@ interface DataTableProps<TData> {
     enableRowSelection?: boolean | ((row: DataTableRow<TData>) => boolean)
   }
   layout?: "fill" | "auto"
+  /**
+   * When true, we avoid using Medusa UI's built-in Toolbar (which renders an
+   * additional FilterBar row). Use this to prevent the duplicated "dark" bar
+   * in specific screens (e.g. Product Variants).
+   */
+  disableBuiltInFilterBar?: boolean
 }
 
 export const DataTable = <TData,>({
@@ -103,6 +109,7 @@ export const DataTable = <TData,>({
   rowSelection,
   isLoading = false,
   layout = "auto",
+  disableBuiltInFilterBar = false,
 }: DataTableProps<TData>) => {
   const { t } = useTranslation()
 
@@ -275,49 +282,74 @@ export const DataTable = <TData,>({
         "h-full [&_tr]:last-of-type:!border-b": layout === "fill",
       })}
     >
-      <Primitive.Toolbar
-        className="flex flex-col items-start justify-between gap-2 md:flex-row md:items-center"
-        translations={toolbarTranslations}
-      >
-        <div className="flex w-full items-center justify-between gap-2">
-          {shouldRenderHeading && (
-            <div>
-              {heading && <Heading>{heading}</Heading>}
-              {subHeading && (
-                <Text size="small" className="text-ui-fg-subtle">
-                  {subHeading}
-                </Text>
+      {disableBuiltInFilterBar ? (
+        <div className="flex flex-col items-start justify-between gap-2 px-6 py-4 md:flex-row md:items-center">
+          <div className="flex w-full flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            {shouldRenderHeading && (
+              <div>
+                {heading && <Heading>{heading}</Heading>}
+                {subHeading && (
+                  <Text size="small" className="text-ui-fg-subtle">
+                    {subHeading}
+                  </Text>
+                )}
+              </div>
+            )}
+
+            <div className="flex w-full flex-wrap items-center justify-end gap-2 md:w-auto">
+              {enableSearch && (
+                <div className="w-full md:w-auto">
+                  <Primitive.Search
+                    placeholder={t("filters.searchLabel")}
+                    autoFocus={autoFocusSearch}
+                  />
+                </div>
               )}
+
+              {enableFiltering && (
+                <Primitive.FilterMenu tooltip={t("filters.filterLabel")} />
+              )}
+              {enableSorting && (
+                <Primitive.SortingMenu tooltip={t("filters.sortLabel")} />
+              )}
+              {actionMenu && <ActionMenu variant="primary" {...actionMenu} />}
+              {action && <DataTableAction {...action} />}
             </div>
-          )}
-          <div className="flex items-center justify-end gap-x-2 md:hidden">
-            {enableFiltering && (
-              <Primitive.FilterMenu tooltip={t("filters.filterLabel")} />
-            )}
-            <Primitive.SortingMenu tooltip={t("filters.sortLabel")} />
-            {actionMenu && <ActionMenu variant="primary" {...actionMenu} />}
-            {action && <DataTableAction {...action} />}
           </div>
         </div>
-        <div className="flex w-full items-center gap-2 md:justify-end">
-          {enableSearch && (
-            <div className="w-full md:w-auto">
-              <Primitive.Search
-                placeholder={t("filters.searchLabel")}
-                autoFocus={autoFocusSearch}
-              />
-            </div>
-          )}
-          <div className="hidden items-center gap-x-2 md:flex">
-            {enableFiltering && (
-              <Primitive.FilterMenu tooltip={t("filters.filterLabel")} />
+      ) : (
+        <Primitive.Toolbar
+          className="flex flex-col items-start justify-between gap-2 md:flex-row md:items-center"
+          translations={toolbarTranslations}
+        >
+          <div className="flex w-full flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            {shouldRenderHeading && (
+              <div>
+                {heading && <Heading>{heading}</Heading>}
+                {subHeading && (
+                  <Text size="small" className="text-ui-fg-subtle">
+                    {subHeading}
+                  </Text>
+                )}
+              </div>
             )}
-            <Primitive.SortingMenu tooltip={t("filters.sortLabel")} />
-            {actionMenu && <ActionMenu variant="primary" {...actionMenu} />}
-            {action && <DataTableAction {...action} />}
+
+            <div className="flex w-full flex-wrap items-center justify-end gap-2 md:w-auto">
+              {enableSearch && (
+                <div className="w-full md:w-auto">
+                  <Primitive.Search
+                    placeholder={t("filters.searchLabel")}
+                    autoFocus={autoFocusSearch}
+                  />
+                </div>
+              )}
+
+              {actionMenu && <ActionMenu variant="primary" {...actionMenu} />}
+              {action && <DataTableAction {...action} />}
+            </div>
           </div>
-        </div>
-      </Primitive.Toolbar>
+        </Primitive.Toolbar>
+      )}
       <Primitive.Table emptyState={emptyState} />
       {enablePagination && (
         <Primitive.Pagination translations={paginationTranslations} />

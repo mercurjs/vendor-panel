@@ -21,7 +21,9 @@ export const CampaignDetail = () => {
   const { campaign, isLoading, isError, error } = useCampaign(
     id!,
     { ...searchParams, fields: CAMPAIGN_DETAIL_FIELDS },
-    { initialData }
+    { 
+      placeholderData: initialData,
+    }
   );
 
   const { getWidgets } = useDashboardExtension();

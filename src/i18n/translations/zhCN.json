@@ -93,7 +93,14 @@
   },
   "validation": {
     "mustBeInt": "值必须是整数。",
-    "mustBePositive": "值必须是正数。"
+    "mustBePositive": "值必须是正数。",
+    "rules": {
+      "lower": "一个小写字母",
+      "upper": "一个大写字母",
+      "12chars": "至少12个字符",
+      "digit": "至少一个数字",
+      "specialChar": "至少一个特殊字符"
+    }
   },
   "actions": {
     "save": "保存",
@@ -507,6 +514,7 @@
       "uploadImagesLabel": "上传图片",
       "uploadImagesHint": "将图片拖放到此处或点击上传。",
       "invalidFileType": "'{{name}}' 不是支持的文件类型。支持的文件类型有：{{types}}。",
+      "fileTooLarge": "'{{name}}' 超出了最大文件大小 {{maxSize}}。",
       "failedToUpload": "添加的媒体上传失败。请重试。",
       "deleteWarning_one": "您即将删除 {{count}} 张图片。此操作无法撤销。",
       "deleteWarning_other": "您即将删除 {{count}} 张图片。此操作无法撤销。",
@@ -2182,7 +2190,8 @@
       "header": "产品",
       "actions": {
         "addProducts": "添加产品",
-        "editPrices": "编辑价格"
+        "editPrices": "编辑价格",
+        "editPricesDisabled": "在编辑价格之前添加产品"
       },
       "delete": {
         "confirmation_one": "您即将删除价格列表中 {{count}} 个产品的价格。此操作无法撤销。",

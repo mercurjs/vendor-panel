@@ -93,7 +93,14 @@
   },
   "validation": {
     "mustBeInt": "Valoarea trebuie să fie un număr întreg.",
-    "mustBePositive": "Valoarea trebuie să fie un număr pozitiv."
+    "mustBePositive": "Valoarea trebuie să fie un număr pozitiv.",
+    "rules": {
+      "lower": "O literă mică",
+      "upper": "O literă mare",
+      "12chars": "Cel puțin 12 caractere",
+      "digit": "Cel puțin o cifră",
+      "specialChar": "Cel puțin un caracter special"
+    }
   },
   "actions": {
     "save": "Salva",
@@ -507,6 +514,7 @@
       "uploadImagesLabel": "Încărcați imagini",
       "uploadImagesHint": "Trageți și plasați imaginile aici sau faceți clic pentru a încărca.",
       "invalidFileType": "'{{name}}' nu este un tip de fișier acceptat.  {{types}}.",
+      "fileTooLarge": "'{{name}}' depășește dimensiunea maximă a fișierului de {{maxSize}}.",
       "failedToUpload": "Nu s-a putut încărca conținutul media adăugat. ",
       "thumbnailTooltip": "Miniatură",
       "galleryLabel": "Galerie",
@@ -2182,7 +2190,8 @@
       "header": "Produse",
       "actions": {
         "addProducts": "Adăugați produse",
-        "editPrices": "Editați prețurile"
+        "editPrices": "Editați prețurile",
+        "editPricesDisabled": "Adăugați produse înainte de a edita prețurile"
       },
       "delete": {
         "confirmation_one": "Sunteți pe cale să ștergeți prețurile pentru {{count}} produs în lista de prețuri. ",

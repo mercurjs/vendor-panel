@@ -93,7 +93,14 @@
   },
   "validation": {
     "mustBeInt": "値は数値でなければなりません。",
-    "mustBePositive": "値は正の数値でなければなりません。"
+    "mustBePositive": "値は正の数値でなければなりません。",
+    "rules": {
+      "lower": "小文字1文字",
+      "upper": "大文字1文字",
+      "12chars": "12文字以上",
+      "digit": "数字1文字以上",
+      "specialChar": "特殊文字1文字以上"
+    }
   },
   "actions": {
     "save": "保存",
@@ -496,6 +503,7 @@
       "uploadImagesLabel": "画像をアップロード",
       "uploadImagesHint": "ここに画像をドラッグ＆ドロップするか、クリックしてアップロードします。",
       "invalidFileType": "「{{name}}」はサポートされていないファイルタイプです。サポートされているファイルタイプは次のとおりです：{{types}}。",
+      "fileTooLarge": "「{{name}}」は最大ファイルサイズ{{maxSize}}を超えています。",
       "failedToUpload": "追加されたメディアのアップロードに失敗しました。もう一度お試しください。",
       "deleteWarning_one": "{{count}}枚の画像を削除しようとしています。この操作は元に戻せません。",
       "deleteWarning_other": "{{count}}枚の画像を削除しようとしています。この操作は元に戻せません。",
@@ -2084,7 +2092,8 @@
       "header": "商品",
       "actions": {
         "addProducts": "商品を追加",
-        "editPrices": "価格を編集"
+        "editPrices": "価格を編集",
+        "editPricesDisabled": "価格を編集する前に商品を追加してください"
       },
       "delete": {
         "confirmation_one": "{{count}}個の商品に対する価格をこの価格リストから削除しようとしています。この操作は取り消せません。",

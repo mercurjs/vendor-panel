@@ -93,7 +93,14 @@
   },
   "validation": {
     "mustBeInt": "El valor debe ser un número entero.",
-    "mustBePositive": "El valor debe ser un número positivo."
+    "mustBePositive": "El valor debe ser un número positivo.",
+    "rules": {
+      "lower": "Una letra minúscula",
+      "upper": "Una letra mayúscula",
+      "12chars": "Al menos 12 caracteres",
+      "digit": "Al menos un dígito",
+      "specialChar": "Al menos un carácter especial"
+    }
   },
   "actions": {
     "save": "Guardar",
@@ -495,6 +502,7 @@
       "uploadImagesLabel": "Subir imágenes",
       "uploadImagesHint": "Arrastra y suelta imágenes aquí o haz clic para cargar.",
       "invalidFileType": "'{{name}}' no es un tipo de archivo compatible. Los tipos de archivo soportados son: {{types}}.",
+      "fileTooLarge": "'{{name}}' excede el tamaño máximo de archivo de {{maxSize}}.",
       "failedToUpload": "Error al subir los medios agregados. Por favor, intenta nuevamente.",
       "deleteWarning_one": "Estás a punto de eliminar {{count}} imagen. Esta acción no puede deshacerse.",
       "deleteWarning_other": "Estás a punto de eliminar {{count}} imágenes. Esta acción no puede deshacerse.",
@@ -2058,7 +2066,8 @@
       "header": "Productos",
       "actions": {
         "addProducts": "Agregar productos",
-        "editPrices": "Editar precios"
+        "editPrices": "Editar precios",
+        "editPricesDisabled": "Agregue productos antes de editar precios"
       },
       "delete": {
         "confirmation_one": "Estás a punto de eliminar los precios de {{count}} producto en la lista de precios. Esta acción no puede deshacerse.",

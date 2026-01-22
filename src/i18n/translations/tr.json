@@ -93,7 +93,14 @@
   },
   "validation": {
     "mustBeInt": "Değer tam sayı olmalıdır.",
-    "mustBePositive": "Değer pozitif bir sayı olmalıdır."
+    "mustBePositive": "Değer pozitif bir sayı olmalıdır.",
+    "rules": {
+      "lower": "Bir küçük harf",
+      "upper": "Bir büyük harf",
+      "12chars": "En az 12 karakter",
+      "digit": "En az bir rakam",
+      "specialChar": "En az bir özel karakter"
+    }
   },
   "actions": {
     "save": "Kaydet",
@@ -507,6 +514,7 @@
       "uploadImagesLabel": "Resimleri yükle",
       "uploadImagesHint": "Resimleri buraya sürükleyip bırakın veya yüklemek için tıklayın.",
       "invalidFileType": "'{{name}}' desteklenmeyen bir dosya türüdür. Desteklenen dosya türleri: {{types}}.",
+      "fileTooLarge": "'{{name}}' maksimum dosya boyutu olan {{maxSize}} değerini aşıyor.",
       "failedToUpload": "Eklenen medya yüklenemedi. Lütfen tekrar deneyin.",
       "deleteWarning_one": "{{count}} resmi silmek üzeresiniz. Bu işlem geri alınamaz.",
       "deleteWarning_other": "{{count}} resmi silmek üzeresiniz. Bu işlem geri alınamaz.",
@@ -2204,7 +2212,8 @@
       "header": "Ürünler",
       "actions": {
         "addProducts": "Ürünleri ekle",
-        "editPrices": "Fiyatları düzenle"
+        "editPrices": "Fiyatları düzenle",
+        "editPricesDisabled": "Fiyatları düzenlemeden önce ürün ekleyin"
       },
       "delete": {
         "confirmation_one": "Fiyat listesindeki {{count}} ürün için fiyatları silmek üzeresiniz. Bu işlem geri alınamaz.",

@@ -93,7 +93,14 @@
   },
   "validation": {
     "mustBeInt": "Wartość musi być liczbą całkowitą.",
-    "mustBePositive": "Wartość musi być liczbą dodatnią."
+    "mustBePositive": "Wartość musi być liczbą dodatnią.",
+    "rules": {
+      "lower": "Jedna mała litera",
+      "upper": "Jedna wielka litera",
+      "12chars": "Co najmniej 12 znaków",
+      "digit": "Co najmniej jedna cyfra",
+      "specialChar": "Co najmniej jeden znak specjalny"
+    }
   },
   "actions": {
     "save": "Zapisz",
@@ -495,6 +502,7 @@
       "uploadImagesLabel": "Prześlij obrazy",
       "uploadImagesHint": "Przeciągnij i upuść obrazy tutaj lub kliknij, aby przesłać.",
       "invalidFileType": "'{{name}}' nie jest obsługiwanym typem pliku. Obsługiwane typy plików to: {{types}}.",
+      "fileTooLarge": "'{{name}}' przekracza maksymalny rozmiar pliku {{maxSize}}.",
       "failedToUpload": "Nie udało się przesłać dodanych mediów. Spróbuj ponownie.",
       "deleteWarning_one": "Zamierzasz usunąć {{count}} obraz. Ta akcja nie może zostać cofnięta.",
       "deleteWarning_other": "Zamierzasz usunąć {{count}} obrazów. Ta akcja nie może zostać cofnięta.",
@@ -2058,7 +2066,8 @@
       "header": "Produkty",
       "actions": {
         "addProducts": "Dodaj produkty",
-        "editPrices": "Edytuj ceny"
+        "editPrices": "Edytuj ceny",
+        "editPricesDisabled": "Dodaj produkty przed edycją cen"
       },
       "delete": {
         "confirmation_one": "Zamierzasz usunąć ceny dla produktu {{count}} z cennika. Tej akcji nie można cofnąć.",

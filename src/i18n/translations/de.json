@@ -93,7 +93,14 @@
   },
   "validation": {
     "mustBeInt": "Der Wert muss eine ganze Zahl sein.",
-    "mustBePositive": "Der Wert muss eine positive Zahl sein."
+    "mustBePositive": "Der Wert muss eine positive Zahl sein.",
+    "rules": {
+      "lower": "Ein Kleinbuchstabe",
+      "upper": "Ein Großbuchstabe",
+      "12chars": "Mindestens 12 Zeichen",
+      "digit": "Mindestens eine Ziffer",
+      "specialChar": "Mindestens ein Sonderzeichen"
+    }
   },
   "actions": {
     "save": "Speichern",
@@ -494,7 +501,8 @@
       "makeThumbnail": "Miniaturbild erstellen",
       "uploadImagesLabel": "Bilder hochladen",
       "uploadImagesHint": "Ziehen Sie Bilder per Drag-and-Drop hierher oder klicken Sie zum Hochladen.",
-      "invalidFileType": "{{name}}' ist kein unterstützter Dateityp. Unterstützte Dateitypen sind: {{types}}.",
+      "invalidFileType": "'{{name}}' ist kein unterstützter Dateityp. Unterstützte Dateitypen sind: {{types}}.",
+      "fileTooLarge": "'{{name}}' überschreitet die maximale Dateigröße von {{maxSize}}.",
       "failedToUpload": "Das Hochladen der hinzugefügten Medien ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
       "deleteWarning_one": "Sie sind dabei, {{count}} Bild zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.",
       "deleteWarning_other": "Sie sind dabei, {{count}} Bilder zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.",
@@ -841,7 +849,7 @@
     },
     "groups": {
       "label": "Kundengruppen",
-      "remove": "Sind Sie sicher, dass Sie den Kunden aus der Kundengruppe „{{name}}“ entfernen möchten?",
+      "remove": "Sind Sie sicher, dass Sie den Kunden aus der Kundengruppe \"{{name}}\" entfernen möchten?",
       "removeMany": "Sind Sie sicher, dass Sie Kunden aus den folgenden Kundengruppen gewinnen möchten: {{groups}}?",
       "alreadyAddedTooltip": "Der Kunde ist bereits in dieser Kundengruppe.",
       "list": {
@@ -2058,7 +2066,8 @@
       "header": "Produkte",
       "actions": {
         "addProducts": "Produkte hinzufügen",
-        "editPrices": "Preise bearbeiten"
+        "editPrices": "Preise bearbeiten",
+        "editPricesDisabled": "Produkte hinzufügen, bevor Sie Preise bearbeiten"
       },
       "delete": {
         "confirmation_one": "Sie sind dabei, die Preise für {{count}} Produkt in der Preisliste zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.",

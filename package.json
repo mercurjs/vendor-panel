@@ -1,6 +1,6 @@
 {
   "name": "vendor-panel",
-  "version": "1.0.0",
+  "version": "1.5.1",
   "scripts": {
     "generate:static": "node ./scripts/generate-currencies.js && prettier --write ./src/lib/currencies.ts",
     "dev": "vite",
@@ -56,6 +56,7 @@
     "@tanstack/react-table": "8.20.5",
     "@tanstack/react-virtual": "^3.8.3",
     "@uiw/react-json-view": "^2.0.0-alpha.17",
+    "clsx": "^2.1.1",
     "cmdk": "^0.2.0",
     "date-fns": "^3.6.0",
     "i18next": "23.7.11",
@@ -103,5 +104,5 @@
     "vite-plugin-inspect": "^0.8.7",
     "vitest": "^3.0.5"
   },
-  "packageManager": "yarn@3.2.1"
+  "packageManager": "yarn@1.22.22"
 }

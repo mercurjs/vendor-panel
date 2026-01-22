@@ -1,34 +1,34 @@
-import { HttpTypes } from "@medusajs/types"
+import { HttpTypes } from '@medusajs/types';
 
 export interface ExtendedPriceListPrice extends HttpTypes.AdminPriceListPrice {
   price_set: {
-    id: string
+    id: string;
     variant: {
-      id: string
-    }
-  }
+      id: string;
+    };
+  };
   price_rules: Array<{
-    attribute: string
-    value: string | number
-  }>
+    attribute: string;
+    value: string | number;
+  }>;
 }
 
 export interface ExtendedPriceList extends Omit<HttpTypes.AdminPriceList, 'prices'> {
-  prices: ExtendedPriceListPrice[]
-  price_list_rules: Array<{
-    value: string[]
-    attribute: string
-  }>
+  prices?: ExtendedPriceListPrice[];
+  price_list_rules?: Array<{
+    value: string[];
+    attribute: string;
+  }>;
 }
 
 export interface PriceListData {
-  price_list_id: string
-  price_list: ExtendedPriceList
+  price_list_id: string;
+  price_list: ExtendedPriceList;
 }
 
 export interface PriceListListResponse {
-  price_lists: PriceListData[]
-  count: number
-  offset: number
-  limit: number
+  price_lists: ExtendedPriceList[];
+  count: number;
+  offset: number;
+  limit: number;
 }

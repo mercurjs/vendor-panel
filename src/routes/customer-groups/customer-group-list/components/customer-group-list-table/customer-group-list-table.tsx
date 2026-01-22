@@ -5,6 +5,7 @@ import {
   Button,
   Container,
   createDataTableColumnHelper,
+  DataTableRow,
   Heading,
   Text,
   toast,
@@ -109,7 +110,9 @@ export const CustomerGroupListTable = () => {
             table={table}
             columns={columns}
             count={count}
-            navigateTo={(row: any) => `/customer-groups/${row.original.customer_group_id}`}
+            navigateTo={(row: DataTableRow<CustomerGroupData>) =>
+              `/customer-groups/${row.original.customer_group_id}`
+            }
             noRecords={{
               title: t('customerGroups.list.empty.heading'),
               message: t('customerGroups.list.empty.description')
@@ -213,10 +216,6 @@ const useColumns = () => {
           );
         }
       })
-
-      // columnHelper.action({
-
-      // })
     ];
   }, [t, navigate, getFullDate, handleDeleteCustomerGroup]);
 };

@@ -13,6 +13,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 
+import { ActionMenu } from '../../../../../components/common/action-menu';
 import { SingleColumnPage } from '../../../../../components/layout/pages';
 import { _DataTable } from '../../../../../components/table/data-table';
 import { DataTableQuery } from '../../../../../components/table/data-table/data-table-query';
@@ -182,31 +183,40 @@ const useColumns = () => {
           return <span>{row?.original?.customer_group?.customers?.length ?? 0}</span>;
         }
       }),
-      columnHelper.action({
-        actions: [
-          [
-            {
-              icon: <PencilSquare />,
-              label: t('actions.edit'),
-              onClick: ({ row }) => {
-                navigate(`/customer-groups/${row.original.customer_group_id}/edit`);
-              }
-            }
-          ],
-          [
-            {
-              icon: <Trash />,
-              label: t('actions.delete'),
-              onClick: ({ row }) => {
-                handleDeleteCustomerGroup({
-                  id: row.original.customer_group_id,
-                  name: row.original.customer_group.name ?? ''
-                });
-              }
-            }
-          ]
-        ]
+      columnHelper.display({
+        id: 'actions',
+        cell: ({ row }) => {
+          return (
+            <ActionMenu
+              groups={[
+                {
+                  actions: [
+                    {
+                      icon: <PencilSquare />,
+                      label: t('actions.edit'),
+                      to: `/customer-groups/${row.original.customer_group_id}/edit`
+                    },
+                    {
+                      icon: <Trash />,
+                      label: t('actions.delete'),
+                      onClick: () => {
+                        handleDeleteCustomerGroup({
+                          id: row.original.customer_group_id,
+                          name: row.original.customer_group.name ?? ''
+                        });
+                      }
+                    }
+                  ]
+                }
+              ]}
+            />
+          );
+        }
       })
+
+      // columnHelper.action({
+
+      // })
     ];
   }, [t, navigate, getFullDate, handleDeleteCustomerGroup]);
 };

@@ -224,7 +224,7 @@ const columnHelper = createColumnHelper<HttpTypes.AdminCurrency>()
 
 const useColumns = (
   pricePreferences: Record<string, boolean>,
-  setPricePreferences: any
+  setPricePreferences: (values: Record<string, boolean>) => void
 ) => {
   const { t } = useTranslation()
   const base = useCurrenciesTableColumns()

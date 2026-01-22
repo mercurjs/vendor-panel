@@ -8,6 +8,7 @@ import {
   TRANSACTION_IN_PROGRESS_STATES,
 } from "./constants"
 import { TransactionState, TransactionStepState } from "./types"
+import { TransactionState as MedusaTransactionType } from "@medusajs/types"
 
 export const adminExecutionKey = {
   detail: (id: string) => ["workflow_executions", "detail", id],
@@ -19,7 +20,7 @@ export const adminExecutionKey = {
 }
 
 export const getTransactionStateColor = (
-  state: TransactionState
+  state: MedusaTransactionType
 ): "green" | "orange" | "red" => {
   let statusColor: "green" | "red" | "orange" = "green"
 
@@ -35,8 +36,8 @@ export const getTransactionStateColor = (
 }
 
 export const getTransactionState = (
-  t: TFunction<"translation", any>,
-  state: TransactionState
+  t: TFunction<"translation">,
+  state: MedusaTransactionType
 ) => {
   switch (state) {
     case TransactionState.DONE:
@@ -75,7 +76,7 @@ export const getStepStateColor = (state: TransactionStepState) => {
 }
 
 export const getStepState = (
-  t: TFunction<"translation", any>,
+  t: TFunction<"translation">,
   state: TransactionStepState
 ) => {
   switch (state) {

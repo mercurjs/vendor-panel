@@ -1,6 +1,7 @@
 import { Container, Heading, Tooltip } from "@medusajs/ui"
+import { HttpTypes } from "@medusajs/types"
 
-export const ReviewCustomerSection = ({ customer }: { customer?: any }) => {
+export const ReviewCustomerSection = ({ customer }: { customer?: HttpTypes.AdminCustomer }) => {
   return (
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">

@@ -5,12 +5,13 @@ import { StatusCell } from "../../../../components/table/table-cells/review/stat
 import { ActionMenu } from "../../../../components/common/action-menu"
 import { ExclamationCircle } from "@medusajs/icons"
 import { Link } from "react-router-dom"
+import { Review } from "../../../../types/user"
 
 export const ReviewGeneralSection = ({
   review,
   isRequested = false,
 }: {
-  review: any
+  review: Review
   isRequested?: boolean
 }) => {
   return (

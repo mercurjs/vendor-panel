@@ -4,6 +4,8 @@ const BASE_PRODUCT_DETAIL_FIELDS = [
   '*variants.inventory_items',
   '*variants.images',
   '*categories',
+  '*secondary_categories',
+  'additional_data',
   'attribute_values.*',
   'attribute_values.attribute.*',
   'options.*',

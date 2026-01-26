@@ -48,6 +48,7 @@ type UploadedMedia = HttpTypes.AdminFile & {
 };
 
 const SAVE_DRAFT_BUTTON = 'save-draft-button';
+const SEC_CAT_PRODUCT_KEY = 'sec_cat_product_key';
 
 // Tab order for determining navigation direction
 const TAB_ORDER: Tab[] = [Tab.DETAILS, Tab.ORGANIZE, Tab.ATTRIBUTES, Tab.VARIANTS, Tab.INVENTORY];
@@ -285,6 +286,10 @@ export const ProductCreateForm = ({
 
     const media = values.media || [];
     const { secondary_categories, ...rest } = values;
+    const secCatProductKey =
+      Array.isArray(secondary_categories) && secondary_categories.length > 0
+        ? `sec-cat-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
+        : undefined;
 
     const adminAttributes: Array<{
       attribute_id: string;
@@ -649,6 +654,16 @@ export const ProductCreateForm = ({
       // Variants will have values for all options
       // If no options exist, use default from payload
       options: allOptions.length > 0 ? allOptions : (finalPayload as any).options,
+      metadata: (() => {
+        const existing = (finalPayload as any)?.metadata ?? undefined;
+        if (!secCatProductKey) {
+          return existing;
+        }
+        return {
+          ...(existing ?? {}),
+          [SEC_CAT_PRODUCT_KEY]: secCatProductKey
+        };
+      })(),
       additional_data: (() => {
         const additionalData: Record<string, any> = {};
 
@@ -661,16 +676,11 @@ export const ProductCreateForm = ({
         }
 
         // Add secondary categories if any
-        if (
-          secondary_categories &&
-          Array.isArray(secondary_categories) &&
-          secondary_categories.length > 0
-        ) {
-          const productHandle = values.handle || '';
+        if (Array.isArray(secondary_categories) && secondary_categories.length > 0 && secCatProductKey) {
           additionalData.secondary_categories = [
             {
-              handle: productHandle,
-              secondary_categories_ids: secondary_categories
+              sec_cat_product_key: secCatProductKey,
+              category_ids: secondary_categories
             }
           ];
         }

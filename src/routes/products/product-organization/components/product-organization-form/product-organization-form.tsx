@@ -24,8 +24,12 @@ type ProductOrganizationFormProps = {
 
 type ProductAdditionalData = {
   secondary_categories?: Array<{
-    handle: string;
-    secondary_categories_ids: string[];
+    // Create format:
+    sec_cat_product_key?: string;
+    category_ids?: string[];
+    // Update/read formats (backend-dependent):
+    handle?: string;
+    secondary_categories_ids?: string[];
   }>;
 };
 
@@ -34,17 +38,78 @@ type ProductWithAdditionalData = ExtendedAdminProduct & {
   secondary_categories?: HttpTypes.AdminProductCategory[];
 };
 
-const getSecondaryCategoryIds = (product: ProductWithAdditionalData): string[] => {
-  if (product.secondary_categories?.length) {
-    return product.secondary_categories.map(cat => cat.id);
+const uniq = (arr: string[]) => Array.from(new Set(arr.filter(Boolean)));
+const isCategoryId = (id: string) => id.startsWith('pcat_');
+const isSecondaryCategoryRelationId = (id: string) => id.startsWith('sec_cat_');
+
+const getSecondaryCategoriesSnapshot = (product: ProductWithAdditionalData) => {
+  const relationEntries = (product.secondary_categories ?? []) as any[];
+
+  const relationSecCatIds = relationEntries
+    .map((cat: any) => cat?.id)
+    .filter((id: any): id is string => typeof id === 'string' && isSecondaryCategoryRelationId(id));
+
+  const relationCategoryIds = relationEntries
+    .map((cat: any) => {
+      const candidates = [
+        cat?.id,
+        cat?.category_id,
+        cat?.product_category_id,
+        cat?.product_category?.id,
+        cat?.category?.id
+      ].filter(Boolean) as string[];
+
+      return candidates.find(isCategoryId);
+    })
+    .filter((id): id is string => Boolean(id));
+
+  const entries = product.additional_data?.secondary_categories ?? [];
+  const additionalCategoryIds = entries.flatMap(entry => (entry as any)?.category_ids ?? []);
+  const additionalIds = entries.flatMap(entry => (entry as any)?.secondary_categories_ids ?? []);
+
+  const additionalCategoryIdsFromSecondaryIds = additionalIds.filter(isCategoryId);
+  const additionalSecCatIds = additionalIds.filter(isSecondaryCategoryRelationId);
+
+  const categoryIds = uniq(
+    relationCategoryIds.length
+      ? relationCategoryIds
+      : additionalCategoryIds.length
+        ? additionalCategoryIds
+        : additionalCategoryIdsFromSecondaryIds
+  );
+
+  const secCatIdByCategoryId = new Map<string, string>();
+
+  relationEntries.forEach((entry: any) => {
+    const secCatId = typeof entry?.id === 'string' && isSecondaryCategoryRelationId(entry.id) ? entry.id : undefined;
+    const catIdCandidates = [entry?.category_id, entry?.product_category_id, entry?.product_category?.id, entry?.category?.id]
+      .filter(Boolean) as string[];
+    const catId = catIdCandidates.find(isCategoryId);
+    if (secCatId && catId) {
+      secCatIdByCategoryId.set(catId, secCatId);
+    }
+  });
+
+  if (
+    additionalCategoryIds.length > 0 &&
+    additionalSecCatIds.length > 0 &&
+    additionalCategoryIds.length === additionalSecCatIds.length
+  ) {
+    for (let i = 0; i < additionalCategoryIds.length; i++) {
+      secCatIdByCategoryId.set(additionalCategoryIds[i], additionalSecCatIds[i]);
+    }
   }
 
-  const additionalSecondaryCategories =
-    product.additional_data?.secondary_categories?.flatMap(
-      entry => entry.secondary_categories_ids ?? []
-    ) ?? [];
+  return {
+    categoryIds,
+    secCatIds: uniq([...relationSecCatIds, ...additionalSecCatIds]),
+    secCatIdByCategoryId
+  };
+};
 
-  return Array.from(new Set(additionalSecondaryCategories));
+const diff = (next: string[], prev: string[]) => {
+  const prevSet = new Set(prev);
+  return next.filter(id => !prevSet.has(id));
 };
 
 const ProductOrganizationSchema = zod.object({
@@ -105,12 +170,14 @@ export const ProductOrganizationForm = ({ product }: ProductOrganizationFormProp
       }))
   });
 
+  const secondarySnapshot = getSecondaryCategoriesSnapshot(product as ProductWithAdditionalData);
+
   const form = useExtendableForm({
     defaultValues: {
       type_id: product.type_id ?? '',
       collection_id: product.collection_id ?? '',
       categories: product.categories?.map(cat => cat.id) || [],
-      secondary_categories: getSecondaryCategoryIds(product as ProductWithAdditionalData),
+      secondary_categories: secondarySnapshot.categoryIds,
       tag_ids: product.tags?.map(t => t.id) || []
     },
     schema: ProductOrganizationSchema,
@@ -121,29 +188,49 @@ export const ProductOrganizationForm = ({ product }: ProductOrganizationFormProp
   const { mutateAsync, isPending } = useUpdateProduct(product.id);
 
   const handleSubmit = form.handleSubmit(async data => {
-    const additionalData: ProductAdditionalData = {};
+    const nextCategoryIds = uniq(Array.isArray(data.secondary_categories) ? data.secondary_categories : []);
+    const currentCategoryIds = secondarySnapshot.categoryIds;
+    const addCategoryIds = diff(nextCategoryIds, currentCategoryIds);
+    const removedCategoryIds = diff(currentCategoryIds, nextCategoryIds);
 
-    // Add secondary categories if any
-    if (Array.isArray(data.secondary_categories)) {
-      additionalData.secondary_categories = [
-        {
-          handle: product.handle || '',
-          secondary_categories_ids: data.secondary_categories
-        }
-      ];
-    }
+    const existingSecCatIds = secondarySnapshot.secCatIds;
+    const removeSecCatIdsFromMap = removedCategoryIds
+      .map(catId => secondarySnapshot.secCatIdByCategoryId.get(catId))
+      .filter((id): id is string => Boolean(id));
+
+    const canMapAllRemovals = removedCategoryIds.length === removeSecCatIdsFromMap.length;
+
+    const removeSecCatIds = uniq(
+      removedCategoryIds.length === 0
+        ? []
+        : canMapAllRemovals
+          ? removeSecCatIdsFromMap
+          : // Fallback: if we can't map category->sec_cat, reset by removing all existing relations.
+            existingSecCatIds
+    );
+
+    const hasSecondaryCatsChanges =
+      addCategoryIds.length > 0 ||
+      removedCategoryIds.length > 0;
 
     const payload = {
       type_id: data.type_id ? data.type_id : undefined,
       collection_id: data.collection_id ? data.collection_id : undefined,
       categories: data.categories?.map(id => ({ id })) || [],
       tags: data.tag_ids?.map(t => ({ id: t })) ?? [],
-      ...(Object.keys(additionalData).length > 0 && {
-        additional_data: additionalData
+      ...(hasSecondaryCatsChanges && {
+        additional_data: {
+          secondary_categories: [
+            {
+              product_id: product.id,
+              add: canMapAllRemovals ? addCategoryIds : nextCategoryIds,
+              remove: removeSecCatIds,
+              secondary_categories_ids: existingSecCatIds
+            }
+          ]
+        }
       })
-    } as HttpTypes.AdminUpdateProduct & {
-      additional_data?: ProductAdditionalData;
-    };
+    } as HttpTypes.AdminUpdateProduct;
 
     await mutateAsync(payload as Parameters<typeof mutateAsync>[0], {
       onSuccess: ({ product }) => {

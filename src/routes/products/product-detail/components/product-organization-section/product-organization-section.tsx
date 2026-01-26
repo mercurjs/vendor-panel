@@ -16,6 +16,8 @@ type ProductOrganizationSectionProps = {
 type ProductAdditionalData = {
   secondary_categories?: Array<{
     handle?: string
+    sec_cat_product_key?: string
+    category_ids?: string[]
     secondary_categories_ids?: string[]
   }>
 }
@@ -44,12 +46,15 @@ export const ProductOrganizationSection = ({
       additional_data?: ProductAdditionalData
     }).additional_data
 
-    const ids =
-      additionalData?.secondary_categories?.flatMap(
-        (entry) => entry.secondary_categories_ids ?? []
-      ) ?? []
+    const entries = additionalData?.secondary_categories ?? []
 
-    return Array.from(new Set(ids))
+    const categoryIds = entries.flatMap((entry) => entry.category_ids ?? [])
+
+    const legacyIds = entries.flatMap((entry) => entry.secondary_categories_ids ?? [])
+    const legacyCategoryIds = legacyIds.filter((id) => String(id).startsWith("pcat_"))
+
+    const ids = categoryIds.length ? categoryIds : legacyCategoryIds
+    return Array.from(new Set(ids.filter(Boolean)))
   }, [product])
 
   const { product_categories: allCategories } = useProductCategories(

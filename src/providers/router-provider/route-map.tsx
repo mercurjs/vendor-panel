@@ -249,10 +249,6 @@ export const RouteMap: RouteObject[] = [
                     path: "export",
                     lazy: () => import("../../routes/products/product-export"),
                   },
-                  {
-                    path: "bulk-edit",
-                    lazy: () => import("../../routes/products/product-bulk-edit"),
-                  },
                 ],
               },
               {

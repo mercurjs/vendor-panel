@@ -1,11 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Trash } from '@medusajs/icons';
 import { Button, Checkbox, Container, Heading, toast, usePrompt } from '@medusajs/ui';
 import { keepPreviousData } from '@tanstack/react-query';
 import { createColumnHelper, OnChangeFn, RowSelectionState } from '@tanstack/react-table';
 import { useTranslation } from 'react-i18next';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 
 import { ActionMenu } from '../../../../../components/common/action-menu';
 import { _DataTable } from '../../../../../components/table/data-table';
@@ -19,14 +19,20 @@ import { useProductTableFilters } from '../../../../../hooks/table/filters/use-p
 import { useProductTableQuery } from '../../../../../hooks/table/query/use-product-table-query';
 import { useDataTable } from '../../../../../hooks/use-data-table';
 import { ExtendedAdminProduct } from '../../../../../types/products';
+import { ProductBulkEditDrawer } from '../../../product-bulk-edit/product-bulk-edit-drawer';
 
 export const PAGE_SIZE = 10;
 
 export const ProductListTable = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const location = useLocation();
 
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [bulkEditOpen, setBulkEditOpen] = useState(false);
+  const [bulkEditProducts, setBulkEditProducts] = useState<ExtendedAdminProduct[]>([]);
+  
+  // Track selected products data across pages
+  const selectedProductsMap = useRef<Map<string, ExtendedAdminProduct>>(new Map());
 
   const updater: OnChangeFn<RowSelectionState> = newSelection => {
     const update = typeof newSelection === 'function' ? newSelection(rowSelection) : newSelection;
@@ -70,6 +76,25 @@ export const ProductListTable = () => {
       updater
     }
   });
+
+  // Sync selected products data across pages
+  useEffect(() => {
+    const selectedIds = new Set(Object.keys(rowSelection));
+    
+    // Add newly selected products from current page
+    products.forEach(product => {
+      if (selectedIds.has(product.id)) {
+        selectedProductsMap.current.set(product.id, product);
+      }
+    });
+    
+    // Remove deselected products
+    selectedProductsMap.current.forEach((_, id) => {
+      if (!selectedIds.has(id)) {
+        selectedProductsMap.current.delete(id);
+      }
+    });
+  }, [rowSelection, products]);
 
   const { mutateAsync } = useBulkDeleteProducts();
   const prompt = usePrompt();
@@ -160,10 +185,10 @@ export const ProductListTable = () => {
         ]}
         commands={[
           {
-            action: async (selection) => {
-              const selectedIds = Object.keys(selection)
-              const selectedProducts = products.filter(p => selectedIds.includes(p.id))
-              navigate('bulk-edit', { state: { products: selectedProducts } })
+            action: async () => {
+              const selectedProducts = Array.from(selectedProductsMap.current.values())
+              setBulkEditProducts(selectedProducts)
+              setBulkEditOpen(true)
             },
             label: t('actions.edit'),
             shortcut: 'e'
@@ -184,6 +209,11 @@ export const ProductListTable = () => {
         }}
       />
       <Outlet />
+      <ProductBulkEditDrawer
+        open={bulkEditOpen}
+        onOpenChange={setBulkEditOpen}
+        products={bulkEditProducts}
+      />
     </Container>
   );
 };

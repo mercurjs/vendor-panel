@@ -603,7 +603,7 @@ export type BatchUpdateProductItem = {
 
 export type BatchUpdateProductsPayload = {
   update: BatchUpdateProductItem[]
-  delete?: string[]
+  delete: string[]
 }
 
 export const useBatchUpdateProducts = (

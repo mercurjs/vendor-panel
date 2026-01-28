@@ -106,7 +106,7 @@ const ProductBulkEditForm = ({ products, onClose }: ProductBulkEditFormProps) =>
     }
 
     await mutateAsync(
-      { update: updates },
+      { update: updates, delete: [] },
       {
         onSuccess: () => {
           toast.success(t("products.bulkEdit.success"))

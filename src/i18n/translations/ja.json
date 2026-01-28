@@ -687,6 +687,18 @@
     "createCollection": "コレクションを作成",
     "createCollectionHint": "商品を整理するための新しいコレクションを作成します。",
     "createSuccess": "コレクションが正常に作成されました。",
+    "requestSuccess": "コレクションのリクエストが正常に送信されました。",
+    "requestCollection": {
+      "tabs": { "details": "詳細", "organizeRanking": "ランキングを整理" },
+      "mediaLabel": "メディア（任意）",
+      "mediaHint": "画像をここにドラッグ＆ドロップするか、クリックしてアップロードしてください。",
+      "iconLabel": "アイコン（任意）",
+      "iconHint": "ファイルをここにドラッグ＆ドロップするか、クリックしてアップロードしてください。",
+      "iconTip": "ヒント：このアイコンはストアフロントのコレクションラベルの近くに表示されます。",
+      "removeThumbnail": "サムネイルを削除",
+      "makeBanner": "バナーに設定",
+      "newBadge": "新着!"
+    },
     "editCollection": "コレクションを編集",
     "handleTooltip": "ハンドルはストアフロントでコレクションを参照するために使用されます。指定しない場合、コレクションのタイトルからハンドルが生成されます。",
     "deleteWarning": "コレクション「{{title}}」を削除しようとしています。この操作は元に戻せません。",

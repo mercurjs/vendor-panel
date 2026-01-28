@@ -683,9 +683,24 @@
   "collections": {
     "domain": "Kolekcje",
     "subtitle": "Organizuj produkty w kolekcje.",
-    "createCollection": "Utwórz kolekcję",
-    "createCollectionHint": "Utwórz nową kolekcję, aby uporządkować swoje produkty.",
+    "createCollection": "Zażądaj kolekcji",
+    "createCollectionHint": "Zażądaj nowej kolekcji, aby uporządkować swoje produkty.",
     "createSuccess": "Kolekcja została pomyślnie utworzona.",
+    "requestSuccess": "Kolekcja została pomyślnie zażądana.",
+    "requestCollection": {
+      "tabs": {
+        "details": "Szczegóły",
+        "organizeRanking": "Organizuj ranking"
+      },
+      "mediaLabel": "Media (opcjonalnie)",
+      "mediaHint": "Przeciągnij i upuść obrazy tutaj lub kliknij, aby przesłać.",
+      "iconLabel": "Ikona (opcjonalnie)",
+      "iconHint": "Przeciągnij i upuść plik tutaj lub kliknij, aby przesłać.",
+      "iconTip": "Wskazówka: Ta ikona pojawi się obok etykiety kolekcji w sklepie.",
+      "removeThumbnail": "Usuń miniaturkę",
+      "makeBanner": "Ustaw jako baner",
+      "newBadge": "Nowe!"
+    },
     "editCollection": "Edytuj kolekcję",
     "handleTooltip": "Uchwyt jest używany do odniesienia się do kolekcji w Twoim sklepie. Jeśli nie zostanie określony, zostanie wygenerowany z tytułu kolekcji.",
     "deleteWarning": "Zamierzasz usunąć kolekcję {{title}}. Tej akcji nie można cofnąć.",

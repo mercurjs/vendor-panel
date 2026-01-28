@@ -687,6 +687,18 @@
     "createCollection": "Crea Collezione",
     "createCollectionHint": "Crea una nuova collezione per organizzare i tuoi prodotti.",
     "createSuccess": "Collezione creata con successo.",
+    "requestSuccess": "Collezione richiesta con successo.",
+    "requestCollection": {
+      "tabs": { "details": "Dettagli", "organizeRanking": "Organizza classifica" },
+      "mediaLabel": "Media (opzionale)",
+      "mediaHint": "Trascina e rilascia le immagini qui o clicca per caricare.",
+      "iconLabel": "Icona (opzionale)",
+      "iconHint": "Trascina e rilascia il file qui o clicca per caricare.",
+      "iconTip": "Suggerimento: Questa icona apparirà accanto all'etichetta della collezione nello store.",
+      "removeThumbnail": "Rimuovi miniatura",
+      "makeBanner": "Imposta come banner",
+      "newBadge": "Nuovo!"
+    },
     "editCollection": "Modifica Collezione",
     "handleTooltip": "L'handle è usato per fare riferimento alla collezione nel tuo negozio. Se non specificato, l'handle sarà generato dal titolo della collezione.",
     "deleteWarning": "Stai per eliminare la collezione {{title}}. Questa azione non può essere annullata.",

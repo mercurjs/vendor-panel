@@ -686,6 +686,18 @@
     "createCollection": "Sammlung erstellen",
     "createCollectionHint": "Erstellen Sie eine neue Sammlung, um Ihre Produkte zu organisieren.",
     "createSuccess": "Sammlung erfolgreich erstellt.",
+    "requestSuccess": "Sammlung erfolgreich angefordert.",
+    "requestCollection": {
+      "tabs": { "details": "Details", "organizeRanking": "Organize Ranking" },
+      "mediaLabel": "Media (Optional)",
+      "mediaHint": "Drag and drop images here or click to upload.",
+      "iconLabel": "Icon (Optional)",
+      "iconHint": "Drag and drop file here or click to upload.",
+      "iconTip": "Tip: This icon will appear near the collection label on the storefront.",
+      "removeThumbnail": "Remove thumbnail",
+      "makeBanner": "Make banner",
+      "newBadge": "New!"
+    },
     "editCollection": "Sammlung bearbeiten",
     "handleTooltip": "Das Handle wird verwendet, um auf die Sammlung in Ihrer Storefront zu verweisen. Wenn nicht angegeben, wird das Handle aus dem Sammlungstitel generiert.",
     "deleteWarning": "Sie sind dabei, die Sammlung {{title}} zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.",

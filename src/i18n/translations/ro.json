@@ -707,6 +707,18 @@
     "createCollection": "Creați o colecție",
     "createCollectionHint": "Creați o nouă colecție pentru a vă organiza produsele.",
     "createSuccess": "Colecție creată cu succes.",
+    "requestSuccess": "Colecție solicitată cu succes.",
+    "requestCollection": {
+      "tabs": { "details": "Detalii", "organizeRanking": "Organizare clasament" },
+      "mediaLabel": "Media (opțional)",
+      "mediaHint": "Trage și plasează imaginile aici sau dă clic pentru a încărca.",
+      "iconLabel": "Pictogramă (opțional)",
+      "iconHint": "Trage și plasează fișierul aici sau dă clic pentru a încărca.",
+      "iconTip": "Sfat: Această pictogramă va apărea lângă eticheta colecției în magazin.",
+      "removeThumbnail": "Elimină miniatura",
+      "makeBanner": "Setează ca banner",
+      "newBadge": "Nou!"
+    },
     "editCollection": "Editați colecția",
     "handleTooltip": "Mânerul este folosit pentru a face referire la colecția din vitrina dvs. ",
     "deleteWarning": "Sunteți pe cale să ștergeți colecția {{title}}. ",

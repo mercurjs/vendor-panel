@@ -707,6 +707,18 @@
     "createCollection": "创建系列",
     "createCollectionHint": "创建新系列以组织您的产品。",
     "createSuccess": "系列创建成功。",
+    "requestSuccess": "系列请求已成功提交。",
+    "requestCollection": {
+      "tabs": { "details": "详情", "organizeRanking": "整理排名" },
+      "mediaLabel": "媒体（可选）",
+      "mediaHint": "在此处拖放图片或点击上传。",
+      "iconLabel": "图标（可选）",
+      "iconHint": "在此处拖放文件或点击上传。",
+      "iconTip": "提示：此图标将显示在商店中系列标签旁边。",
+      "removeThumbnail": "移除缩略图",
+      "makeBanner": "设为横幅",
+      "newBadge": "新！"
+    },
     "editCollection": "编辑系列",
     "handleTooltip": "标识用于在您的店面引用系列。如果未指定,将根据系列标题生成标识。",
     "deleteWarning": "您即将删除系列 {{title}}。此操作无法撤销。",

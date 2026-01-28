@@ -2769,6 +2769,33 @@
         "handleTooltip": {
           "type": "string"
         },
+        "requestSuccess": {
+          "type": "string"
+        },
+        "requestCollection": {
+          "type": "object",
+          "properties": {
+            "tabs": {
+              "type": "object",
+              "properties": {
+                "details": { "type": "string" },
+                "organizeRanking": { "type": "string" }
+              },
+              "required": ["details", "organizeRanking"],
+              "additionalProperties": false
+            },
+            "mediaLabel": { "type": "string" },
+            "mediaHint": { "type": "string" },
+            "iconLabel": { "type": "string" },
+            "iconHint": { "type": "string" },
+            "iconTip": { "type": "string" },
+            "removeThumbnail": { "type": "string" },
+            "makeBanner": { "type": "string" },
+            "newBadge": { "type": "string" }
+          },
+          "required": ["tabs", "mediaLabel", "mediaHint", "iconLabel", "iconHint", "iconTip", "removeThumbnail", "makeBanner", "newBadge"],
+          "additionalProperties": false
+        },
         "deleteWarning": {
           "type": "string"
         },
@@ -2831,8 +2858,10 @@
         "createCollection",
         "createCollectionHint",
         "createSuccess",
+        "requestSuccess",
         "editCollection",
         "handleTooltip",
+        "requestCollection",
         "deleteWarning",
         "removeSingleProductWarning",
         "removeProductsWarning_one",

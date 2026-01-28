@@ -686,6 +686,18 @@
     "createCollection": "Crear Colección",
     "createCollectionHint": "Crea una nueva colección para organizar tus productos.",
     "createSuccess": "Colección creada exitosamente.",
+    "requestSuccess": "Colección solicitada correctamente.",
+    "requestCollection": {
+      "tabs": { "details": "Detalles", "organizeRanking": "Organizar ranking" },
+      "mediaLabel": "Media (opcional)",
+      "mediaHint": "Arrastra y suelta imágenes aquí o haz clic para subir.",
+      "iconLabel": "Icono (opcional)",
+      "iconHint": "Arrastra y suelta un archivo aquí o haz clic para subir.",
+      "iconTip": "Consejo: este icono aparecerá junto a la etiqueta de la colección en la tienda.",
+      "removeThumbnail": "Quitar miniatura",
+      "makeBanner": "Establecer como banner",
+      "newBadge": "¡Nuevo!"
+    },
     "editCollection": "Editar Colección",
     "handleTooltip": "El identificador se usa para referenciar la colección en tu tienda online. Si no se especifica, el identificador se generará a partir del título de la colección.",
     "deleteWarning": "Estás a punto de eliminar la colección {{title}}. Esta acción no puede deshacerse.",

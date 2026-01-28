@@ -565,20 +565,17 @@ export const useDeleteProduct = (
 }
 
 export const useBulkDeleteProducts = (
-  options?: UseMutationOptions<
-    HttpTypes.AdminProductDeleteResponse[],
-    FetchError,
-    string[]
-  >
+  options?: UseMutationOptions<void, FetchError, string[]>
 ) => {
   return useMutation({
     mutationFn: async (productIds: string[]) => {
-      const deletePromises = productIds.map((id) =>
-        fetchQuery(`/vendor/products/${id}`, {
-          method: "DELETE",
-        })
-      )
-      return Promise.all(deletePromises)
+      return fetchQuery(`/vendor/products/batch`, {
+        method: "POST",
+        body: {
+          update: [],
+          delete: productIds,
+        },
+      })
     },
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
@@ -588,6 +585,45 @@ export const useBulkDeleteProducts = (
       variables.forEach((id: string) => {
         queryClient.invalidateQueries({
           queryKey: productsQueryKeys.detail(id),
+        })
+      })
+
+      options?.onSuccess?.(data, variables, context)
+    },
+    ...options,
+  })
+}
+
+export type BatchUpdateProductItem = {
+  id: string
+  title?: string
+  status?: "draft" | "published"
+  discountable?: boolean
+}
+
+export type BatchUpdateProductsPayload = {
+  update: BatchUpdateProductItem[]
+  delete?: string[]
+}
+
+export const useBatchUpdateProducts = (
+  options?: UseMutationOptions<void, FetchError, BatchUpdateProductsPayload>
+) => {
+  return useMutation({
+    mutationFn: async (payload: BatchUpdateProductsPayload) => {
+      return fetchQuery(`/vendor/products/batch`, {
+        method: "POST",
+        body: payload,
+      })
+    },
+    onSuccess: (data: any, variables: any, context: any) => {
+      queryClient.invalidateQueries({
+        queryKey: productsQueryKeys.lists(),
+      })
+
+      variables.update?.forEach((item: BatchUpdateProductItem) => {
+        queryClient.invalidateQueries({
+          queryKey: productsQueryKeys.detail(item.id),
         })
       })
 

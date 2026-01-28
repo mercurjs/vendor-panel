@@ -5,7 +5,7 @@ import { Button, Checkbox, Container, Heading, toast, usePrompt } from '@medusaj
 import { keepPreviousData } from '@tanstack/react-query';
 import { createColumnHelper, OnChangeFn, RowSelectionState } from '@tanstack/react-table';
 import { useTranslation } from 'react-i18next';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 
 import { ActionMenu } from '../../../../../components/common/action-menu';
 import { _DataTable } from '../../../../../components/table/data-table';
@@ -24,6 +24,7 @@ export const PAGE_SIZE = 10;
 
 export const ProductListTable = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
@@ -158,6 +159,15 @@ export const ProductListTable = () => {
           }
         ]}
         commands={[
+          {
+            action: async (selection) => {
+              const selectedIds = Object.keys(selection)
+              const selectedProducts = products.filter(p => selectedIds.includes(p.id))
+              navigate('bulk-edit', { state: { products: selectedProducts } })
+            },
+            label: t('actions.edit'),
+            shortcut: 'e'
+          },
           {
             action: handleDelete,
             label: t('actions.delete'),

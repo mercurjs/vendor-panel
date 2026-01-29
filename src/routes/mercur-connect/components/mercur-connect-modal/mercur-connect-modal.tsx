@@ -1,6 +1,5 @@
 import { CurrencyDollar, XMarkMini } from '@medusajs/icons';
 import { Button, Kbd, Prompt, Text } from '@medusajs/ui';
-import { Link } from 'react-router-dom';
 
 export const MercurConnectModal = ({
   open,
@@ -39,43 +38,27 @@ export const MercurConnectModal = ({
           </div>
         </Prompt.Header>
         <Prompt.Description
-          data-testid={`${testId}-description`}
-          className="mx-auto mt-10 flex w-full max-w-[464px] flex-col items-center gap-2 text-center"
+          data-testid={`${testId}-description-wrapper`}
+          className="mx-auto my-10 flex w-full max-w-[464px] flex-col items-center gap-2 text-center"
         >
           <CurrencyDollar />
           <Text
             size="small"
             weight="plus"
             className="line-height-[20px] text-ui-fg-base"
+            data-testid={`${testId}-title`}
           >
             Mercur Connect Feature
           </Text>
           <Text
             size="small"
             className="text-ui-fg-subtle"
+            data-testid={`${testId}-description`}
           >
             Your current plan doesn’t include this feature.
             <span className="block">Please contact your admin to enable it for your account.</span>
           </Text>
         </Prompt.Description>
-        <Prompt.Footer
-          className="flex justify-center p-0 py-6"
-          data-testid={`${testId}-footer`}
-        >
-          <Link
-            to="https://www.mercurjs.com/contact"
-            target="_blank"
-            data-testid={`${testId}-contact-us-link`}
-          >
-            <Button
-              variant="secondary"
-              size="small"
-              data-testid={`${testId}-contact-us-button`}
-            >
-              Contact us
-            </Button>
-          </Link>
-        </Prompt.Footer>
       </Prompt.Content>
     </Prompt>
   );

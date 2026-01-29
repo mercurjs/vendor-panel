@@ -34,8 +34,11 @@ export const ProductAdditionalAttributesForm = ({ product, attributes, id }: Pro
   const { mutate: updateProduct, isPending: isMutating } = useUpdateProduct(id);
 
   const handleSubmit = form.handleSubmit(async (data: any) => {
+    console.log(data)
     const values = Object.keys(data).reduce((acc: Array<Record<string, string>>, key) => {
-      acc.push({ attribute_id: key, value: data[key] });
+      if (data[key] !== undefined) {
+        acc.push({ attribute_id: key, value: data[key] });
+      }
       return acc;
     }, []);
 

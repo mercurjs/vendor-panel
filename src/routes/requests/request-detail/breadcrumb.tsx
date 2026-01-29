@@ -9,7 +9,7 @@ export const RequestDetailBreadcrumb = (props: ReviewDetailBreadcrumbProps) => {
   const { review } = useReview(id!, undefined, {
     initialData: props.data,
     enabled: Boolean(id),
-  }) as any
+  })
 
   if (!review) {
     return null

@@ -2,7 +2,7 @@ import { clx } from "@medusajs/ui"
 import { PropsWithChildren } from "react"
 
 type StatusCellProps = PropsWithChildren<{
-  color?: "green" | "red" | "blue" | "orange" | "grey" | "purple"
+  color?: "green" | "red" | "blue" | "orange" | "grey" | "purple" | "yellow"
 }>
 
 /**
@@ -25,6 +25,7 @@ export const StatusCell = ({ color, children }: StatusCellProps) => {
               "bg-ui-tag-blue-icon": color === "blue",
               "bg-ui-tag-orange-icon": color === "orange",
               "bg-ui-tag-purple-icon": color === "purple",
+              "bg-ui-tag-yellow-icon": color === "yellow",
             }
           )}
         />

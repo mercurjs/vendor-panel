@@ -16,7 +16,7 @@ import { TaxOverrideCard } from "../tax-override-card"
 
 type TaxOverrideTableProps = {
   isPending: boolean
-  queryObject: Record<string, any>
+  queryObject: Record<string, unknown>
   count?: number
   table: Table<HttpTypes.AdminTaxRate>
   action: { label: string; to: string }

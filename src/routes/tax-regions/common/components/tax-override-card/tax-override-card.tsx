@@ -336,7 +336,7 @@ const useReferenceValues = (
       }
     // case TaxRateRuleReferenceType.PRODUCT_TAG:
     //   return {
-    //     labels: tags.product_tags?.map((tag: any) => tag.value),
+    //     labels: tags.product_tags?.map((tag: HttpTypes.AdminProductTag) => tag.value),
     //     isPending: tags.isPending,
     //     additional:
     //       tags.product_tags && tags.count

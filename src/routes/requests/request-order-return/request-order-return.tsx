@@ -9,6 +9,8 @@ import { useForm } from "react-hook-form"
 import { Form } from "../../../components/common/form"
 import { useStockLocations } from "../../../hooks/api"
 import { useEffect } from "react"
+import { VendorUpdateOrderReturnRequestPayload } from "../../../types/request"
+
 
 const STATUS_OPTIONS = ["refunded", "escalated"]
 
@@ -41,7 +43,7 @@ export function RequestOrderReturn() {
 
   const { mutate: updateOrderReturnRequest } = useUpdateOrderReturnRequest(id!)
 
-  const handleUpdateOrderReturnRequest = async (payload: any) => {
+  const handleUpdateOrderReturnRequest = async (payload: VendorUpdateOrderReturnRequestPayload) => {
     updateOrderReturnRequest(payload, {
       onSuccess: () => {
         navigate("/requests/orders", { replace: true })

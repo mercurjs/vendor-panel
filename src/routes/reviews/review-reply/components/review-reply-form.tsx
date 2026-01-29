@@ -19,7 +19,7 @@ export const ReviewReplyForm = () => {
 
   const form = useForm<z.infer<typeof ReviewReplySchema>>({
     defaultValues: {
-      seller_note: review.seller_note || "",
+      seller_note: review?.seller_note || "",
     },
     resolver: zodResolver(ReviewReplySchema),
   })
@@ -64,10 +64,10 @@ export const ReviewReplyForm = () => {
     <RouteDrawer>
       <RouteDrawer.Header>
         <RouteDrawer.Title asChild>
-          <Heading>{review.seller_note ? "Edit Reply" : "Reply"}</Heading>
+          <Heading>{review?.seller_note ? "Edit Reply" : "Reply"}</Heading>
         </RouteDrawer.Title>
         <RouteDrawer.Description>
-          {review.seller_note
+          {review?.seller_note
             ? "Edit your reply to customer review."
             : "Reply to customer review."}
         </RouteDrawer.Description>
@@ -92,7 +92,7 @@ export const ReviewReplyForm = () => {
         </RouteDrawer.Body>
       </RouteDrawer.Form>
       <RouteDrawer.Footer>
-        {review.seller_note && (
+        {review?.seller_note && (
           <Button
             className="px-6"
             variant="secondary"
@@ -108,7 +108,7 @@ export const ReviewReplyForm = () => {
           className="px-6"
           isLoading={isPending}
         >
-          {review.seller_note ? "Save" : "Reply"}
+          {review?.seller_note ? "Save" : "Reply"}
         </Button>
       </RouteDrawer.Footer>
     </RouteDrawer>

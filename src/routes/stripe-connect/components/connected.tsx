@@ -20,7 +20,10 @@ export const Connected = ({
           return_url: hostname,
         },
       })
-      window.location.replace(payout_account.onboarding.data.url)
+      const url = payout_account.onboarding?.data?.url
+      if (url) {
+        window.location.replace(url)
+      }
     } catch {
       // toast.error('Connection error!');
       window.location.reload()

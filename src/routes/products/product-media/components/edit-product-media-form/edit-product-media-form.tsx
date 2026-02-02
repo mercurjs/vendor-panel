@@ -51,6 +51,7 @@ type ProductMediaViewProps = {
 type Media = z.infer<typeof MediaSchema>
 
 export const EditProductMediaForm = ({ product }: ProductMediaViewProps) => {
+  // Use `field_id` for selection since newly added media doesn't have a backend `id` yet.
   const [selection, setSelection] = useState<Record<string, true>>({})
   const { t } = useTranslation()
   const { handleSuccess } = useRouteModal()
@@ -156,13 +157,13 @@ export const EditProductMediaForm = ({ product }: ProductMediaViewProps) => {
   })
 
   const handleCheckedChange = useCallback(
-    (id: string) => {
+    (fieldId: string) => {
       return (val: boolean) => {
         if (!val) {
-          const { [id]: _, ...rest } = selection
+          const { [fieldId]: _, ...rest } = selection
           setSelection(rest)
         } else {
-          setSelection((prev) => ({ ...prev, [id]: true }))
+          setSelection((prev) => ({ ...prev, [fieldId]: true }))
         }
       }
     },
@@ -171,7 +172,7 @@ export const EditProductMediaForm = ({ product }: ProductMediaViewProps) => {
 
   const handleDelete = () => {
     const ids = Object.keys(selection)
-    const indices = ids.map((id) => fields.findIndex((m) => m.id === id))
+    const indices = ids.map((fieldId) => fields.findIndex((m) => m.field_id === fieldId))
 
     remove(indices)
     setSelection({})
@@ -193,7 +194,7 @@ export const EditProductMediaForm = ({ product }: ProductMediaViewProps) => {
       })
     }
 
-    const index = fields.findIndex((m) => m.id === ids[0])
+    const index = fields.findIndex((m) => m.field_id === ids[0])
 
     update(index, {
       ...fields[index],
@@ -237,8 +238,8 @@ export const EditProductMediaForm = ({ product }: ProductMediaViewProps) => {
                     {fields.map((m) => {
                       return (
                         <MediaGridItem
-                          onCheckedChange={handleCheckedChange(m.id!)}
-                          checked={!!selection[m.id!]}
+                          onCheckedChange={handleCheckedChange(m.field_id)}
+                          checked={!!selection[m.field_id]}
                           key={m.field_id}
                           media={m}
                         />
@@ -251,7 +252,7 @@ export const EditProductMediaForm = ({ product }: ProductMediaViewProps) => {
                         media={fields.find((m) => m.field_id === activeId)!}
                         checked={
                           !!selection[
-                          fields.find((m) => m.field_id === activeId)!.id!
+                          fields.find((m) => m.field_id === activeId)!.field_id
                           ]
                         }
                       />

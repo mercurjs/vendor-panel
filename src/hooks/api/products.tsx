@@ -525,7 +525,10 @@ export const useUpdateProduct = (
         queryKey: productsQueryKeys.lists(),
       })
       await queryClient.invalidateQueries({
+        // Refetch even if the product query is currently inactive (e.g. when editing
+        // media in a modal route and navigating back to product details).
         queryKey: productsQueryKeys.detail(id),
+        refetchType: "all",
       })
       await queryClient.invalidateQueries({
         queryKey: productAttributesQueryKey(id),

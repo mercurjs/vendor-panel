@@ -1,6 +1,9 @@
 import { getLinkedFields } from '../../../extensions';
 
 const BASE_PRODUCT_DETAIL_FIELDS = [
+  // Media
+  "*images",
+  "thumbnail",
   '*variants.inventory_items',
   '*variants.images',
   '*categories',

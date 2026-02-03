@@ -521,15 +521,87 @@ export const useUpdateProduct = (
       })
     },
     onSuccess: async (data, variables, context) => {
+      const hasOwn = (obj: object, key: string) =>
+        Object.prototype.hasOwnProperty.call(obj, key)
+
+      // Media updates are special: the product detail page uses a loader-backed query
+      // that doesn't necessarily include `images`/`thumbnail` in its `fields` selection.
+      // A refetch can therefore temporarily "drop" media. Instead, we patch cached product
+      // media from the mutation variables to keep the UI in sync.
+      const isMediaUpdate =
+        hasOwn(variables as object, "images") || hasOwn(variables as object, "thumbnail")
+
+      if (isMediaUpdate) {
+        queryClient.setQueriesData(
+          {
+            predicate: (q) => {
+              const key = q.queryKey as any[]
+              return (
+                Array.isArray(key) &&
+                key[0] === PRODUCTS_QUERY_KEY &&
+                key[1] === "detail" &&
+                key[2] === id
+              )
+            },
+          },
+          (old: any) => {
+            if (!old?.product) {
+              return old
+            }
+
+            const prevProduct = old.product
+
+            const nextImages = hasOwn(variables as object, "images")
+              ? (Array.isArray((variables as any).images)
+                  ? (variables as any).images
+                      .filter((img: any) => Boolean(img?.url))
+                      .map((img: any, idx: number) => {
+                        const url = img.url as string
+                        const existing = prevProduct.images?.find((p: any) => p.url === url)
+
+                        // Ensure we always have a stable `id` for rendering/selection.
+                        const fallbackId =
+                          img.id ?? `temp_${idx}_${Math.random().toString(36).slice(2, 8)}`
+
+                        return {
+                          ...(existing ?? {}),
+                          id: existing?.id ?? fallbackId,
+                          url,
+                        }
+                      })
+                  : prevProduct.images) ?? prevProduct.images
+              : prevProduct.images
+
+            const nextThumbnail = hasOwn(variables as object, "thumbnail")
+              ? ((variables as any).thumbnail ?? "")
+              : prevProduct.thumbnail
+
+            const mergedProduct = {
+              ...prevProduct,
+              images: nextImages,
+              thumbnail: nextThumbnail,
+            }
+
+            return {
+              ...old,
+              // Keep formatting consistent with `useProduct` queryFn
+              product: productsImagesFormatter(mergedProduct as any) ?? mergedProduct,
+            }
+          }
+        )
+      }
+
       await queryClient.invalidateQueries({
         queryKey: productsQueryKeys.lists(),
       })
-      await queryClient.invalidateQueries({
-        // Refetch even if the product query is currently inactive (e.g. when editing
-        // media in a modal route and navigating back to product details).
-        queryKey: productsQueryKeys.detail(id),
-        refetchType: "all",
-      })
+
+      // For media updates we patch cache above and avoid a refetch that could
+      // momentarily remove media depending on `fields` selection.
+      if (!isMediaUpdate) {
+        await queryClient.invalidateQueries({
+          queryKey: productsQueryKeys.detail(id),
+        })
+      }
       await queryClient.invalidateQueries({
         queryKey: productAttributesQueryKey(id),
       })

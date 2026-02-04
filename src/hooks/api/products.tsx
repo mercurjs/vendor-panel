@@ -1,22 +1,16 @@
-import { FetchError } from "@medusajs/js-sdk"
-import { HttpTypes } from "@medusajs/types"
-import {
-  QueryKey,
-  useMutation,
-  UseMutationOptions,
-  useQuery,
-  UseQueryOptions,
-} from "@tanstack/react-query"
-import { ProductAttributesResponse } from "../../types/products"
-import { fetchQuery, importProductsQuery, sdk } from "../../lib/client"
-import { queryClient } from "../../lib/query-client"
-import { queryKeysFactory } from "../../lib/query-key-factory"
-import { inventoryItemsQueryKeys } from "./inventory.tsx"
-import productsImagesFormatter from "../../utils/products-images-formatter"
-import {
-  ExtendedAdminProductResponse,
-  ExtendedAdminProductListResponse,
-} from "../../types/products"
+import { FetchError } from '@medusajs/js-sdk';
+import { HttpTypes } from '@medusajs/types';
+import { QueryKey, useMutation, UseMutationOptions, useQuery, UseQueryOptions } from '@tanstack/react-query';
+
+
+
+import { fetchQuery, importProductsQuery, sdk } from '../../lib/client';
+import { queryClient } from '../../lib/query-client';
+import { queryKeysFactory } from '../../lib/query-key-factory';
+import { ExtendedAdminProductListResponse, ExtendedAdminProductResponse, ExtendedAdminProductVariant, ProductAttributesResponse } from '../../types/products';
+import productsImagesFormatter from '../../utils/products-images-formatter';
+import { inventoryItemsQueryKeys } from './inventory.tsx';
+
 
 const PRODUCTS_QUERY_KEY = "products" as const
 export const productsQueryKeys = queryKeysFactory(PRODUCTS_QUERY_KEY)
@@ -148,21 +142,33 @@ export const useProductVariant = (
   return { ...data, ...rest }
 }
 
+export type ProductVariantsListResponse = {
+  variants: ExtendedAdminProductVariant[]
+  count: number
+  offset: number
+  limit: number
+}
+
 export const useProductVariants = (
   productId: string,
-  query?: HttpTypes.AdminProductVariantParams,
+  query?: Record<string, string | number | boolean | string[] | object | undefined>,
   options?: Omit<
     UseQueryOptions<
-      HttpTypes.AdminProductVariantListResponse,
+      ProductVariantsListResponse,
       FetchError,
-      HttpTypes.AdminProductVariantListResponse,
+      ProductVariantsListResponse,
       QueryKey
     >,
     "queryFn" | "queryKey"
   >
 ) => {
   const { data, ...rest } = useQuery({
-    queryFn: () => sdk.admin.product.listVariants(productId, query),
+    queryFn: async () => {
+      return await fetchQuery(`/vendor/products/${productId}/variants`, {
+        method: 'GET',
+        query: query as Record<string, string | number | object>
+      });
+    },
     queryKey: variantsQueryKeys.list({
       productId,
       ...query,

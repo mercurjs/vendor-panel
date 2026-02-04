@@ -184,6 +184,7 @@ export const DataTableRoot = <TData,>({
                                 showStickyBorder &&
                                 isStickyHeader &&
                                 !isSpecialHeader,
+                              "text-right pr-6": isActionHeader,
                             })}
                           >
                             {flexRender(
@@ -227,6 +228,7 @@ export const DataTableRoot = <TData,>({
                     {cells.map((cell, index) => {
                       const visibleCells = row.getVisibleCells()
                       const isSelectCell = cell.column.id === "select"
+                      const isActionsCell = cell.column.id === "actions"
 
                       const firstCell = visibleCells.findIndex(
                         (h) => h.column.id !== "select"
@@ -256,7 +258,7 @@ export const DataTableRoot = <TData,>({
                       )
 
                       const isTabableLink = isFirstCell && !!to
-                      const shouldRenderAsLink = !!to && !isSelectCell
+                      const shouldRenderAsLink = !!to && !isSelectCell && !isActionsCell
 
                       return (
                         <Table.Cell
@@ -272,6 +274,7 @@ export const DataTableRoot = <TData,>({
                               showStickyBorder && isStickyCell && !isSelectCell,
                             "!bg-ui-bg-disabled !hover:bg-ui-bg-disabled":
                               isRowDisabled,
+                            "pr-6": isActionsCell,
                           })}
                           style={{
                             paddingLeft: depthOffset
@@ -298,7 +301,13 @@ export const DataTableRoot = <TData,>({
                               </div>
                             </Link>
                           ) : (
-                            Inner
+                            isActionsCell ? (
+                              <div className="flex w-full justify-end">
+                                {Inner}
+                              </div>
+                            ) : (
+                              Inner
+                            )
                           )}
                         </Table.Cell>
                       )

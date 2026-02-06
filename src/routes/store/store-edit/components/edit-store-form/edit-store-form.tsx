@@ -19,6 +19,11 @@ import { useCallback } from "react"
 import { uploadFilesQuery } from "../../../../../lib/client"
 import { HttpTypes } from "@medusajs/types"
 
+interface AdminFileResponse {
+  files: HttpTypes.AdminFile[]
+}
+
+
 export const EditStoreSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
@@ -111,8 +116,8 @@ export const EditStoreForm = ({ seller }: { seller: StoreVendor }) => {
       if (values.media?.length) {
         const fileReqs = []
         fileReqs.push(
-          uploadFilesQuery(values.media).then((r: any) =>
-            r.files.map((f: any) => ({
+          uploadFilesQuery(values.media).then((r: AdminFileResponse) =>
+            r.files.map((f: HttpTypes.AdminFile) => ({
               ...f,
               isThumbnail: false,
             }))

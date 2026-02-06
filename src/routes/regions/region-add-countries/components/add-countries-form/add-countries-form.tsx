@@ -66,7 +66,7 @@ export const AddCountriesForm = ({ region }: AddCountriesFormProps) => {
     countries: staticCountries.map((c, i) => ({
       display_name: c.display_name,
       name: c.name,
-      id: i as any,
+      id: i,
       iso_2: c.iso_2,
       iso_3: c.iso_3,
       num_code: c.num_code,

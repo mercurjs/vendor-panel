@@ -1,10 +1,11 @@
 import { createColumnHelper } from "@tanstack/react-table"
 import { DateCell } from "../../../../components/table/table-cells/common/date-cell"
 import { StatusCell } from "../../../../components/table/table-cells/common/status-cell"
+import { OrderReturnRequest } from "../../../../types/request"
 
-const columnHelper = createColumnHelper<any>()
+const columnHelper = createColumnHelper<OrderReturnRequest>()
 
-const getStatusColor: any = (status: string) => {
+const getStatusColor = (status: string) => {
   switch (status) {
     case "pending":
       return "orange"

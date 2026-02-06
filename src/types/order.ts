@@ -1,4 +1,4 @@
-import { AdminOrderLineItem, AdminRegion, HttpTypes } from "@medusajs/types"
+import { AdminOrderLineItem, AdminReturn, HttpTypes } from "@medusajs/types"
 
 export type OrderPaymentStatus =
   | "pending"
@@ -43,7 +43,7 @@ export interface ExtendedAdminOrderResponse {
 
 export type ExtendedAdminOrder = Omit<HttpTypes.AdminOrder, "items" | "fulfillments"> & {
   canceled_at?: string | null
-  returns?: any[]
+  returns?: AdminReturn[]
   discount_subtotal: number
   items: ExtendedAdminOrderLineItemWithInventory[]
   fulfillments?: ExtendedAdminOrderFulfillment[]

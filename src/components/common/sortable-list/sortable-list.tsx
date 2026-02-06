@@ -11,6 +11,7 @@ import {
   useSensor,
   useSensors,
   type DropAnimation,
+  type DraggableAttributes,
   type UniqueIdentifier,
 } from "@dnd-kit/core"
 import {
@@ -141,7 +142,7 @@ type SortableItemProps<TItem extends SortableBaseItem> = PropsWithChildren<{
 }>
 
 type SortableItemContextValue = {
-  attributes: Record<string, any>
+  attributes: DraggableAttributes
   listeners: DraggableSyntheticListeners
   ref: (node: HTMLElement | null) => void
   isDragging: boolean

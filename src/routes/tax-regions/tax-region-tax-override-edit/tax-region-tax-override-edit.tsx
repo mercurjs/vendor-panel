@@ -95,8 +95,8 @@ const useDefaultRulesValues = (
       ids: idsByReferenceType[TaxRateRuleReferenceType.PRODUCT_TAG],
       hook: useProductTags,
       key: TaxRateRuleReferenceType.PRODUCT_TAG,
-      getResult: (result: any) =>
-        result.tags.map((tag: any) => ({
+      getResult: (result: HttpTypes.AdminProductTagListResponse) =>
+        result.product_tags.map((tag: HttpTypes.AdminProductTag) => ({
           label: tag.value,
           value: tag.id,
         })),

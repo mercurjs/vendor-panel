@@ -82,11 +82,13 @@ type MediaField = RequestCollectionMediaSchemaType & {
 function MediaItem({
   field,
   onDelete,
+  onMakeThumbnail,
   onRemoveThumbnail,
   onMakeBanner,
 }: {
   field: MediaField
   onDelete: () => void
+  onMakeThumbnail: () => void
   onRemoveThumbnail: () => void
   onMakeBanner: () => void
 }) {
@@ -159,6 +161,11 @@ function MediaItem({
             {
               actions: [
                 {
+                  label: t("collections.requestCollection.makeThumbnail"),
+                  icon: <ThumbnailBadge />,
+                  onClick: onMakeThumbnail,
+                },
+                {
                   label: t("collections.requestCollection.removeThumbnail"),
                   icon: <StackPerspective />,
                   onClick: onRemoveThumbnail,
@@ -228,23 +235,31 @@ export const RequestCollectionDetailsForm = ({
   const onMediaUploaded = useCallback(
     (files: FileType[]) => {
       form.clearErrors("media")
-      files.forEach((f) =>
+      const currentLength = fields.length
+      files.forEach((f, index) =>
         append({
           url: f.url,
           file: f.file,
-          isThumbnail: false,
+          isThumbnail: currentLength + index === 0,
           isBanner: false,
           field_id: f.id,
         } as RequestCollectionMediaSchemaType & { field_id: string })
       )
     },
-    [form, append]
+    [form, append, fields.length]
   )
 
   const getRemoveThumbnail = (index: number) => () => {
     const next = fields.map((f, i) =>
       i === index ? { ...f, isThumbnail: false } : f
     )
+    form.setValue("media", next, { shouldDirty: true, shouldTouch: true })
+  }
+  const getMakeThumbnail = (index: number) => () => {
+    const next = fields.map((f, i) => ({
+      ...f,
+      isThumbnail: i === index,
+    }))
     form.setValue("media", next, { shouldDirty: true, shouldTouch: true })
   }
   const getMakeBanner = (index: number) => () => {
@@ -341,6 +356,7 @@ export const RequestCollectionDetailsForm = ({
                           <MediaItem
                             field={field}
                             onDelete={() => {}}
+                            onMakeThumbnail={() => {}}
                             onRemoveThumbnail={() => {}}
                             onMakeBanner={() => {}}
                           />
@@ -356,6 +372,7 @@ export const RequestCollectionDetailsForm = ({
                             key={(field as MediaField).field_id}
                             field={field as MediaField}
                             onDelete={() => remove(index)}
+                            onMakeThumbnail={getMakeThumbnail(index)}
                             onRemoveThumbnail={getRemoveThumbnail(index)}
                             onMakeBanner={getMakeBanner(index)}
                           />

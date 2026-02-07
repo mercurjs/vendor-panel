@@ -748,11 +748,19 @@
       "iconLabel": "Icon (Optional)",
       "iconHint": "Drag and drop file here or click to upload.",
       "iconTip": "Tip: This icon will appear near the collection label on the storefront.",
+      "makeThumbnail": "Make thumbnail",
       "removeThumbnail": "Remove thumbnail",
       "makeBanner": "Make banner",
       "newBadge": "New!"
     },
     "editCollection": "Edit Collection",
+    "media": {
+      "label": "Media",
+      "banner": "Banner"
+    },
+    "icon": {
+      "label": "Icon"
+    },
     "handleTooltip": "The handle is used to reference the collection in your storefront. If not specified, the handle will be generated from the collection title.",
     "deleteWarning": "You are about to delete the collection {{title}}. This action cannot be undone.",
     "removeSingleProductWarning": "You are about to remove the product {{title}} from the collection. This action cannot be undone.",

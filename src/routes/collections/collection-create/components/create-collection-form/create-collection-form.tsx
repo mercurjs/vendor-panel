@@ -15,10 +15,13 @@ import {
   useRouteModal,
 } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
+import { useCreateCollection } from "../../../../../hooks/api/collections"
+import { uploadFilesQuery } from "../../../../../lib/client"
 import {
   REQUEST_COLLECTION_FORM_DEFAULTS,
   RequestCollectionSchema,
 } from "../../constants"
+import type { RequestCollectionMediaSchemaType } from "../../constants"
 import { RequestCollectionDetailsForm } from "../request-collection-details-form"
 import { RequestCollectionOrganizeRankingForm } from "../request-collection-organize-ranking-form"
 
@@ -29,6 +32,51 @@ enum Tab {
 
 type TabState = Record<Tab, ProgressStatus>
 
+function buildCollectionDetails(
+  media: RequestCollectionMediaSchemaType[] | undefined,
+  icon: { url: string; file?: File } | null | undefined,
+  uploadedUrls: string[]
+): {
+  thumbnail?: string
+  icon?: string
+  banner?: string
+  media?: Array<{ url: string }>
+} {
+  const details: {
+    thumbnail?: string
+    icon?: string
+    banner?: string
+    media?: Array<{ url: string }>
+  } = {}
+  let urlIndex = 0
+  const galleryUrls: string[] = []
+
+  const mediaItems = media ?? []
+
+  for (const item of mediaItems) {
+    if (item.file && uploadedUrls[urlIndex]) {
+      const url = uploadedUrls[urlIndex]
+      urlIndex++
+      if (item.isThumbnail && !details.thumbnail) details.thumbnail = url
+      if (item.isBanner && !details.banner) details.banner = url
+      if (!details.thumbnail) details.thumbnail = url
+      if (!item.isThumbnail && !item.isBanner) {
+        galleryUrls.push(url)
+      }
+    }
+  }
+
+  if (icon?.file && uploadedUrls[urlIndex]) {
+    details.icon = uploadedUrls[urlIndex]
+  }
+
+  if (galleryUrls.length > 0) {
+    details.media = galleryUrls.map((url) => ({ url }))
+  }
+
+  return details
+}
+
 export const CreateCollectionForm = () => {
   const [tab, setTab] = useState<Tab>(Tab.DETAILS)
   const [tabState, setTabState] = useState<TabState>({
@@ -38,6 +86,7 @@ export const CreateCollectionForm = () => {
 
   const { t } = useTranslation()
   const { handleSuccess } = useRouteModal()
+  const { mutateAsync, isPending } = useCreateCollection()
 
   const form = useForm<zod.infer<typeof RequestCollectionSchema>>({
     defaultValues: REQUEST_COLLECTION_FORM_DEFAULTS as zod.infer<
@@ -46,11 +95,44 @@ export const CreateCollectionForm = () => {
     resolver: zodResolver(RequestCollectionSchema),
   })
 
-  const handleSubmit = form.handleSubmit(async () => {
-    // Mock submit: no API call
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    toast.success(t("collections.requestSuccess"))
-    handleSuccess()
+  const handleSubmit = form.handleSubmit(async (data) => {
+    const media = data.media ?? []
+    const icon = data.icon
+    const filesToUpload: { file: File }[] = []
+
+    media.forEach((m) => {
+      if (m.file) filesToUpload.push({ file: m.file })
+    })
+    if (icon?.file) filesToUpload.push({ file: icon.file })
+
+    let uploadedUrls: string[] = []
+    if (filesToUpload.length > 0) {
+      const result = await uploadFilesQuery(filesToUpload)
+      if (!result?.files?.length) {
+        toast.error(t("products.media.failedToUpload"))
+        return
+      }
+      uploadedUrls = result.files.map((f: { url: string }) => f.url)
+    }
+
+    const details = buildCollectionDetails(media, icon, uploadedUrls)
+
+    await mutateAsync(
+      {
+        title: data.title,
+        handle: data.handle ?? "",
+        ...(Object.keys(details).length > 0 ? { details } : {}),
+      },
+      {
+        onSuccess: () => {
+          toast.success(t("collections.requestSuccess"))
+          handleSuccess()
+        },
+        onError: (err) => {
+          toast.error(err.message ?? "Something went wrong")
+        },
+      }
+    )
   })
 
   const onNext = async (currentTab: Tab) => {
@@ -132,6 +214,7 @@ export const CreateCollectionForm = () => {
                 type="submit"
                 variant="primary"
                 size="small"
+                isLoading={isPending}
               >
                 {t("actions.save")}
               </Button>

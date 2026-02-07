@@ -2769,6 +2769,23 @@
         "handleTooltip": {
           "type": "string"
         },
+        "media": {
+          "type": "object",
+          "properties": {
+            "label": { "type": "string" },
+            "banner": { "type": "string" }
+          },
+          "required": ["label", "banner"],
+          "additionalProperties": false
+        },
+        "icon": {
+          "type": "object",
+          "properties": {
+            "label": { "type": "string" }
+          },
+          "required": ["label"],
+          "additionalProperties": false
+        },
         "requestSuccess": {
           "type": "string"
         },
@@ -2789,11 +2806,12 @@
             "iconLabel": { "type": "string" },
             "iconHint": { "type": "string" },
             "iconTip": { "type": "string" },
+            "makeThumbnail": { "type": "string" },
             "removeThumbnail": { "type": "string" },
             "makeBanner": { "type": "string" },
             "newBadge": { "type": "string" }
           },
-          "required": ["tabs", "mediaLabel", "mediaHint", "iconLabel", "iconHint", "iconTip", "removeThumbnail", "makeBanner", "newBadge"],
+          "required": ["tabs", "mediaLabel", "mediaHint", "iconLabel", "iconHint", "iconTip", "makeThumbnail", "removeThumbnail", "makeBanner", "newBadge"],
           "additionalProperties": false
         },
         "deleteWarning": {
@@ -2861,6 +2879,8 @@
         "requestSuccess",
         "editCollection",
         "handleTooltip",
+        "media",
+        "icon",
         "requestCollection",
         "deleteWarning",
         "removeSingleProductWarning",

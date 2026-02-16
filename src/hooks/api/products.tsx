@@ -171,6 +171,37 @@ export const useRemoveProductAttribute = (
   })
 }
 
+type UpdateProductAttributePayload = {
+  values?: string[]
+  use_for_variations?: boolean
+  name?: string
+  ui_component?: string
+}
+
+export const useUpdateProductAttribute = (
+  productId: string,
+  attributeId: string,
+  options?: UseMutationOptions<any, FetchError, UpdateProductAttributePayload>
+) => {
+  return useMutation({
+    mutationFn: (payload: UpdateProductAttributePayload) =>
+      fetchQuery(`/vendor/products/${productId}/attributes/${attributeId}`, {
+        method: "POST",
+        body: payload,
+      }),
+    onSuccess: (data: any, variables: any, context: any) => {
+      queryClient.invalidateQueries({
+        queryKey: productsQueryKeys.detail(productId),
+      })
+      queryClient.invalidateQueries({
+        queryKey: productAttributesQueryKey(productId),
+      })
+      options?.onSuccess?.(data, variables, context)
+    },
+    ...options,
+  })
+}
+
 export const useProductVariant = (
   productId: string,
   variantId: string,

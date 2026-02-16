@@ -1,5 +1,5 @@
-import { PencilSquare, Plus, Trash } from '@medusajs/icons';
-import { Badge, Container, Heading, toast, usePrompt } from '@medusajs/ui';
+import { AdjustmentsDone, PencilSquare, Plus, SquareTwoStack, Trash } from '@medusajs/icons';
+import { Badge, Container, Heading, Text, toast, usePrompt } from '@medusajs/ui';
 import { useTranslation } from 'react-i18next';
 
 import { ActionMenu } from '../../../../../components/common/action-menu';
@@ -19,17 +19,15 @@ type ProductAttributeSectionProps = {
 const OptionRowActions = ({
   productId,
   option,
-  comingSoon,
 }: {
   productId: string;
   option: ExtendedAdminProductOption;
-  comingSoon: string;
 }) => {
   const { t } = useTranslation();
   const prompt = usePrompt();
   const { mutateAsync, isPending } = useDeleteProductOption(productId, option.id);
 
-  const isVendor = option.metadata?.author === 'vendor';
+  const canDelete = option.metadata?.author !== 'admin';
 
   const handleDelete = async () => {
     const res = await prompt({
@@ -60,12 +58,14 @@ const OptionRowActions = ({
             {
               icon: <PencilSquare />,
               label: t('actions.edit'),
-              disabled: true,
-              disabledTooltip: comingSoon,
-              onClick: () => undefined
+              to: `options/${option.id}/edit`,
             },
-            ...(isVendor
-              ? [
+          ]
+        },
+        ...(canDelete
+          ? [
+              {
+                actions: [
                   {
                     icon: <Trash />,
                     label: t('actions.delete'),
@@ -73,9 +73,9 @@ const OptionRowActions = ({
                     onClick: handleDelete
                   }
                 ]
-              : [])
-          ]
-        }
+              }
+            ]
+          : [])
       ]}
     />
   );
@@ -84,11 +84,9 @@ const OptionRowActions = ({
 const InformationalAttributeRowActions = ({
   productId,
   attribute,
-  comingSoon,
 }: {
   productId: string;
   attribute: ProductInformationalAttribute;
-  comingSoon: string;
 }) => {
   const { t } = useTranslation();
   const prompt = usePrompt();
@@ -102,10 +100,10 @@ const InformationalAttributeRowActions = ({
   const handleDelete = async () => {
     const res = await prompt({
       title: t('general.areYouSure'),
-      description: (t(
+      description: t(
         'products.attributes.deleteWarning',
         'You are about to remove this attribute from the product. This action cannot be undone.'
-      ) as string),
+      ) as string,
       confirmText: t('actions.delete'),
       cancelText: t('actions.cancel')
     });
@@ -129,12 +127,14 @@ const InformationalAttributeRowActions = ({
             {
               icon: <PencilSquare />,
               label: t('actions.edit'),
-              disabled: true,
-              disabledTooltip: comingSoon,
-              onClick: () => undefined
+              to: `informational-attributes/${attribute.attribute_id}/edit`,
             },
-            ...(isVendorSource
-              ? [
+          ]
+        },
+        ...(isVendorSource
+          ? [
+              {
+                actions: [
                   {
                     icon: <Trash />,
                     label: t('actions.delete'),
@@ -142,9 +142,9 @@ const InformationalAttributeRowActions = ({
                     onClick: handleDelete
                   }
                 ]
-              : [])
-          ]
-        }
+              }
+            ]
+          : [])
       ]}
     />
   );
@@ -156,7 +156,6 @@ export const ProductAdditionalAttributesSection = ({ product }: ProductAttribute
   const informationalAttributes =
     product.informational_attributes?.filter(Boolean) ?? [];
   const options = product.options?.filter(Boolean) ?? [];
-  const comingSoon = t('general.comingSoon', 'Coming soon') as string;
 
   const getInformationalAttributeDisplayValue = (
     v: ProductInformationalAttributeValue
@@ -164,23 +163,13 @@ export const ProductAdditionalAttributesSection = ({ product }: ProductAttribute
     return v.value;
   };
 
-  const getInformationalAttributeValueKey = (
-    attributeId: string,
-    v: ProductInformationalAttributeValue,
-    index: number
-  ) => {
-    const display = getInformationalAttributeDisplayValue(v);
-    const stable = v.attribute_value_id ?? `${v.source}:${display}`;
-    return `${attributeId}-${stable}-${index}`;
-  };
-
   if (!informationalAttributes.length && !options.length) {
     return null;
   }
 
   return (
-    <Container className="divide-y p-0">
-      <div className="flex items-center justify-between px-6 py-4">
+    <Container className="p-0">
+      <div className="flex items-center justify-between border-b px-6 py-4">
         <Heading>{t('products.attributes')}</Heading>
         <ActionMenu
           groups={[
@@ -196,74 +185,94 @@ export const ProductAdditionalAttributesSection = ({ product }: ProductAttribute
           ]}
         />
       </div>
-      {informationalAttributes.length > 0 && (
-        <>
-          <div className="flex items-center justify-between px-6 py-4">
-            <Heading>Informational attributes</Heading>
-          </div>
-          {informationalAttributes.map(attribute => (
-            <SectionRow
-              key={`${attribute.attribute_id}-${attribute.attribute_source}`}
-              title={attribute.name}
-              actions={
-                <InformationalAttributeRowActions
-                  productId={product.id}
-                  attribute={attribute}
-                  comingSoon={comingSoon}
-                />
-              }
-              value={
-                attribute.values?.length ? (
-                  attribute.values.map((value, index) => (
-                    <Badge
-                      key={getInformationalAttributeValueKey(
-                        attribute.attribute_id,
-                        value,
-                        index
-                      )}
-                      size="2xsmall"
-                      className="flex min-w-[20px] items-center justify-center"
-                    >
-                      {getInformationalAttributeDisplayValue(value)}
-                    </Badge>
-                  ))
-                ) : (
-                  '-'
-                )
-              }
-              tooltip={attribute.description ?? undefined}
-            />
-          ))}
-        </>
-      )}
+
       {options.length > 0 && (
-        <>
-          <div className="flex items-center justify-between px-6 py-4">
-            <Heading>{t('products.options.header')}</Heading>
+        <div className="px-6 py-4">
+          <div className="flex items-center gap-x-3 pb-4">
+            <div className="bg-ui-bg-base shadow-borders-base flex size-7 items-center justify-center rounded-md">
+              <div className="bg-ui-bg-component flex size-6 items-center justify-center rounded-[4px]">
+                <SquareTwoStack className="text-ui-fg-subtle" />
+              </div>
+            </div>
+            <div>
+              <Text size="small" weight="plus" leading="compact">
+                {t('products.options.variations', 'Variations')}
+              </Text>
+              <Text size="xsmall" leading="compact" className="text-ui-fg-subtle">
+                {t('products.options.variationsDescription', 'Attributes used for variations')}
+              </Text>
+            </div>
           </div>
-          {options.map(option => (
-            <SectionRow
-              key={option.id}
-              title={option.title}
-              actions={
-                <OptionRowActions
-                  productId={product.id}
-                  option={option}
-                  comingSoon={comingSoon}
-                />
-              }
-              value={option.values?.map((value, index) => (
-                <Badge
-                  key={`${option.id}-${value.value}-${index}`}
-                  size="2xsmall"
-                  className="flex min-w-[20px] items-center justify-center"
-                >
-                  {value.value}
-                </Badge>
-              ))}
-            />
-          ))}
-        </>
+          <div className="overflow-hidden divide-y rounded-lg border">
+            {options.map(option => (
+              <SectionRow
+                key={option.id}
+                title={option.title}
+                actions={
+                  <OptionRowActions
+                    productId={product.id}
+                    option={option}
+                  />
+                }
+                value={option.values?.map((value, index) => (
+                  <Badge
+                    key={`${option.id}-${value.value}-${index}`}
+                    size="2xsmall"
+                    className="flex min-w-[20px] items-center justify-center"
+                  >
+                    {value.value}
+                  </Badge>
+                ))}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {options.length > 0 && informationalAttributes.length > 0 && (
+        <div className="border-t border-dashed border-ui-border-base" />
+      )}
+
+      {informationalAttributes.length > 0 && (
+        <div className="px-6 py-4">
+          <div className="flex items-center gap-x-3 pb-4">
+            <div className="bg-ui-bg-base shadow-borders-base flex size-7 items-center justify-center rounded-md">
+              <div className="bg-ui-bg-component flex size-6 items-center justify-center rounded-[4px]">
+                <AdjustmentsDone className="text-ui-fg-subtle" />
+              </div>
+            </div>
+            <div>
+              <Text size="small" weight="plus" leading="compact">
+                {t('products.informationalAttributes.header', 'Product Information')}
+              </Text>
+              <Text size="xsmall" leading="compact" className="text-ui-fg-subtle">
+                {t('products.informationalAttributes.description', 'Attributes used for informational purposes')}
+              </Text>
+            </div>
+          </div>
+          <div className="overflow-hidden divide-y rounded-lg border">
+            {informationalAttributes.map(attribute => (
+              <SectionRow
+                key={`${attribute.attribute_id}-${attribute.attribute_source}`}
+                title={attribute.name}
+                actions={
+                  <InformationalAttributeRowActions
+                    productId={product.id}
+                    attribute={attribute}
+                  />
+                }
+                value={
+                  attribute.values?.length
+                    ? attribute.values
+                        .map(v => getInformationalAttributeDisplayValue(v))
+                        .join(', ')
+                    : '-'
+                }
+                tooltip={attribute.description ?? undefined}
+              />
+            ))}
+          </div>
+        </div>
       )}
     </Container>
   );

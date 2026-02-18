@@ -68,7 +68,7 @@ export const EditReservationForm = ({
   const { mutateAsync } = useUpdateReservationItem(reservation.id)
 
   const handleSubmit = form.handleSubmit(async (values) => {
-    mutateAsync(values as any, {
+    mutateAsync(values, {
       onSuccess: () => {
         toast.success(t("inventory.reservation.updateSuccessToast"))
         handleSuccess()

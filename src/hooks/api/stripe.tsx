@@ -7,12 +7,17 @@ import { fetchQuery } from "../../lib/client"
 import { queryClient } from "../../lib/query-client"
 import { FetchError } from "@medusajs/js-sdk"
 import { queryKeysFactory } from "../../lib/query-key-factory"
+import {
+  VendorPayoutAccountResponse,
+  VendorCreatePayoutAccountRequest,
+  VendorCreateOnboardingRequest,
+} from "../../types/payout"
 
 const STRIPE_QUERY_KEY = "stripe" as const
 export const stripeQueryKeys = queryKeysFactory(STRIPE_QUERY_KEY)
 
 export const useStripeAccount = () => {
-  const { data, ...rest } = useQuery({
+  const { data, ...rest } = useQuery<VendorPayoutAccountResponse>({
     queryFn: () =>
       fetchQuery("/vendor/payout-account", {
         method: "GET",
@@ -24,7 +29,11 @@ export const useStripeAccount = () => {
 }
 
 export const useCreateStripeAccount = (
-  options?: UseMutationOptions<any, FetchError, any>
+  options?: UseMutationOptions<
+    VendorPayoutAccountResponse,
+    FetchError,
+    VendorCreatePayoutAccountRequest
+  >
 ) => {
   return useMutation({
     mutationFn: (payload) =>
@@ -44,7 +53,11 @@ export const useCreateStripeAccount = (
 }
 
 export const useCreateStripeOnboarding = (
-  options?: UseMutationOptions<any, FetchError, any>
+  options?: UseMutationOptions<
+    VendorPayoutAccountResponse,
+    FetchError,
+    VendorCreateOnboardingRequest
+  >
 ) => {
   return useMutation({
     mutationFn: (payload) =>

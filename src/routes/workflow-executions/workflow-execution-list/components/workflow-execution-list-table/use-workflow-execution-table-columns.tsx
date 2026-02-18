@@ -12,10 +12,9 @@ const columnHelper =
     HttpTypes.AdminWorkflowExecutionResponse["workflow_execution"]
   >()
 
-export const useWorkflowExecutionTableColumns = (): ColumnDef<
-  HttpTypes.AdminWorkflowExecutionResponse["workflow_execution"],
-  any
->[] => {
+type WorkflowExecution = HttpTypes.AdminWorkflowExecutionResponse["workflow_execution"]
+
+export const useWorkflowExecutionTableColumns = (): ColumnDef<WorkflowExecution>[] => {
   const { t } = useTranslation()
 
   return useMemo(
@@ -64,7 +63,7 @@ export const useWorkflowExecutionTableColumns = (): ColumnDef<
           })
         },
       }),
-    ],
+    ] as ColumnDef<WorkflowExecution>[],
     [t]
   )
 }

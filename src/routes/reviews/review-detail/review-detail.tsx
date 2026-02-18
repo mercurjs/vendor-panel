@@ -8,6 +8,7 @@ import { TwoColumnPageSkeleton } from "../../../components/common/skeleton"
 import { ReviewCustomerSection } from "./components/review-customer-section"
 import { ReviewProductSection } from "./components/review-product-section"
 import { useRequests } from "../../../hooks/api"
+import { Request } from "../../../types/request"
 
 export const ReviewDetail = () => {
   const initialData = useLoaderData() as Awaited<
@@ -24,7 +25,7 @@ export const ReviewDetail = () => {
   const { requests, isLoading: isRequestsLoading } = useRequests()
 
   const isRequested = requests?.some(
-    (request: any) =>
+    (request: Request) =>
       request.type === "review_remove" && request.data.review_id === id
   )
 

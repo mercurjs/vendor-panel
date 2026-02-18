@@ -7,6 +7,16 @@ import { Container } from '@medusajs/ui';
 import { clsx } from 'clsx';
 import { useTranslation } from 'react-i18next';
 
+interface PasswordError {
+  isValid: boolean;
+  hasError: boolean;
+  lower: boolean;
+  upper: boolean;
+  '12chars': boolean;
+  digit: boolean;
+  specialChar: boolean;
+}
+
 function validatePassword(password: string) {
   const errors = {
     tooShort: password.length < 12,
@@ -64,7 +74,7 @@ export const PasswordValidator = ({
   setError
 }: {
   password: string;
-  setError: (error: any) => void;
+  setError: (error: PasswordError) => void;
 }) => {
   const [newPasswordError, setNewPasswordError] = useState(rules);
   useEffect(() => {

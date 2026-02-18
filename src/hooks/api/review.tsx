@@ -1,5 +1,5 @@
 import { FetchError } from "@medusajs/js-sdk"
-import { PaginatedResponse } from "@medusajs/types"
+import { HttpTypes } from "@medusajs/types"
 import {
   QueryKey,
   useMutation,
@@ -10,15 +10,20 @@ import {
 import { queryKeysFactory } from "../../lib/query-key-factory"
 import { fetchQuery } from "../../lib/client"
 import { queryClient } from "../../lib/query-client"
+import {
+  ReviewResponse,
+  ReviewsListResponse,
+  VendorUpdateReviewRequest,
+} from "../../types/review"
 
 const REVIEWS_QUERY_KEY = "reviews" as const
 export const reviewsQueryKeys = queryKeysFactory(REVIEWS_QUERY_KEY)
 
 export const useReview = (
   id: string,
-  query?: { [key: string]: string | number },
+  query?: HttpTypes.SelectParams,
   options?: Omit<
-    UseQueryOptions<{ review: any }, FetchError, { review: any }, QueryKey>,
+    UseQueryOptions<ReviewResponse, FetchError, ReviewResponse, QueryKey>,
     "queryFn" | "queryKey"
   >
 ) => {
@@ -36,16 +41,12 @@ export const useReview = (
 }
 
 export const useReviews = (
-  query?: Record<string, any>,
+  query?: HttpTypes.SelectParams,
   options?: Omit<
     UseQueryOptions<
-      PaginatedResponse<{
-        reviews: any
-      }>,
+      HttpTypes.PaginatedResponse<ReviewsListResponse>,
       FetchError,
-      PaginatedResponse<{
-        reviews: any
-      }>,
+      HttpTypes.PaginatedResponse<ReviewsListResponse>,
       QueryKey
     >,
     "queryFn" | "queryKey"
@@ -67,7 +68,11 @@ export const useReviews = (
 
 export const useUpdateReview = (
   id: string,
-  options?: UseMutationOptions<any, FetchError, any>
+  options?: UseMutationOptions<
+    ReviewResponse,
+    FetchError,
+    VendorUpdateReviewRequest
+  >
 ) => {
   return useMutation({
     mutationFn: (payload) =>

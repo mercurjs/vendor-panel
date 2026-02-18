@@ -30,9 +30,9 @@ export const ReviewListTable = () => {
     }
   )
 
-  const filtered = reviews?.filter((review: any) => review) || []
+  const filtered = reviews?.filter((review) => review) || []
   const filteredReviews = sellerNote
-    ? filtered.filter((review: any) => !review.seller_note)
+    ? filtered.filter((review) => !review.seller_note)
     : filtered
 
   const count = filteredReviews.length

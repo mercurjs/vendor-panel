@@ -17,7 +17,7 @@ import { useForm, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import * as zod from "zod"
 
-import { PaymentProviderDTO } from "@medusajs/types"
+import { AdminRegion, PaymentProviderDTO } from "@medusajs/types"
 
 import { Form } from "../../../../../components/common/form"
 import { Combobox } from "../../../../../components/inputs/combobox"
@@ -123,7 +123,7 @@ export const CreateRegionForm = ({
       iso_3: c.iso_3,
       num_code: c.num_code,
       region_id: null,
-      region: {} as any,
+      region: {} as AdminRegion,
     })),
     ...searchParams,
   })

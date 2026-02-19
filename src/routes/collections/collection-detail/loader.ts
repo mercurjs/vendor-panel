@@ -9,6 +9,9 @@ const collectionDetailQuery = (id: string) => ({
   queryFn: async () =>
     fetchQuery(`/vendor/product-collections/${id}`, {
       method: "GET",
+      query: {
+        fields: "*products,*collection_detail,*collection_detail.media",
+      },
     }),
 })
 

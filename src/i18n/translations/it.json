@@ -710,6 +710,15 @@
   "categories": {
     "domain": "Categorie",
     "subtitle": "Organizza i prodotti in categorie e gestisci il ranking e la gerarchia di queste categorie.",
+    "searchPlaceholder": "Search by category name",
+    "list": {
+      "requestButton": "Request"
+    },
+    "empty": {
+      "title": "No categories yet",
+      "message": "Categories will appear here once they have been approved. Request a category to get started.",
+      "requestCta": "Request"
+    },
     "create": {
       "header": "Crea Categoria",
       "hint": "Crea una nuova categoria per organizzare i tuoi prodotti.",
@@ -769,6 +778,9 @@
       "new": {
         "label": "Nuovo"
       }
+    },
+    "request": {
+      "successToast": "Category was successfully requested. Once approved by the admin, they will appear on the storefront."
     }
   },
   "inventory": {

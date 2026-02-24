@@ -709,6 +709,15 @@
   "categories": {
     "domain": "Kategorien",
     "subtitle": "Organisieren Sie Produkte in Kategorien und verwalten Sie die Rangfolge und Hierarchie dieser Kategorien.",
+    "searchPlaceholder": "Nach Kategoriename suchen",
+    "list": {
+      "requestButton": "Anfragen"
+    },
+    "empty": {
+      "title": "Noch keine Kategorien",
+      "message": "Kategorien erscheinen hier nach der Freigabe. Fordern Sie eine Kategorie an, um zu starten.",
+      "requestCta": "Anfragen"
+    },
     "create": {
       "header": "Kategorie erstellen",
       "hint": "Erstellen Sie eine neue Kategorie, um Ihre Produkte zu organisieren.",
@@ -768,6 +777,9 @@
       "new": {
         "label": "Neu"
       }
+    },
+    "request": {
+      "successToast": "Category was successfully requested. Once approved by the admin, they will appear on the storefront."
     }
   },
   "inventory": {

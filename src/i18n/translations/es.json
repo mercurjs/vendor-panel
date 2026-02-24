@@ -709,6 +709,15 @@
   "categories": {
     "domain": "Categorías",
     "subtitle": "Organiza productos en categorías, y administra el ranking y jerarquía de esas categorías.",
+    "searchPlaceholder": "Buscar por nombre de categoría",
+    "list": {
+      "requestButton": "Solicitar"
+    },
+    "empty": {
+      "title": "Aún no hay categorías",
+      "message": "Las categorías aparecerán aquí una vez aprobadas. Solicita una categoría para comenzar.",
+      "requestCta": "Solicitar"
+    },
     "create": {
       "header": "Crear Categoría",
       "hint": "Crea una nueva categoría para organizar tus productos.",
@@ -768,6 +777,9 @@
       "new": {
         "label": "Nueva"
       }
+    },
+    "request": {
+      "successToast": "Category was successfully requested. Once approved by the admin, they will appear on the storefront."
     }
   },
   "inventory": {
@@ -2453,7 +2465,10 @@
         "placeholder": "wrong_size",
         "tooltip": "El valor debe ser un identificador único para la razón de devolución."
       },
-      "label": { "label": "Etiqueta", "placeholder": "Tamaño incorrecto" },
+      "label": {
+        "label": "Etiqueta",
+        "placeholder": "Tamaño incorrecto"
+      },
       "description": {
         "label": "Descripción",
         "placeholder": "El cliente recibió el tamaño incorrecto"

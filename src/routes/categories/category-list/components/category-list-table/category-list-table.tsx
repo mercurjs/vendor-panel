@@ -22,13 +22,15 @@ export const CategoryListTable = () => {
   const query = raw.q
     ? {
         include_ancestors_tree: true,
-        fields: "id,name,handle,is_active,is_internal,parent_category",
+        fields:
+          "id,name,handle,is_active,is_internal,parent_category,category_detail.media,category_detail.thumbnail_id",
         ...searchParams,
       }
     : {
         include_descendants_tree: true,
         parent_category_id: "null",
-        fields: "id,name,category_children,handle,is_internal,is_active",
+        fields:
+          "id,name,category_children,handle,is_internal,is_active,category_detail.media,category_detail.thumbnail_id",
         ...searchParams,
       }
 
@@ -64,12 +66,12 @@ export const CategoryListTable = () => {
         <div>
           <Heading>{t("categories.domain")}</Heading>
           <Text className="text-ui-fg-subtle" size="small">
-            Organize products into categories.
+            {t("categories.subtitle")}
           </Text>
         </div>
         <div className="flex items-center gap-x-2">
           <Button size="small" variant="secondary" asChild>
-            <Link to="create">Request Category</Link>
+            <Link to="create">{t("categories.list.requestButton")}</Link>
           </Button>
         </div>
       </div>
@@ -83,6 +85,12 @@ export const CategoryListTable = () => {
         queryObject={raw}
         search
         pagination
+        searchPlaceholder={t("categories.searchPlaceholder")}
+        noRecords={{
+          title: t("categories.empty.title"),
+          message: t("categories.empty.message"),
+          action: { to: "create", label: t("categories.empty.requestCta") },
+        }}
       />
     </Container>
   )

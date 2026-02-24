@@ -4,7 +4,9 @@ import { usePrompt } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 
 import { ActionMenu } from "../../../../../components/common/action-menu"
-import { useDeleteCollection } from "../../../../../hooks/api/collections"
+import {
+  useDeleteCollection,
+} from "../../../../../hooks/api/collections"
 
 export const CollectionRowActions = ({
   collection,

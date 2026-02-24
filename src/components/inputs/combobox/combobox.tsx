@@ -58,6 +58,7 @@ interface ComboboxProps<T extends Value = Value>
   onCreateOption?: (value: string) => void
   noResultsPlaceholder?: ReactNode
   allowClear?: boolean
+  onClear?: () => void
   forceHideInput?: boolean
 }
 
@@ -76,6 +77,7 @@ const ComboboxImpl = <T extends Value = string>(
     noResultsPlaceholder,
     allowClear,
     forceHideInput,
+    onClear,
     ...inputProps
   }: ComboboxProps<T>,
   ref: ForwardedRef<HTMLInputElement>
@@ -316,6 +318,10 @@ const ComboboxImpl = <T extends Value = string>(
             type="button"
             onClick={(e) => {
               e.preventDefault()
+              if(onClear) {
+                onClear?.()
+                return
+              }
               handleValueChange(undefined)
             }}
             className="bg-ui-bg-base hover:bg-ui-bg-base-hover txt-compact-small-plus text-ui-fg-subtle focus-within:border-ui-fg-interactive transition-fg absolute end-[28px] top-0.5 z-[1] flex h-[28px] items-center rounded-[4px] border px-1.5 py-[2px] outline-none"

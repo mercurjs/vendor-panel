@@ -112,7 +112,7 @@ export const ProductOrganizationForm = ({
     await mutateAsync(
       {
         type_id: data.type_id ? data.type_id : undefined,
-        collection_id: data.collection_id ? data.collection_id : undefined,
+        collection_id: data.collection_id,
         categories: data.category_ids ? [{ id: data.category_ids }] : [],
         tags: data.tag_ids?.map((t) => ({ id: t })) ?? [],
       },
@@ -176,6 +176,9 @@ export const ProductOrganizationForm = ({
                         options={collections.options}
                         onSearchValueChange={collections.onSearchValueChange}
                         searchValue={collections.searchValue}
+                        allowClear
+                        onClear={() => field.onChange(null)}
+
                       />
                     </Form.Control>
                     <Form.ErrorMessage />

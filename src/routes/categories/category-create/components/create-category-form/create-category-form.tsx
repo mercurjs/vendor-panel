@@ -63,16 +63,16 @@ export const CreateCategoryForm = ({
             name: name,
             handle,
             ...parsedData,
-            is_active: "active",
-            is_internal: true,
+            is_active: status === "active",
+            is_internal: visibility === "internal",
             rank: rank ?? undefined,
-            parent_category_id: null,
+            parent_category_id: parent_category_id ?? null,
           },
         },
       },
       {
         onSuccess: () => {
-          toast.success("Request has been sent")
+          toast.success(t("categories.request.successToast"))
 
           handleSuccess("/requests")
         },

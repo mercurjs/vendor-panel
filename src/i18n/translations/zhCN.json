@@ -730,6 +730,15 @@
   "categories": {
     "domain": "分类",
     "subtitle": "将产品组织到分类中,并管理这些分类的排序和层级。",
+    "searchPlaceholder": "Search by category name",
+    "list": {
+      "requestButton": "Request"
+    },
+    "empty": {
+      "title": "No categories yet",
+      "message": "Categories will appear here once they have been approved. Request a category to get started.",
+      "requestCta": "Request"
+    },
     "create": {
       "header": "创建分类",
       "hint": "创建新分类以组织您的产品。",
@@ -789,6 +798,9 @@
       "new": {
         "label": "新建"
       }
+    },
+    "request": {
+      "successToast": "Category was successfully requested. Once approved by the admin, they will appear on the storefront."
     }
   },
   "inventory": {
@@ -2591,7 +2603,10 @@
         "placeholder": "wrong_size",
         "tooltip": "值应该是退货原因的唯一标识符。"
       },
-      "label": { "label": "标签", "placeholder": "错误尺寸" },
+      "label": {
+        "label": "标签",
+        "placeholder": "错误尺寸"
+      },
       "description": {
         "label": "描述",
         "placeholder": "客户收到错误尺寸"

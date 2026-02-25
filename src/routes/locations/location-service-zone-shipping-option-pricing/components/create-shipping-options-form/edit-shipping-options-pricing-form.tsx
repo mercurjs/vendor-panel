@@ -32,6 +32,7 @@ import {
   UpdateConditionalPriceSchema,
 } from "../../../common/schema"
 import { ConditionalPriceInfo } from "../../../common/types"
+import { buildShippingOptionPriceRules } from "../../../common/utils/price-rule-helpers"
 import { useRegions } from "../../../../../hooks/api"
 
 type PriceRecord = {
@@ -102,12 +103,17 @@ export function EditShippingOptionsPricingForm({
     [store]
   )
 
-  const { price_preferences: pricePreferences } = usePricePreferences({})
-
-  const { regions } = useRegions({
+  const {
+    regions,
+    isLoading: isRegionsLoading,
+    isError: isRegionsError,
+    error: regionsError,
+  } = useRegions({
     fields: "id,name,currency_code",
     limit: 999,
   })
+
+  const { price_preferences: pricePreferences } = usePricePreferences({})
 
   const { setCloseOnEscape } = useRouteModal()
 
@@ -118,7 +124,10 @@ export function EditShippingOptionsPricingForm({
     pricePreferences,
   })
 
-  const data = useMemo(() => [[...(currencies || [])]], [currencies])
+  const data = useMemo(
+    () => [[...(currencies || []), ...(regions || [])]],
+    [currencies, regions]
+  )
 
   const handleSubmit = form.handleSubmit(async (data) => {
     // const currencyPrices = Object.entries(data.currency_prices)
@@ -164,33 +173,35 @@ export function EditShippingOptionsPricingForm({
      */
     const regionPrices = Object.entries(data.region_prices)
       .map(([region_id, value]) => {
+        if (!value || !regions?.some((region) => region.id === region_id)) {
+          return undefined
+        }
+
         const priceRecord: PriceRecord = {
           region_id,
-          amount: castNumber(value || 0),
-          // currency_code: regions?.find((r) => r.id === region_id)
-          //   ?.currency_code,
+          amount: castNumber(value),
         }
 
         return priceRecord
       })
       .filter((p): p is PriceRecord => !!p)
 
-    // const conditionalRegionPrices = Object.entries(
-    //   data.conditional_region_prices
-    // ).flatMap(([region_id, value]) =>
-    //   value?.map((rule) => ({
-    //     id: rule.id,
-    //     region_id,
-    //     amount: castNumber(rule.amount),
-    //     rules: buildShippingOptionPriceRules(rule),
-    //   }))
-    // )
+    const conditionalRegionPrices = Object.entries(
+      data.conditional_region_prices
+    ).flatMap(([region_id, value]) =>
+      value?.map((rule) => ({
+        id: rule.id,
+        region_id,
+        amount: castNumber(rule.amount),
+        rules: buildShippingOptionPriceRules(rule),
+      })) ?? []
+    )
 
     const allPrices = [
       // ...currencyPrices,
       // ...conditionalCurrencyPrices,
       ...regionPrices,
-      // ...conditionalRegionPrices,
+      ...conditionalRegionPrices,
     ]
 
     await mutateAsync(
@@ -207,10 +218,15 @@ export function EditShippingOptionsPricingForm({
     )
   })
 
-  const isLoading = isStoreLoading || !currencies
+  const isLoading =
+    isStoreLoading || isRegionsLoading || !currencies || !regions
 
   if (isStoreError) {
     throw storeError
+  }
+
+  if (isRegionsError) {
+    throw regionsError
   }
 
   return (
@@ -311,6 +327,7 @@ const getDefaultValues = (prices: HttpTypes.AdminShippingOptionPrice[]) => {
     forbidden: string[] = []
   ) => {
     const attributes = price.price_rules?.map((r) => r.attribute) || []
+
     return (
       required.every((attr) => attributes.includes(attr)) &&
       !forbidden.some((attr) => attributes.includes(attr))
@@ -326,15 +343,7 @@ const getDefaultValues = (prices: HttpTypes.AdminShippingOptionPrice[]) => {
   prices.forEach((price) => {
     if (!price.price_rules?.length) {
       currency_prices[price.currency_code!] = price.amount
-      return
-    }
 
-    const region_id = price.price_rules?.find(
-      (r) => r.attribute === REGION_ID_ATTRIBUTE
-    )?.value
-
-    if (region_id) {
-      region_prices[region_id] = price.amount
       return
     }
 
@@ -344,7 +353,34 @@ const getDefaultValues = (prices: HttpTypes.AdminShippingOptionPrice[]) => {
         conditional_currency_prices[code] = []
       }
       conditional_currency_prices[code].push(mapToConditionalPrice(price))
+
       return
+    }
+
+    if (hasAttributes(price, [REGION_ID_ATTRIBUTE], [ITEM_TOTAL_ATTRIBUTE])) {
+      const regionId = price.price_rules.find(
+        (r) => r.attribute === REGION_ID_ATTRIBUTE
+      )?.value
+
+      if (regionId !== undefined) {
+        region_prices[String(regionId)] = price.amount
+      }
+      
+      return
+    }
+
+    if (hasAttributes(price, [REGION_ID_ATTRIBUTE, ITEM_TOTAL_ATTRIBUTE])) {
+      const regionId = price.price_rules.find(
+        (r) => r.attribute === REGION_ID_ATTRIBUTE
+      )?.value
+
+      if (regionId !== undefined) {
+        const key = String(regionId)
+        if (!conditional_region_prices[key]) {
+          conditional_region_prices[key] = []
+        }
+        conditional_region_prices[key].push(mapToConditionalPrice(price))
+      }
     }
   })
 

@@ -30,7 +30,7 @@ export const ProductListTable = () => {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [bulkEditOpen, setBulkEditOpen] = useState(false);
   const [bulkEditProducts, setBulkEditProducts] = useState<ExtendedAdminProduct[]>([]);
-  
+
   // Track selected products data across pages
   const selectedProductsMap = useRef<Map<string, ExtendedAdminProduct>>(new Map());
 
@@ -80,14 +80,14 @@ export const ProductListTable = () => {
   // Sync selected products data across pages
   useEffect(() => {
     const selectedIds = new Set(Object.keys(rowSelection));
-    
+
     // Add newly selected products from current page
     products.forEach(product => {
       if (selectedIds.has(product.id)) {
         selectedProductsMap.current.set(product.id, product);
       }
     });
-    
+
     // Remove deselected products
     selectedProductsMap.current.forEach((_, id) => {
       if (!selectedIds.has(id)) {
@@ -168,6 +168,7 @@ export const ProductListTable = () => {
         pageSize={PAGE_SIZE}
         filters={filters}
         search
+        clearableSearch
         pagination
         isLoading={isLoading}
         queryObject={raw}
@@ -186,9 +187,9 @@ export const ProductListTable = () => {
         commands={[
           {
             action: async () => {
-              const selectedProducts = Array.from(selectedProductsMap.current.values())
-              setBulkEditProducts(selectedProducts)
-              setBulkEditOpen(true)
+              const selectedProducts = Array.from(selectedProductsMap.current.values());
+              setBulkEditProducts(selectedProducts);
+              setBulkEditOpen(true);
             },
             label: t('actions.edit'),
             shortcut: 'e'

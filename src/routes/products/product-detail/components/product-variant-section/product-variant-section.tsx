@@ -340,14 +340,26 @@ const useColumns = (product: ExtendedAdminProduct) => {
       columnHelper.accessor('title', {
         header: t('fields.title'),
         enableSorting: true,
-        sortAscLabel: t('filters.sorting.alphabeticallyAsc'),
-        sortDescLabel: t('filters.sorting.alphabeticallyDesc')
+        sortAscLabel: t('general.ascending'),
+        sortDescLabel: t('general.descending')
       }),
       columnHelper.accessor('sku', {
         header: t('fields.sku'),
         enableSorting: true,
-        sortAscLabel: t('filters.sorting.alphabeticallyAsc'),
-        sortDescLabel: t('filters.sorting.alphabeticallyDesc')
+        sortAscLabel: t('general.ascending'),
+        sortDescLabel: t('general.descending')
+      }),
+      columnHelper.accessor('created_at', {
+        enableSorting: true,
+        sortLabel: t('fields.createdAt'),
+        sortAscLabel: t('general.ascending'),
+        sortDescLabel: t('general.descending')
+      }),
+      columnHelper.accessor('updated_at', {
+        enableSorting: true,
+        sortLabel: t('fields.updatedAt'),
+        sortAscLabel: t('general.ascending'),
+        sortDescLabel: t('general.descending')
       }),
       ...optionColumns,
       columnHelper.display({

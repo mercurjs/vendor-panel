@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useState } from 'react';
+import React, { ReactNode, useCallback, useMemo, useState } from 'react';
 
 import { XMarkMini } from '@medusajs/icons';
 import {
@@ -18,6 +18,7 @@ import {
   Text,
   useDataTable
 } from '@medusajs/ui';
+import { VisibilityState } from '@tanstack/react-table';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -82,6 +83,7 @@ interface DataTableProps<TData> {
     enableRowSelection?: boolean | ((row: DataTableRow<TData>) => boolean);
   };
   layout?: 'fill' | 'auto';
+  hiddenColumns?: string[];
   /**
    * When true, we avoid using Medusa UI's built-in Toolbar (which renders an
    * additional FilterBar row). Use this to prevent the duplicated "dark" bar
@@ -112,6 +114,7 @@ export const DataTable = <TData,>({
   rowSelection,
   isLoading = false,
   layout = 'auto',
+  hiddenColumns,
   disableBuiltInFilterBar = false,
   clearableSearch = false
 }: DataTableProps<TData>) => {
@@ -192,6 +195,12 @@ export const DataTable = <TData,>({
   const [sorting, setSorting] = useState<DataTableSortingState | null>(
     order ? parseSortingState(order) : null
   );
+
+  const columnVisibilityState = useMemo<VisibilityState>(
+    () => Object.fromEntries((hiddenColumns ?? []).map(id => [id, false])),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
   const handleSortingChange = (value: DataTableSortingState) => {
     setSorting(value);
     setSearchParams(prev => {
@@ -268,7 +277,13 @@ export const DataTable = <TData,>({
         }
       : undefined,
     rowSelection,
-    isLoading
+    isLoading,
+    columnVisibility: hiddenColumns?.length
+      ? {
+          state: columnVisibilityState,
+          onColumnVisibilityChange: () => {}
+        }
+      : undefined
   });
 
   const shouldRenderHeading = heading || subHeading;

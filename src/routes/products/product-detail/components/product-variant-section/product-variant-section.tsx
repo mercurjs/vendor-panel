@@ -7,7 +7,6 @@ import {
   Container,
   createDataTableColumnHelper,
   createDataTableCommandHelper,
-  createDataTableFilterHelper,
   DataTableAction,
   Tooltip,
   usePrompt
@@ -128,6 +127,7 @@ export const ProductVariantSection = ({ product }: ProductVariantSectionProps) =
         data={pagedVariants}
         columns={columns}
         filters={filters}
+        hiddenColumns={['created_at', 'updated_at']}
         disableBuiltInFilterBar
         clearableSearch
         rowCount={count}
@@ -380,32 +380,12 @@ const useColumns = (product: ExtendedAdminProduct) => {
   }, [t, optionColumns, dateColumns, getActions, getInventory]);
 };
 
-const filterHelper = createDataTableFilterHelper<ExtendedAdminProductVariant>();
-
 const useFilters = () => {
   const { t } = useTranslation();
   const dateFilters = useDataTableDateFilters();
 
   return useMemo(() => {
-    return [
-      filterHelper.accessor('allow_backorder', {
-        type: 'radio',
-        label: t('fields.allowBackorder'),
-        options: [
-          { label: t('filters.radio.yes'), value: 'true' },
-          { label: t('filters.radio.no'), value: 'false' }
-        ]
-      }),
-      filterHelper.accessor('manage_inventory', {
-        type: 'radio',
-        label: t('fields.manageInventory'),
-        options: [
-          { label: t('filters.radio.yes'), value: 'true' },
-          { label: t('filters.radio.no'), value: 'false' }
-        ]
-      }),
-      ...dateFilters
-    ];
+    return [...dateFilters];
   }, [t, dateFilters]);
 };
 

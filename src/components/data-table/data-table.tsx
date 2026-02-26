@@ -1,5 +1,6 @@
 import React, { ReactNode, useCallback, useMemo, useState } from 'react';
 
+import { XMarkMini } from '@medusajs/icons';
 import {
   Button,
   clx,
@@ -83,7 +84,13 @@ interface DataTableProps<TData> {
   };
   layout?: 'fill' | 'auto';
   hiddenColumns?: string[];
+  /**
+   * When true, we avoid using Medusa UI's built-in Toolbar (which renders an
+   * additional FilterBar row). Use this to prevent the duplicated "dark" bar
+   * in specific screens (e.g. Product Variants).
+   */
   disableBuiltInFilterBar?: boolean;
+  clearableSearch?: boolean;
 }
 
 export const DataTable = <TData,>({
@@ -108,7 +115,8 @@ export const DataTable = <TData,>({
   isLoading = false,
   layout = 'auto',
   hiddenColumns,
-  disableBuiltInFilterBar = false
+  disableBuiltInFilterBar = false,
+  clearableSearch = false
 }: DataTableProps<TData>) => {
   const { t } = useTranslation();
 
@@ -306,11 +314,22 @@ export const DataTable = <TData,>({
 
             <div className="flex w-full flex-wrap items-center justify-end gap-2 md:w-auto">
               {enableSearch && (
-                <div className="w-full md:w-auto">
+                <div className="relative w-full md:w-auto">
                   <Primitive.Search
                     placeholder={t('filters.searchLabel')}
                     autoFocus={autoFocusSearch}
                   />
+
+                  {!!search && clearableSearch && (
+                    <Button
+                      size="small"
+                      variant="transparent"
+                      className="absolute right-0 top-1/2 -translate-y-1/2"
+                      onClick={() => handleSearchChange('')}
+                    >
+                      <XMarkMini className="text-ui-fg-muted" />
+                    </Button>
+                  )}
                 </div>
               )}
 

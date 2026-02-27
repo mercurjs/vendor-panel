@@ -64,7 +64,11 @@ type ProductCreateFormProps = {
   defaultChannel?: HttpTypes.AdminSalesChannel;
   store?: HttpTypes.AdminStore;
   pricePreferences?: HttpTypes.AdminPricePreference[];
-  onOpenMediaModal?: (variantIndex: number, variantTitle?: string, initialMedia?: MediaItem[]) => void;
+  onOpenMediaModal?: (
+    variantIndex: number,
+    variantTitle?: string,
+    initialMedia?: MediaItem[]
+  ) => void;
   onSaveVariantMediaRef?: React.MutableRefObject<
     ((variantIndex: number, media: MediaItem[]) => void) | null
   >;
@@ -527,19 +531,19 @@ export const ProductCreateForm = ({
     }
 
     const uploadVariantMedia = async (mediaItems: MediaItem[]) => {
-      const existingThumbnail = mediaItems.find((item) => item.isThumbnail && item.url)?.url;
-      const existingUrls = mediaItems
-        .filter((item) => !item.file && item.url)
-        .map((item) => item.url);
+      const existingThumbnail = mediaItems.find(item => item.isThumbnail && item.url)?.url;
+      const existingUrls = mediaItems.filter(item => !item.file && item.url).map(item => item.url);
 
-      const thumbnailReq = mediaItems.filter((item) => item.file && item.isThumbnail);
-      const otherMediaReq = mediaItems.filter((item) => item.file && !item.isThumbnail);
+      const thumbnailReq = mediaItems.filter(item => item.file && item.isThumbnail);
+      const otherMediaReq = mediaItems.filter(item => item.file && !item.isThumbnail);
       const uploaded: Array<{ url: string; isThumbnail: boolean }> = [];
 
       if (thumbnailReq.length > 0) {
         const response = await uploadFilesQuery(thumbnailReq);
         const files = Array.isArray(response?.files) ? response.files : [];
-        uploaded.push(...files.map((file: HttpTypes.AdminFile) => ({ ...file, isThumbnail: true })));
+        uploaded.push(
+          ...files.map((file: HttpTypes.AdminFile) => ({ ...file, isThumbnail: true }))
+        );
       }
 
       if (otherMediaReq.length > 0) {
@@ -625,7 +629,10 @@ export const ProductCreateForm = ({
 
       return {
         ...variantWithoutMedia,
-        options: mappedOptions,
+        options:
+          Object.keys(mappedOptions).length > 0
+            ? mappedOptions
+            : PRODUCT_CREATE_FORM_DEFAULTS?.variants?.[0]?.options || {},
         ...(variantImageKey && {
           metadata: {
             variant_image_key: variantImageKey
@@ -676,7 +683,11 @@ export const ProductCreateForm = ({
         }
 
         // Add secondary categories if any
-        if (Array.isArray(secondary_categories) && secondary_categories.length > 0 && secCatProductKey) {
+        if (
+          Array.isArray(secondary_categories) &&
+          secondary_categories.length > 0 &&
+          secCatProductKey
+        ) {
           additionalData.secondary_categories = [
             {
               sec_cat_product_key: secCatProductKey,
@@ -855,7 +866,7 @@ export const ProductCreateForm = ({
     const currentTabIndex = TAB_ORDER.indexOf(currentTab);
     const currentMaxIndex = TAB_ORDER.indexOf(maxReachedTab);
     if (currentTabIndex >= currentMaxIndex) {
-      setMaxReachedTab(currentTab);
+      setMaxReachedTab(TAB_ORDER[currentMaxIndex + 1]);
     }
 
     // Navigate to next tab
@@ -965,6 +976,7 @@ export const ProductCreateForm = ({
 
                 if (fieldsToValidate.length > 0) {
                   const valid = await form.trigger(fieldsToValidate);
+
                   if (!valid) {
                     return;
                   }
@@ -980,7 +992,7 @@ export const ProductCreateForm = ({
                 // Update maxReachedTab to the current tab since we've successfully validated it
                 // maxReachedTab represents the last completed tab, not the next one
                 if (currentIndex >= maxReachedIndex) {
-                  setMaxReachedTab(tab);
+                  setMaxReachedTab(TAB_ORDER[currentIndex + 1]);
                 }
               }
 
@@ -1090,6 +1102,14 @@ export const ProductCreateForm = ({
                 data-name={SAVE_DRAFT_BUTTON}
                 size="small"
                 type="submit"
+                onClick={() => {
+                  if (form.getValues('categories').length === 0 && form.getValues('title')) {
+                    onNext(Tab.DETAILS);
+                    return;
+                  }
+
+                  handleSubmit();
+                }}
                 isLoading={isPending}
                 className="whitespace-nowrap"
               >

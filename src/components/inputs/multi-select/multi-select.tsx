@@ -140,10 +140,10 @@ const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
       }
     };
 
-    const handleClearAll = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      onChange([]);
-    };
+    // const handleClearAll = (e: React.MouseEvent) => {
+    //   e.stopPropagation();
+    //   onChange([]);
+    // };
 
     const handleRemoveBadge = (optionValue: string, e: React.MouseEvent) => {
       e.stopPropagation();
@@ -176,7 +176,7 @@ const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
       >
         <div
           ref={triggerRef}
-          className={`relative flex h-10 w-full cursor-pointer items-center justify-between overflow-hidden rounded-md border bg-ui-bg-field text-ui-fg-base shadow-sm transition-colors duration-150 ease-in-out focus-within:ring-1 hover:bg-ui-bg-field-hover ${
+          className={`relative flex h-8 w-full cursor-pointer items-center justify-between overflow-hidden rounded-md border bg-ui-bg-field text-ui-fg-base shadow-sm transition-colors duration-150 ease-in-out focus-within:ring-1 hover:bg-ui-bg-field-hover ${
             disabled
               ? 'cursor-not-allowed bg-ui-bg-disabled opacity-50'
               : ariaInvalid
@@ -205,17 +205,17 @@ const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
                       key={optionValue}
                       type="button"
                       onClick={e => handleRemoveBadge(optionValue, e)}
-                      className="flex-shrink-0"
+                      className="flex flex-shrink-0 items-center self-center"
                       disabled={disabled}
                     >
                       <Badge
-                        size="small"
-                        className="w-fit"
+                        size="2xsmall"
+                        className="w-fit p-0"
                       >
-                        <span className="max-w-[200px] truncate text-ellipsis">
+                        <span className="max-w-[200px] truncate text-ellipsis border-r border-ui-border-base px-1.5">
                           {option?.label || 'Unknown'}
                         </span>
-                        <XMarkMini />
+                        <XMarkMini className="mr-0.5 !text-ui-fg-base" />
                       </Badge>
                     </button>
                   );
@@ -234,7 +234,7 @@ const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
             )}
           </div>
           <div className="flex h-full items-center justify-center">
-            {value && value.length > 0 && !disabled && (
+            {/* {value && value.length > 0 && !disabled && (
               <button
                 type="button"
                 className="flex h-full w-8 items-center justify-center"
@@ -242,7 +242,7 @@ const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
               >
                 <XMarkMini className="text-ui-fg-muted" />
               </button>
-            )}
+            )} */}
             <span className="flex h-full w-8 items-center justify-center">
               <TrianglesMini className="text-ui-fg-muted" />
             </span>
@@ -280,7 +280,7 @@ const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
             )}
 
             {/* Options list */}
-            <div className={`${showSearch ? 'max-h-48' : 'max-h-60'} overflow-y-auto`}>
+            <div className={`${showSearch ? 'max-h-48' : 'max-h-60'} overflow-y-auto py-1`}>
               {filteredOptions.length === 0 ? (
                 <div className="txt-compact-small-plus p-3 text-ui-fg-subtle">
                   {showSearch && searchValue.trim()
@@ -297,7 +297,7 @@ const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
                       className={`flex cursor-pointer items-center px-1 py-1 hover:bg-ui-bg-base-hover`}
                       onClick={() => handleItemClick(option.value)}
                     >
-                      <div className="relative flex flex-1 items-center rounded-md px-2 py-1.5">
+                      <div className="relative flex flex-1 items-center rounded-md px-2">
                         {isSelected && (
                           <span className="absolute left-3 top-1/2 h-1 w-1 -translate-y-1/2 rounded-full bg-ui-fg-base" />
                         )}

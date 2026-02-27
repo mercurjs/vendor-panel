@@ -1,5 +1,6 @@
 import { HttpTypes } from '@medusajs/types';
 
+import { applyDateFilter } from '../../../utils/apply-date-filter';
 import { useQueryParams } from '../../use-query-params';
 
 type UseProductTableQueryProps = {
@@ -7,7 +8,8 @@ type UseProductTableQueryProps = {
   pageSize?: number;
 };
 
-const DEFAULT_FIELDS = 'id,title,handle,status,discountable,*collection,*sales_channels,variants.id,thumbnail';
+const DEFAULT_FIELDS =
+  'id,title,handle,status,discountable,*collection,*sales_channels,variants.id,thumbnail';
 
 export const useProductTableQuery = ({ prefix, pageSize = 20 }: UseProductTableQueryProps) => {
   const queryObject = useQueryParams(
@@ -67,32 +69,8 @@ export const useProductTableQuery = ({ prefix, pageSize = 20 }: UseProductTableQ
     fields: DEFAULT_FIELDS
   };
 
-  /**
-   * Flatten date filters so they use bracket notation:
-   * created_at[$gte]=... instead of created_at={"$gte":"..."}
-   * This matches the backend expectation and the admin app payload.
-   */
-  const applyDateFilter = (key: 'created_at' | 'updated_at', raw: string | undefined) => {
-    if (!raw) {
-      return;
-    }
-
-    try {
-      const parsed = JSON.parse(raw);
-      if (parsed && typeof parsed === 'object') {
-        Object.entries(parsed).forEach(([op, value]) => {
-          if (value) {
-            (searchParams as Record<string, any>)[`${key}[${op}]`] = value;
-          }
-        });
-      }
-    } catch {
-      // Ignore malformed JSON and leave filter unset
-    }
-  };
-
-  applyDateFilter('created_at', created_at);
-  applyDateFilter('updated_at', updated_at);
+  applyDateFilter<HttpTypes.AdminProductListParams>('created_at', created_at, searchParams);
+  applyDateFilter<HttpTypes.AdminProductListParams>('updated_at', updated_at, searchParams);
 
   return {
     searchParams,

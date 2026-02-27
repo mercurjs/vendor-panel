@@ -3,26 +3,31 @@ import { useCallback, useMemo } from 'react';
 import { Buildings, Component, PencilSquare, Trash } from '@medusajs/icons';
 import {
   Badge,
+  Button,
   clx,
   Container,
   createDataTableColumnHelper,
-  createDataTableCommandHelper,
-  DataTableAction,
+  Heading,
   Tooltip,
   usePrompt
 } from '@medusajs/ui';
-import { CellContext } from '@tanstack/react-table';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
-import { DataTable } from '../../../../../components/data-table';
+import { Action, ActionMenu } from '../../../../../components/common/action-menu';
 import { useDataTableDateColumns } from '../../../../../components/data-table/helpers/general/use-data-table-date-columns';
-import { useDataTableDateFilters } from '../../../../../components/data-table/helpers/general/use-data-table-date-filters';
+import { _DataTable } from '../../../../../components/table/data-table/data-table';
+import { Filter } from '../../../../../components/table/data-table/data-table-filter';
 import { useInventoryItemLevels } from '../../../../../hooks/api';
-import { useDeleteVariantLazy } from '../../../../../hooks/api/products';
+import { useDeleteVariantLazy, useProductVariants } from '../../../../../hooks/api/products';
+import { useDataTable } from '../../../../../hooks/use-data-table';
 import { useQueryParams } from '../../../../../hooks/use-query-params';
-import { ExtendedAdminProduct, ExtendedAdminProductVariant } from '../../../../../types/products';
-import { PRODUCT_VARIANT_IDS_KEY } from '../../../common/constants';
+import {
+  ExtendedAdminProduct,
+  ExtendedAdminProductVariant,
+  ExtendedAdminProductVariantListParams
+} from '../../../../../types/products';
+import { applyDateFilter } from '../../../../../utils/apply-date-filter';
 
 type ProductVariantSectionProps = {
   product: ExtendedAdminProduct;
@@ -33,136 +38,69 @@ const PAGE_SIZE = 10;
 export const ProductVariantSection = ({ product }: ProductVariantSectionProps) => {
   const { t } = useTranslation();
 
-  const { q, order, offset, allow_backorder, manage_inventory } = useQueryParams([
-    'q',
-    'order',
-    'offset',
-    'allow_backorder',
-    'manage_inventory'
-  ]);
+  const { searchParams, raw } = useVariantsTableQuery({ pageSize: PAGE_SIZE });
 
   const columns = useColumns(product);
   const filters = useFilters();
-  const commands = useCommands();
 
-  const { variants } = product;
+  const { variants, count, isLoading } = useProductVariants(product.id, {
+    ...searchParams,
+    fields: '*inventory_items'
+  });
 
-  const processedVariants = useMemo(() => {
-    const base = variants ?? [];
-
-    const filterByBooleanParam = (
-      list: typeof base,
-      key: 'allow_backorder' | 'manage_inventory',
-      raw?: string
-    ) => {
-      if (!raw) {
-        return list;
-      }
-
-      try {
-        const parsed = JSON.parse(raw);
-        const value = parsed?.value;
-
-        if (value === undefined || value === null || value === '') {
-          return list;
-        }
-
-        const expected = String(value);
-        return list.filter(v => String((v as any)[key]) === expected);
-      } catch {
-        return list;
-      }
-    };
-
-    let list = base;
-
-    if (q) {
-      const needle = q.toLowerCase();
-      list = list.filter(v => {
-        const title = (v.title ?? '').toLowerCase();
-        const sku = (v.sku ?? '').toLowerCase();
-        return title.includes(needle) || sku.includes(needle);
-      });
-    }
-
-    list = filterByBooleanParam(list, 'allow_backorder', allow_backorder);
-    list = filterByBooleanParam(list, 'manage_inventory', manage_inventory);
-
-    if (order) {
-      const desc = order.startsWith('-');
-      const key = desc ? order.slice(1) : order;
-
-      const getSortable = (v: ExtendedAdminProductVariant) => {
-        switch (key) {
-          case 'title':
-            return v.title ?? '';
-          case 'sku':
-            return v.sku ?? '';
-          default:
-            return '';
-        }
-      };
-
-      list = [...list].sort((a, b) => {
-        const av = getSortable(a);
-        const bv = getSortable(b);
-        const cmp = String(av).localeCompare(String(bv), undefined, {
-          numeric: true,
-          sensitivity: 'base'
-        });
-        return desc ? -cmp : cmp;
-      });
-    }
-
-    return list;
-  }, [variants, q, order, allow_backorder, manage_inventory]);
-
-  const offsetValue = offset ? parseInt(offset) : 0;
-  const count = processedVariants.length;
-  const pagedVariants = processedVariants.slice(offsetValue, offsetValue + PAGE_SIZE);
+  const { table } = useDataTable({
+    data: variants || [],
+    columns: columns,
+    count,
+    enablePagination: true,
+    pageSize: PAGE_SIZE,
+    getRowId: row => row?.id || ''
+  });
 
   return (
     <Container className="divide-y p-0">
-      <DataTable
-        data={pagedVariants}
+      <div className="flex items-center justify-between px-6 py-4">
+        <Heading level="h2">{t('products.variants.header')}</Heading>
+        <div className="flex items-center justify-center gap-x-2">
+          <ActionMenu
+            groups={[
+              {
+                actions: [
+                  {
+                    label: t('products.variants.editStocksAndPrices.header'),
+                    to: `edit-stocks-and-prices`,
+                    icon: <PencilSquare />
+                  }
+                ]
+              }
+            ]}
+            variant="primary"
+          />
+          <Button
+            size="small"
+            variant="secondary"
+            asChild
+          >
+            <Link to="variants/create">{t('actions.create')}</Link>
+          </Button>
+        </div>
+      </div>
+      <_DataTable
+        table={table}
         columns={columns}
+        count={count}
         filters={filters}
-        hiddenColumns={['created_at', 'updated_at']}
-        disableBuiltInFilterBar
         clearableSearch
-        rowCount={count}
-        getRowId={row => row.id}
+        navigateTo={row => `variants/${row.original.id}`}
         pageSize={PAGE_SIZE}
-        heading={t('products.variants.header')}
-        rowHref={row => `variants/${row.id}`}
-        emptyState={{
-          empty: {
-            heading: t('products.variants.empty.heading'),
-            description: t('products.variants.empty.description')
-          },
-          filtered: {
-            heading: t('products.variants.filtered.heading'),
-            description: t('products.variants.filtered.description')
-          }
-        }}
-        actionMenu={{
-          groups: [
-            {
-              actions: [
-                {
-                  label: t('products.variants.editStocksAndPrices.header'),
-                  to: `edit-stocks-and-prices`,
-                  icon: <PencilSquare />
-                }
-              ]
-            }
-          ]
-        }}
-        action={{
-          label: t('actions.create'),
-          to: `variants/create`
-        }}
-        commands={commands}
+        search
+        pagination
+        isLoading={isLoading}
+        queryObject={raw}
+        orderBy={[
+          { key: 'created_at', label: t('fields.createdAt') },
+          { key: 'updated_at', label: t('fields.updatedAt') }
+        ]}
       />
     </Container>
   );
@@ -233,20 +171,18 @@ const useColumns = (product: ExtendedAdminProduct) => {
   }, [product]);
 
   const getActions = useCallback(
-    (ctx: CellContext<ExtendedAdminProductVariant, unknown>) => {
-      const variant = ctx.row.original;
-
-      const mainActions: DataTableAction<ExtendedAdminProductVariant>[] = [
+    (variant: ExtendedAdminProductVariant) => {
+      const mainActions: Action[] = [
         {
           icon: <PencilSquare />,
           label: t('actions.edit'),
-          onClick: row => {
-            navigate(`edit-variant?variant_id=${row.row.original.id}`);
+          onClick: () => {
+            navigate(`edit-variant?variant_id=${variant.id}`);
           }
         }
       ];
 
-      const secondaryActions: DataTableAction<ExtendedAdminProductVariant>[] = [
+      const secondaryActions: Action[] = [
         {
           icon: <Trash />,
           label: t('actions.delete'),
@@ -292,7 +228,7 @@ const useColumns = (product: ExtendedAdminProduct) => {
         }
       }
 
-      return [mainActions, secondaryActions];
+      return [{ actions: mainActions }, { actions: secondaryActions }];
     },
     [handleDelete, navigate, t]
   );
@@ -349,18 +285,6 @@ const useColumns = (product: ExtendedAdminProduct) => {
         sortAscLabel: t('general.ascending'),
         sortDescLabel: t('general.descending')
       }),
-      columnHelper.accessor('created_at', {
-        enableSorting: true,
-        sortLabel: t('fields.createdAt'),
-        sortAscLabel: t('general.ascending'),
-        sortDescLabel: t('general.descending')
-      }),
-      columnHelper.accessor('updated_at', {
-        enableSorting: true,
-        sortLabel: t('fields.updatedAt'),
-        sortAscLabel: t('general.ascending'),
-        sortDescLabel: t('general.descending')
-      }),
       ...optionColumns,
       columnHelper.display({
         id: 'inventory',
@@ -383,10 +307,15 @@ const useColumns = (product: ExtendedAdminProduct) => {
             </Tooltip>
           );
         },
-        maxSize: 250
+        size: 500
       }),
-      columnHelper.action({
-        actions: getActions
+      columnHelper.display({
+        id: 'actions',
+        cell: ctx => {
+          const actions = getActions(ctx.row.original);
+
+          return <ActionMenu groups={actions} />;
+        }
       })
     ];
   }, [t, optionColumns, dateColumns, getActions, getInventory]);
@@ -394,26 +323,54 @@ const useColumns = (product: ExtendedAdminProduct) => {
 
 const useFilters = () => {
   const { t } = useTranslation();
-  const dateFilters = useDataTableDateFilters();
+
+  const createdAtFilter: Filter = {
+    key: 'created_at',
+    label: t('fields.createdAt'),
+    type: 'date'
+  };
+
+  const updatedAtFilter: Filter = {
+    key: 'updated_at',
+    label: t('fields.updatedAt'),
+    type: 'date'
+  };
 
   return useMemo(() => {
-    return [...dateFilters];
-  }, [t, dateFilters]);
+    return [createdAtFilter, updatedAtFilter];
+  }, [t, createdAtFilter, updatedAtFilter]);
 };
 
-const commandHelper = createDataTableCommandHelper();
+type UseVariantsTableQueryProps = {
+  prefix?: string;
+  pageSize?: number;
+};
 
-const useCommands = () => {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
+const useVariantsTableQuery = ({ pageSize = 10 }: UseVariantsTableQueryProps) => {
+  const queryObject = useQueryParams([
+    'q',
+    'order',
+    'offset',
+    'allow_backorder',
+    'manage_inventory',
+    'created_at',
+    'updated_at'
+  ]);
 
-  return [
-    commandHelper.command({
-      label: t('inventory.stock.action'),
-      shortcut: 'i',
-      action: async selection => {
-        navigate(`stock?${PRODUCT_VARIANT_IDS_KEY}=${Object.keys(selection).join(',')}`);
-      }
-    })
-  ];
+  const { offset, order, q, allow_backorder, manage_inventory, created_at, updated_at } =
+    queryObject;
+
+  const searchParams: Record<string, unknown> = {
+    limit: pageSize,
+    offset: offset ? Number(offset) : 0,
+    order,
+    q,
+    allow_backorder,
+    manage_inventory
+  };
+
+  applyDateFilter('created_at', created_at, searchParams);
+  applyDateFilter('updated_at', updated_at, searchParams);
+
+  return { searchParams: searchParams as ExtendedAdminProductVariantListParams, raw: queryObject };
 };

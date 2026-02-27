@@ -7,7 +7,8 @@ type UseProductTableQueryProps = {
   pageSize?: number;
 };
 
-const DEFAULT_FIELDS = 'id,title,handle,status,discountable,*collection,*sales_channels,variants.id,thumbnail';
+const DEFAULT_FIELDS =
+  'id,title,handle,status,discountable,*collection,*sales_channels,variants.id,thumbnail,*categories';
 
 export const useProductTableQuery = ({ prefix, pageSize = 20 }: UseProductTableQueryProps) => {
   const queryObject = useQueryParams(
@@ -59,7 +60,7 @@ export const useProductTableQuery = ({ prefix, pageSize = 20 }: UseProductTableQ
     category_id: category_id?.split(','),
     collection_id: collection_id?.split(','),
     is_giftcard: is_giftcard ? is_giftcard === 'true' : undefined,
-    order: order,
+    order: order || '-created_at',
     tag_id: tag_id ? tag_id.split(',') : undefined,
     type_id: type_id?.split(','),
     status: status?.split(',') as HttpTypes.AdminProductStatus[],

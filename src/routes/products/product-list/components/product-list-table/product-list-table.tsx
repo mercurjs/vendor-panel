@@ -54,7 +54,7 @@ export const ProductListTable = () => {
     isLoading,
     isError,
     error
-  } = useProducts(searchParams, options);
+  } = useProducts({ ...searchParams, fields: '*categories' }, options);
 
   // When a query/filter yields no rows but the API still returns a count,
   // force the table to treat it as empty so the "no results" state appears.

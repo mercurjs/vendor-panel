@@ -60,7 +60,7 @@ export const useProductTableQuery = ({ prefix, pageSize = 20 }: UseProductTableQ
     category_id: category_id?.split(','),
     collection_id: collection_id?.split(','),
     is_giftcard: is_giftcard ? is_giftcard === 'true' : undefined,
-    order: order || '-created_at',
+    order: order,
     tag_id: tag_id ? tag_id.split(',') : undefined,
     type_id: type_id?.split(','),
     status: status?.split(',') as HttpTypes.AdminProductStatus[],

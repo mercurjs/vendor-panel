@@ -603,7 +603,8 @@
         "label": "Categories"
       },
       "primaryCategory": {
-        "label": "Primary category"
+        "label": "Primary category",
+        "tooltip": "Primary category could define attributes that apply to this product."
       },
       "secondaryCategories": {
         "label": "Secondary categories"

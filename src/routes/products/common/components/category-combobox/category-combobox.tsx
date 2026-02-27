@@ -21,6 +21,7 @@ import {
 } from '@medusajs/icons';
 import { AdminProductCategoryResponse } from '@medusajs/types';
 import { Badge, clx, Divider, Text } from '@medusajs/ui';
+import clsx from 'clsx';
 import { Popover as RadixPopover } from 'radix-ui';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -36,6 +37,7 @@ interface CategoryComboboxProps extends Omit<
   onChange: (value: string[]) => void;
   onFocus?: () => void;
   onBlur?: () => void;
+  isSingleSelect?: boolean;
 }
 
 type Level = {
@@ -47,7 +49,7 @@ const TABLUAR_NUM_WIDTH = 8;
 const TAG_BASE_WIDTH = 28;
 
 export const CategoryCombobox = forwardRef<HTMLInputElement, CategoryComboboxProps>(
-  ({ value, onChange, className, onFocus, onBlur, ...props }, ref) => {
+  ({ value, onChange, className, onFocus, onBlur, isSingleSelect = false, ...props }, ref) => {
     const innerRef = useRef<HTMLInputElement>(null);
     const badgesContainerRef = useRef<HTMLDivElement>(null);
     const [visibleBadgesCount, setVisibleBadgesCount] = useState(0);
@@ -136,6 +138,15 @@ export const CategoryCombobox = forwardRef<HTMLInputElement, CategoryComboboxPro
           e.preventDefault();
           e.stopPropagation();
 
+          if (isSingleSelect) {
+            onChange(isSelected(value, option.value) ? [] : [option.value]);
+            onSearchValueChange('');
+            setLevel([]);
+            setOpen(false);
+            innerRef.current?.focus();
+            return;
+          }
+
           if (isSelected(value, option.value)) {
             onChange(value.filter(v => v !== option.value));
           } else {
@@ -145,7 +156,7 @@ export const CategoryCombobox = forwardRef<HTMLInputElement, CategoryComboboxPro
           innerRef.current?.focus();
         };
       },
-      [value, onChange]
+      [value, onChange, isSingleSelect, onSearchValueChange]
     );
 
     function handleOpenChange(open: boolean) {
@@ -345,6 +356,7 @@ export const CategoryCombobox = forwardRef<HTMLInputElement, CategoryComboboxPro
               'has-[input:focus]:shadow-borders-interactive-with-active',
               'has-[:invalid]:shadow-borders-error has-[[aria-invalid=true]]:shadow-borders-error',
               'has-[:disabled]:cursor-not-allowed has-[:disabled]:bg-ui-bg-disabled has-[:disabled]:text-ui-fg-disabled',
+              '[&+p]:bg-red-100',
               {
                 // Fake the focus state as long as the popover is open,
                 // this prevents the styling from flickering when navigating
@@ -365,39 +377,53 @@ export const CategoryCombobox = forwardRef<HTMLInputElement, CategoryComboboxPro
             >
               {value.length > 0 ? (
                 <>
-                  {value.slice(0, visibleBadgesCount).map(categoryId => {
-                    const category = allCategoriesOptions.find(opt => opt.value === categoryId);
-                    return (
-                      <button
-                        key={categoryId}
-                        type="button"
-                        onClick={e => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          onChange(value.filter(id => id !== categoryId));
-                        }}
-                        className="flex flex-shrink-0 items-center self-center"
-                        disabled={props.disabled}
-                      >
+                  {isSingleSelect ? (
+                    <Text
+                      size="small"
+                      leading="compact"
+                      className={clsx('w-full text-ui-fg-base', {
+                        hidden: open
+                      })}
+                    >
+                      {allCategoriesOptions.find(opt => opt.value === value[0])?.label || 'Unknown'}
+                    </Text>
+                  ) : (
+                    <>
+                      {value.slice(0, visibleBadgesCount).map(categoryId => {
+                        const category = allCategoriesOptions.find(opt => opt.value === categoryId);
+                        return (
+                          <button
+                            key={categoryId}
+                            type="button"
+                            onClick={e => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              onChange(value.filter(id => id !== categoryId));
+                            }}
+                            className="flex flex-shrink-0 items-center self-center"
+                            disabled={props.disabled}
+                          >
+                            <Badge
+                              size="2xsmall"
+                              className="flex w-fit items-center p-0"
+                            >
+                              <span className="max-w-[200px] truncate text-ellipsis border-r border-ui-border-base px-1.5">
+                                {category?.label || 'Unknown'}
+                              </span>
+                              <XMarkMini className="mr-0.5 !text-ui-fg-base" />
+                            </Badge>
+                          </button>
+                        );
+                      })}
+                      {value.length > visibleBadgesCount && (
                         <Badge
                           size="2xsmall"
-                          className="flex w-fit items-center"
+                          className="txt-compact-small-plus flex w-fit flex-shrink-0 items-center self-center border-none bg-transparent px-0 text-ui-fg-subtle"
                         >
-                          <span className="max-w-[200px] truncate text-ellipsis">
-                            {category?.label || 'Unknown'}
-                          </span>
-                          <XMarkMini />
+                          +{value.length - visibleBadgesCount}
                         </Badge>
-                      </button>
-                    );
-                  })}
-                  {value.length > visibleBadgesCount && (
-                    <Badge
-                      size="2xsmall"
-                      className="txt-compact-small-plus flex w-fit flex-shrink-0 items-center self-center border-none bg-transparent px-0 text-ui-fg-subtle"
-                    >
-                      +{value.length - visibleBadgesCount}
-                    </Badge>
+                      )}
+                    </>
                   )}
                 </>
               ) : null}

@@ -10,9 +10,12 @@ export type DataTableOrderByKey<TData> = {
   label: string;
 };
 
+export type DataTableOrderByValue<TData> = keyof TData | `-${keyof TData & string}`;
+
 type DataTableOrderByProps<TData> = {
   keys: DataTableOrderByKey<TData>[];
   prefix?: string;
+  defaultOrder?: DataTableOrderByValue<TData>;
 };
 
 enum SortDirection {
@@ -51,7 +54,11 @@ const initState = (
   };
 };
 
-export const DataTableOrderBy = <TData,>({ keys, prefix }: DataTableOrderByProps<TData>) => {
+export const DataTableOrderBy = <TData,>({
+  keys,
+  prefix,
+  defaultOrder
+}: DataTableOrderByProps<TData>) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const param = prefix ? `${prefix}_order` : 'order';
   const [state, setState] = useState<{
@@ -69,7 +76,7 @@ export const DataTableOrderBy = <TData,>({ keys, prefix }: DataTableOrderByProps
     const sortParam = searchParams.get(param);
     // If no order param exists, set the first available key as default
     if (!sortParam) {
-      const defaultKey = String(keys[0].key);
+      const defaultKey = defaultOrder ? String(defaultOrder) : String(keys[0].key);
       setSearchParams(prev => {
         const newParams = new URLSearchParams(prev);
         newParams.set(param, defaultKey);

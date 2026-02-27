@@ -1,6 +1,10 @@
 import { Filter } from '..';
 import { DataTableFilter } from '../data-table-filter';
-import { DataTableOrderBy, DataTableOrderByKey } from '../data-table-order-by';
+import {
+  DataTableOrderBy,
+  DataTableOrderByKey,
+  DataTableOrderByValue
+} from '../data-table-order-by';
 import { DataTableSearch } from '../data-table-search';
 
 export interface DataTableQueryProps<TData> {
@@ -9,6 +13,7 @@ export interface DataTableQueryProps<TData> {
   filters?: Filter[];
   prefix?: string;
   clearableSearch?: boolean;
+  defaultOrder?: DataTableOrderByValue<TData>;
 }
 
 export const DataTableQuery = <TData,>({
@@ -16,7 +21,8 @@ export const DataTableQuery = <TData,>({
   orderBy,
   filters,
   prefix,
-  clearableSearch
+  clearableSearch,
+  defaultOrder
 }: DataTableQueryProps<TData>) => {
   return (
     (search || orderBy || filters || prefix) && (
@@ -41,6 +47,7 @@ export const DataTableQuery = <TData,>({
             <DataTableOrderBy
               keys={orderBy}
               prefix={prefix}
+              defaultOrder={defaultOrder}
             />
           )}
         </div>

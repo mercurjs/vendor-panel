@@ -37,6 +37,7 @@ export const _DataTable = <TData,>({
   count = 0,
   search = false,
   orderBy,
+  defaultOrder,
   filters,
   prefix,
   queryObject = {},
@@ -87,6 +88,7 @@ export const _DataTable = <TData,>({
         filters={filters}
         prefix={prefix}
         clearableSearch={clearableSearch}
+        defaultOrder={defaultOrder}
       />
       <DataTableRoot
         table={table}

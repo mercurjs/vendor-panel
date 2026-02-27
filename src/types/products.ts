@@ -1,4 +1,5 @@
 import { HttpTypes } from '@medusajs/types';
+import { BaseProductVariantParams } from '@medusajs/types/dist/http/product/common';
 
 export interface ProductOptionMetadata {
   author?: string;
@@ -112,9 +113,18 @@ export type ExtendedAdminProductVariant = Omit<
   inventory?: HttpTypes.AdminInventoryItem[] | null;
 };
 
+export type ExtendedAdminProductVariantListResponse = Omit<
+  HttpTypes.AdminProductVariantListResponse,
+  'variants'
+> & {
+  variants: ExtendedAdminProductVariant[];
+};
+
 export type ExtendedAdminProductWithVariants = Omit<ExtendedAdminProduct, 'variants'> & {
   variants?: ExtendedAdminProductVariant[];
 };
+
+export type ExtendedAdminProductVariantListParams = BaseProductVariantParams;
 
 /**
  * Union type for product stock grid rows

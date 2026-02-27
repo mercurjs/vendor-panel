@@ -60,7 +60,7 @@ export const ProductListTable = () => {
   // force the table to treat it as empty so the "no results" state appears.
   const count = products.length === 0 ? 0 : apiCount;
 
-  const filters = useProductTableFilters();
+  const filters = useProductTableFilters(['sales_channel_id']);
   const columns = useColumns();
 
   const { table } = useDataTable({

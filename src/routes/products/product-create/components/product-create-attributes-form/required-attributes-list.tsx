@@ -22,6 +22,8 @@ export const RequiredAttributesList = ({
 }: RequiredAttributesListProps) => {
   const { t } = useTranslation();
 
+  console.log(form.getValues());
+
   return (
     <>
       {fields.map((field: any) => (
@@ -54,7 +56,7 @@ export const RequiredAttributesList = ({
           )}
 
           {field.ui_component === 'multivalue' && (
-            <>
+            <div className="flex flex-col gap-y-2">
               <Form.Field
                 control={form.control}
                 name={field.handle as any}
@@ -87,7 +89,7 @@ export const RequiredAttributesList = ({
                 label={t('products.fields.attributes.useForVariants.label')}
                 description={t('products.fields.attributes.useForVariants.description')}
               />
-            </>
+            </div>
           )}
 
           {field.ui_component === 'text_area' && (

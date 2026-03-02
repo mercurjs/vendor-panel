@@ -1,4 +1,5 @@
-import { Button, Input, Select, Text, Textarea, toast } from '@medusajs/ui';
+import { InformationCircleSolid } from '@medusajs/icons';
+import { Button, Input, Select, Text, Textarea, toast, Tooltip } from '@medusajs/ui';
 import { useTranslation } from 'react-i18next';
 import * as zod from 'zod';
 
@@ -8,7 +9,7 @@ import { RouteDrawer, useRouteModal } from '../../../../../components/modals';
 import { KeyboundForm } from '../../../../../components/utilities/keybound-form';
 import { FormExtensionZone, useDashboardExtension } from '../../../../../extensions';
 import { useExtendableForm } from '../../../../../extensions/forms/hooks';
-import { useUpdateProduct } from '../../../../../hooks/api/products';
+import { useUpdateProduct, useUpdateProductStatus } from '../../../../../hooks/api/products';
 import { ExtendedAdminProduct } from '../../../../../types/products';
 
 type EditProductFormProps = {
@@ -16,6 +17,7 @@ type EditProductFormProps = {
 };
 
 const EditProductSchema = zod.object({
+  status: zod.string().min(1),
   title: zod.string().min(1),
   subtitle: zod.string().optional(),
   handle: zod.string().min(1),
@@ -33,6 +35,7 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
 
   const form = useExtendableForm({
     defaultValues: {
+      status: product.status,
       title: product.title,
       subtitle: product.subtitle || '',
       handle: product.handle || '',
@@ -44,12 +47,32 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
     data: product
   });
 
-  const { mutateAsync, isPending } = useUpdateProduct(product.id);
+  const { mutateAsync: updateProduct, isPending: isUpdateProductPending } = useUpdateProduct(
+    product.id
+  );
+  const { mutateAsync: updateProductStatus, isPending: isUpdateProductStatusPending } =
+    useUpdateProductStatus(product.id);
 
   const handleSubmit = form.handleSubmit(async data => {
-    const { description, discountable, handle, title, subtitle } = data;
+    const { status, description, discountable, handle, title, subtitle } = data;
 
-    await mutateAsync(
+    if (status !== product.status) {
+      await updateProductStatus(
+        {
+          status
+        },
+        {
+          onSuccess: () => {
+            handleSuccess();
+          },
+          onError: e => {
+            toast.error(e.message);
+          }
+        }
+      );
+    }
+
+    await updateProduct(
       {
         description,
         discountable,
@@ -80,7 +103,7 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
         className="flex flex-1 flex-col overflow-hidden"
       >
         <RouteDrawer.Body className="flex flex-1 flex-col gap-y-8 overflow-y-auto">
-          <div className="flex flex-col gap-y-8">
+          <div className="flex flex-col gap-y-4">
             <div className="flex flex-col gap-y-4">
               <Form.Field
                 control={form.control}
@@ -98,18 +121,25 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
                             <Select.Value />
                           </Select.Trigger>
                           <Select.Content>
-                            {(['draft', 'published', 'proposed', 'rejected'] as const).map(
-                              status => {
-                                return (
-                                  <Select.Item
-                                    key={status}
-                                    value={status}
-                                  >
-                                    {t(`products.productStatus.${status}`)}
-                                  </Select.Item>
-                                );
-                              }
-                            )}
+                            {(['draft', 'published'] as const).map(status => {
+                              return (
+                                <Select.Item
+                                  key={`status-${status}`}
+                                  value={status}
+                                >
+                                  {t(`products.productStatus.${status}`)}
+                                </Select.Item>
+                              );
+                            })}
+                            {(['proposed', 'rejected'] as const).map(status => (
+                              <Select.Item
+                                key={`status-${status}`}
+                                value={status}
+                                className="hidden"
+                              >
+                                {t(`products.productStatus.${status}`)}
+                              </Select.Item>
+                            ))}
                           </Select.Content>
                         </Select>
                       </Form.Control>
@@ -154,7 +184,12 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
                 render={({ field }) => {
                   return (
                     <Form.Item>
-                      <Form.Label>{t('fields.handle')}</Form.Label>
+                      <Form.Label className="flex items-center gap-x-1.5">
+                        {t('fields.handle')}{' '}
+                        <Tooltip content={'test'}>
+                          <InformationCircleSolid className="text-ui-fg-muted" />
+                        </Tooltip>
+                      </Form.Label>
                       <Form.Control>
                         <div className="relative">
                           <div className="absolute inset-y-0 left-0 z-10 flex w-8 items-center justify-center border-r">
@@ -236,7 +271,7 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
             <Button
               size="small"
               type="submit"
-              isLoading={isPending}
+              isLoading={isUpdateProductPending || isUpdateProductStatusPending}
             >
               {t('actions.save')}
             </Button>

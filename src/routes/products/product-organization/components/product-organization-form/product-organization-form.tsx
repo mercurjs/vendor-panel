@@ -6,6 +6,7 @@ import * as zod from 'zod';
 import { Form } from '../../../../../components/common/form';
 import { Combobox } from '../../../../../components/inputs/combobox';
 import { RouteDrawer, useRouteModal } from '../../../../../components/modals';
+import { i18n } from '../../../../../components/utilities/i18n';
 import { KeyboundForm } from '../../../../../components/utilities/keybound-form';
 import {
   FormExtensionZone,
@@ -81,9 +82,16 @@ const getSecondaryCategoriesSnapshot = (product: ProductWithAdditionalData) => {
   const secCatIdByCategoryId = new Map<string, string>();
 
   relationEntries.forEach((entry: any) => {
-    const secCatId = typeof entry?.id === 'string' && isSecondaryCategoryRelationId(entry.id) ? entry.id : undefined;
-    const catIdCandidates = [entry?.category_id, entry?.product_category_id, entry?.product_category?.id, entry?.category?.id]
-      .filter(Boolean) as string[];
+    const secCatId =
+      typeof entry?.id === 'string' && isSecondaryCategoryRelationId(entry.id)
+        ? entry.id
+        : undefined;
+    const catIdCandidates = [
+      entry?.category_id,
+      entry?.product_category_id,
+      entry?.product_category?.id,
+      entry?.category?.id
+    ].filter(Boolean) as string[];
     const catId = catIdCandidates.find(isCategoryId);
     if (secCatId && catId) {
       secCatIdByCategoryId.set(catId, secCatId);
@@ -115,7 +123,9 @@ const diff = (next: string[], prev: string[]) => {
 const ProductOrganizationSchema = zod.object({
   type_id: zod.string().nullable(),
   collection_id: zod.string().nullable(),
-  categories: zod.array(zod.string()),
+  categories: zod
+    .array(zod.string())
+    .min(1, { message: i18n.t('products.create.errors.primaryCategoryRequired') }),
   secondary_categories: zod.array(zod.string()).optional(),
   tag_ids: zod.array(zod.string())
 });
@@ -188,7 +198,9 @@ export const ProductOrganizationForm = ({ product }: ProductOrganizationFormProp
   const { mutateAsync, isPending } = useUpdateProduct(product.id);
 
   const handleSubmit = form.handleSubmit(async data => {
-    const nextCategoryIds = uniq(Array.isArray(data.secondary_categories) ? data.secondary_categories : []);
+    const nextCategoryIds = uniq(
+      Array.isArray(data.secondary_categories) ? data.secondary_categories : []
+    );
     const currentCategoryIds = secondarySnapshot.categoryIds;
     const addCategoryIds = diff(nextCategoryIds, currentCategoryIds);
     const removedCategoryIds = diff(currentCategoryIds, nextCategoryIds);
@@ -209,9 +221,7 @@ export const ProductOrganizationForm = ({ product }: ProductOrganizationFormProp
             existingSecCatIds
     );
 
-    const hasSecondaryCatsChanges =
-      addCategoryIds.length > 0 ||
-      removedCategoryIds.length > 0;
+    const hasSecondaryCatsChanges = addCategoryIds.length > 0 || removedCategoryIds.length > 0;
 
     const payload = {
       type_id: data.type_id ? data.type_id : undefined,
@@ -301,26 +311,13 @@ export const ProductOrganizationForm = ({ product }: ProductOrganizationFormProp
               control={form.control}
               name="categories"
               render={({ field }) => {
-                const currentValue = field.value || [];
                 return (
                   <Form.Item>
                     <Form.Label>{t('products.fields.primaryCategory.label')}</Form.Label>
                     <Form.Control>
                       <CategoryCombobox
                         {...field}
-                        value={currentValue}
-                        onChange={newValue => {
-                          // For primary category, only allow single selection
-                          // If a new category was added (length increased), keep only the last one
-                          // If a category was removed (length decreased), use the new array
-                          if (newValue.length > currentValue.length) {
-                            // New category selected - replace with just the new one
-                            field.onChange([newValue[newValue.length - 1]]);
-                          } else {
-                            // Category deselected - use the filtered array (should be empty or same)
-                            field.onChange(newValue);
-                          }
-                        }}
+                        isSingleSelect
                       />
                     </Form.Control>
                     <Form.ErrorMessage />

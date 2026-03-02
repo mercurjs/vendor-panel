@@ -645,6 +645,27 @@ export const useUpdateProduct = (
   });
 };
 
+export const useUpdateProductStatus = (
+  id: string,
+  options?: UseMutationOptions<HttpTypes.AdminProductResponse, FetchError, { status: string }>
+) => {
+  return useMutation({
+    mutationFn: async payload => {
+      return fetchQuery(`/vendor/products/${id}/status`, {
+        method: 'POST',
+        body: payload
+      });
+    },
+    onSuccess: (data, variables, context) => {
+      queryClient.invalidateQueries({
+        queryKey: productsQueryKeys.detail(id)
+      });
+      options?.onSuccess?.(data, variables, context);
+    },
+    ...options
+  });
+};
+
 export const useDeleteProduct = (
   id: string,
   options?: UseMutationOptions<HttpTypes.AdminProductDeleteResponse, FetchError, void>

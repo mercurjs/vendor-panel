@@ -1,4 +1,4 @@
-import { InformationCircleSolid } from '@medusajs/icons';
+import { CircleInfoSolid } from '@medusajs/icons';
 import { Button, Input, Select, Text, Textarea, toast, Tooltip } from '@medusajs/ui';
 import { useTranslation } from 'react-i18next';
 import * as zod from 'zod';
@@ -184,10 +184,10 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
                 render={({ field }) => {
                   return (
                     <Form.Item>
-                      <Form.Label className="flex items-center gap-x-1.5">
-                        {t('fields.handle')}{' '}
-                        <Tooltip content={'test'}>
-                          <InformationCircleSolid className="text-ui-fg-muted" />
+                      <Form.Label className="flex items-center gap-x-1">
+                        {t('fields.handle')}
+                        <Tooltip content={t('products.fields.handle.tooltip')}>
+                          <CircleInfoSolid className="text-ui-fg-muted" />
                         </Tooltip>
                       </Form.Label>
                       <Form.Control>

@@ -579,7 +579,7 @@
       },
       "handle": {
         "label": "Handle",
-        "tooltip": "The handle is used to reference the product in your storefront. If not specified, the handle will be generated from the product title."
+        "tooltip": "Handle allows the system to precisely identify the product."
       },
       "description": {
         "label": "Description",

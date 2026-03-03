@@ -1,38 +1,30 @@
-import { Switch } from "@medusajs/ui"
-import { ReactNode, forwardRef } from "react"
-import { ControllerProps, FieldPath, FieldValues } from "react-hook-form"
+import { ReactNode } from 'react';
 
-import { Form } from "../../common/form"
+import { Switch } from '@medusajs/ui';
+import { ControllerProps, FieldPath, FieldValues } from 'react-hook-form';
+
+import { Form } from '../../common/form';
 
 interface HeadlessControllerProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> extends Omit<ControllerProps<TFieldValues, TName>, "render"> { }
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+> extends Omit<ControllerProps<TFieldValues, TName>, 'render'> {}
 
 interface SwitchBoxProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
 > extends HeadlessControllerProps<TFieldValues, TName> {
-  label: string
-  description: string
-  optional?: boolean
-  tooltip?: ReactNode
-  /**
-   * Callback for performing additional actions when the checked state changes.
-   * This does not intercept the form control, it is only used for injecting side-effects.
-   */
-  onCheckedChange?: (checked: boolean) => void
+  label: string;
+  description: string;
+  optional?: boolean;
+  tooltip?: ReactNode;
+  onCheckedChange?: (checked: boolean) => void;
+  className?: string;
 }
 
-/**
- * Wrapper for the Switch component to be used with `react-hook-form`.
- *
- * Use this component whenever a design calls for wrapping the Switch component
- * in a container with a label and description.
- */
-export const SwitchBox = forwardRef(<
+export const SwitchBox = <
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
 >({
   label,
   description,
@@ -40,31 +32,36 @@ export const SwitchBox = forwardRef(<
   tooltip,
   onCheckedChange,
   disabled,
+  className,
   ...props
-}: SwitchBoxProps<TFieldValues, TName>, _ref: any) => {
+}: SwitchBoxProps<TFieldValues, TName>) => {
   return (
     <Form.Field
       {...props}
       disabled={disabled}
       render={({ field: { value, onChange, ...field } }) => {
         return (
-          <Form.Item>
-            <div className="bg-ui-bg-component shadow-elevation-card-rest flex items-start gap-x-3 rounded-lg p-3">
+          <Form.Item className={className}>
+            <div className="flex items-start gap-x-3 rounded-lg bg-ui-bg-component p-3 shadow-elevation-card-rest">
               <Form.Control>
                 <Switch
                   {...field}
                   checked={value}
+                  className="flex-none"
                   disabled={disabled}
-                  onCheckedChange={(e) => {
+                  onCheckedChange={e => {
                     if (!disabled) {
-                      onCheckedChange?.(e)
-                      onChange(e)
+                      onCheckedChange?.(e);
+                      onChange(e);
                     }
                   }}
                 />
               </Form.Control>
               <div>
-                <Form.Label optional={optional} tooltip={tooltip}>
+                <Form.Label
+                  optional={optional}
+                  tooltip={tooltip}
+                >
                   {label}
                 </Form.Label>
                 <Form.Hint>{description}</Form.Hint>
@@ -72,10 +69,8 @@ export const SwitchBox = forwardRef(<
             </div>
             <Form.ErrorMessage />
           </Form.Item>
-        )
+        );
       }}
     />
-  )
-})
-
-SwitchBox.displayName = "SwitchBox"
+  );
+};

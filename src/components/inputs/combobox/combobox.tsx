@@ -42,8 +42,10 @@ type Value = string[] | string;
 const TABLUAR_NUM_WIDTH = 8;
 const TAG_BASE_WIDTH = 28;
 
-interface ComboboxProps<T extends Value = Value>
-  extends Omit<ComponentPropsWithoutRef<'input'>, 'onChange' | 'value'> {
+interface ComboboxProps<T extends Value = Value> extends Omit<
+  ComponentPropsWithoutRef<'input'>,
+  'onChange' | 'value'
+> {
   value?: T;
   onChange?: (value?: T) => void;
   searchValue?: string;
@@ -340,12 +342,12 @@ const ComboboxImpl = <T extends Value = string>(
                   >
                     <Badge
                       size="2xsmall"
-                      className="flex w-fit items-center"
+                      className="w-fit p-0"
                     >
-                      <span className="max-w-[200px] truncate text-ellipsis">
+                      <span className="max-w-[200px] truncate text-ellipsis border-r border-ui-border-base bg-ui-bg-base px-1.5">
                         {option?.label || 'Unknown'}
                       </span>
-                      <XMarkMini />
+                      <XMarkMini className="mr-0.5 !text-ui-fg-base" />
                     </Badge>
                   </button>
                 );

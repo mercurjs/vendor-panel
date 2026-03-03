@@ -41,7 +41,7 @@ export const ProductAddAttribute = () => {
 
   const { mutateAsync, isPending } = useAddProductAttribute(id!);
 
-  const handleSubmit = form.handleSubmit(async (data) => {
+  const handleSubmit = form.handleSubmit(async data => {
     const option = data.options?.[0];
 
     const name = option?.title?.trim();
@@ -63,17 +63,17 @@ export const ProductAddAttribute = () => {
         name,
         values,
         use_for_variations,
-        ui_component: 'multivalue',
+        ui_component: 'multivalue'
       },
       {
         onSuccess: () => {
           toast.success(t('actions.save'));
           navigate(`/products/${id}`, {
             replace: true,
-            state: { isSubmitSuccessful: true },
+            state: { isSubmitSuccessful: true }
           });
         },
-        onError: (err) => {
+        onError: err => {
           toast.error(err.message);
         }
       }
@@ -85,7 +85,7 @@ export const ProductAddAttribute = () => {
       <RouteDrawer.Header>
         <div className="flex items-center justify-between">
           <RouteDrawer.Title asChild>
-            <Heading>{t('actions.add')} Attrbiute</Heading>
+            <Heading>{t('products.edit.attributes.addAttribute')}</Heading>
           </RouteDrawer.Title>
         </div>
       </RouteDrawer.Header>

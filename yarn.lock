@@ -1150,12 +1150,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@medusajs/icons@npm:2.12.1, @medusajs/icons@npm:^2.5.0":
+"@medusajs/icons@npm:2.12.1":
   version: 2.12.1
   resolution: "@medusajs/icons@npm:2.12.1"
   peerDependencies:
     react: ^18.3.1
   checksum: 820e6a5c860c803e06c81c3a12e4a399c524655b279a46c08740f11debf352e31e23659ee59eb7e7cab8b00bd3b819e19c39efe84f02352fa189b578a1a487b8
+  languageName: node
+  linkType: hard
+
+"@medusajs/icons@npm:2.13.3":
+  version: 2.13.3
+  resolution: "@medusajs/icons@npm:2.13.3"
+  peerDependencies:
+    react: ^18.3.1
+  checksum: 7e9bf5942125114192a6ddd1f80d09dca839e1f576611601c9a938bffd53393e44c0ded81d621848e70187def496d8f1ad4b25b1193b3824f3bf42a8958bc79e
   languageName: node
   linkType: hard
 
@@ -8348,7 +8357,7 @@ __metadata:
     "@ianvs/prettier-plugin-sort-imports": ^4.7.0
     "@medusajs/admin-shared": ^2.5.0
     "@medusajs/admin-vite-plugin": ^2.5.0
-    "@medusajs/icons": ^2.5.0
+    "@medusajs/icons": 2.13.3
     "@medusajs/js-sdk": ^2.5.0
     "@medusajs/types": ^2.5.0
     "@medusajs/ui": ~4.0.5

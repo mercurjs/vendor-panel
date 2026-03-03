@@ -14,7 +14,7 @@ import { PRODUCT_DETAIL_FIELDS } from './constants';
 export const ProductDetail = () => {
   const { id } = useParams();
   const { product, isLoading, isError, error } = useProduct(id!, {
-    fields: PRODUCT_DETAIL_FIELDS,
+    fields: PRODUCT_DETAIL_FIELDS
   });
 
   const { getWidgets } = useDashboardExtension();

@@ -1,29 +1,27 @@
-import { InformationCircleSolid } from "@medusajs/icons"
-import { Text, Tooltip, clx } from "@medusajs/ui"
-import { ReactNode } from "react"
+import { ReactNode } from 'react';
+
+import { InformationCircleSolid } from '@medusajs/icons';
+import { clx, Text, Tooltip } from '@medusajs/ui';
 
 export type SectionRowProps = {
-  title: string
-  value?: ReactNode | string | null
-  actions?: ReactNode
-  tooltip?: string
-}
+  title: string;
+  value?: ReactNode | string | null;
+  actions?: ReactNode;
+  tooltip?: string;
+  className?: string;
+};
 
-export const SectionRow = ({
-  title,
-  value,
-  actions,
-  tooltip,
-}: SectionRowProps) => {
-  const isValueString = typeof value === "string" || !value
+export const SectionRow = ({ title, value, actions, tooltip, className }: SectionRowProps) => {
+  const isValueString = typeof value === 'string' || !value;
 
   return (
     <div
       className={clx(
-        `text-ui-fg-subtle grid w-full grid-cols-2 items-center gap-4 px-6 py-4`,
+        `grid w-full grid-cols-2 items-center gap-4 px-6 py-4 text-ui-fg-subtle`,
         {
-          "grid-cols-[1fr_1fr_28px]": !!actions,
-        }
+          'grid-cols-[1fr_1fr_28px]': !!actions
+        },
+        className
       )}
     >
       <Text
@@ -46,7 +44,7 @@ export const SectionRow = ({
           leading="compact"
           className="whitespace-pre-line text-pretty"
         >
-          {value ?? "-"}
+          {value ?? '-'}
         </Text>
       ) : (
         <div className="flex flex-wrap gap-1">{value}</div>
@@ -54,5 +52,5 @@ export const SectionRow = ({
 
       {actions && <div>{actions}</div>}
     </div>
-  )
-}
+  );
+};

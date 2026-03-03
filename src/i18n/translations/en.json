@@ -418,7 +418,18 @@
     "edit": {
       "header": "Edit Product",
       "description": "Edit the product details.",
-      "successToast": "Product {{title}} was successfully updated."
+      "successToast": "Product {{title}} was successfully updated.",
+      "attributes": {
+        "addAttribute": "Add attribute",
+        "useForVariations": "Use for variations",
+        "useForVariationsDescription": "If checked, we will create variants using this attribute. If not, the attribute will be used for informational purposes only.",
+        "conversionWarning": "Changes to this attribute may affect existing product variants or details. Review your variants and product details after saving.",
+        "required": "This attribute is required by Admin"
+      },
+      "informationalAttributes": {
+        "header": "Product Information",
+        "description": "Attributes used for informational purposes"
+      }
     },
     "create": {
       "title": "Create Product",
@@ -673,9 +684,9 @@
         "label": "Product options",
         "hint": "Options are used to define the color, size, etc. of the product",
         "add": "Add option",
-        "optionTitle": "Option title",
+        "optionTitle": "Title",
         "optionTitlePlaceholder": "Color",
-        "variations": "Variations (comma-separated)",
+        "variations": "Values",
         "variantionsPlaceholder": "Red, Blue, Green"
       },
       "variants": {
@@ -735,14 +746,18 @@
     "options": {
       "header": "Options",
       "edit": {
-        "header": "Edit Option",
-        "successToast": "Option {{title}} was successfully updated."
+        "header": "Edit Attribute",
+        "successToast": "Attribute {{title}} was successfully updated."
       },
       "create": {
         "header": "Create Option",
         "successToast": "Option {{title}} was successfully created."
       },
-      "deleteWarning": "You are about to delete the product option: {{title}}. This action cannot be undone."
+      "deleteWarning": "You are about to delete the product option: {{title}}. This action cannot be undone.",
+      "variations": {
+        "label": "Variations",
+        "description": "Attributes used for variations"
+      }
     },
     "organization": {
       "header": "Organize",

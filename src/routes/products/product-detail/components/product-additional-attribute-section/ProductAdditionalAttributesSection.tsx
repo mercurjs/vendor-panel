@@ -1,15 +1,18 @@
-import { AdjustmentsDone, PencilSquare, Plus, SquareTwoStack, Trash } from '@medusajs/icons';
+import { DropCap, PencilSquare, Plus, Swatch, Trash } from '@medusajs/icons';
 import { Badge, Container, Heading, Text, toast, usePrompt } from '@medusajs/ui';
 import { useTranslation } from 'react-i18next';
 
 import { ActionMenu } from '../../../../../components/common/action-menu';
 import { SectionRow } from '../../../../../components/common/section';
-import { useDeleteProductOption, useRemoveProductAttribute } from '../../../../../hooks/api/products';
+import {
+  useDeleteProductOption,
+  useRemoveProductAttribute
+} from '../../../../../hooks/api/products';
 import {
   ExtendedAdminProduct,
   ExtendedAdminProductOption,
   ProductInformationalAttribute,
-  ProductInformationalAttributeValue,
+  ProductInformationalAttributeValue
 } from '../../../../../types/products';
 
 type ProductAttributeSectionProps = {
@@ -18,7 +21,7 @@ type ProductAttributeSectionProps = {
 
 const OptionRowActions = ({
   productId,
-  option,
+  option
 }: {
   productId: string;
   option: ExtendedAdminProductOption;
@@ -44,7 +47,7 @@ const OptionRowActions = ({
     }
 
     await mutateAsync(undefined, {
-      onError: (err) => {
+      onError: err => {
         toast.error(err.message);
       }
     });
@@ -58,8 +61,8 @@ const OptionRowActions = ({
             {
               icon: <PencilSquare />,
               label: t('actions.edit'),
-              to: `options/${option.id}/edit`,
-            },
+              to: `options/${option.id}/edit`
+            }
           ]
         },
         ...(canDelete
@@ -83,17 +86,14 @@ const OptionRowActions = ({
 
 const InformationalAttributeRowActions = ({
   productId,
-  attribute,
+  attribute
 }: {
   productId: string;
   attribute: ProductInformationalAttribute;
 }) => {
   const { t } = useTranslation();
   const prompt = usePrompt();
-  const { mutateAsync, isPending } = useRemoveProductAttribute(
-    productId,
-    attribute.attribute_id
-  );
+  const { mutateAsync, isPending } = useRemoveProductAttribute(productId, attribute.attribute_id);
 
   const isVendorSource = attribute.attribute_source === 'vendor';
 
@@ -113,7 +113,7 @@ const InformationalAttributeRowActions = ({
     }
 
     await mutateAsync(undefined, {
-      onError: (err) => {
+      onError: err => {
         toast.error(err.message);
       }
     });
@@ -127,8 +127,8 @@ const InformationalAttributeRowActions = ({
             {
               icon: <PencilSquare />,
               label: t('actions.edit'),
-              to: `informational-attributes/${attribute.attribute_id}/edit`,
-            },
+              to: `informational-attributes/${attribute.attribute_id}/edit`
+            }
           ]
         },
         ...(isVendorSource
@@ -153,13 +153,10 @@ const InformationalAttributeRowActions = ({
 export const ProductAdditionalAttributesSection = ({ product }: ProductAttributeSectionProps) => {
   const { t } = useTranslation();
 
-  const informationalAttributes =
-    product.informational_attributes?.filter(Boolean) ?? [];
+  const informationalAttributes = product.informational_attributes?.filter(Boolean) ?? [];
   const options = product.options?.filter(Boolean) ?? [];
 
-  const getInformationalAttributeDisplayValue = (
-    v: ProductInformationalAttributeValue
-  ): string => {
+  const getInformationalAttributeDisplayValue = (v: ProductInformationalAttributeValue): string => {
     return v.value;
   };
 
@@ -187,23 +184,31 @@ export const ProductAdditionalAttributesSection = ({ product }: ProductAttribute
       </div>
 
       {options.length > 0 && (
-        <div className="px-6 py-4">
-          <div className="flex items-center gap-x-3 pb-4">
-            <div className="bg-ui-bg-base shadow-borders-base flex size-7 items-center justify-center rounded-md">
-              <div className="bg-ui-bg-component flex size-6 items-center justify-center rounded-[4px]">
-                <SquareTwoStack className="text-ui-fg-subtle" />
+        <div className="px-3 py-4">
+          <div className="flex items-center gap-x-3 px-3 pb-4">
+            <div className="flex size-7 items-center justify-center rounded-md bg-ui-bg-base shadow-borders-base">
+              <div className="flex size-6 items-center justify-center rounded-[4px] bg-ui-bg-component">
+                <Swatch className="text-ui-fg-subtle" />
               </div>
             </div>
             <div>
-              <Text size="small" weight="plus" leading="compact">
-                {t('products.options.variations', 'Variations')}
+              <Text
+                size="small"
+                weight="plus"
+                leading="compact"
+              >
+                {t('products.options.variations.label')}
               </Text>
-              <Text size="xsmall" leading="compact" className="text-ui-fg-subtle">
-                {t('products.options.variationsDescription', 'Attributes used for variations')}
+              <Text
+                size="xsmall"
+                leading="compact"
+                className="text-ui-fg-subtle"
+              >
+                {t('products.options.variations.description')}
               </Text>
             </div>
           </div>
-          <div className="overflow-hidden divide-y rounded-lg border">
+          <div className="divide-y overflow-hidden rounded-lg border">
             {options.map(option => (
               <SectionRow
                 key={option.id}
@@ -214,6 +219,7 @@ export const ProductAdditionalAttributesSection = ({ product }: ProductAttribute
                     option={option}
                   />
                 }
+                className="bg-ui-bg-component p-3"
                 value={option.values?.map((value, index) => (
                   <Badge
                     key={`${option.id}-${value.value}-${index}`}
@@ -234,23 +240,31 @@ export const ProductAdditionalAttributesSection = ({ product }: ProductAttribute
       )}
 
       {informationalAttributes.length > 0 && (
-        <div className="px-6 py-4">
-          <div className="flex items-center gap-x-3 pb-4">
-            <div className="bg-ui-bg-base shadow-borders-base flex size-7 items-center justify-center rounded-md">
-              <div className="bg-ui-bg-component flex size-6 items-center justify-center rounded-[4px]">
-                <AdjustmentsDone className="text-ui-fg-subtle" />
+        <div className="px-3 py-4">
+          <div className="flex items-center gap-x-3 px-3 pb-4">
+            <div className="flex size-7 items-center justify-center rounded-md bg-ui-bg-base shadow-borders-base">
+              <div className="flex size-6 items-center justify-center rounded-[4px] bg-ui-bg-component">
+                <DropCap className="text-ui-fg-subtle" />
               </div>
             </div>
             <div>
-              <Text size="small" weight="plus" leading="compact">
-                {t('products.informationalAttributes.header', 'Product Information')}
+              <Text
+                size="small"
+                weight="plus"
+                leading="compact"
+              >
+                {t('products.edit.informationalAttributes.header')}
               </Text>
-              <Text size="xsmall" leading="compact" className="text-ui-fg-subtle">
-                {t('products.informationalAttributes.description', 'Attributes used for informational purposes')}
+              <Text
+                size="xsmall"
+                leading="compact"
+                className="text-ui-fg-subtle"
+              >
+                {t('products.edit.informationalAttributes.description')}
               </Text>
             </div>
           </div>
-          <div className="overflow-hidden divide-y rounded-lg border">
+          <div className="divide-y overflow-hidden rounded-lg border">
             {informationalAttributes.map(attribute => (
               <SectionRow
                 key={`${attribute.attribute_id}-${attribute.attribute_source}`}
@@ -261,14 +275,17 @@ export const ProductAdditionalAttributesSection = ({ product }: ProductAttribute
                     attribute={attribute}
                   />
                 }
+                className="bg-ui-bg-component p-3 [&>p]:gap-x-1"
                 value={
                   attribute.values?.length
-                    ? attribute.values
-                        .map(v => getInformationalAttributeDisplayValue(v))
-                        .join(', ')
+                    ? attribute.values.map(v => getInformationalAttributeDisplayValue(v)).join(', ')
                     : '-'
                 }
-                tooltip={attribute.description ?? undefined}
+                tooltip={
+                  (attribute.description ?? attribute.is_required)
+                    ? t('products.edit.attributes.required')
+                    : undefined
+                }
               />
             ))}
           </div>

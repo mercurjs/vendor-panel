@@ -1,6 +1,6 @@
 {
   "name": "vendor-panel",
-  "version": "1.5.1",
+  "version": "1.5.4",
   "scripts": {
     "generate:static": "node ./scripts/generate-currencies.js && prettier --write ./src/lib/currencies.ts",
     "dev": "vite",

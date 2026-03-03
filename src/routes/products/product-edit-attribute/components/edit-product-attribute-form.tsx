@@ -10,6 +10,7 @@ import { SwitchBox } from '../../../../components/common/switch-box';
 import { ChipInput } from '../../../../components/inputs/chip-input';
 import { Combobox } from '../../../../components/inputs/combobox';
 import { RouteDrawer, useRouteModal } from '../../../../components/modals';
+import { i18n } from '../../../../components/utilities/i18n';
 import { KeyboundForm } from '../../../../components/utilities/keybound-form';
 import { useUpdateProductAttribute } from '../../../../hooks/api/products';
 import { ProductAttribute, ProductInformationalAttribute } from '../../../../types/products';
@@ -21,7 +22,7 @@ type EditProductAttributeFormProps = {
 };
 
 const EditProductAttributeSchema = z.object({
-  values: z.array(z.string()).min(1),
+  values: z.array(z.string()).min(1, i18n.t('products.edit.attributes.valuesRequired')),
   use_for_variations: z.boolean()
 });
 

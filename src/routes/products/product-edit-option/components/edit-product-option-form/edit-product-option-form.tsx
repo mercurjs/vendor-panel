@@ -9,6 +9,7 @@ import { Form } from '../../../../../components/common/form';
 import { SwitchBox } from '../../../../../components/common/switch-box';
 import { ChipInput } from '../../../../../components/inputs/chip-input';
 import { RouteDrawer, useRouteModal } from '../../../../../components/modals';
+import { i18n } from '../../../../../components/utilities/i18n';
 import { KeyboundForm } from '../../../../../components/utilities/keybound-form';
 import { useUpdateProductOption } from '../../../../../hooks/api/products';
 
@@ -17,8 +18,8 @@ type EditProductOptionFormProps = {
 };
 
 const EditProductOptionSchema = z.object({
-  title: z.string().min(1),
-  values: z.array(z.string()).optional(),
+  title: z.string().min(1, i18n.t('products.edit.attributes.titleRequired')),
+  values: z.array(z.string()).min(1, i18n.t('products.edit.attributes.valuesRequired')),
   use_for_variations: z.boolean()
 });
 

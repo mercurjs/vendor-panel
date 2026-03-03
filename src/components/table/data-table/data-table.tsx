@@ -61,7 +61,8 @@ export const _DataTable = <TData,>({
     );
   }
 
-  const noQuery = Object.values(queryObject).filter(v => Boolean(v)).length === 0;
+  const noQuery =
+    Object.values(queryObject).filter(v => Boolean(v) && v !== defaultOrder).length === 0;
   const noResults = !isLoading && count === 0 && !noQuery;
   const noRecords = !isLoading && count === 0 && noQuery;
 

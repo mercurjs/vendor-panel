@@ -206,7 +206,7 @@ export const ProductListTable = () => {
           message: t('products.list.noRecordsMessage'),
           action: {
             to: '/products/create',
-            label: t('actions.add')
+            label: t('actions.create')
           }
         }}
       />

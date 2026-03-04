@@ -25,10 +25,8 @@ type ProductOrganizationFormProps = {
 
 type ProductAdditionalData = {
   secondary_categories?: Array<{
-    // Create format:
     sec_cat_product_key?: string;
     category_ids?: string[];
-    // Update/read formats (backend-dependent):
     handle?: string;
     secondary_categories_ids?: string[];
   }>;
@@ -127,7 +125,7 @@ const ProductOrganizationSchema = zod.object({
     .array(zod.string())
     .min(1, { message: i18n.t('products.create.errors.primaryCategoryRequired') }),
   secondary_categories: zod.array(zod.string()).optional(),
-  tag_ids: zod.array(zod.string())
+  tag_ids: zod.array(zod.string()).nullable()
 });
 
 export const ProductOrganizationForm = ({ product }: ProductOrganizationFormProps) => {
@@ -224,8 +222,8 @@ export const ProductOrganizationForm = ({ product }: ProductOrganizationFormProp
     const hasSecondaryCatsChanges = addCategoryIds.length > 0 || removedCategoryIds.length > 0;
 
     const payload = {
-      type_id: data.type_id ? data.type_id : undefined,
-      collection_id: data.collection_id ? data.collection_id : undefined,
+      type_id: data.type_id || null,
+      collection_id: data.collection_id || null,
       categories: data.categories?.map(id => ({ id })) || [],
       tags: data.tag_ids?.map(t => ({ id: t })) ?? [],
       ...(hasSecondaryCatsChanges && {
@@ -279,6 +277,7 @@ export const ProductOrganizationForm = ({ product }: ProductOrganizationFormProp
                         options={tags.options}
                         onSearchValueChange={tags.onSearchValueChange}
                         searchValue={tags.searchValue}
+                        allowClear
                       />
                     </Form.Control>
                     <Form.ErrorMessage />
@@ -300,6 +299,7 @@ export const ProductOrganizationForm = ({ product }: ProductOrganizationFormProp
                         searchValue={types.searchValue}
                         onSearchValueChange={types.onSearchValueChange}
                         fetchNextPage={types.fetchNextPage}
+                        allowClear
                       />
                     </Form.Control>
                     <Form.ErrorMessage />
@@ -313,11 +313,14 @@ export const ProductOrganizationForm = ({ product }: ProductOrganizationFormProp
               render={({ field }) => {
                 return (
                   <Form.Item>
-                    <Form.Label>{t('products.fields.primaryCategory.label')}</Form.Label>
+                    <Form.Label tooltip={t('products.fields.primaryCategory.tooltip')}>
+                      {t('products.fields.primaryCategory.label')}
+                    </Form.Label>
                     <Form.Control>
                       <CategoryCombobox
                         {...field}
                         isSingleSelect
+                        allowClear={false}
                       />
                     </Form.Control>
                     <Form.ErrorMessage />
@@ -359,6 +362,7 @@ export const ProductOrganizationForm = ({ product }: ProductOrganizationFormProp
                         options={collections.options}
                         onSearchValueChange={collections.onSearchValueChange}
                         searchValue={collections.searchValue}
+                        allowClear
                       />
                     </Form.Control>
                     <Form.ErrorMessage />

@@ -142,6 +142,7 @@ export const ProductCreateOrganizationSection = ({
                       field.onBlur();
                     }}
                     isSingleSelect
+                    allowClear={false}
                   />
                 </Form.Control>
                 {!isFocused && <Form.ErrorMessage />}

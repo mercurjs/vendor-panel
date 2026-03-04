@@ -38,6 +38,7 @@ interface CategoryComboboxProps extends Omit<
   onFocus?: () => void;
   onBlur?: () => void;
   isSingleSelect?: boolean;
+  allowClear?: boolean;
 }
 
 type Level = {
@@ -49,7 +50,19 @@ const TABLUAR_NUM_WIDTH = 8;
 const TAG_BASE_WIDTH = 28;
 
 export const CategoryCombobox = forwardRef<HTMLInputElement, CategoryComboboxProps>(
-  ({ value, onChange, className, onFocus, onBlur, isSingleSelect = false, ...props }, ref) => {
+  (
+    {
+      value,
+      onChange,
+      className,
+      onFocus,
+      onBlur,
+      isSingleSelect = false,
+      allowClear = true,
+      ...props
+    },
+    ref
+  ) => {
     const innerRef = useRef<HTMLInputElement>(null);
     const badgesContainerRef = useRef<HTMLDivElement>(null);
     const [visibleBadgesCount, setVisibleBadgesCount] = useState(0);
@@ -405,7 +418,7 @@ export const CategoryCombobox = forwardRef<HTMLInputElement, CategoryComboboxPro
                           >
                             <Badge
                               size="2xsmall"
-                              className="flex w-fit items-center p-0"
+                              className="flex w-fit items-center bg-ui-bg-base p-0"
                             >
                               <span className="max-w-[200px] truncate text-ellipsis border-r border-ui-border-base px-1.5">
                                 {category?.label || 'Unknown'}
@@ -451,6 +464,17 @@ export const CategoryCombobox = forwardRef<HTMLInputElement, CategoryComboboxPro
                 }}
               />
             </div>
+
+            {value.length > 0 && allowClear && (
+              <button
+                type="button"
+                onClick={() => onChange([])}
+                className="absolute right-7 flex size-8 items-center justify-center text-ui-fg-muted outline-none transition-fg hover:bg-ui-bg-field-hover"
+              >
+                <XMarkMini className="text-ui-fg-muted" />
+              </button>
+            )}
+
             <button
               type="button"
               onClick={() => handleOpenChange(true)}

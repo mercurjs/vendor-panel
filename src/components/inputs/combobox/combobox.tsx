@@ -342,9 +342,9 @@ const ComboboxImpl = <T extends Value = string>(
                   >
                     <Badge
                       size="2xsmall"
-                      className="w-fit p-0"
+                      className="w-fit bg-ui-bg-base p-0"
                     >
-                      <span className="max-w-[200px] truncate text-ellipsis border-r border-ui-border-base bg-ui-bg-base px-1.5">
+                      <span className="max-w-[200px] truncate text-ellipsis border-r border-ui-border-base px-1.5">
                         {option?.label || 'Unknown'}
                       </span>
                       <XMarkMini className="mr-0.5 !text-ui-fg-base" />
@@ -375,7 +375,14 @@ const ComboboxImpl = <T extends Value = string>(
             </button>
           ) : null}
           {hideInput && !isArrayValue && (
-            <div className="pointer-events-none flex size-full items-center overflow-hidden">
+            <div
+              className="flex size-full items-center overflow-hidden"
+              onClick={e => {
+                e.preventDefault();
+                e.stopPropagation();
+                comboboxRef?.current?.focus();
+              }}
+            >
               <Text
                 size="small"
                 leading="compact"
@@ -409,14 +416,14 @@ const ComboboxImpl = <T extends Value = string>(
             {...inputProps}
           />
         </div>
-        {allowClear && controlledValue && (
+        {allowClear && controlledValue && (isArrayValue ? selectedValues.length > 0 : true) && (
           <button
             type="button"
             onClick={e => {
               e.preventDefault();
-              handleValueChange(undefined);
+              handleValueChange(emptyState);
             }}
-            className="txt-compact-small-plus absolute end-[28px] top-0.5 z-[1] flex h-[28px] items-center rounded-[4px] border bg-ui-bg-base px-1.5 py-[2px] text-ui-fg-subtle outline-none transition-fg focus-within:border-ui-fg-interactive hover:bg-ui-bg-base-hover"
+            className="absolute right-7 flex size-8 items-center justify-center text-ui-fg-muted outline-none transition-fg hover:bg-ui-bg-field-hover"
           >
             <XMarkMini className="text-ui-fg-muted" />
           </button>

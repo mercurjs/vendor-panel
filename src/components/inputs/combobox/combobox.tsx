@@ -346,8 +346,8 @@ const ComboboxImpl = <T extends Value = string>(
                       size="2xsmall"
                       className="w-fit bg-ui-bg-base p-0"
                     >
-                      <span className="max-w-[200px] truncate text-ellipsis border-r border-ui-border-base px-1.5">
-                        {option?.label || optionValue || 'Unknown'}
+                      <span className="max-w-[200px] truncate text-ellipsis border-r border-ui-border-base bg-ui-bg-base px-1.5">
+                        {option?.label || 'Unknown'}
                       </span>
                       <XMarkMini className="mr-0.5 !text-ui-fg-base" />
                     </Badge>

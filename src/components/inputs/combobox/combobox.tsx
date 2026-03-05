@@ -57,6 +57,7 @@ interface ComboboxProps<T extends Value = Value> extends Omit<
   noResultsPlaceholder?: ReactNode;
   allowClear?: boolean;
   forceHideInput?: boolean;
+  showCheck?: boolean;
 }
 
 const ComboboxImpl = <T extends Value = string>(
@@ -74,6 +75,7 @@ const ComboboxImpl = <T extends Value = string>(
     noResultsPlaceholder,
     allowClear,
     forceHideInput,
+    showCheck = true,
     ...inputProps
   }: ComboboxProps<T>,
   ref: ForwardedRef<HTMLInputElement>
@@ -202,7 +204,7 @@ const ComboboxImpl = <T extends Value = string>(
   const showSelected = showTag && !searchValue && !open;
 
   const hideInput = forceHideInput || (!isArrayValue && hasValue && !open);
-  const selectedLabel = options.find(o => o.value === selectedValues)?.label;
+  const selectedLabel = options.find(o => o.value === selectedValues)?.label || controlledValue;
 
   const hidePlaceholder = showSelected || open;
 
@@ -345,7 +347,7 @@ const ComboboxImpl = <T extends Value = string>(
                       className="w-fit bg-ui-bg-base p-0"
                     >
                       <span className="max-w-[200px] truncate text-ellipsis border-r border-ui-border-base px-1.5">
-                        {option?.label || 'Unknown'}
+                        {option?.label || optionValue || 'Unknown'}
                       </span>
                       <XMarkMini className="mr-0.5 !text-ui-fg-base" />
                     </Badge>
@@ -402,7 +404,7 @@ const ComboboxImpl = <T extends Value = string>(
               {
                 'opacity-0': hideInput && !isArrayValue,
                 'ps-2': !showTag && !isArrayValue,
-                'absolute inset-0':
+                'absolute inset-0 opacity-0':
                   isArrayValue && Array.isArray(selectedValues) && selectedValues.length > 0
               }
             )}
@@ -474,9 +476,11 @@ const ComboboxImpl = <T extends Value = string>(
               }
             )}
           >
-            <PrimitiveComboboxItemCheck className="flex !size-5 items-center justify-center">
-              {isArrayValue ? <CheckMini /> : <EllipseMiniSolid />}
-            </PrimitiveComboboxItemCheck>
+            {showCheck && (
+              <PrimitiveComboboxItemCheck className="flex !size-5 items-center justify-center">
+                {isArrayValue ? <CheckMini /> : <EllipseMiniSolid />}
+              </PrimitiveComboboxItemCheck>
+            )}
             <PrimitiveComboboxItemValue className="txt-compact-small">
               {label}
             </PrimitiveComboboxItemValue>

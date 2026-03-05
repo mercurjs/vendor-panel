@@ -1,10 +1,11 @@
 import { forwardRef, useEffect, useImperativeHandle } from 'react';
 
 import { Button, Divider, Heading, Text } from '@medusajs/ui';
-import { Path, UseFormReturn, useFieldArray } from 'react-hook-form';
+import { Path, useFieldArray, UseFormReturn } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useAttributes } from '../../../../../hooks/api/attributes';
+import { ProductAttribute } from '../../../../../types/products';
 import { ProductCreateSchemaType } from '../../types';
 import { createAttributeValidationRules } from '../../utils/attribute-validation';
 import { processAttributes, type FormField } from '../../utils/process-attributes';
@@ -157,13 +158,21 @@ export const ProductCreateAttributesForm = forwardRef<
     return () => subscription.unsubscribe();
   }, [form, requiredFormFields]);
 
+  const availableAttributes = allAttributes
+    ?.filter(attribute => !attribute.is_required)
+    .filter(attribute => !options.fields?.some(option => option.attributeId === attribute.id));
+
   return (
     <div className="flex flex-col items-center p-16">
       <div className="flex w-full max-w-[720px] flex-col gap-y-8">
         <Header options={options} />
         <div className="flex flex-col gap-y-8">
           {/* User-created options */}
-          <UserCreatedOptionsList form={form} options={options} />
+          <UserCreatedOptionsList
+            form={form}
+            options={options}
+            availableAttributes={availableAttributes as ProductAttribute[]}
+          />
 
           {/* Required attributes */}
           {requiredFormFields.length === 0 ? (
@@ -207,7 +216,12 @@ ProductCreateAttributesForm.displayName = 'ProductCreateAttributesForm';
 
 type HeaderProps = {
   options: {
-    append: (option: { title: string; values: string[]; metadata?: Record<string, unknown> }) => void;
+    append: (option: {
+      title: string;
+      values: string[];
+      metadata?: Record<string, unknown>;
+      useForVariants: boolean;
+    }) => void;
   };
 };
 

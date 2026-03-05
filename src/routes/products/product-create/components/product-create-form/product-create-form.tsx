@@ -15,7 +15,11 @@ import { usePricePreferences } from '../../../../../hooks/api/price-preferences'
 import { useCreateProduct } from '../../../../../hooks/api/products';
 import { useStockLocations } from '../../../../../hooks/api/stock-locations';
 import { uploadFilesQuery } from '../../../../../lib/client';
-import { PRODUCT_CREATE_FORM_DEFAULTS, ProductCreateSchema } from '../../constants';
+import {
+  PRODUCT_CREATE_FORM_DEFAULTS,
+  PRODUCT_CREATE_OPTION_DEFAULTS,
+  ProductCreateSchema
+} from '../../constants';
 import { ProductCreateSchemaType } from '../../types';
 import {
   ProductCreateAttributesForm,
@@ -273,6 +277,14 @@ export const ProductCreateForm = ({
     [form]
   );
 
+  useEffect(() => {
+    if (tab === Tab.VARIANTS) {
+      if (form.getValues('options').length === 0) {
+        form.setValue('options', [PRODUCT_CREATE_OPTION_DEFAULTS]);
+      }
+    }
+  }, [tab]);
+
   // Expose handler via ref if provided
   useEffect(() => {
     if (onSaveVariantMediaRef) {
@@ -470,6 +482,25 @@ export const ProductCreateForm = ({
       });
     });
 
+    const allFormOptions: any[] = (rest as any).options || [];
+
+    allFormOptions
+      .filter(
+        (opt: any) =>
+          opt.useForVariants === false &&
+          opt.metadata?.author === 'admin' &&
+          opt.attributeId &&
+          opt.title &&
+          opt.values?.length > 0
+      )
+      .forEach((option: any) => {
+        adminAttributes.push({
+          attribute_id: option.attributeId,
+          values: option.values.map((value: any) => String(value)),
+          use_for_variations: false
+        });
+      });
+
     // Remove dynamic attribute fields from payload
     const { ...payload } = rest;
     dynamicAttributeFields.forEach(fieldName => {
@@ -657,10 +688,17 @@ export const ProductCreateForm = ({
       collection_id: (finalPayload as any).collection_id || undefined,
       shipping_profile_id: undefined,
       enable_variants: undefined,
-      // Send options used for variants
-      // Variants will have values for all options
-      // If no options exist, use default from payload
-      options: allOptions.length > 0 ? allOptions : (finalPayload as any).options,
+      options: (() => {
+        if (allOptions.length > 0) {
+          return allOptions;
+        }
+        const formOptionsForVariants = ((finalPayload as any).options || []).filter(
+          (opt: any) => opt.useForVariants !== false
+        );
+        return formOptionsForVariants.length > 0
+          ? formOptionsForVariants
+          : [PRODUCT_CREATE_OPTION_DEFAULTS];
+      })(),
       metadata: (() => {
         const existing = (finalPayload as any)?.metadata ?? undefined;
         if (!secCatProductKey) {

@@ -77,11 +77,7 @@ export const ProductCreateVariantsForm = ({
 
         const selectedValueIds = (formValues as any)?.[attr.handle];
 
-        if (
-          selectedValueIds &&
-          Array.isArray(selectedValueIds) &&
-          selectedValueIds.length > 0
-        ) {
+        if (selectedValueIds && Array.isArray(selectedValueIds) && selectedValueIds.length > 0) {
           const selectedValues = selectedValueIds
             .map((valueId: string) => {
               const possibleValue = attr.possible_values?.find((pv: any) => pv.id === valueId);
@@ -105,7 +101,6 @@ export const ProductCreateVariantsForm = ({
     const options = (formValues as any)?.options || [];
     options.forEach((option: any) => {
       if (
-        option?.metadata?.author === 'vendor' &&
         option?.useForVariants !== false &&
         option?.title &&
         option?.values &&
@@ -315,7 +310,7 @@ export const ProductCreateVariantsForm = ({
       // When no variant attributes are selected, only create default variant if variants are empty
       // This prevents overwriting existing variants unnecessarily
       const currentVariants = form.getValues('variants') || [];
-      
+
       // Only create default variant if there are no variants at all
       if (currentVariants.length === 0) {
         const stockLocationsData: Record<string, any> = {};
@@ -409,13 +404,13 @@ const useColumns = ({
     defaultValue: []
   });
 
-  const allSelected = variants.length > 0 && variants.every((v) => v.should_create);
-  const someSelected = variants.some((v) => v.should_create) && !allSelected;
+  const allSelected = variants.length > 0 && variants.every(v => v.should_create);
+  const someSelected = variants.some(v => v.should_create) && !allSelected;
 
   const handleSelectAll = useCallback(
     (checked: boolean) => {
       const currentVariants = form.getValues('variants') || [];
-      const updatedVariants = currentVariants.map((v) => ({
+      const updatedVariants = currentVariants.map(v => ({
         ...v,
         should_create: checked
       }));
@@ -425,134 +420,139 @@ const useColumns = ({
   );
 
   return useMemo(
-    () => [
-      // Checkbox column
-      columnHelper.column({
-        id: 'checkbox',
-        header: () => {
-          return (
-            <Checkbox
-              checked={allSelected ? true : someSelected ? 'indeterminate' : false}
-              onCheckedChange={handleSelectAll}
-            />
-          );
-        },
-        field: context => {
-          const rowData = context.row.original as VariantWithIndex;
-          return `variants.${rowData.originalIndex}.should_create`;
-        },
-        type: 'boolean',
-        cell: context => {
-          return <DataGrid.BooleanCell context={context} />;
-        },
-        disableHiding: true,
-        size: 52,
-        pin: 'left'
-      }),
-      // Single readonly column showing all option values combined (e.g., "Color / Material") - first
-      columnHelper.column({
-        id: 'options_combined',
-        name: variantAttributes.length > 0 ? variantAttributes.map(attr => attr.name).join(' / ') : 'Options',
-        header: variantAttributes.length > 0 ? variantAttributes.map(attr => attr.name).join(' / ') : 'Options',
-        cell: context => {
-          if (variantAttributes.length === 0) {
-            return <DataGrid.ReadonlyCell context={context}></DataGrid.ReadonlyCell>;
+    () =>
+      [
+        // Checkbox column
+        columnHelper.column({
+          id: 'checkbox',
+          header: () => {
+            return (
+              <Checkbox
+                checked={allSelected ? true : someSelected ? 'indeterminate' : false}
+                onCheckedChange={handleSelectAll}
+              />
+            );
+          },
+          field: context => {
+            const rowData = context.row.original as VariantWithIndex;
+            return `variants.${rowData.originalIndex}.should_create`;
+          },
+          type: 'boolean',
+          cell: context => {
+            return <DataGrid.BooleanCell context={context} />;
+          },
+          disableHiding: true,
+          size: 52,
+          pin: 'left'
+        }),
+        // Single readonly column showing all option values combined (e.g., "Color / Material") - first
+        columnHelper.column({
+          id: 'options_combined',
+          name:
+            variantAttributes.length > 0
+              ? variantAttributes.map(attr => attr.name).join(' / ')
+              : 'Options',
+          header:
+            variantAttributes.length > 0
+              ? variantAttributes.map(attr => attr.name).join(' / ')
+              : 'Options',
+          cell: context => {
+            if (variantAttributes.length === 0) {
+              return <DataGrid.ReadonlyCell context={context}></DataGrid.ReadonlyCell>;
+            }
+            const rowData = context.row.original as VariantWithIndex;
+            const combinedValue = variantAttributes
+              .map(attr => rowData.options?.[attr.name] || '')
+              .filter(Boolean)
+              .join(' / ');
+            return <DataGrid.ReadonlyCell context={context}>{combinedValue}</DataGrid.ReadonlyCell>;
+          },
+          disableHiding: true,
+          pin: 'left'
+        }),
+        // Title column (editable) - second (after variant)
+        columnHelper.column({
+          id: 'title',
+          name: t('fields.title'),
+          header: t('fields.title'),
+          field: context => {
+            const rowData = context.row.original as VariantWithIndex;
+            return `variants.${rowData.originalIndex}.title`;
+          },
+          type: 'text',
+          cell: context => {
+            return <DataGrid.TextCell context={context} />;
+          },
+          disableHiding: true,
+          pin: 'left'
+        }),
+        // Media column - third
+        columnHelper.column({
+          id: 'media',
+          name: t('products.create.variants.productVariants.media'),
+          header: t('products.create.variants.productVariants.media'),
+          field: context => {
+            const rowData = context.row.original as VariantWithIndex;
+            return `variants.${rowData.originalIndex}.media`;
+          },
+          type: 'media',
+          cell: context => {
+            const rowData = context.row.original as VariantWithIndex;
+            const variantMedia = variants[rowData.originalIndex]?.media;
+            return (
+              <DataGridMediaCell
+                context={context}
+                onOpenMediaModal={() => {
+                  onOpenMediaModal?.(rowData.originalIndex, rowData.title, variantMedia);
+                }}
+              />
+            );
           }
-          const rowData = context.row.original as VariantWithIndex;
-          const combinedValue = variantAttributes
-            .map(attr => rowData.options?.[attr.name] || '')
-            .filter(Boolean)
-            .join(' / ');
-          return (
-            <DataGrid.ReadonlyCell context={context}>{combinedValue}</DataGrid.ReadonlyCell>
-          );
-        },
-        disableHiding: true,
-        pin: 'left'
-      }),
-      // Title column (editable) - second (after variant)
-      columnHelper.column({
-        id: 'title',
-        name: t('fields.title'),
-        header: t('fields.title'),
-        field: context => {
-          const rowData = context.row.original as VariantWithIndex;
-          return `variants.${rowData.originalIndex}.title`;
-        },
-        type: 'text',
-        cell: context => {
-          return <DataGrid.TextCell context={context} />;
-        },
-        disableHiding: true,
-        pin: 'left'
-      }),
-      // Media column - third
-      columnHelper.column({
-        id: 'media',
-        name: t('products.create.variants.productVariants.media'),
-        header: t('products.create.variants.productVariants.media'),
-        field: context => {
-          const rowData = context.row.original as VariantWithIndex;
-          return `variants.${rowData.originalIndex}.media`;
-        },
-        type: 'media',
-        cell: context => {
-          const rowData = context.row.original as VariantWithIndex;
-          const variantMedia = variants[rowData.originalIndex]?.media;
-          return (
-            <DataGridMediaCell
-              context={context}
-              onOpenMediaModal={() => {
-                onOpenMediaModal?.(rowData.originalIndex, rowData.title, variantMedia);
-              }}
-            />
-          );
-        }
-      }),
-      columnHelper.column({
-        id: 'sku',
-        name: t('fields.sku'),
-        header: t('fields.sku'),
-        field: context => {
-          const rowData = context.row.original as VariantWithIndex;
-          return `variants.${rowData.originalIndex}.sku`;
-        },
-        type: 'text',
-        cell: context => {
-          return <DataGrid.TextCell context={context} />;
-        }
-      }),
-      ...createDataGridPriceColumns<VariantWithIndex, ProductCreateSchemaType>({
-        currencies: store?.supported_currencies?.map((c) => c.currency_code) || [],
-        pricePreferences,
-        getFieldName: (context, value) => {
-          const rowData = context.row.original as VariantWithIndex;
-          return `variants.${rowData.originalIndex}.prices.${value}`;
-        },
-        t
-      }),
-      // Stock location columns - commented out for now
-      // ...stockLocations.map(location =>
-      //   columnHelper.column({
-      //     id: `stock_location_${location.id}`,
-      //     name: location.name,
-      //     header: location.name,
-      //     field: context => {
-      //       const rowData = context.row.original as any;
-      //       return `variants.${rowData.originalIndex}.stock_locations.${location.id}` as any;
-      //     },
-      //     type: 'togglable-number',
-      //     cell: context => {
-      //       return (
-      //         <DataGridTogglableNumberCell
-      //           context={context}
-      //           disabledToggleTooltip={t('inventory.stock.disabledToggleTooltip')}
-      //         />
-      //       );
-      //     }
-      //   })
-      // )
-    ] as ColumnDef<VariantWithIndex>[],
+        }),
+        columnHelper.column({
+          id: 'sku',
+          name: t('fields.sku'),
+          header: t('fields.sku'),
+          field: context => {
+            const rowData = context.row.original as VariantWithIndex;
+            return `variants.${rowData.originalIndex}.sku`;
+          },
+          type: 'text',
+          cell: context => {
+            return <DataGrid.TextCell context={context} />;
+          }
+        }),
+        ...createDataGridPriceColumns<VariantWithIndex, ProductCreateSchemaType>({
+          currencies: store?.supported_currencies?.map(c => c.currency_code) || [],
+          pricePreferences,
+          getFieldName: (context, value) => {
+            const rowData = context.row.original as VariantWithIndex;
+            return `variants.${rowData.originalIndex}.prices.${value}`;
+          },
+          t
+        })
+        // Stock location columns - commented out for now
+        // ...stockLocations.map(location =>
+        //   columnHelper.column({
+        //     id: `stock_location_${location.id}`,
+        //     name: location.name,
+        //     header: location.name,
+        //     field: context => {
+        //       const rowData = context.row.original as any;
+        //       return `variants.${rowData.originalIndex}.stock_locations.${location.id}` as any;
+        //     },
+        //     type: 'togglable-number',
+        //     cell: context => {
+        //       return (
+        //         <DataGridTogglableNumberCell
+        //           context={context}
+        //           disabledToggleTooltip={t('inventory.stock.disabledToggleTooltip')}
+        //         />
+        //       );
+        //     }
+        //   })
+        // )
+      ] as ColumnDef<VariantWithIndex>[],
     [
       variantAttributes,
       t,

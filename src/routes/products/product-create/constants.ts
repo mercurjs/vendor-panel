@@ -1,14 +1,15 @@
-import { z } from "zod"
-import { i18n } from "../../../components/utilities/i18n/i18n"
-import { optionalFloat, optionalInt } from "../../../lib/validation"
-import { decorateVariantsWithDefaultValues } from "./utils"
+import { z } from 'zod';
+
+import { i18n } from '../../../components/utilities/i18n/i18n';
+import { optionalFloat, optionalInt } from '../../../lib/validation';
+import { decorateVariantsWithDefaultValues } from './utils';
 
 export const MediaSchema = z.object({
   id: z.string().optional(),
   url: z.string(),
   isThumbnail: z.boolean(),
-  file: z.any().nullable(), // File
-})
+  file: z.any().nullable() // File
+});
 
 const ProductCreateVariantSchema = z.object({
   should_create: z.boolean(),
@@ -36,31 +37,30 @@ const ProductCreateVariantSchema = z.object({
     .array(
       z.object({
         inventory_item_id: z.string(),
-        required_quantity: optionalInt,
+        required_quantity: optionalInt
       })
     )
     .optional(),
-  media: z.array(MediaSchema).optional(),
-})
+  media: z.array(MediaSchema).optional()
+});
 
-export type ProductCreateVariantSchema = z.infer<
-  typeof ProductCreateVariantSchema
->
+export type ProductCreateVariantSchema = z.infer<typeof ProductCreateVariantSchema>;
 
-const ProductCreateOptionSchema = z.object({
-  title: z.string(),
-  values: z.array(z.string()).min(1),
+export const ProductCreateOptionSchema = z.object({
+  title: z.string().min(1, i18n.t('products.fields.attributes.add.title.required')),
+  values: z.array(z.string()).min(1, i18n.t('products.fields.attributes.add.values.required')),
   metadata: z.record(z.unknown()).optional(),
   useForVariants: z.boolean().optional(),
-})
+  attributeId: z.string().optional()
+});
 
-export type ProductCreateOptionSchema = z.infer<
-  typeof ProductCreateOptionSchema
->
+export type ProductCreateOptionSchemaType = {
+  options: Array<z.infer<typeof ProductCreateOptionSchema>>;
+};
 
 export const ProductCreateSchema = z
   .object({
-    title: z.string().min(1, i18n.t("products.create.errors.titleRequired")),
+    title: z.string().min(1, i18n.t('products.create.errors.titleRequired')),
     subtitle: z.string().optional(),
     handle: z.string().optional(),
     description: z.string().optional(),
@@ -68,14 +68,16 @@ export const ProductCreateSchema = z
     type_id: z.string().optional(),
     collection_id: z.string().optional(),
     shipping_profile_id: z.string().optional(),
-    categories: z.array(z.string()).min(1, i18n.t("products.create.errors.primaryCategoryRequired")),
+    categories: z
+      .array(z.string())
+      .min(1, i18n.t('products.create.errors.primaryCategoryRequired')),
     secondary_categories: z.array(z.string()).optional(),
     tags: z.array(z.string()).optional(),
     sales_channels: z
       .array(
         z.object({
           id: z.string(),
-          name: z.string(),
+          name: z.string()
         })
       )
       .optional(),
@@ -92,18 +94,18 @@ export const ProductCreateSchema = z
     options: z.array(ProductCreateOptionSchema).min(1),
     enable_variants: z.boolean(),
     variants: z.array(ProductCreateVariantSchema).min(1),
-    media: z.array(MediaSchema).optional(),
+    media: z.array(MediaSchema).optional()
   })
   .superRefine((data, ctx) => {
-    if (data.variants.every((v) => !v.should_create)) {
+    if (data.variants.every(v => !v.should_create)) {
       return ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        path: ["variants"],
-        message: "invalid_length",
-      })
+        path: ['variants'],
+        message: 'invalid_length'
+      });
     }
 
-    const skus = new Set<string>()
+    const skus = new Set<string>();
 
     data.variants.forEach((v, index) => {
       if (v.sku) {
@@ -111,61 +113,59 @@ export const ProductCreateSchema = z
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: [`variants.${index}.sku`],
-            message: i18n.t("products.create.errors.uniqueSku"),
-          })
+            message: i18n.t('products.create.errors.uniqueSku')
+          });
         }
 
-        skus.add(v.sku)
+        skus.add(v.sku);
       }
-    })
-  })
+    });
+  });
 
 export const EditProductMediaSchema = z.object({
-  media: z.array(MediaSchema),
-})
+  media: z.array(MediaSchema)
+});
 
-export const PRODUCT_CREATE_FORM_DEFAULTS: Partial<
-  z.infer<typeof ProductCreateSchema>
-> = {
+export const PRODUCT_CREATE_OPTION_DEFAULTS: Partial<z.infer<typeof ProductCreateOptionSchema>> = {
+  title: 'Default option',
+  values: ['Default option value']
+};
+
+export const PRODUCT_CREATE_FORM_DEFAULTS: Partial<z.infer<typeof ProductCreateSchema>> = {
   discountable: true,
   tags: [],
   sales_channels: [],
-  options: [
-    {
-      title: "Default option",
-      values: ["Default option value"],
-    },
-  ],
+  options: [],
   variants: decorateVariantsWithDefaultValues([
     {
-      title: "Default variant",
+      title: 'Default variant',
       should_create: true,
       variant_rank: 0,
       options: {
-        "Default option": "Default option value",
+        'Default option': 'Default option value'
       },
-      inventory: [{ inventory_item_id: "", required_quantity: "" }],
-      is_default: true,
-    },
+      inventory: [{ inventory_item_id: '', required_quantity: '' }],
+      is_default: true
+    }
   ]),
   enable_variants: false,
   media: [],
   categories: [],
   secondary_categories: [],
-  collection_id: "",
-  shipping_profile_id: "",
-  description: "",
-  handle: "",
-  height: "",
-  hs_code: "",
-  length: "",
-  material: "",
-  mid_code: "",
-  origin_country: "",
-  subtitle: "",
-  title: "",
-  type_id: "",
-  weight: "",
-  width: "",
+  collection_id: '',
+  shipping_profile_id: '',
+  description: '',
+  handle: '',
+  height: '',
+  hs_code: '',
+  length: '',
+  material: '',
+  mid_code: '',
+  origin_country: '',
+  subtitle: '',
+  title: '',
+  type_id: '',
+  weight: '',
+  width: ''
   // Dynamic attributes defaults will be set in the form component
-}
+};

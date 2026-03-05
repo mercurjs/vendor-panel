@@ -1,38 +1,55 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Heading, toast } from '@medusajs/ui';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
+import { z } from 'zod';
 
 import { RouteDrawer } from '../../../components/modals';
 import { KeyboundForm } from '../../../components/utilities/keybound-form';
-import { useAddProductAttribute } from '../../../hooks/api/products';
+import {
+  useAddProductAttribute,
+  useProduct,
+  useProductAttributes
+} from '../../../hooks/api/products';
 import { UserCreatedOptionsList } from '../product-create/components/product-create-attributes-form/user-created-options-list';
-
-type AddAttributeFormValues = {
-  options: Array<{
-    title: string;
-    values: string[];
-    metadata?: Record<string, unknown>;
-    useForVariants?: boolean;
-  }>;
-};
+import { ProductCreateOptionSchema } from '../product-create/constants';
+import { ProductCreateSchemaType } from '../product-create/types';
 
 export const ProductAddAttribute = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
-  const form = useForm<AddAttributeFormValues>({
+  const form = useForm<ProductCreateSchemaType>({
     defaultValues: {
       options: [
         {
           title: '',
           values: [],
           metadata: { author: 'vendor' },
+          attributeId: '',
           useForVariants: true
         }
       ]
-    }
+    },
+    resolver: zodResolver(
+      z.object({
+        options: z.array(ProductCreateOptionSchema)
+      })
+    )
   });
+
+  const { attributes: allAttributes, isLoading: allAttributesLoading } = useProductAttributes(id!);
+  const { product, isLoading: isProductLoading } = useProduct(id!);
+
+  const availableAttributes = allAttributes
+    ?.filter(attribute => !attribute.is_required)
+    ?.filter(
+      attribute =>
+        !product?.informational_attributes?.some(
+          infoAttribute => infoAttribute.attribute_id === attribute.id
+        )
+    );
 
   const options = useFieldArray({
     control: form.control,
@@ -47,16 +64,6 @@ export const ProductAddAttribute = () => {
     const name = option?.title?.trim();
     const values = (option?.values ?? []).map(v => v.trim()).filter(Boolean);
     const use_for_variations = option?.useForVariants === true;
-
-    if (!name) {
-      toast.error(t('products.fields.options.optionTitlePlaceholder'));
-      return;
-    }
-
-    if (!values.length) {
-      toast.error(t('products.fields.options.variantionsPlaceholder'));
-      return;
-    }
 
     await mutateAsync(
       {
@@ -80,6 +87,10 @@ export const ProductAddAttribute = () => {
     );
   });
 
+  if (allAttributesLoading || isProductLoading) {
+    return null;
+  }
+
   return (
     <RouteDrawer>
       <RouteDrawer.Header>
@@ -96,9 +107,11 @@ export const ProductAddAttribute = () => {
         >
           <RouteDrawer.Body className="flex flex-col gap-y-4">
             <UserCreatedOptionsList
-              form={form as any}
-              options={options as any}
+              form={form}
+              options={options}
               allowRemove={false}
+              availableAttributes={availableAttributes ?? []}
+              isExistingProduct
             />
           </RouteDrawer.Body>
           <RouteDrawer.Footer>

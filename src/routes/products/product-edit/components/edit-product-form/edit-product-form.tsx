@@ -1,4 +1,5 @@
 import { Button, Input, Select, Text, Textarea, toast } from '@medusajs/ui';
+import i18next from 'i18next';
 import { useTranslation } from 'react-i18next';
 import * as zod from 'zod';
 
@@ -17,9 +18,9 @@ type EditProductFormProps = {
 
 const EditProductSchema = zod.object({
   status: zod.string().min(1),
-  title: zod.string().min(1),
+  title: zod.string().min(1, i18next.t('products.create.errors.titleRequired')),
   subtitle: zod.string().optional(),
-  handle: zod.string().min(1),
+  handle: zod.string().optional(),
   description: zod.string().optional(),
   discountable: zod.boolean()
 });
@@ -37,7 +38,7 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
       status: product.status,
       title: product.title,
       subtitle: product.subtitle || '',
-      handle: product.handle || '',
+      handle: product.handle,
       description: product.description || '',
       discountable: product.discountable
     },
@@ -75,7 +76,7 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
       {
         description,
         discountable,
-        handle,
+        handle: handle || undefined,
         title,
         subtitle
       },
@@ -189,7 +190,7 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
                       >
                         {t('fields.handle')}
                       </Form.Label>
-                      <Form.Control>
+                      <Form.Control className="[&>div>input]:aria-[invalid=true]:shadow-borders-error">
                         <div className="relative">
                           <div className="absolute inset-y-0 left-0 z-10 flex w-8 items-center justify-center border-r">
                             <Text
@@ -212,23 +213,6 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
                   );
                 }}
               />
-              {/* <Form.Field
-                control={form.control}
-                name='material'
-                render={({ field }) => {
-                  return (
-                    <Form.Item>
-                      <Form.Label optional>
-                        {t('fields.material')}
-                      </Form.Label>
-                      <Form.Control>
-                        <Input {...field} />
-                      </Form.Control>
-                      <Form.ErrorMessage />
-                    </Form.Item>
-                  );
-                }}
-              /> */}
               <Form.Field
                 control={form.control}
                 name="description"

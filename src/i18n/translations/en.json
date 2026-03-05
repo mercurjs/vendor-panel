@@ -657,8 +657,9 @@
           "placeholder": "Select value(s)"
         },
         "useForVariants": {
-          "label": "Use for variants",
-          "description": "When checked, we will create variants with this attribute"
+          "label": "Use for variations",
+          "description": "When checked, we will create variants with this attribute",
+          "editDescription": "If checked, you will be able to create variants using this attribute. If not, the attribute will be used for informational purposes only."
         },
         "selectValuePlaceholder": "Select value",
         "enterValuePlaceholder": "Enter value",
@@ -668,6 +669,18 @@
           "requiredSelect": "This attribute is required by the admin. Please select value.",
           "requiredSelectMultiple": "This attribute is required by the admin. Please select value(s).",
           "requiredEnter": "This attribute is required by the admin. Please enter value."
+        },
+        "add": {
+          "title": {
+            "label": "Title",
+            "placeholder": "Color",
+            "required": "Please enter a title"
+          },
+          "values": {
+            "label": "Values",
+            "placeholder": "Red, Blue, Green",
+            "required": "Please enter at least one value"
+          }
         }
       },
       "width": {

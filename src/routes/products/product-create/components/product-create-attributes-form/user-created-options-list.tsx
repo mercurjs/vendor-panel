@@ -1,95 +1,147 @@
 import { XMarkMini } from '@medusajs/icons';
-import { IconButton, Input, Label } from '@medusajs/ui';
-import { Controller, UseFormReturn, useWatch } from 'react-hook-form';
+import { IconButton } from '@medusajs/ui';
+import { UseFormReturn } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { Form } from '../../../../../components/common/form';
 import { SwitchBox } from '../../../../../components/common/switch-box';
 import { ChipInput } from '../../../../../components/inputs/chip-input';
+import { Combobox } from '../../../../../components/inputs/combobox';
+import { ProductAttribute } from '../../../../../types/products';
 import { ProductCreateSchemaType } from '../../types';
 
 type UserCreatedOptionsListProps = {
   form: UseFormReturn<ProductCreateSchemaType>;
   options: {
     fields: Array<{ id: string }>;
-    append: (option: { title: string; values: string[]; metadata?: Record<string, unknown> }) => void;
+    append: (option: {
+      title: string;
+      values: string[];
+      metadata?: Record<string, unknown>;
+      attributeId?: string;
+    }) => void;
     remove: (index: number) => void;
   };
-  /**
-   * Whether the user can remove an option row (shows the X button).
-   * Defaults to true to preserve behavior in product create flows.
-   */
   allowRemove?: boolean;
+  availableAttributes: ProductAttribute[];
+  isExistingProduct?: boolean;
 };
 
 export const UserCreatedOptionsList = ({
   form,
   options,
   allowRemove = true,
+  availableAttributes,
+  isExistingProduct = false
 }: UserCreatedOptionsListProps) => {
   const { t } = useTranslation();
 
-  // Watch all options to filter user-created ones
-  const watchedOptions = useWatch({
-    control: form.control,
-    name: 'options',
-    defaultValue: []
-  });
-
-  // Filter only user-created options (with metadata.author === 'vendor')
-  const userCreatedOptions = options.fields
-    .map((field, index) => ({ field, index }))
-    .filter(({ index }) => {
-      const option = watchedOptions[index];
-      return option?.metadata?.author === 'vendor';
-    });
-
-  if (userCreatedOptions.length === 0) {
+  if (options?.fields?.length === 0) {
     return null;
   }
 
   return (
     <ul className="flex flex-col gap-y-4">
-      {userCreatedOptions.map(({ field, index }) => {
+      {options.fields.map(({ id }, index) => {
         return (
-          <li key={field.id} className="flex flex-col gap-y-4">
-            <div className="bg-ui-bg-component shadow-elevation-card-rest grid grid-cols-[1fr_28px] items-center gap-1.5 rounded-xl p-1.5">
-              <div className="grid grid-cols-[min-content,1fr] items-center gap-1.5">
-                <div className="flex items-center px-2 py-1.5">
-                  <Label
-                    size="xsmall"
-                    weight="plus"
-                    className="text-ui-fg-subtle"
-                    htmlFor={`options.${index}.title`}
-                  >
-                    {t('fields.title')}
-                  </Label>
-                </div>
-                <Input
-                  className="bg-ui-bg-field-component hover:bg-ui-bg-field-component-hover"
-                  {...form.register(`options.${index}.title` as any)}
-                  placeholder={t('products.fields.options.optionTitlePlaceholder')}
-                />
-                <div className="flex items-center px-2 py-1.5">
-                  <Label
-                    size="xsmall"
-                    weight="plus"
-                    className="text-ui-fg-subtle"
-                    htmlFor={`options.${index}.values`}
-                  >
-                    {t('fields.values')}
-                  </Label>
-                </div>
-                <Controller
+          <li
+            className="flex flex-col gap-y-2 rounded-xl border bg-ui-bg-component p-1.5"
+            key={id}
+          >
+            <div className="flex items-center gap-1.5">
+              <div className="flex grow flex-col gap-y-2">
+                <Form.Field
                   control={form.control}
-                  name={`options.${index}.values` as any}
+                  name={`options.${index}.title`}
                   render={({ field: { onChange, ...field } }) => {
                     return (
-                      <ChipInput
-                        {...field}
-                        variant="contrast"
-                        onChange={onChange}
-                        placeholder={t('products.fields.options.variantionsPlaceholder')}
-                      />
+                      <Form.Item className="flex flex-row items-start gap-x-1.5 space-y-0 [&>div:last-child]:w-full">
+                        <Form.Label className="min-w-[60px] px-2 py-1.5">
+                          {t('products.fields.attributes.add.title.label')}
+                        </Form.Label>
+                        <Form.Control>
+                          <div className="flex flex-col gap-y-1.5">
+                            <Combobox
+                              {...field}
+                              placeholder={t('products.fields.attributes.add.title.placeholder')}
+                              options={[
+                                ...availableAttributes.map(attribute => ({
+                                  label: attribute.name,
+                                  value: attribute.id
+                                }))
+                              ]}
+                              onChange={v => {
+                                if (availableAttributes.find(attribute => attribute.id === v)) {
+                                  form.setValue(`options.${index}.values`, []);
+                                  form.setValue(`options.${index}.attributeId`, v);
+                                  form.setValue(
+                                    `options.${index}.title`,
+                                    availableAttributes.find(attribute => attribute.id === v)
+                                      ?.name || ''
+                                  );
+                                  form.setValue(`options.${index}.metadata`, { author: 'admin' });
+                                  return;
+                                }
+                                form.setValue(`options.${index}.values`, []);
+                                form.setValue(`options.${index}.attributeId`, '');
+                                form.setValue(`options.${index}.metadata`, { author: 'vendor' });
+                                onChange(v);
+                              }}
+                              onCreateOption={value => {
+                                form.setValue(`options.${index}.title`, value);
+                              }}
+                              className="w-full bg-ui-bg-base hover:bg-ui-bg-base-hover [&>div>input]:px-0 [&>div>input]:placeholder:text-ui-fg-muted"
+                              multiple={false}
+                              showCheck={false}
+                            />
+                            <Form.ErrorMessage />
+                          </div>
+                        </Form.Control>
+                      </Form.Item>
+                    );
+                  }}
+                />
+                <Form.Field
+                  control={form.control}
+                  name={`options.${index}.values`}
+                  render={({ field: { ...field } }) => {
+                    const selectedAttribute = availableAttributes?.find(
+                      attribute => attribute.id === form.watch(`options.${index}.attributeId`)
+                    );
+
+                    return (
+                      <Form.Item className="flex flex-row items-start gap-x-1.5 space-y-0">
+                        <Form.Label className="min-w-[60px] px-2 py-1.5">
+                          {t('products.fields.attributes.add.values.label')}
+                        </Form.Label>
+                        <Form.Control>
+                          <div className="flex w-full flex-col gap-y-1.5">
+                            {!!selectedAttribute ? (
+                              <Combobox
+                                {...field}
+                                options={[
+                                  ...selectedAttribute.possible_values.map(({ value }) => ({
+                                    label: value,
+                                    value: value
+                                  }))
+                                ]}
+                                onCreateOption={value => {
+                                  form.setValue(`options.${index}.values`, [...field.value, value]);
+                                }}
+                                className="w-full bg-ui-bg-base hover:bg-ui-bg-base-hover"
+                              />
+                            ) : (
+                              <ChipInput
+                                {...field}
+                                variant="contrast"
+                                placeholder={t('products.fields.attributes.add.values.placeholder')}
+                                className="w-full"
+                              />
+                            )}
+                            <Form.ErrorMessage />
+                          </div>
+                        </Form.Control>
+                      </Form.Item>
                     );
                   }}
                 />
@@ -110,7 +162,12 @@ export const UserCreatedOptionsList = ({
               control={form.control as any}
               name={`options.${index}.useForVariants` as any}
               label={t('products.fields.attributes.useForVariants.label')}
-              description={t('products.fields.attributes.useForVariants.description')}
+              description={
+                isExistingProduct
+                  ? t('products.fields.attributes.useForVariants.editDescription')
+                  : t('products.fields.attributes.useForVariants.description')
+              }
+              className="pl-14 [&>*]:shadow-none"
             />
           </li>
         );
@@ -118,4 +175,3 @@ export const UserCreatedOptionsList = ({
     </ul>
   );
 };
-

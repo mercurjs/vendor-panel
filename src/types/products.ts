@@ -156,6 +156,7 @@ export interface ProductAttribute {
   description: string;
   handle: string;
   is_filterable: boolean;
+  is_required: boolean;
   ui_component: 'toggle' | 'select' | 'text' | 'text_area' | 'unit';
   metadata: Record<string, any>;
   possible_values: ProductAttributePossibleValue[];

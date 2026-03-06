@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { Action, ActionMenu } from '../../../../../components/common/action-menu';
+import { Thumbnail } from '../../../../../components/common/thumbnail';
 import { useDataTableDateColumns } from '../../../../../components/data-table/helpers/general/use-data-table-date-columns';
 import { _DataTable } from '../../../../../components/table/data-table/data-table';
 import { Filter } from '../../../../../components/table/data-table/data-table-filter';
@@ -277,7 +278,22 @@ const useColumns = (product: ExtendedAdminProduct) => {
         header: t('fields.title'),
         enableSorting: true,
         sortAscLabel: t('general.ascending'),
-        sortDescLabel: t('general.descending')
+        sortDescLabel: t('general.descending'),
+        cell: ({ row }) => {
+          return (
+            <div className="flex h-full w-full max-w-[250px] items-center gap-x-3 overflow-hidden">
+              <div className="w-fit flex-shrink-0">
+                <Thumbnail src={row.original.thumbnail} />
+              </div>
+              <span
+                title={row.original.title || undefined}
+                className="truncate"
+              >
+                {row.original.title}
+              </span>
+            </div>
+          );
+        }
       }),
       columnHelper.accessor('sku', {
         header: t('fields.sku'),

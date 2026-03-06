@@ -370,6 +370,40 @@ export const useProductVariantsInventoryItemsBatch = (
   });
 };
 
+type UpdateVariantMediaPayload = {
+  add?: string[];
+  remove?: string[];
+};
+
+type UpdateVariantMediaResponse = {
+  added: HttpTypes.AdminProductImage[];
+  removed: HttpTypes.AdminProductImage[];
+};
+
+export const useUpdateVariantMedia = (
+  productId: string,
+  variantId: string,
+  options?: UseMutationOptions<UpdateVariantMediaResponse, FetchError, UpdateVariantMediaPayload>
+) => {
+  return useMutation({
+    mutationFn: (payload: UpdateVariantMediaPayload) =>
+      fetchQuery(`/vendor/products/${productId}/variants/${variantId}/media`, {
+        method: 'POST',
+        body: payload
+      }),
+    onSuccess: (data, variables, context) => {
+      queryClient.invalidateQueries({
+        queryKey: productsQueryKeys.detail(productId)
+      });
+      queryClient.invalidateQueries({
+        queryKey: variantsQueryKeys.detail(variantId)
+      });
+      options?.onSuccess?.(data, variables, context);
+    },
+    ...options
+  });
+};
+
 export const useDeleteVariant = (
   productId: string,
   variantId: string,
@@ -637,6 +671,12 @@ export const useUpdateProduct = (
       }
       await queryClient.invalidateQueries({
         queryKey: productAttributesQueryKey(id)
+      });
+      await queryClient.invalidateQueries({
+        queryKey: variantsQueryKeys.lists()
+      });
+      await queryClient.invalidateQueries({
+        queryKey: variantsQueryKeys.details()
       });
 
       options?.onSuccess?.(data, variables, context);

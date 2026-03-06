@@ -567,6 +567,7 @@
       "emptyState": {
         "header": "No media yet",
         "description": "Add media to the product to showcase it in your storefront.",
+        "variantDescription": "Add media to showcase it in your storefront.",
         "action": "Add media"
       },
       "successToast": "Media was successfully updated."

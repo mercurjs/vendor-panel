@@ -16,7 +16,7 @@ import {
   useUpdateProductVariant,
   useUpdateVariantMedia
 } from '../../../../../hooks/api/products';
-import { uploadFilesQuery } from '../../../../../lib/client';
+import { fetchQuery, uploadFilesQuery } from '../../../../../lib/client';
 import { UploadMediaFormItem } from '../../../../products/common/components/upload-media-form-item';
 import { EditProductMediaSchema, MediaSchema } from '../../../../products/product-create/constants';
 import { EditProductMediaSchemaType } from '../../../../products/product-create/types';
@@ -166,6 +166,27 @@ export const EditVariantMediaForm = ({
         ...newUrls.map(url => ({ url }))
       ];
       ops.push(updateProduct({ images: updatedProductImages }));
+
+      const removedImageUrls = variantImages
+        .filter(img => removeImageIds.includes(img.id!))
+        .map(img => img.url!);
+
+      const variants = await fetchQuery(`/vendor/products/${productId}/variants`, {
+        method: 'GET'
+      }).catch(() => null);
+
+      const allVariants: { id: string; thumbnail?: string | null }[] = variants?.variants ?? [];
+
+      allVariants
+        .filter(v => v.id !== variantId && v.thumbnail && removedImageUrls.includes(v.thumbnail))
+        .forEach(v => {
+          ops.push(
+            fetchQuery(`/vendor/products/${productId}/variants/${v.id}`, {
+              method: 'POST',
+              body: { thumbnail: null }
+            })
+          );
+        });
     }
 
     if (thumbnailChanged) {

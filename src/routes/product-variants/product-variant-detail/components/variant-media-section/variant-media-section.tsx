@@ -185,7 +185,7 @@ export const VariantMediaSection = ({
               size="small"
               className="text-ui-fg-muted"
             >
-              {t('products.media.emptyState.description')}
+              {t('products.media.emptyState.variantDescription')}
             </Text>
           </div>
           <Button

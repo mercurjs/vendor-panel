@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { PencilSquare, ThumbnailBadge } from '@medusajs/icons';
+import { HttpTypes } from '@medusajs/types';
 import {
   Button,
   Checkbox,
@@ -16,38 +17,61 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { ActionMenu } from '../../../../../components/common/action-menu';
-import {
-  productsQueryKeys,
-  useUpdateProduct,
-  variantsQueryKeys
-} from '../../../../../hooks/api/products';
-import { fetchQuery } from '../../../../../lib/client';
-import { queryClient } from '../../../../../lib/query-client';
-import { ExtendedAdminProduct } from '../../../../../types/products';
+import { useUpdateProduct, useUpdateProductVariant } from '../../../../../hooks/api/products';
+import { ExtendedAdminProductVariant } from '../../../../../types/products';
 
-type ProductMedisaSectionProps = {
-  product: ExtendedAdminProduct;
+type VariantMediaSectionProps = {
+  variant: ExtendedAdminProductVariant;
+  productId: string;
+  productImages: HttpTypes.AdminProductImage[];
 };
 
-export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
+type Media = {
+  id: string;
+  url: string;
+  isThumbnail: boolean;
+};
+
+const getMedia = (
+  images: HttpTypes.AdminProductImage[] | null | undefined,
+  thumbnail: string | null | undefined
+): Media[] => {
+  const media: Media[] = (images ?? []).map(image => ({
+    id: image.id!,
+    url: image.url!,
+    isThumbnail: image.url === thumbnail
+  }));
+
+  if (thumbnail && !media.some(m => m.isThumbnail)) {
+    media.unshift({ id: 'variant_thumbnail', url: thumbnail, isThumbnail: true });
+  }
+
+  return media;
+};
+
+export const VariantMediaSection = ({
+  variant,
+  productId,
+  productImages
+}: VariantMediaSectionProps) => {
   const { t } = useTranslation();
   const prompt = usePrompt();
   const [selection, setSelection] = useState<Record<string, boolean>>({});
 
-  const media = getMedia(product);
+  const media = getMedia(variant.images, variant.thumbnail);
 
   const handleCheckedChange = (id: string) => {
     setSelection(prev => {
       if (prev[id]) {
         const { [id]: _, ...rest } = prev;
         return rest;
-      } else {
-        return { ...prev, [id]: true };
       }
+      return { ...prev, [id]: true };
     });
   };
 
-  const { mutateAsync } = useUpdateProduct(product.id);
+  const { mutateAsync: updateProduct } = useUpdateProduct(productId);
+  const { mutateAsync: updateVariant } = useUpdateProductVariant(productId, variant.id);
 
   const handleDelete = async () => {
     const ids = Object.keys(selection);
@@ -56,12 +80,8 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
     const res = await prompt({
       title: t('general.areYouSure'),
       description: includingThumbnail
-        ? t('products.media.deleteWarningWithThumbnail', {
-            count: ids.length
-          })
-        : t('products.media.deleteWarning', {
-            count: ids.length
-          }),
+        ? t('products.media.deleteWarningWithThumbnail', { count: ids.length })
+        : t('products.media.deleteWarning', { count: ids.length }),
       confirmText: t('actions.delete'),
       cancelText: t('actions.cancel')
     });
@@ -70,39 +90,21 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
       return;
     }
 
-    const removedImageUrls = (product.images ?? []).filter(i => ids.includes(i.id)).map(i => i.url);
+    const ops: Promise<unknown>[] = [];
 
-    const mediaToKeep = product.images?.filter(i => !ids.includes(i.id)).map(i => ({ url: i.url }));
+    const imageIdsToRemove = ids.filter(id => id !== 'variant_thumbnail');
+    if (imageIdsToRemove.length) {
+      const updatedProductImages = productImages
+        .filter(img => !imageIdsToRemove.includes(img.id!))
+        .map(img => ({ url: img.url! }));
+      ops.push(updateProduct({ images: updatedProductImages }));
+    }
 
-    await mutateAsync({
-      images: mediaToKeep,
-      thumbnail: includingThumbnail ? '' : undefined
-    });
+    if (includingThumbnail) {
+      ops.push(updateVariant({ thumbnail: null }));
+    }
 
-    const freshVariants = await fetchQuery(`/vendor/products/${product.id}/variants`, {
-      method: 'GET'
-    }).catch(() => null);
-
-    const variantsToClean: { id: string; thumbnail?: string | null }[] =
-      freshVariants?.variants ?? [];
-
-    await Promise.all(
-      variantsToClean
-        .filter(v => v.thumbnail && removedImageUrls.includes(v.thumbnail))
-        .map(v =>
-          fetchQuery(`/vendor/products/${product.id}/variants/${v.id}`, {
-            method: 'POST',
-            body: { thumbnail: null }
-          })
-        )
-    );
-
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: productsQueryKeys.detail(product.id) }),
-      queryClient.invalidateQueries({ queryKey: variantsQueryKeys.lists() }),
-      queryClient.invalidateQueries({ queryKey: variantsQueryKeys.details() })
-    ]);
-
+    await Promise.all(ops);
     setSelection({});
   };
 
@@ -126,28 +128,28 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
       </div>
       {media.length > 0 ? (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(96px,1fr))] gap-4 px-6 py-4">
-          {media.map((i, index) => {
-            const isSelected = selection[i.id];
+          {media.map((item, index) => {
+            const isSelected = selection[item.id];
 
             return (
               <div
                 className="group relative aspect-square size-full cursor-pointer overflow-hidden rounded-[8px] shadow-elevation-card-rest transition-fg hover:shadow-elevation-card-hover"
-                key={i.id}
+                key={item.id}
               >
                 <div
                   className={clx(
                     'invisible absolute right-2 top-2 opacity-0 transition-fg group-hover:visible group-hover:opacity-100',
-                    {
-                      'visible opacity-100': isSelected
-                    }
+                    { 'visible opacity-100': isSelected }
                   )}
                 >
                   <Checkbox
-                    checked={selection[i.id] || false}
-                    onCheckedChange={() => handleCheckedChange(i.id)}
+                    checked={selection[item.id] || false}
+                    onCheckedChange={() => handleCheckedChange(item.id)}
+                    aria-label={t('actions.select')}
+                    data-testid={`variant-media-checkbox-${item.id}`}
                   />
                 </div>
-                {i.isThumbnail && (
+                {item.isThumbnail && (
                   <div className="absolute left-2 top-2">
                     <Tooltip content={t('fields.thumbnail')}>
                       <ThumbnailBadge />
@@ -155,12 +157,12 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
                   </div>
                 )}
                 <Link
-                  to={`media`}
+                  to="media"
                   state={{ curr: index }}
                 >
                   <img
-                    src={i.url}
-                    alt={`${product.title} image`}
+                    src={item.url}
+                    alt={`${variant.title ?? ''} image ${index + 1}`}
                     className="size-full object-cover"
                   />
                 </Link>
@@ -183,7 +185,7 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
               size="small"
               className="text-ui-fg-muted"
             >
-              {t('products.media.emptyState.description')}
+              {t('products.media.emptyState.variantDescription')}
             </Text>
           </div>
           <Button
@@ -191,16 +193,19 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
             variant="secondary"
             asChild
           >
-            <Link to="media?view=edit">{t('products.media.emptyState.action')}</Link>
+            <Link
+              to="media?view=edit"
+              data-testid="variant-media-add-button"
+            >
+              {t('products.media.emptyState.action')}
+            </Link>
           </Button>
         </div>
       )}
       <CommandBar open={!!Object.keys(selection).length}>
         <CommandBar.Bar>
           <CommandBar.Value>
-            {t('general.countSelected', {
-              count: Object.keys(selection).length
-            })}
+            {t('general.countSelected', { count: Object.keys(selection).length })}
           </CommandBar.Value>
           <CommandBar.Seperator />
           <CommandBar.Command
@@ -212,30 +217,4 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
       </CommandBar>
     </Container>
   );
-};
-
-type Media = {
-  id: string;
-  url: string;
-  isThumbnail: boolean;
-};
-
-const getMedia = (product: ExtendedAdminProduct) => {
-  const { images = [], thumbnail } = product;
-
-  const media: Media[] = (images || []).map(image => ({
-    id: image.id,
-    url: image.url,
-    isThumbnail: image.url === thumbnail
-  }));
-
-  if (thumbnail && !media.some(mediaItem => mediaItem.url === thumbnail)) {
-    media.unshift({
-      id: 'img_thumbnail',
-      url: thumbnail,
-      isThumbnail: true
-    });
-  }
-
-  return media;
 };

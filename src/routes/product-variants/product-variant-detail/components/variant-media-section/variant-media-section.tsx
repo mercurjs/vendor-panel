@@ -1,29 +1,19 @@
 import { useState } from 'react';
 
 import { PencilSquare, ThumbnailBadge } from '@medusajs/icons';
-import { HttpTypes } from '@medusajs/types';
-import {
-  Button,
-  Checkbox,
-  clx,
-  CommandBar,
-  Container,
-  Heading,
-  Text,
-  Tooltip,
-  usePrompt
-} from '@medusajs/ui';
+import type { HttpTypes } from '@medusajs/types';
+import { Button, Checkbox, clx, CommandBar, Container, Heading, Text, Tooltip } from '@medusajs/ui';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { ActionMenu } from '../../../../../components/common/action-menu';
-import { useUpdateProduct, useUpdateProductVariant } from '../../../../../hooks/api/products';
+import { useUpdateProductVariant, useUpdateVariantMedia } from '../../../../../hooks/api/products';
 import { ExtendedAdminProductVariant } from '../../../../../types/products';
 
 type VariantMediaSectionProps = {
   variant: ExtendedAdminProductVariant;
+  variantImages: HttpTypes.AdminProductImage[];
   productId: string;
-  productImages: HttpTypes.AdminProductImage[];
 };
 
 type Media = {
@@ -51,14 +41,13 @@ const getMedia = (
 
 export const VariantMediaSection = ({
   variant,
-  productId,
-  productImages
+  variantImages,
+  productId
 }: VariantMediaSectionProps) => {
   const { t } = useTranslation();
-  const prompt = usePrompt();
   const [selection, setSelection] = useState<Record<string, boolean>>({});
 
-  const media = getMedia(variant.images, variant.thumbnail);
+  const media = getMedia(variantImages, variant.thumbnail);
 
   const handleCheckedChange = (id: string) => {
     setSelection(prev => {
@@ -70,38 +59,29 @@ export const VariantMediaSection = ({
     });
   };
 
-  const { mutateAsync: updateProduct } = useUpdateProduct(productId);
+  const { mutateAsync: updateVariantMedia } = useUpdateVariantMedia(productId, variant.id);
   const { mutateAsync: updateVariant } = useUpdateProductVariant(productId, variant.id);
 
-  const handleDelete = async () => {
+  const handleRemove = async () => {
     const ids = Object.keys(selection);
     const includingThumbnail = ids.some(id => media.find(m => m.id === id)?.isThumbnail);
 
-    const res = await prompt({
-      title: t('general.areYouSure'),
-      description: includingThumbnail
-        ? t('products.media.deleteWarningWithThumbnail', { count: ids.length })
-        : t('products.media.deleteWarning', { count: ids.length }),
-      confirmText: t('actions.delete'),
-      cancelText: t('actions.cancel')
-    });
-
-    if (!res) {
-      return;
-    }
+    const imageIdsToRemove = ids.filter(id => id !== 'variant_thumbnail');
 
     const ops: Promise<unknown>[] = [];
 
-    const imageIdsToRemove = ids.filter(id => id !== 'variant_thumbnail');
     if (imageIdsToRemove.length) {
-      const updatedProductImages = productImages
-        .filter(img => !imageIdsToRemove.includes(img.id!))
-        .map(img => ({ url: img.url! }));
-      ops.push(updateProduct({ images: updatedProductImages }));
+      ops.push(updateVariantMedia({ remove: imageIdsToRemove }));
     }
 
     if (includingThumbnail) {
       ops.push(updateVariant({ thumbnail: null }));
+    }
+
+    if (!ops.length) {
+      setSelection({});
+
+      return;
     }
 
     await Promise.all(ops);
@@ -209,9 +189,9 @@ export const VariantMediaSection = ({
           </CommandBar.Value>
           <CommandBar.Seperator />
           <CommandBar.Command
-            action={handleDelete}
-            label={t('actions.delete')}
-            shortcut="d"
+            action={handleRemove}
+            label={t('actions.remove')}
+            shortcut="r"
           />
         </CommandBar.Bar>
       </CommandBar>

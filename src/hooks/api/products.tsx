@@ -398,6 +398,9 @@ export const useUpdateVariantMedia = (
       queryClient.invalidateQueries({
         queryKey: variantsQueryKeys.detail(variantId)
       });
+      queryClient.invalidateQueries({
+        queryKey: variantsQueryKeys.lists()
+      });
       options?.onSuccess?.(data, variables, context);
     },
     ...options

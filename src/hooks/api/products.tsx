@@ -797,7 +797,7 @@ export const useBatchUpdateProducts = (
 };
 
 export const useExportProducts = (
-  query?: HttpTypes.AdminProductListParams,
+  query?: HttpTypes.AdminProductListParams & { tag_id?: string | string[] },
   options?: UseMutationOptions<
     HttpTypes.AdminExportProductResponse & { url: string },
     FetchError,
@@ -806,11 +806,11 @@ export const useExportProducts = (
 ) => {
   return useMutation({
     mutationFn: payload => {
-      const { fields, limit, offset, order, ...filters } = query || {};
+      const { fields, limit, offset, order, category_id, tag_id, ...filters } = query || {};
 
       return fetchQuery('/vendor/products/export', {
         method: 'POST',
-        body: { ...filters, ...payload }
+        body: { ...filters, categories: { id: category_id }, tags: { id: tag_id }, ...payload }
       });
     },
     onSuccess: (data, variables, context) => {

@@ -5,6 +5,8 @@ import { SingleColumnPage } from "../../../components/layout/pages"
 import { useDashboardExtension } from "../../../extensions"
 import { useCollection } from "../../../hooks/api/collections"
 import { CollectionGeneralSection } from "./components/collection-general-section"
+import { CollectionIconSection } from "./components/collection-icon-section"
+import { CollectionMediaSection } from "./components/collection-media-section"
 import { CollectionProductSection } from "./components/collection-product-section"
 import { collectionLoader } from "./loader"
 
@@ -21,7 +23,7 @@ export const CollectionDetail = () => {
   const { getWidgets } = useDashboardExtension()
 
   if (isLoading || !product_collection) {
-    return <SingleColumnPageSkeleton sections={2} />
+    return <SingleColumnPageSkeleton sections={4} />
   }
 
   if (isError) {
@@ -37,6 +39,8 @@ export const CollectionDetail = () => {
       data={product_collection}
     >
       <CollectionGeneralSection collection={product_collection} />
+      <CollectionMediaSection collection={product_collection} />
+      <CollectionIconSection collection={product_collection} />
       <CollectionProductSection collection={product_collection} />
     </SingleColumnPage>
   )

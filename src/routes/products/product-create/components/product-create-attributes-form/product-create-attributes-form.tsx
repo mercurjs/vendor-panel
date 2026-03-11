@@ -165,7 +165,19 @@ export const ProductCreateAttributesForm = forwardRef<
   return (
     <div className="flex flex-col items-center p-16">
       <div className="flex w-full max-w-[720px] flex-col gap-y-8">
-        <Header options={options} />
+        <Header
+          onAddOption={() => {
+            options.append(
+              {
+                title: '',
+                values: [],
+                metadata: { author: 'vendor' },
+                useForVariants: true
+              },
+              { shouldFocus: false }
+            );
+          }}
+        />
         <div className="flex flex-col gap-y-8">
           {/* User-created options */}
           <UserCreatedOptionsList
@@ -215,17 +227,10 @@ export const ProductCreateAttributesForm = forwardRef<
 ProductCreateAttributesForm.displayName = 'ProductCreateAttributesForm';
 
 type HeaderProps = {
-  options: {
-    append: (option: {
-      title: string;
-      values: string[];
-      metadata?: Record<string, unknown>;
-      useForVariants: boolean;
-    }) => void;
-  };
+  onAddOption: () => void;
 };
 
-const Header = ({ options }: HeaderProps) => {
+const Header = ({ onAddOption }: HeaderProps) => {
   const { t } = useTranslation();
 
   return (
@@ -250,14 +255,8 @@ const Header = ({ options }: HeaderProps) => {
           variant="secondary"
           type="button"
           className="min-w-[100px]"
-          onClick={() => {
-            options.append({
-              title: '',
-              values: [],
-              metadata: { author: 'vendor' },
-              useForVariants: true // Locked to true
-            });
-          }}
+          data-testid="add-attribute-button"
+          onClick={onAddOption}
         >
           {t('actions.add')} {t('products.create.attributes.buttonLabel')}
         </Button>

@@ -24,7 +24,9 @@ type UserCreatedOptionsListProps = {
   };
   allowRemove?: boolean;
   availableAttributes: ProductAttribute[];
+  allNonRequiredAttributes?: ProductAttribute[];
   isExistingProduct?: boolean;
+  allowCreate?: boolean;
 };
 
 export const UserCreatedOptionsList = ({
@@ -32,7 +34,9 @@ export const UserCreatedOptionsList = ({
   options,
   allowRemove = true,
   availableAttributes,
-  isExistingProduct = false
+  allNonRequiredAttributes,
+  isExistingProduct = false,
+  allowCreate = true
 }: UserCreatedOptionsListProps) => {
   const { t } = useTranslation();
 
@@ -87,9 +91,13 @@ export const UserCreatedOptionsList = ({
                                 form.setValue(`options.${index}.metadata`, { author: 'vendor' });
                                 onChange(v);
                               }}
-                              onCreateOption={value => {
-                                form.setValue(`options.${index}.title`, value);
-                              }}
+                              onCreateOption={
+                                allowCreate
+                                  ? value => {
+                                      form.setValue(`options.${index}.title`, value);
+                                    }
+                                  : undefined
+                              }
                               className="w-full bg-ui-bg-base hover:bg-ui-bg-base-hover [&>div>input]:px-0 [&>div>input]:placeholder:text-ui-fg-muted"
                               multiple={false}
                               showCheck={false}
@@ -105,7 +113,8 @@ export const UserCreatedOptionsList = ({
                   control={form.control}
                   name={`options.${index}.values`}
                   render={({ field: { ...field } }) => {
-                    const selectedAttribute = availableAttributes?.find(
+                    const attributeLookup = allNonRequiredAttributes || availableAttributes;
+                    const selectedAttribute = attributeLookup?.find(
                       attribute => attribute.id === form.watch(`options.${index}.attributeId`)
                     );
 
@@ -125,9 +134,16 @@ export const UserCreatedOptionsList = ({
                                     value: value
                                   }))
                                 ]}
-                                onCreateOption={value => {
-                                  form.setValue(`options.${index}.values`, [...field.value, value]);
-                                }}
+                                onCreateOption={
+                                  allowCreate
+                                    ? value => {
+                                        form.setValue(`options.${index}.values`, [
+                                          ...field.value,
+                                          value
+                                        ]);
+                                      }
+                                    : undefined
+                                }
                                 className="w-full bg-ui-bg-base hover:bg-ui-bg-base-hover"
                               />
                             ) : (

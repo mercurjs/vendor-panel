@@ -24,7 +24,7 @@ import {
   ComboboxProvider as PrimitiveComboboxProvider,
   Separator as PrimitiveSeparator
 } from '@ariakit/react';
-import { CheckMini, EllipseMiniSolid, PlusMini, TrianglesMini, XMarkMini } from '@medusajs/icons';
+import { CheckMini, PlusMini, TrianglesMini, XMarkMini } from '@medusajs/icons';
 import { Badge, clx, Text } from '@medusajs/ui';
 import { matchSorter } from 'match-sorter';
 import { useTranslation } from 'react-i18next';
@@ -311,6 +311,7 @@ const ComboboxImpl = <T extends Value = string>(
           'has-[input:focus]:shadow-borders-interactive-with-active',
           'has-[:invalid]:shadow-borders-error has-[[aria-invalid=true]]:shadow-borders-error',
           'has-[:disabled]:cursor-not-allowed has-[:disabled]:bg-ui-bg-disabled has-[:disabled]:text-ui-fg-disabled',
+          'hover:bg-ui-bg-field-hover',
           className
         )}
         style={
@@ -327,6 +328,7 @@ const ComboboxImpl = <T extends Value = string>(
             <>
               {selectedValues.slice(0, visibleBadgesCount).map(optionValue => {
                 const option = options.find(opt => opt.value === optionValue);
+
                 return (
                   <button
                     key={optionValue}
@@ -347,7 +349,7 @@ const ComboboxImpl = <T extends Value = string>(
                       className="w-fit bg-ui-bg-base p-0"
                     >
                       <span className="max-w-[200px] truncate text-ellipsis border-r border-ui-border-base bg-ui-bg-base px-1.5">
-                        {option?.label || 'Unknown'}
+                        {option?.label || optionValue || 'Unknown'}
                       </span>
                       <XMarkMini className="mr-0.5 !text-ui-fg-base" />
                     </Badge>
@@ -400,7 +402,6 @@ const ComboboxImpl = <T extends Value = string>(
             onFocus={() => setOpen(true)}
             className={clx(
               '!placeholder:text-ui-fg-muted txt-compact-small size-full cursor-pointer bg-transparent pe-8 text-ui-fg-base outline-none transition-fg focus:cursor-text',
-              'hover:bg-ui-bg-field-hover',
               {
                 'opacity-0': hideInput && !isArrayValue,
                 'ps-2': !showTag && !isArrayValue,
@@ -478,7 +479,7 @@ const ComboboxImpl = <T extends Value = string>(
           >
             {showCheck && (
               <PrimitiveComboboxItemCheck className="flex !size-5 items-center justify-center">
-                {isArrayValue ? <CheckMini /> : <EllipseMiniSolid />}
+                <CheckMini />
               </PrimitiveComboboxItemCheck>
             )}
             <PrimitiveComboboxItemValue className="txt-compact-small">

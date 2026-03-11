@@ -27,8 +27,6 @@ const ProductCreateVariantSchema = z.object({
   material: z.string().optional(),
   origin_country: z.string().optional(),
   sku: z.string().optional(),
-  manage_inventory: z.boolean().optional(),
-  allow_backorder: z.boolean().optional(),
   inventory_kit: z.boolean().optional(),
   options: z.record(z.string(), z.string()),
   variant_rank: z.number(),
@@ -62,7 +60,17 @@ export const ProductCreateSchema = z
   .object({
     title: z.string().min(1, i18n.t('products.create.errors.titleRequired')),
     subtitle: z.string().optional(),
-    handle: z.string().optional(),
+    handle: z
+      .string()
+      .optional()
+      .refine(
+        val => !val || /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(val),
+        i18n.t('products.create.errors.handleInvalidFormat')
+      )
+      .refine(
+        val => !val || /[a-z]/.test(val),
+        i18n.t('products.create.errors.handleMustContainLetter')
+      ),
     description: z.string().optional(),
     discountable: z.boolean(),
     type_id: z.string().optional(),
@@ -91,7 +99,7 @@ export const ProductCreateSchema = z
     hs_code: z.string().optional(),
     // Dynamic attributes fields - these will be populated based on API data
     // The actual fields will be added dynamically in the form component
-    options: z.array(ProductCreateOptionSchema).min(1),
+    options: z.array(ProductCreateOptionSchema),
     enable_variants: z.boolean(),
     variants: z.array(ProductCreateVariantSchema).min(1),
     media: z.array(MediaSchema).optional()
@@ -141,9 +149,7 @@ export const PRODUCT_CREATE_FORM_DEFAULTS: Partial<z.infer<typeof ProductCreateS
       title: 'Default variant',
       should_create: true,
       variant_rank: 0,
-      options: {
-        'Default option': 'Default option value'
-      },
+      options: {},
       inventory: [{ inventory_item_id: '', required_quantity: '' }],
       is_default: true
     }

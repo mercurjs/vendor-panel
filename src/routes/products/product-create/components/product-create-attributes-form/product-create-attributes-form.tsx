@@ -158,9 +158,10 @@ export const ProductCreateAttributesForm = forwardRef<
     return () => subscription.unsubscribe();
   }, [form, requiredFormFields]);
 
-  const availableAttributes = allAttributes
-    ?.filter(attribute => !attribute.is_required)
-    .filter(attribute => !options.fields?.some(option => option.attributeId === attribute.id));
+  const nonRequiredAttributes = allAttributes?.filter(attribute => !attribute.is_required);
+  const availableAttributes = nonRequiredAttributes?.filter(
+    attribute => !options.fields?.some(option => option.attributeId === attribute.id)
+  );
 
   return (
     <div className="flex flex-col items-center p-16">
@@ -172,6 +173,8 @@ export const ProductCreateAttributesForm = forwardRef<
             form={form}
             options={options}
             availableAttributes={availableAttributes as ProductAttribute[]}
+            allNonRequiredAttributes={nonRequiredAttributes as ProductAttribute[]}
+            allowCreate={false}
           />
 
           {/* Required attributes */}

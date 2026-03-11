@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 
-import { TrianglesMini, XMarkMini } from '@medusajs/icons';
+import { CheckMini, TrianglesMini, XMarkMini } from '@medusajs/icons';
 import { Badge, Input, Text } from '@medusajs/ui';
 import { useTranslation } from 'react-i18next';
 
@@ -299,7 +299,7 @@ const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
                     >
                       <div className="relative flex flex-1 items-center rounded-md px-2">
                         {isSelected && (
-                          <span className="absolute left-3 top-1/2 h-1 w-1 -translate-y-1/2 rounded-full bg-ui-fg-base" />
+                          <CheckMini className="absolute left-3 top-1/2 -translate-y-1/2" />
                         )}
                         <Text className="ml-6">{option.label}</Text>
                       </div>

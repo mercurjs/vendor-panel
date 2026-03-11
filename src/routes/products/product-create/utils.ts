@@ -68,8 +68,6 @@ export const normalizeVariants = (
       title: variant.title || Object.values(variant.options || {}).join(' / '),
       options: variant.options,
       sku: variant.sku || undefined,
-      manage_inventory: !!variant.manage_inventory,
-      allow_backorder: !!variant.allow_backorder,
       variant_rank: variant.variant_rank,
       inventory_items: variant
         .inventory!.map(i => {
@@ -118,8 +116,6 @@ export const decorateVariantsWithDefaultValues = (
     ...variant,
     title: variant.title || '',
     sku: variant.sku || '',
-    manage_inventory: variant.manage_inventory || false,
-    allow_backorder: variant.allow_backorder || false,
     inventory_kit: variant.inventory_kit || false,
     media: variant.media || []
   }));

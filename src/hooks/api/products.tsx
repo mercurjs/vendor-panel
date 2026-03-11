@@ -805,12 +805,14 @@ export const useExportProducts = (
   >
 ) => {
   return useMutation({
-    mutationFn: payload =>
-      fetchQuery('/vendor/products/export', {
+    mutationFn: payload => {
+      const { fields, limit, offset, order, ...filters } = query || {};
+
+      return fetchQuery('/vendor/products/export', {
         method: 'POST',
-        body: payload,
-        query: query as { [key: string]: string }
-      }),
+        body: { ...filters, ...payload }
+      });
+    },
     onSuccess: (data, variables, context) => {
       options?.onSuccess?.(data, variables, context);
     },

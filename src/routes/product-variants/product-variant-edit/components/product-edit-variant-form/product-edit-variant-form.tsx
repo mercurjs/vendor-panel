@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Divider, Heading, Input, Switch, toast } from '@medusajs/ui';
+import { Button, Divider, Heading, Input, toast } from '@medusajs/ui';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
@@ -29,8 +29,6 @@ const ProductEditVariantSchema = z.object({
   ean: z.string().optional(),
   upc: z.string().optional(),
   barcode: z.string().optional(),
-  manage_inventory: z.boolean(),
-  allow_backorder: z.boolean(),
   weight: optionalInt,
   height: optionalInt,
   width: optionalInt,
@@ -59,8 +57,6 @@ export const ProductEditVariantForm = ({ variant, product }: ProductEditVariantF
       ean: variant?.ean || '',
       upc: variant?.upc || '',
       barcode: variant?.barcode || '',
-      manage_inventory: variant?.manage_inventory || false,
-      allow_backorder: variant?.allow_backorder || false,
       weight: variant?.weight || '',
       height: variant?.height || '',
       width: variant?.width || '',
@@ -76,17 +72,7 @@ export const ProductEditVariantForm = ({ variant, product }: ProductEditVariantF
   const { mutateAsync, isPending } = useUpdateProductVariant(variant?.product_id!, variant?.id!);
 
   const handleSubmit = form.handleSubmit(async data => {
-    const {
-      title,
-      weight,
-      height,
-      width,
-      length,
-      allow_backorder,
-      manage_inventory,
-      options,
-      ...optional
-    } = data;
+    const { title, weight, height, width, length, options, ...optional } = data;
 
     const nullableData = transformNullableFormData(optional);
 
@@ -97,8 +83,6 @@ export const ProductEditVariantForm = ({ variant, product }: ProductEditVariantF
         width: transformNullableFormNumber(width),
         length: transformNullableFormNumber(length),
         title,
-        allow_backorder,
-        manage_inventory,
         options,
         ...nullableData
       },
@@ -227,48 +211,6 @@ export const ProductEditVariantForm = ({ variant, product }: ProductEditVariantF
                         <Input {...field} />
                       </Form.Control>
                       <Form.ErrorMessage />
-                    </Form.Item>
-                  );
-                }}
-              />
-              <Form.Field
-                control={form.control}
-                name="manage_inventory"
-                render={({ field: { value, onChange, ...field } }) => {
-                  return (
-                    <Form.Item className="flex flex-row items-center gap-x-3">
-                      <Form.Control>
-                        <Switch
-                          checked={value}
-                          onCheckedChange={checked => onChange(!!checked)}
-                          className="mt-1.5"
-                          {...field}
-                        />
-                      </Form.Control>
-                      <Form.Label>
-                        {t('products.variant.inventory.manageInventoryLabel')}
-                      </Form.Label>
-                    </Form.Item>
-                  );
-                }}
-              />
-              <Form.Field
-                control={form.control}
-                name="allow_backorder"
-                render={({ field: { value, onChange, ...field } }) => {
-                  return (
-                    <Form.Item className="flex flex-row items-center gap-x-3">
-                      <Form.Control>
-                        <Switch
-                          checked={value}
-                          onCheckedChange={checked => onChange(!!checked)}
-                          className="mt-1.5"
-                          {...field}
-                        />
-                      </Form.Control>
-                      <Form.Label>
-                        {t('products.variant.inventory.allowBackordersLabel')}
-                      </Form.Label>
                     </Form.Item>
                   );
                 }}

@@ -21,6 +21,7 @@ import {
   ProductCreateSchema
 } from '../../constants';
 import { ProductCreateSchemaType } from '../../types';
+import { decorateVariantsWithDefaultValues } from '../../utils';
 import {
   ProductCreateAttributesForm,
   ProductCreateAttributesFormRef
@@ -279,8 +280,21 @@ export const ProductCreateForm = ({
 
   useEffect(() => {
     if (tab === Tab.VARIANTS) {
-      if (form.getValues('options').length === 0) {
-        form.setValue('options', [PRODUCT_CREATE_OPTION_DEFAULTS]);
+      const currentOptions = form.getValues('options');
+      const currentVariants = form.getValues('variants');
+      if (currentOptions.length === 0 && currentVariants.length === 0) {
+        form.setValue(
+          'variants',
+          decorateVariantsWithDefaultValues([
+            {
+              title: 'Default variant',
+              should_create: true,
+              variant_rank: 0,
+              options: {},
+              is_default: true
+            }
+          ])
+        );
       }
     }
   }, [tab]);
@@ -663,7 +677,10 @@ export const ProductCreateForm = ({
         options:
           Object.keys(mappedOptions).length > 0
             ? mappedOptions
-            : PRODUCT_CREATE_FORM_DEFAULTS?.variants?.[0]?.options || {},
+            : {
+                [PRODUCT_CREATE_OPTION_DEFAULTS.title as string]:
+                  PRODUCT_CREATE_OPTION_DEFAULTS.values![0]
+              },
         ...(variantImageKey && {
           metadata: {
             variant_image_key: variantImageKey
@@ -853,7 +870,7 @@ export const ProductCreateForm = ({
 
     switch (currentTab) {
       case Tab.DETAILS:
-        fieldsToValidate = ['title'];
+        fieldsToValidate = ['title', 'handle'];
         break;
       case Tab.ORGANIZE:
         fieldsToValidate = ['categories'];
@@ -997,7 +1014,7 @@ export const ProductCreateForm = ({
 
                 switch (tab) {
                   case Tab.DETAILS:
-                    fieldsToValidate = ['title'];
+                    fieldsToValidate = ['title', 'handle'];
                     break;
                   case Tab.ORGANIZE:
                     fieldsToValidate = ['categories'];

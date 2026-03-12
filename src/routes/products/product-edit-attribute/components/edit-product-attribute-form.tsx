@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CircleInfoSolid } from '@medusajs/icons';
-import { Button, InlineTip, Text, Tooltip } from '@medusajs/ui';
+import { Button, InlineTip, Input, Select, Text, Textarea, Tooltip } from '@medusajs/ui';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
@@ -9,6 +9,7 @@ import { Form } from '../../../../components/common/form';
 import { SwitchBox } from '../../../../components/common/switch-box';
 import { ChipInput } from '../../../../components/inputs/chip-input';
 import { Combobox } from '../../../../components/inputs/combobox';
+import { NumericInput } from '../../../../components/inputs/numeric-input';
 import { RouteDrawer, useRouteModal } from '../../../../components/modals';
 import { i18n } from '../../../../components/utilities/i18n';
 import { KeyboundForm } from '../../../../components/utilities/keybound-form';
@@ -65,11 +66,8 @@ export const EditProductAttributeForm = ({
     );
   });
 
-  const isSelectType =
-    attributeDefinition?.ui_component === 'select' &&
-    attributeDefinition.possible_values?.length > 0;
-
-  const comboboxOptions =
+  const uiComponent = attributeDefinition?.ui_component ?? attribute.ui_component;
+  const possibleValueOptions =
     attributeDefinition?.possible_values?.map(pv => ({
       value: pv.value,
       label: pv.value
@@ -99,51 +97,133 @@ export const EditProductAttributeForm = ({
             <Form.Field
               control={form.control}
               name="values"
-              render={({ field }) => (
-                <Form.Item>
-                  <Form.Control>
-                    {isSelectType ? (
+              render={({ field }) => {
+                const renderValuesInput = () => {
+                  if (uiComponent === 'select') {
+                    return (
+                      <Combobox
+                        value={field.value[0] ?? ''}
+                        onChange={val => field.onChange(val ? [val as string] : [])}
+                        options={possibleValueOptions}
+                        multiple={false}
+                        placeholder={t(
+                          'products.attributes.edit.valuesPlaceholder',
+                          'Select value'
+                        )}
+                      />
+                    );
+                  }
+
+                  if (uiComponent === 'multivalue') {
+                    return (
                       <Combobox
                         value={field.value}
                         onChange={val => field.onChange(val ?? [])}
-                        options={comboboxOptions}
+                        options={possibleValueOptions}
                         placeholder={t(
                           'products.attributes.edit.valuesPlaceholder',
                           'Select values'
                         )}
                       />
-                    ) : (
-                      <ChipInput
-                        value={field.value}
-                        onChange={field.onChange}
-                        placeholder={t(
-                          'products.attributes.edit.valuesPlaceholder',
-                          'Type and press Enter'
-                        )}
+                    );
+                  }
+
+                  if (uiComponent === 'text') {
+                    return (
+                      <Input
+                        value={field.value[0] ?? ''}
+                        onChange={e => field.onChange([e.target.value])}
+                        placeholder={t('products.attributes.edit.valuesPlaceholder', 'Enter value')}
+                        data-testid="edit-attribute-value-input"
                       />
-                    )}
-                  </Form.Control>
-                  <Form.ErrorMessage />
-                </Form.Item>
-              )}
+                    );
+                  }
+
+                  if (uiComponent === 'text_area') {
+                    return (
+                      <Textarea
+                        value={field.value[0] ?? ''}
+                        onChange={e => field.onChange([e.target.value])}
+                        placeholder={t('products.attributes.edit.valuesPlaceholder', 'Enter value')}
+                        data-testid="edit-attribute-value-textarea"
+                      />
+                    );
+                  }
+
+                  if (uiComponent === 'toggle') {
+                    return (
+                      <Select
+                        value={field.value[0] ?? ''}
+                        onValueChange={val => field.onChange([val])}
+                      >
+                        <Select.Trigger data-testid="edit-attribute-value-toggle">
+                          <Select.Value
+                            placeholder={t('products.fields.attributes.selectValuePlaceholder')}
+                          />
+                        </Select.Trigger>
+                        <Select.Content>
+                          <Select.Item value="true">{t('general.true')}</Select.Item>
+                          <Select.Item value="false">{t('general.false')}</Select.Item>
+                        </Select.Content>
+                      </Select>
+                    );
+                  }
+
+                  if (uiComponent === 'unit') {
+                    return (
+                      <NumericInput
+                        value={
+                          field.value[0] !== undefined ? parseFloat(field.value[0]) : undefined
+                        }
+                        onChange={val => field.onChange([String(val ?? '')])}
+                        placeholder={t('products.attributes.edit.valuesPlaceholder', 'Enter value')}
+                        data-testid="edit-attribute-value-numeric"
+                        hideControls
+                      />
+                    );
+                  }
+
+                  return (
+                    <ChipInput
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder={t(
+                        'products.attributes.edit.valuesPlaceholder',
+                        'Type and press Enter'
+                      )}
+                    />
+                  );
+                };
+
+                return (
+                  <Form.Item>
+                    <Form.Control>{renderValuesInput()}</Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                );
+              }}
             />
           </div>
 
-          <SwitchBox
-            control={form.control}
-            name="use_for_variations"
-            label={t('products.edit.attributes.useForVariations')}
-            description={t('products.edit.attributes.useForVariationsDescription')}
-          />
+          {uiComponent === 'multivalue' && (
+            <>
+              <SwitchBox
+                control={form.control}
+                name="use_for_variations"
+                label={t('products.edit.attributes.useForVariations')}
+                description={t('products.edit.attributes.useForVariationsDescription')}
+              />
 
-          {useForVariations && (
-            <InlineTip
-              variant="warning"
-              label={t('general.warning')}
-              className="mt-2"
-            >
-              {t('products.edit.attributes.conversionWarning')}
-            </InlineTip>
+              {useForVariations && (
+                <InlineTip
+                  variant="warning"
+                  label={t('general.warning')}
+                  className="mt-2"
+                >
+                  {t('products.edit.attributes.conversionWarning')}
+                </InlineTip>
+              )}
+            </>
           )}
         </RouteDrawer.Body>
         <RouteDrawer.Footer>

@@ -112,7 +112,8 @@ export const ProductListTable = () => {
         count: keys.length
       }),
       confirmText: t('actions.delete'),
-      cancelText: t('actions.cancel')
+      cancelText: t('actions.cancel'),
+      variant: 'danger'
     });
 
     if (!res) {

@@ -390,6 +390,15 @@ export const ProductCreateForm = ({
       (opt: any) => opt.useForVariants === true
     );
 
+    const adminOptionsForVariants = ((rest as any).options || []).filter(
+      (opt: any) =>
+        opt.useForVariants === true &&
+        opt.metadata?.author === 'admin' &&
+        opt.attributeId &&
+        opt.title &&
+        opt.values?.length > 0
+    );
+
     // Generate options from required multivalue attributes when useForVariants is enabled
     const requiredAttributeOptions: Array<{
       title: string;
@@ -434,7 +443,11 @@ export const ProductCreateForm = ({
     });
 
     // Combine options used for variants only
-    const allOptions = [...vendorOptionsForVariants, ...requiredAttributeOptions];
+    const allOptions = [
+      ...vendorOptionsForVariants,
+      ...requiredAttributeOptions,
+      ...adminOptionsForVariants
+    ];
 
     dynamicAttributeFields.forEach(fieldName => {
       const value = form.getValues(fieldName as any);
@@ -514,6 +527,14 @@ export const ProductCreateForm = ({
           use_for_variations: false
         });
       });
+
+    adminOptionsForVariants.forEach((option: any) => {
+      adminAttributes.push({
+        attribute_id: option.attributeId,
+        values: option.values.map((value: any) => String(value)),
+        use_for_variations: true
+      });
+    });
 
     // Remove dynamic attribute fields from payload
     const { ...payload } = rest;
@@ -1166,6 +1187,7 @@ export const ProductCreateForm = ({
                   handleSubmit();
                 }}
                 isLoading={isPending}
+                variant="secondary"
                 className="whitespace-nowrap"
               >
                 Draft
@@ -1204,7 +1226,7 @@ const PrimaryButton = ({ tab, next, isLoading, showInventoryTab }: PrimaryButton
         size="small"
         isLoading={isLoading}
       >
-        Create Product
+        {t('actions.publish')}
       </Button>
     );
   }

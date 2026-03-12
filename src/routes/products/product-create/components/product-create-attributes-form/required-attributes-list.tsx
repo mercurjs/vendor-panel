@@ -183,6 +183,7 @@ export const RequiredAttributesList = ({
                       name={formField.name}
                       placeholder={t('products.fields.attributes.enterValuePlaceholder')}
                       aria-invalid={!!fieldState.error}
+                      hideControls
                     />
                   </Form.Control>
                   <Form.ErrorMessage />

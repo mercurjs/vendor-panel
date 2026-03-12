@@ -15,6 +15,7 @@ export interface NumericInputProps {
   step?: number;
   disabled?: boolean;
   className?: string;
+  hideControls?: boolean;
   'aria-invalid'?: boolean;
 }
 
@@ -31,6 +32,7 @@ export const NumericInput = forwardRef<HTMLInputElement, NumericInputProps>(
       step = 1,
       disabled = false,
       className = '',
+      hideControls = false,
       'aria-invalid': ariaInvalid = false
     },
     ref
@@ -44,10 +46,8 @@ export const NumericInput = forwardRef<HTMLInputElement, NumericInputProps>(
     const isUserTypingRef = useRef<boolean>(false);
     const previousValueRef = useRef<number | undefined>(value);
 
-    // Update input value when prop value changes (but not during user input)
     useEffect(() => {
       if (value !== undefined && value !== previousValueRef.current) {
-        // Only update if the prop value actually changed (not from user input)
         if (!isUserTypingRef.current) {
           setInputValue(value.toString());
           currentValueRef.current = value;
@@ -56,7 +56,6 @@ export const NumericInput = forwardRef<HTMLInputElement, NumericInputProps>(
       }
     }, [value]);
 
-    // Cleanup interval on unmount
     useEffect(() => {
       return () => {
         if (timeoutRef.current) {
@@ -73,17 +72,14 @@ export const NumericInput = forwardRef<HTMLInputElement, NumericInputProps>(
       setInputValue(newValue);
       isUserTypingRef.current = true;
 
-      // Only call onChange if the value is a valid number
       const numericValue = parseFloat(newValue);
       if (!isNaN(numericValue) && onChange) {
         currentValueRef.current = numericValue;
         onChange(numericValue);
       } else if (newValue === '' && onChange) {
-        // Allow empty values - don't force to 0
         currentValueRef.current = 0;
-        onChange(undefined as any); // Pass undefined to indicate empty
+        onChange(undefined as any);
       } else if (newValue === '0' && onChange) {
-        // Explicitly handle "0" as a valid value
         currentValueRef.current = 0;
         onChange(0);
       }
@@ -91,11 +87,8 @@ export const NumericInput = forwardRef<HTMLInputElement, NumericInputProps>(
 
     const handleIncrement = () => {
       if (disabled) return;
-
-      // Always use the current inputValue as the source of truth for calculations
       const currentValue = parseFloat(inputValue) || 0;
       const newValue = Math.min(currentValue + step, max);
-
       currentValueRef.current = newValue;
       setInputValue(newValue.toString());
       if (onChange) {
@@ -105,11 +98,8 @@ export const NumericInput = forwardRef<HTMLInputElement, NumericInputProps>(
 
     const handleDecrement = () => {
       if (disabled) return;
-
-      // Always use the current inputValue as the source of truth for calculations
       const currentValue = parseFloat(inputValue) || 0;
       const newValue = Math.max(currentValue - step, min);
-
       currentValueRef.current = newValue;
       setInputValue(newValue.toString());
       if (onChange) {
@@ -128,11 +118,9 @@ export const NumericInput = forwardRef<HTMLInputElement, NumericInputProps>(
     };
 
     const handleBlur = () => {
-      // Ensure value is within bounds on blur, but don't override valid values
       const numericValue = parseFloat(inputValue);
       if (!isNaN(numericValue)) {
         const clampedValue = Math.max(Math.min(numericValue, max), min);
-        // Only update if the value actually needs clamping
         if (clampedValue !== numericValue) {
           setInputValue(clampedValue.toString());
           if (onChange) {
@@ -140,7 +128,6 @@ export const NumericInput = forwardRef<HTMLInputElement, NumericInputProps>(
           }
         }
       }
-      // Reset typing flag on blur with a small delay to prevent race conditions
       setTimeout(() => {
         isUserTypingRef.current = false;
       }, 100);
@@ -163,17 +150,12 @@ export const NumericInput = forwardRef<HTMLInputElement, NumericInputProps>(
 
     const handleMouseDown = (action: 'increment' | 'decrement') => {
       if (disabled) return;
-
       isMouseDownRef.current = true;
-
-      // Execute action immediately
       if (action === 'increment') {
         handleIncrement();
       } else {
         handleDecrement();
       }
-
-      // Start interval after a short delay (like browser behavior)
       timeoutRef.current = setTimeout(() => {
         if (isMouseDownRef.current) {
           intervalRef.current = setInterval(() => {
@@ -186,13 +168,12 @@ export const NumericInput = forwardRef<HTMLInputElement, NumericInputProps>(
             } else {
               clearRepeatInterval();
             }
-          }, 50); // Fast repeat rate
+          }, 50);
         }
-      }, 500); // Initial delay before repeating
+      }, 500);
     };
 
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-      // Prevent onClick from firing if we're using mouse hold functionality
       e.preventDefault();
     };
 
@@ -220,34 +201,36 @@ export const NumericInput = forwardRef<HTMLInputElement, NumericInputProps>(
           step={step}
           disabled={disabled}
           aria-invalid={ariaInvalid}
-          className="w-full pr-16 [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+          className={`w-full [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none ${hideControls ? '' : 'pr-16'}`}
         />
-        <div className="absolute bottom-0 right-0 top-0 flex flex-row border-l border-ui-border-base">
-          <button
-            type="button"
-            onClick={handleClick}
-            onMouseDown={() => handleMouseDown('decrement')}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseLeave}
-            disabled={disabled || (parseFloat(inputValue) || 0) <= min}
-            className="bg-ui-field flex h-full w-8 items-center justify-center border-r border-ui-border-base transition-colors hover:bg-ui-bg-field-hover disabled:cursor-not-allowed disabled:opacity-50"
-            aria-label={t('general.decrement')}
-          >
-            <Minus className="h-3 w-3 text-ui-fg-muted" />
-          </button>
-          <button
-            type="button"
-            onClick={handleClick}
-            onMouseDown={() => handleMouseDown('increment')}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseLeave}
-            disabled={disabled || (parseFloat(inputValue) || 0) >= max}
-            className="bg-ui-field flex h-full w-8 items-center justify-center rounded-r-md transition-colors hover:bg-ui-bg-field-hover disabled:cursor-not-allowed disabled:opacity-50"
-            aria-label={t('general.increment')}
-          >
-            <Plus className="h-3 w-3 text-ui-fg-muted" />
-          </button>
-        </div>
+        {!hideControls && (
+          <div className="absolute bottom-0 right-0 top-0 flex flex-row border-l border-ui-border-base">
+            <button
+              type="button"
+              onClick={handleClick}
+              onMouseDown={() => handleMouseDown('decrement')}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseLeave}
+              disabled={disabled || (parseFloat(inputValue) || 0) <= min}
+              className="bg-ui-field flex h-full w-8 items-center justify-center border-r border-ui-border-base transition-colors hover:bg-ui-bg-field-hover disabled:cursor-not-allowed disabled:opacity-50"
+              aria-label={t('general.decrement')}
+            >
+              <Minus className="h-3 w-3 text-ui-fg-muted" />
+            </button>
+            <button
+              type="button"
+              onClick={handleClick}
+              onMouseDown={() => handleMouseDown('increment')}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseLeave}
+              disabled={disabled || (parseFloat(inputValue) || 0) >= max}
+              className="bg-ui-field flex h-full w-8 items-center justify-center rounded-r-md transition-colors hover:bg-ui-bg-field-hover disabled:cursor-not-allowed disabled:opacity-50"
+              aria-label={t('general.increment')}
+            >
+              <Plus className="h-3 w-3 text-ui-fg-muted" />
+            </button>
+          </div>
+        )}
       </div>
     );
   }

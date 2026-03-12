@@ -474,6 +474,7 @@ const useColumns = ({
               .map(attr => rowData.options?.[attr.name] || '')
               .filter(Boolean)
               .join(' / ');
+
             return <DataGrid.ReadonlyCell context={context}>{combinedValue}</DataGrid.ReadonlyCell>;
           },
           disableHiding: true,

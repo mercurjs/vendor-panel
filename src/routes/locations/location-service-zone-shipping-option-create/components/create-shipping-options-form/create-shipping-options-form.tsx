@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
+import { HttpTypes } from "@medusajs/types"
 import { VendorExtendedAdminServiceZone } from "../../../../../types/stock-location"
 import { Button, ProgressStatus, ProgressTabs, toast } from "@medusajs/ui"
 import { useForm, useWatch } from "react-hook-form"
@@ -23,6 +24,7 @@ import {
   CreateShippingOptionSchema,
 } from "./schema"
 import { useFulfillmentProviderOptions } from "../../../../../hooks/api"
+import { useRegions } from "../../../../../hooks/api/regions"
 
 enum Tab {
   DETAILS = "details",
@@ -74,6 +76,11 @@ export function CreateShippingOptionsForm({
       enabled: !!selectedProviderId,
     })
 
+  const { regions } = useRegions({
+    fields: "id,name,currency_code",
+    limit: 999,
+  })
+
   const isCalculatedPriceType =
     form.watch("price_type") === ShippingOptionPriceType.Calculated
 
@@ -89,22 +96,30 @@ export function CreateShippingOptionsForm({
         return {
           currency_code: code,
           amount: castNumber(value),
-        }
+          rules: [],
+        } as HttpTypes.AdminCreateShippingOptionPriceWithCurrency
       })
-      .filter((p): p is { currency_code: string; amount: number } => !!p)
+      .filter((p): p is HttpTypes.AdminCreateShippingOptionPriceWithCurrency => !!p)
 
     const regionPrices = Object.entries(data.region_prices)
-      .map(([region, value]) => {
+      .map(([regionId, value]) => {
         if (!value) {
           return undefined
         }
 
-        return {
-          region_id: region,
-          amount: castNumber(value),
+        const region = regions?.find((r) => r.id === regionId)
+        
+        if (!region?.currency_code) {
+          return undefined
         }
+
+        return {
+          currency_code: region.currency_code,
+          amount: castNumber(value),
+          rules: [],
+        } as HttpTypes.AdminCreateShippingOptionPriceWithCurrency
       })
-      .filter((p): p is { region_id: string; amount: number } => !!p)
+      .filter((p): p is HttpTypes.AdminCreateShippingOptionPriceWithCurrency => !!p)
 
     const fulfillmentOptionData = fulfillmentProviderOptions?.find(
       (fo) => fo.id === data.fulfillment_option_id

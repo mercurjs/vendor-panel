@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import * as zod from "zod"
 
@@ -39,6 +39,7 @@ type PriceRecord = {
   currency_code?: string
   region_id?: string
   amount: number
+  rules?: HttpTypes.AdminCreateShippingOptionRule[]
 }
 
 const EditShippingOptionPricingSchema = zod.object({
@@ -111,6 +112,13 @@ export function EditShippingOptionsPricingForm({
 
   const { setCloseOnEscape } = useRouteModal()
 
+  useEffect(() => {
+    if (regions && regions.length > 0) {
+      const defaultValues = getDefaultValues(shippingOption.prices, regions)
+      form.reset(defaultValues)
+    }
+  }, [regions, shippingOption.prices])
+
   const columns = useShippingOptionPriceColumns({
     name: shippingOption.name,
     currencies,
@@ -164,11 +172,16 @@ export function EditShippingOptionsPricingForm({
      */
     const regionPrices = Object.entries(data.region_prices)
       .map(([region_id, value]) => {
+        const region = regions?.find((r) => r.id === region_id)
+        
+        if (!region?.currency_code) {
+          return undefined
+        }
+
         const priceRecord: PriceRecord = {
-          region_id,
+          currency_code: region.currency_code,
           amount: castNumber(value || 0),
-          // currency_code: regions?.find((r) => r.id === region_id)
-          //   ?.currency_code,
+          rules: [],
         }
 
         return priceRecord
@@ -304,7 +317,10 @@ const mapToConditionalPrice = (
   }
 }
 
-const getDefaultValues = (prices: HttpTypes.AdminShippingOptionPrice[]) => {
+const getDefaultValues = (
+  prices: HttpTypes.AdminShippingOptionPrice[],
+  regions?: { id: string; currency_code: string }[]
+) => {
   const hasAttributes = (
     price: HttpTypes.AdminShippingOptionPrice,
     required: string[],
@@ -323,12 +339,17 @@ const getDefaultValues = (prices: HttpTypes.AdminShippingOptionPrice[]) => {
   const region_prices: Record<string, number> = {}
   const conditional_region_prices: Record<string, UpdateConditionalPrice[]> = {}
 
-  prices.forEach((price) => {
-    if (!price.price_rules?.length) {
-      currency_prices[price.currency_code!] = price.amount
-      return
+  const currencyToRegions = new Map<string, { id: string; currency_code: string }[]>()
+  regions?.forEach((region) => {
+    if (!currencyToRegions.has(region.currency_code)) {
+      currencyToRegions.set(region.currency_code, [])
     }
+    currencyToRegions.get(region.currency_code)!.push(region)
+  })
 
+  const usedCurrencies = new Set<string>()
+
+  prices.forEach((price) => {
     const region_id = price.price_rules?.find(
       (r) => r.attribute === REGION_ID_ATTRIBUTE
     )?.value
@@ -344,6 +365,20 @@ const getDefaultValues = (prices: HttpTypes.AdminShippingOptionPrice[]) => {
         conditional_currency_prices[code] = []
       }
       conditional_currency_prices[code].push(mapToConditionalPrice(price))
+      return
+    }
+
+    if (!price.price_rules?.length) {
+      const code = price.currency_code!
+      const regionMatches = currencyToRegions.get(code) || []
+
+      if (regionMatches.length === 1 && !usedCurrencies.has(code)) {
+        region_prices[regionMatches[0].id] = price.amount
+        usedCurrencies.add(code)
+      } else {
+        currency_prices[code] = price.amount
+        usedCurrencies.add(code)
+      }
       return
     }
   })

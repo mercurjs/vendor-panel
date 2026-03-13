@@ -1,9 +1,12 @@
+import { useMemo } from 'react';
+
 import { useParams } from 'react-router-dom';
 
 import { TwoColumnPageSkeleton } from '../../../components/common/skeleton';
 import { TwoColumnPage } from '../../../components/layout/pages';
 import { useDashboardExtension } from '../../../extensions';
-import { useProduct } from '../../../hooks/api/products';
+import { useProduct, useProductVariants } from '../../../hooks/api/products';
+import { getExplicitVariantImages } from '../../../utils/get-explicit-variant-images';
 import { VariantGeneralSection } from './components/variant-general-section';
 import {
   InventorySectionPlaceholder,
@@ -14,15 +17,35 @@ import { VariantPricesSection } from './components/variant-prices-section';
 
 export const ProductVariantDetail = () => {
   const { id, variant_id } = useParams();
-  const { product, isLoading, isError, error } = useProduct(id!, {
-    fields: '*variants.inventory_items,*variants.images'
+  const {
+    product,
+    isLoading: isProductLoading,
+    isError,
+    error
+  } = useProduct(id!, {
+    fields: '*variants.inventory_items,*images'
   });
 
-  const variant = product?.variants?.find(item => item.id === variant_id);
+  const { variants, isLoading: isVariantsLoading } = useProductVariants(id!, {
+    fields: '*images'
+  } as any);
+
+  const productVariant = product?.variants?.find(item => item.id === variant_id);
+  const variantsDataVariant = variants?.find(v => v.id === variant_id);
+
+  const variantImages = useMemo(() => {
+    if (!variantsDataVariant?.images) {
+      return [];
+    }
+
+    return getExplicitVariantImages(variantsDataVariant.images, variant_id!);
+  }, [variantsDataVariant?.images, variant_id]);
 
   const { getWidgets } = useDashboardExtension();
 
-  if (isLoading || !variant) {
+  const isLoading = isProductLoading || isVariantsLoading;
+
+  if (isLoading || !productVariant) {
     return (
       <TwoColumnPageSkeleton
         mainSections={2}
@@ -34,9 +57,10 @@ export const ProductVariantDetail = () => {
   if (isError) {
     throw error;
   }
+
   return (
     <TwoColumnPage
-      data={variant}
+      data={productVariant}
       hasOutlet
       widgets={{
         after: getWidgets('product_variant.details.after'),
@@ -46,22 +70,22 @@ export const ProductVariantDetail = () => {
       }}
     >
       <TwoColumnPage.Main>
-        <VariantGeneralSection variant={variant} />
+        <VariantGeneralSection variant={productVariant} />
         <VariantMediaSection
-          variant={variant}
+          variant={productVariant}
+          variantImages={variantImages}
           productId={id!}
-          productImages={product?.images ?? []}
         />
-        {!variant.manage_inventory ? (
+        {!productVariant.manage_inventory ? (
           <InventorySectionPlaceholder />
         ) : (
-          variant.inventory_items && (
+          productVariant.inventory_items && (
             <VariantInventorySection
-              inventoryItems={variant.inventory_items.map(i => {
+              inventoryItems={productVariant.inventory_items.map(i => {
                 return {
                   id: i.inventory_item_id,
                   required_quantity: i.required_quantity,
-                  variant
+                  variant: productVariant
                 };
               })}
             />
@@ -69,7 +93,7 @@ export const ProductVariantDetail = () => {
         )}
       </TwoColumnPage.Main>
       <TwoColumnPage.Sidebar>
-        <VariantPricesSection variant={variant} />
+        <VariantPricesSection variant={productVariant} />
       </TwoColumnPage.Sidebar>
     </TwoColumnPage>
   );

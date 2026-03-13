@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { HttpTypes } from '@medusajs/types';
 import { Checkbox } from '@medusajs/ui';
@@ -19,12 +19,25 @@ import { ProductCreateVariantSchema } from '../../constants';
 import { ProductCreateSchemaType } from '../../types';
 import { decorateVariantsWithDefaultValues } from '../../utils';
 
+type MediaItem = {
+  file?: File;
+  url?: string;
+  isThumbnail?: boolean;
+  id?: string;
+};
+
 type ProductCreateVariantsFormProps = {
   form: UseFormReturn<ProductCreateSchemaType>;
   store?: HttpTypes.AdminStore;
   regions?: HttpTypes.AdminRegion[];
   pricePreferences?: HttpTypes.AdminPricePreference[];
-  onOpenMediaModal?: (variantIndex: number, variantTitle?: string, initialMedia?: any[]) => void;
+  onOpenMediaModal?: (
+    variantIndex: number,
+    variantTitle?: string,
+    initialMedia?: MediaItem[],
+    productMedia?: MediaItem[]
+  ) => void;
+  productMedia?: MediaItem[];
 };
 
 type VariantWithIndex = ProductCreateVariantSchema & {
@@ -36,7 +49,8 @@ export const ProductCreateVariantsForm = ({
   store,
   regions = [],
   pricePreferences = [],
-  onOpenMediaModal
+  onOpenMediaModal,
+  productMedia = []
 }: ProductCreateVariantsFormProps) => {
   const { t } = useTranslation();
   const [searchValue, setSearchValue] = useState('');
@@ -122,6 +136,8 @@ export const ProductCreateVariantsForm = ({
   /**
    * NOTE: anything that goes to the datagrid component needs to be memoised otherwise DataGrid will rerender and inputs will loose focus
    */
+  const hasProductMedia = productMedia.length > 0;
+
   const columns = useColumns({
     variantAttributes,
     store,
@@ -129,7 +145,9 @@ export const ProductCreateVariantsForm = ({
     pricePreferences,
     stockLocations: stock_locations,
     onOpenMediaModal,
-    form
+    form,
+    productMedia,
+    hasProductMedia
   });
 
   const variantData = useMemo(() => {
@@ -391,7 +409,9 @@ const useColumns = ({
   pricePreferences = [],
   stockLocations = [],
   onOpenMediaModal,
-  form
+  form,
+  productMedia = [],
+  hasProductMedia = false
 }: {
   variantAttributes?: Array<{
     handle: string;
@@ -402,8 +422,15 @@ const useColumns = ({
   regions?: HttpTypes.AdminRegion[];
   pricePreferences?: HttpTypes.AdminPricePreference[];
   stockLocations?: HttpTypes.AdminStockLocation[];
-  onOpenMediaModal?: (variantIndex: number, variantTitle?: string, initialMedia?: any[]) => void;
+  onOpenMediaModal?: (
+    variantIndex: number,
+    variantTitle?: string,
+    initialMedia?: MediaItem[],
+    productMedia?: MediaItem[]
+  ) => void;
   form: UseFormReturn<ProductCreateSchemaType>;
+  productMedia?: MediaItem[];
+  hasProductMedia?: boolean;
 }) => {
   const { t } = useTranslation();
 
@@ -412,6 +439,9 @@ const useColumns = ({
     name: 'variants',
     defaultValue: []
   });
+
+  const variantsRef = useRef(variants);
+  variantsRef.current = variants;
 
   const allSelected = variants.length > 0 && variants.every(v => v.should_create);
   const someSelected = variants.some(v => v.should_create) && !allSelected;
@@ -508,13 +538,24 @@ const useColumns = ({
           type: 'media',
           cell: context => {
             const rowData = context.row.original as VariantWithIndex;
-            const variantMedia = variants[rowData.originalIndex]?.media;
+
             return (
               <DataGridMediaCell
                 context={context}
-                onOpenMediaModal={() => {
-                  onOpenMediaModal?.(rowData.originalIndex, rowData.title, variantMedia);
-                }}
+                disabled={!hasProductMedia}
+                onOpenMediaModal={
+                  hasProductMedia
+                    ? () => {
+                        const currentMedia = variantsRef.current[rowData.originalIndex]?.media;
+                        onOpenMediaModal?.(
+                          rowData.originalIndex,
+                          rowData.title,
+                          currentMedia,
+                          productMedia
+                        );
+                      }
+                    : undefined
+                }
               />
             );
           }
@@ -573,7 +614,9 @@ const useColumns = ({
       onOpenMediaModal,
       allSelected,
       someSelected,
-      handleSelectAll
+      handleSelectAll,
+      hasProductMedia,
+      productMedia
     ]
   );
 };

@@ -574,6 +574,8 @@
         "variantDescription": "Add media to showcase it in your storefront.",
         "action": "Add media"
       },
+      "selectImages": "Select images",
+      "selectImagesHint": "Add product images to the variant. To add new images, add them to the product first.",
       "successToast": "Media was successfully updated."
     },
     "discountableHint": "When unchecked, discounts will not be applied to this product.",

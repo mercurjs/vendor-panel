@@ -1,25 +1,14 @@
-import { Fragment, useCallback, useState } from 'react';
+import { Fragment, useCallback, useMemo, useState } from 'react';
 
-import { zodResolver } from '@hookform/resolvers/zod';
 import { ThumbnailBadge } from '@medusajs/icons';
-import { HttpTypes } from '@medusajs/types';
+import type { HttpTypes } from '@medusajs/types';
 import { Button, Checkbox, clx, CommandBar, toast, Tooltip } from '@medusajs/ui';
-import { useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { z } from 'zod';
 
 import { RouteFocusModal, useRouteModal } from '../../../../../components/modals';
 import { KeyboundForm } from '../../../../../components/utilities/keybound-form';
-import {
-  useUpdateProduct,
-  useUpdateProductVariant,
-  useUpdateVariantMedia
-} from '../../../../../hooks/api/products';
-import { fetchQuery, uploadFilesQuery } from '../../../../../lib/client';
-import { UploadMediaFormItem } from '../../../../products/common/components/upload-media-form-item';
-import { EditProductMediaSchema, MediaSchema } from '../../../../products/product-create/constants';
-import { EditProductMediaSchemaType } from '../../../../products/product-create/types';
+import { useUpdateProductVariant, useUpdateVariantMedia } from '../../../../../hooks/api/products';
 
 type EditVariantMediaFormProps = {
   productId: string;
@@ -29,38 +18,6 @@ type EditVariantMediaFormProps = {
   thumbnail: string | null;
 };
 
-type Media = z.infer<typeof MediaSchema>;
-
-interface MediaView {
-  id?: string;
-  field_id: string;
-  url: string;
-  isThumbnail: boolean;
-}
-
-const getDefaultValues = (
-  images: HttpTypes.AdminProductImage[],
-  thumbnail: string | null
-): Media[] => {
-  const media: Media[] = images.map(image => ({
-    id: image.id!,
-    url: image.url!,
-    isThumbnail: image.url === thumbnail,
-    file: null
-  }));
-
-  if (thumbnail && !media.some(m => m.isThumbnail)) {
-    media.unshift({
-      id: Math.random().toString(36).substring(7),
-      url: thumbnail,
-      isThumbnail: true,
-      file: null
-    });
-  }
-
-  return media;
-};
-
 export const EditVariantMediaForm = ({
   productId,
   variantId,
@@ -68,133 +25,145 @@ export const EditVariantMediaForm = ({
   productImages,
   thumbnail
 }: EditVariantMediaFormProps) => {
-  const [selection, setSelection] = useState<Record<string, true>>({});
   const { t } = useTranslation();
   const { handleSuccess } = useRouteModal();
 
-  const originalImageIds = variantImages.map(img => img.id!);
-  const originalThumbnail = thumbnail;
+  const originalImageIds = useMemo(
+    () => new Set(variantImages.map(img => img.id!)),
+    [variantImages]
+  );
 
-  const form = useForm<EditProductMediaSchemaType>({
-    defaultValues: {
-      media: getDefaultValues(variantImages, thumbnail)
-    },
-    resolver: zodResolver(EditProductMediaSchema)
-  });
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(
+    () => new Set(variantImages.map(img => img.id!))
+  );
 
-  const { fields, append, remove, update } = useFieldArray({
-    name: 'media',
-    control: form.control,
-    keyName: 'field_id'
+  const [thumbnailId, setThumbnailId] = useState<string | null>(() => {
+    if (!thumbnail) {
+      return null;
+    }
+    const match = variantImages.find(img => img.url === thumbnail);
+
+    return match?.id ?? null;
   });
 
   const { mutateAsync: updateVariantMedia, isPending: isMediaPending } = useUpdateVariantMedia(
     productId,
     variantId
   );
-  const { mutateAsync: updateProduct, isPending: isProductPending } = useUpdateProduct(productId);
   const { mutateAsync: updateVariant, isPending: isVariantPending } = useUpdateProductVariant(
     productId,
     variantId
   );
 
-  const isPending = isMediaPending || isProductPending || isVariantPending;
+  const isPending = isMediaPending || isVariantPending;
 
-  const handleSubmit = form.handleSubmit(async ({ media }) => {
-    const filesToUpload = media.map((m, i) => ({ file: m.file, index: i })).filter(m => !!m.file);
+  const selectedImages = useMemo(
+    () => productImages.filter(img => selectedIds.has(img.id!)),
+    [productImages, selectedIds]
+  );
 
-    let newImageIds: string[] = [];
-    let newUrls: string[] = [];
-    let withUpdatedUrls = media;
+  const unselectedImages = useMemo(
+    () => productImages.filter(img => !selectedIds.has(img.id!)),
+    [productImages, selectedIds]
+  );
 
-    if (filesToUpload.length) {
-      const uploadResult = await uploadFilesQuery(filesToUpload).catch(() => {
-        form.setError('media', {
-          type: 'invalid_file',
-          message: t('products.media.failedToUpload')
-        });
-        return { files: [] as HttpTypes.AdminFile[] };
+  const handleSelectImage = useCallback((imageId: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      next.add(imageId);
+
+      return next;
+    });
+  }, []);
+
+  const [checkedIds, setCheckedIds] = useState<Record<string, true>>({});
+
+  const handleDeselectImage = useCallback(
+    (imageId: string) => {
+      setSelectedIds(prev => {
+        const next = new Set(prev);
+        next.delete(imageId);
+
+        return next;
       });
 
-      const uploadedFiles: HttpTypes.AdminFile[] = uploadResult?.files ?? [];
-
-      if (uploadedFiles.length) {
-        withUpdatedUrls = media.map((entry, i) => {
-          const toUploadIndex = filesToUpload.findIndex(m => m.index === i);
-          if (toUploadIndex > -1) {
-            return { ...entry, url: uploadedFiles[toUploadIndex]?.url };
-          }
-          return entry;
-        });
-
-        newUrls = uploadedFiles.map(f => f.url);
-        const existingProductImageUrls = productImages.map(img => ({ url: img.url! }));
-
-        const updatedProductResponse = await updateProduct({
-          images: [...existingProductImageUrls, ...newUrls.map(url => ({ url }))]
-        }).catch(() => null);
-
-        if (updatedProductResponse) {
-          const updatedImages: HttpTypes.AdminProductImage[] =
-            (updatedProductResponse as any).product?.images ?? [];
-
-          newImageIds = newUrls
-            .map(url => updatedImages.find(img => img.url === url)?.id)
-            .filter((id): id is string => !!id);
-        }
+      if (thumbnailId === imageId) {
+        setThumbnailId(null);
       }
+
+      const { [imageId]: _, ...restChecked } = checkedIds;
+      setCheckedIds(restChecked);
+    },
+    [thumbnailId, checkedIds]
+  );
+
+  const handleCheckedChange = useCallback(
+    (imageId: string, value: boolean) => {
+      if (!value) {
+        const { [imageId]: _, ...rest } = checkedIds;
+        setCheckedIds(rest);
+
+        return;
+      }
+      setCheckedIds(prev => ({ ...prev, [imageId]: true }));
+    },
+    [checkedIds]
+  );
+
+  const handlePromoteToThumbnail = useCallback(() => {
+    const ids = Object.keys(checkedIds);
+    if (ids.length !== 1) {
+      return;
     }
 
-    const currentItemIds = withUpdatedUrls.filter(m => !m.file && m.id).map(m => m.id!);
+    setThumbnailId(ids[0]);
+    setCheckedIds({});
+  }, [checkedIds]);
 
-    const removeImageIds = originalImageIds.filter(id => !currentItemIds.includes(id));
+  const checkedCount = Object.keys(checkedIds).length;
 
-    const newThumbnail = withUpdatedUrls.find(m => m.isThumbnail)?.url ?? null;
-    const thumbnailChanged = newThumbnail !== originalThumbnail;
+  const getEffectiveThumbnailId = useCallback(() => {
+    if (selectedIds.size === 0) {
+      return null;
+    }
+
+    if (thumbnailId && selectedIds.has(thumbnailId)) {
+      return thumbnailId;
+    }
+
+    return [...selectedIds][0];
+  }, [selectedIds, thumbnailId]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const addIds = [...selectedIds].filter(id => !originalImageIds.has(id));
+    const removeIds = [...originalImageIds].filter(id => !selectedIds.has(id));
+
+    const effectiveThumbnailId = getEffectiveThumbnailId();
+    const effectiveThumbnailUrl = effectiveThumbnailId
+      ? (productImages.find(img => img.id === effectiveThumbnailId)?.url ?? null)
+      : null;
+    const thumbnailChanged = effectiveThumbnailUrl !== thumbnail;
 
     const ops: Promise<unknown>[] = [];
 
-    if (newImageIds.length) {
-      ops.push(updateVariantMedia({ add: newImageIds }));
-    }
-
-    if (removeImageIds.length) {
-      const updatedProductImages = [
-        ...productImages
-          .filter(img => !removeImageIds.includes(img.id!))
-          .map(img => ({ url: img.url! })),
-        ...newUrls.map(url => ({ url }))
-      ];
-      ops.push(updateProduct({ images: updatedProductImages }));
-
-      const removedImageUrls = variantImages
-        .filter(img => removeImageIds.includes(img.id!))
-        .map(img => img.url!);
-
-      const variants = await fetchQuery(`/vendor/products/${productId}/variants`, {
-        method: 'GET'
-      }).catch(() => null);
-
-      const allVariants: { id: string; thumbnail?: string | null }[] = variants?.variants ?? [];
-
-      allVariants
-        .filter(v => v.id !== variantId && v.thumbnail && removedImageUrls.includes(v.thumbnail))
-        .forEach(v => {
-          ops.push(
-            fetchQuery(`/vendor/products/${productId}/variants/${v.id}`, {
-              method: 'POST',
-              body: { thumbnail: null }
-            })
-          );
-        });
+    if (addIds.length || removeIds.length) {
+      ops.push(
+        updateVariantMedia({
+          ...(addIds.length ? { add: addIds } : {}),
+          ...(removeIds.length ? { remove: removeIds } : {})
+        })
+      );
     }
 
     if (thumbnailChanged) {
-      ops.push(updateVariant({ thumbnail: newThumbnail }));
+      ops.push(updateVariant({ thumbnail: effectiveThumbnailUrl }));
     }
 
     if (!ops.length) {
       handleSuccess();
+
       return;
     }
 
@@ -206,189 +175,196 @@ export const EditVariantMediaForm = ({
       .catch(error => {
         toast.error(error.message);
       });
-  });
-
-  const handleCheckedChange = useCallback(
-    (fieldId: string) => (val: boolean) => {
-      if (!val) {
-        const { [fieldId]: _, ...rest } = selection;
-        setSelection(rest);
-        return;
-      }
-      setSelection(prev => ({ ...prev, [fieldId]: true }));
-    },
-    [selection]
-  );
-
-  const handleDelete = () => {
-    const ids = Object.keys(selection);
-    const indices = ids.map(fieldId => fields.findIndex(m => m.field_id === fieldId));
-    remove(indices);
-    setSelection({});
   };
-
-  const handlePromoteToThumbnail = () => {
-    const ids = Object.keys(selection);
-    if (!ids.length) {
-      return;
-    }
-
-    const currentThumbnailIndex = fields.findIndex(m => m.isThumbnail);
-    if (currentThumbnailIndex > -1) {
-      update(currentThumbnailIndex, { ...fields[currentThumbnailIndex], isThumbnail: false });
-    }
-
-    const index = fields.findIndex(m => m.field_id === ids[0]);
-    update(index, { ...fields[index], isThumbnail: true });
-
-    setSelection({});
-  };
-
-  const selectionCount = Object.keys(selection).length;
 
   return (
-    <RouteFocusModal.Form
-      blockSearchParams
-      form={form}
+    <KeyboundForm
+      className="flex size-full flex-col overflow-hidden"
+      onSubmit={handleSubmit}
     >
-      <KeyboundForm
-        className="flex size-full flex-col overflow-hidden"
-        onSubmit={handleSubmit}
-      >
-        <RouteFocusModal.Header>
-          <div className="flex items-center justify-end gap-x-2">
-            <Button
-              variant="secondary"
-              size="small"
-              asChild
-            >
-              <Link to={{ pathname: '.', search: undefined }}>
-                {t('products.media.galleryLabel')}
-              </Link>
-            </Button>
+      <RouteFocusModal.Header>
+        <div className="flex items-center justify-end gap-x-2">
+          <Button
+            variant="secondary"
+            size="small"
+            asChild
+          >
+            <Link to={{ pathname: '.', search: undefined }}>
+              {t('products.media.galleryLabel')}
+            </Link>
+          </Button>
+        </div>
+      </RouteFocusModal.Header>
+      <RouteFocusModal.Body className="flex flex-col overflow-hidden">
+        <div className="flex size-full">
+          <div className="flex-1 overflow-auto bg-ui-bg-subtle p-6">
+            <div className="flex flex-wrap content-start gap-6">
+              {selectedImages.map(img => {
+                const effectiveThumbId = getEffectiveThumbnailId();
+                const isThumb = img.id === effectiveThumbId;
+
+                return (
+                  <SelectedImageCard
+                    key={img.id}
+                    image={img}
+                    isThumbnail={isThumb}
+                    checked={!!checkedIds[img.id!]}
+                    onCheckedChange={val => handleCheckedChange(img.id!, val)}
+                  />
+                );
+              })}
+            </div>
           </div>
-        </RouteFocusModal.Header>
-        <RouteFocusModal.Body className="flex flex-col overflow-hidden">
-          <div className="flex size-full flex-col-reverse lg:grid lg:grid-cols-[1fr_560px]">
-            <div className="size-full overflow-auto bg-ui-bg-subtle">
-              <div className="grid h-fit auto-rows-auto grid-cols-4 gap-6 p-6">
-                {fields.map(m => (
-                  <MediaGridItem
-                    key={m.field_id}
-                    media={m}
-                    checked={!!selection[m.field_id]}
-                    onCheckedChange={handleCheckedChange(m.field_id)}
+          <div className="w-px shrink-0 bg-ui-border-base" />
+          <div className="flex w-[318px] shrink-0 flex-col">
+            <div className="p-4">
+              <p className="txt-compact-small-plus text-ui-fg-base">
+                {t('products.media.selectImages')}
+              </p>
+              <p className="txt-small mt-1 text-ui-fg-subtle">
+                {t('products.media.selectImagesHint')}
+              </p>
+            </div>
+            <div className="h-px bg-ui-border-base" />
+            <div className="flex-1 overflow-auto p-4">
+              <div className="grid grid-cols-2 gap-4">
+                {unselectedImages.map(img => (
+                  <UnselectedImageCard
+                    key={img.id}
+                    image={img}
+                    onSelect={() => handleSelectImage(img.id!)}
                   />
                 ))}
               </div>
             </div>
-            <div className="overflow-auto border-b bg-ui-bg-base px-6 py-4 lg:border-b-0 lg:border-l">
-              <UploadMediaFormItem
-                form={form}
-                append={append}
+          </div>
+        </div>
+      </RouteFocusModal.Body>
+      <CommandBar open={!!checkedCount}>
+        <CommandBar.Bar>
+          <CommandBar.Value>{t('general.countSelected', { count: checkedCount })}</CommandBar.Value>
+          <CommandBar.Seperator />
+          {checkedCount === 1 && (
+            <Fragment>
+              <CommandBar.Command
+                action={handlePromoteToThumbnail}
+                label={t('products.media.makeThumbnail')}
+                shortcut="t"
               />
-            </div>
-          </div>
-        </RouteFocusModal.Body>
-        <CommandBar open={!!selectionCount}>
-          <CommandBar.Bar>
-            <CommandBar.Value>
-              {t('general.countSelected', { count: selectionCount })}
-            </CommandBar.Value>
-            <CommandBar.Seperator />
-            {selectionCount === 1 && (
-              <Fragment>
-                <CommandBar.Command
-                  action={handlePromoteToThumbnail}
-                  label={t('products.media.makeThumbnail')}
-                  shortcut="t"
-                />
-                <CommandBar.Seperator />
-              </Fragment>
-            )}
-            <CommandBar.Command
-              action={handleDelete}
-              label={t('actions.delete')}
-              shortcut="d"
-            />
-          </CommandBar.Bar>
-        </CommandBar>
-        <RouteFocusModal.Footer>
-          <div className="flex items-center justify-end gap-x-2">
-            <RouteFocusModal.Close asChild>
-              <Button
-                variant="secondary"
-                size="small"
-              >
-                {t('actions.cancel')}
-              </Button>
-            </RouteFocusModal.Close>
+              <CommandBar.Seperator />
+            </Fragment>
+          )}
+          <CommandBar.Command
+            action={() => {
+              Object.keys(checkedIds).forEach(id => handleDeselectImage(id));
+              setCheckedIds({});
+            }}
+            label={t('actions.remove')}
+            shortcut="r"
+          />
+        </CommandBar.Bar>
+      </CommandBar>
+      <RouteFocusModal.Footer>
+        <div className="flex items-center justify-end gap-x-2">
+          <RouteFocusModal.Close asChild>
             <Button
+              variant="secondary"
               size="small"
-              type="submit"
-              isLoading={isPending}
-              data-testid="variant-media-edit-save"
+              data-testid="variant-media-edit-cancel"
             >
-              {t('actions.save')}
+              {t('actions.cancel')}
             </Button>
-          </div>
-        </RouteFocusModal.Footer>
-      </KeyboundForm>
-    </RouteFocusModal.Form>
+          </RouteFocusModal.Close>
+          <Button
+            size="small"
+            type="submit"
+            isLoading={isPending}
+            data-testid="variant-media-edit-save"
+          >
+            {t('actions.save')}
+          </Button>
+        </div>
+      </RouteFocusModal.Footer>
+    </KeyboundForm>
   );
 };
 
-interface MediaGridItemProps {
-  media: MediaView;
+type SelectedImageCardProps = {
+  image: HttpTypes.AdminProductImage;
+  isThumbnail: boolean;
   checked: boolean;
   onCheckedChange: (value: boolean) => void;
-}
+};
 
-const MediaGridItem = ({ media, checked, onCheckedChange }: MediaGridItemProps) => {
+const SelectedImageCard = ({
+  image,
+  isThumbnail,
+  checked,
+  onCheckedChange
+}: SelectedImageCardProps) => {
   const { t } = useTranslation();
-
-  const handleToggle = useCallback(
-    (value: boolean) => {
-      onCheckedChange(value);
-    },
-    [onCheckedChange]
-  );
 
   return (
     <div
       className={clx(
-        'group relative aspect-square h-auto max-w-full overflow-hidden rounded-lg bg-ui-bg-subtle-hover shadow-elevation-card-rest outline-none hover:shadow-elevation-card-hover focus-visible:shadow-borders-focus'
+        'group relative size-[156px] shrink-0 overflow-hidden rounded-lg',
+        'shadow-elevation-card-rest'
       )}
     >
-      {media.isThumbnail && (
-        <div className="absolute left-2 top-2">
+      {isThumbnail && (
+        <div className="absolute left-2 top-2 z-[1]">
           <Tooltip content={t('products.media.thumbnailTooltip')}>
             <ThumbnailBadge />
           </Tooltip>
         </div>
       )}
       <div
-        className={clx('absolute right-2 top-2 opacity-0 transition-fg', {
-          'group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100':
-            !checked,
-          'opacity-100': checked
-        })}
+        className={clx(
+          'absolute right-2 top-2 z-[1] opacity-0 transition-opacity',
+          'group-hover:opacity-100',
+          { 'opacity-100': checked }
+        )}
       >
         <Checkbox
-          onClick={e => {
-            e.stopPropagation();
-          }}
           checked={checked}
-          onCheckedChange={handleToggle}
-          aria-label="Select image"
-          data-testid={`variant-media-item-checkbox-${media.field_id}`}
+          onCheckedChange={onCheckedChange}
+          aria-label={t('actions.select')}
+          data-testid={`variant-media-check-${image.id}`}
         />
       </div>
       <img
-        src={media.url}
+        src={image.url!}
         alt=""
         className="size-full object-cover object-center"
       />
     </div>
+  );
+};
+
+type UnselectedImageCardProps = {
+  image: HttpTypes.AdminProductImage;
+  onSelect: () => void;
+};
+
+const UnselectedImageCard = ({ image, onSelect }: UnselectedImageCardProps) => {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={clx(
+        'aspect-square w-full overflow-hidden rounded-lg',
+        'shadow-elevation-card-rest transition-shadow',
+        'hover:shadow-elevation-card-hover',
+        'outline-none focus-visible:shadow-borders-focus'
+      )}
+      aria-label={`Select image`}
+      data-testid={`variant-media-select-${image.id}`}
+    >
+      <img
+        src={image.url!}
+        alt=""
+        className="size-full object-cover object-center"
+      />
+    </button>
   );
 };

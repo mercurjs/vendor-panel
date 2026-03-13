@@ -72,7 +72,8 @@ type ProductCreateFormProps = {
   onOpenMediaModal?: (
     variantIndex: number,
     variantTitle?: string,
-    initialMedia?: MediaItem[]
+    initialMedia?: MediaItem[],
+    productMedia?: MediaItem[]
   ) => void;
   onSaveVariantMediaRef?: React.MutableRefObject<
     ((variantIndex: number, media: MediaItem[]) => void) | null
@@ -254,6 +255,11 @@ export const ProductCreateForm = ({
     control: form.control,
     name: 'variants'
   });
+
+  const watchedMedia = useWatch({
+    control: form.control,
+    name: 'media'
+  }) as MediaItem[] | undefined;
 
   const showInventoryTab = useMemo(
     () => watchedVariants.some((v: any) => v.manage_inventory && v.inventory_kit),
@@ -596,39 +602,34 @@ export const ProductCreateForm = ({
       }
     }
 
-    const uploadVariantMedia = async (mediaItems: MediaItem[]) => {
-      const existingThumbnail = mediaItems.find(item => item.isThumbnail && item.url)?.url;
-      const existingUrls = mediaItems.filter(item => !item.file && item.url).map(item => item.url);
+    const blobToUploadedUrl = new Map<string, string>();
+    const allOriginalMedia = media as MediaItem[];
 
-      const thumbnailReq = mediaItems.filter(item => item.file && item.isThumbnail);
-      const otherMediaReq = mediaItems.filter(item => item.file && !item.isThumbnail);
-      const uploaded: Array<{ url: string; isThumbnail: boolean }> = [];
+    if (uploadedMedia.length > 0) {
+      const thumbnailItems = allOriginalMedia.filter((m: MediaItem) => m.isThumbnail && m.file);
+      const otherItems = allOriginalMedia.filter((m: MediaItem) => !m.isThumbnail && m.file);
 
-      if (thumbnailReq.length > 0) {
-        const response = await uploadFilesQuery(thumbnailReq);
-        const files = Array.isArray(response?.files) ? response.files : [];
-        uploaded.push(
-          ...files.map((file: HttpTypes.AdminFile) => ({ ...file, isThumbnail: true }))
-        );
+      let thumbIdx = 0;
+      let otherIdx = 0;
+
+      for (const uploaded of uploadedMedia) {
+        if (uploaded.isThumbnail && thumbIdx < thumbnailItems.length) {
+          const blobUrl = thumbnailItems[thumbIdx].url;
+          if (blobUrl) {
+            blobToUploadedUrl.set(blobUrl, uploaded.url);
+          }
+          thumbIdx++;
+        }
+        if (!uploaded.isThumbnail && otherIdx < otherItems.length) {
+          const blobUrl = otherItems[otherIdx].url;
+          if (blobUrl) {
+            blobToUploadedUrl.set(blobUrl, uploaded.url);
+          }
+          otherIdx++;
+        }
       }
+    }
 
-      if (otherMediaReq.length > 0) {
-        const response = await uploadFilesQuery(otherMediaReq);
-        const files = Array.isArray(response?.files) ? response.files : [];
-        uploaded.push(
-          ...files.map((file: HttpTypes.AdminFile) => ({ ...file, isThumbnail: false }))
-        );
-      }
-
-      const uploadedUrls = uploaded.map(file => file.url);
-      const imageUrls = [...existingUrls, ...uploadedUrls].filter(Boolean);
-      const uploadedThumbnail = uploaded.find(file => file.isThumbnail)?.url;
-      const thumbnailUrl = uploadedThumbnail || existingThumbnail || imageUrls[0];
-
-      return { imageUrls, thumbnailUrl };
-    };
-
-    // Filter variants to only include those with should_create === true
     const variantsToCreate = (finalPayload as any).variants.filter(
       (variant: any) => variant.should_create === true
     );
@@ -638,22 +639,31 @@ export const ProductCreateForm = ({
 
     for (let i = 0; i < variantsToCreate.length; i++) {
       const variant = variantsToCreate[i];
-      const variantMedia = variant.media || [];
+      const variantMedia: MediaItem[] = variant.media || [];
       if (!variantMedia.length) {
         continue;
       }
 
-      const variantImageKey = `variant-${i}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-      const { imageUrls, thumbnailUrl } = await uploadVariantMedia(variantMedia);
+      const resolvedUrls = variantMedia
+        .map(m => (m.url ? blobToUploadedUrl.get(m.url) : undefined))
+        .filter((url): url is string => !!url);
 
-      if (imageUrls.length === 0) {
+      if (resolvedUrls.length === 0) {
         continue;
       }
+
+      const variantThumb = variantMedia.find(m => m.isThumbnail);
+      const resolvedThumbUrl = variantThumb?.url
+        ? blobToUploadedUrl.get(variantThumb.url)
+        : undefined;
+      const thumbnailUrl = resolvedThumbUrl || resolvedUrls[0];
+
+      const variantImageKey = `variant-${i}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
       variantImageKeyByIndex.set(i, variantImageKey);
       variantsImages.push({
         variant_image_key: variantImageKey,
-        image_urls: imageUrls,
+        image_urls: resolvedUrls,
         thumbnail_url: thumbnailUrl
       });
     }
@@ -1152,6 +1162,7 @@ export const ProductCreateForm = ({
                   regions={regions}
                   pricePreferences={pricePreferences}
                   onOpenMediaModal={onOpenMediaModal}
+                  productMedia={watchedMedia || []}
                 />
               </ProgressTabs.Content>
               {showInventoryTab && (

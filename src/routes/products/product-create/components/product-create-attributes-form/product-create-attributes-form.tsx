@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle } from 'react';
 
-import { Button, Divider, Heading, Text } from '@medusajs/ui';
+import { CircleInfoSolid } from '@medusajs/icons';
+import { Button, Divider, Heading, Text, Tooltip } from '@medusajs/ui';
 import { Path, useFieldArray, UseFormReturn } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -219,12 +220,15 @@ ProductCreateAttributesForm.displayName = 'ProductCreateAttributesForm';
 
 type HeaderProps = {
   options: {
-    append: (option: {
-      title: string;
-      values: string[];
-      metadata?: Record<string, unknown>;
-      useForVariants: boolean;
-    }) => void;
+    append: (
+      option: {
+        title: string;
+        values: string[];
+        metadata?: Record<string, unknown>;
+        useForVariants: boolean;
+      },
+      focusOptions: Record<string, boolean>
+    ) => void;
   };
 };
 
@@ -241,12 +245,23 @@ const Header = ({ options }: HeaderProps) => {
           >
             {t('products.create.tabs.attributes')}
           </Heading>
-          <Text
-            size="small"
-            className="max-w-[440px] text-ui-fg-subtle"
-          >
-            {t('products.create.attributes.description')}
-          </Text>
+          <div className="space-y-0.5">
+            <Text
+              size="small"
+              className="max-w-[440px] text-ui-fg-subtle"
+            >
+              {t('products.create.attributes.description')}
+            </Text>
+            <Text
+              size="small"
+              className="flex items-center gap-1 text-ui-fg-subtle"
+            >
+              {t('products.create.attributes.learnMore.label')}
+              <Tooltip content={t('products.create.attributes.learnMore.content')}>
+                <CircleInfoSolid />
+              </Tooltip>
+            </Text>
+          </div>
         </div>
         <Button
           size="small"
@@ -254,12 +269,17 @@ const Header = ({ options }: HeaderProps) => {
           type="button"
           className="min-w-[100px]"
           onClick={() => {
-            options.append({
-              title: '',
-              values: [],
-              metadata: { author: 'vendor' },
-              useForVariants: true // Locked to true
-            });
+            options.append(
+              {
+                title: '',
+                values: [],
+                metadata: { author: 'vendor' },
+                useForVariants: true // Locked to true
+              },
+              {
+                shouldFocus: false
+              }
+            );
           }}
         >
           {t('actions.add')} {t('products.create.attributes.buttonLabel')}

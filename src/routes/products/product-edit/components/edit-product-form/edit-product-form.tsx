@@ -196,6 +196,7 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
                     <Form.Item>
                       <Form.Label
                         className="flex items-center gap-x-1"
+                        optional
                         tooltip={t('products.fields.handle.tooltip')}
                       >
                         {t('fields.handle')}

@@ -76,6 +76,7 @@ function DetailsTab({ form, product }: DetailsTabProps) {
                         }))}
                       />
                     </Form.Control>
+                    <Form.ErrorMessage />
                   </Form.Item>
                 );
               }}

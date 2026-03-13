@@ -322,7 +322,7 @@ const ComboboxImpl = <T extends Value = string>(
       >
         <div
           ref={badgesContainerRef}
-          className="relative flex h-full min-w-0 flex-1 items-center gap-2 overflow-hidden px-2"
+          className="relative flex h-full min-w-0 flex-1 items-center gap-2 overflow-hidden"
         >
           {isArrayValue && Array.isArray(selectedValues) && selectedValues.length > 0 ? (
             <>
@@ -348,7 +348,7 @@ const ComboboxImpl = <T extends Value = string>(
                       size="2xsmall"
                       className="w-fit bg-ui-bg-base p-0"
                     >
-                      <span className="max-w-[200px] truncate text-ellipsis border-r border-ui-border-base bg-ui-bg-base px-1.5">
+                      <span className="max-w-[200px] truncate text-ellipsis border-r border-ui-border-base px-1.5">
                         {option?.label || optionValue || 'Unknown'}
                       </span>
                       <XMarkMini className="mr-0.5 !text-ui-fg-base" />
@@ -401,7 +401,7 @@ const ComboboxImpl = <T extends Value = string>(
             ref={comboboxRef}
             onFocus={() => setOpen(true)}
             className={clx(
-              '!placeholder:text-ui-fg-muted txt-compact-small size-full cursor-pointer bg-transparent pe-8 text-ui-fg-base outline-none transition-fg focus:cursor-text',
+              '!placeholder:text-ui-fg-muted txt-compact-small size-full cursor-pointer bg-transparent !px-2 pe-8 text-ui-fg-base outline-none transition-fg focus:cursor-text',
               {
                 'opacity-0': hideInput && !isArrayValue,
                 'ps-2': !showTag && !isArrayValue,
@@ -452,7 +452,7 @@ const ComboboxImpl = <T extends Value = string>(
         role="listbox"
         className={clx(
           'z-50 rounded-[8px] bg-ui-bg-base p-1 shadow-elevation-flyout',
-          'max-h-[200px] overflow-y-auto',
+          'max-h-[200px] w-full overflow-y-auto',
           'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
           'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
           'data-[side=start]:slide-in-from-end-2 data-[side=end]:slide-in-from-start-2 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2'

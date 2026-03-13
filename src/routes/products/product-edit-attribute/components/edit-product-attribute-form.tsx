@@ -107,7 +107,7 @@ export const EditProductAttributeForm = ({
                         options={possibleValueOptions}
                         multiple={false}
                         placeholder={t(
-                          'products.attributes.edit.valuesPlaceholder',
+                          'products.edit.attributes.valuesPlaceholder',
                           'Select value'
                         )}
                       />
@@ -121,7 +121,7 @@ export const EditProductAttributeForm = ({
                         onChange={val => field.onChange(val ?? [])}
                         options={possibleValueOptions}
                         placeholder={t(
-                          'products.attributes.edit.valuesPlaceholder',
+                          'products.edit.attributes.valuesPlaceholder',
                           'Select values'
                         )}
                       />
@@ -133,7 +133,7 @@ export const EditProductAttributeForm = ({
                       <Input
                         value={field.value[0] ?? ''}
                         onChange={e => field.onChange([e.target.value])}
-                        placeholder={t('products.attributes.edit.valuesPlaceholder', 'Enter value')}
+                        placeholder={t('products.edit.attributes.valuesPlaceholder', 'Enter value')}
                         data-testid="edit-attribute-value-input"
                       />
                     );
@@ -144,7 +144,7 @@ export const EditProductAttributeForm = ({
                       <Textarea
                         value={field.value[0] ?? ''}
                         onChange={e => field.onChange([e.target.value])}
-                        placeholder={t('products.attributes.edit.valuesPlaceholder', 'Enter value')}
+                        placeholder={t('products.edit.attributes.valuesPlaceholder', 'Enter value')}
                         data-testid="edit-attribute-value-textarea"
                       />
                     );
@@ -176,7 +176,7 @@ export const EditProductAttributeForm = ({
                           field.value[0] !== undefined ? parseFloat(field.value[0]) : undefined
                         }
                         onChange={val => field.onChange([String(val ?? '')])}
-                        placeholder={t('products.attributes.edit.valuesPlaceholder', 'Enter value')}
+                        placeholder={t('products.edit.attributes.valuesPlaceholder', 'Enter value')}
                         data-testid="edit-attribute-value-numeric"
                         hideControls
                       />
@@ -188,7 +188,7 @@ export const EditProductAttributeForm = ({
                       value={field.value}
                       onChange={field.onChange}
                       placeholder={t(
-                        'products.attributes.edit.valuesPlaceholder',
+                        'products.edit.attributes.valuesPlaceholder',
                         'Type and press Enter'
                       )}
                     />

@@ -210,7 +210,7 @@ const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
                     >
                       <Badge
                         size="2xsmall"
-                        className="w-fit p-0"
+                        className="w-fit bg-ui-bg-base p-0"
                       >
                         <span className="max-w-[200px] truncate text-ellipsis border-r border-ui-border-base px-1.5">
                           {option?.label || 'Unknown'}

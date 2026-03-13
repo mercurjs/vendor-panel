@@ -72,19 +72,21 @@ export const CreateProductOptionForm = ({ option }: EditProductOptionFormProps) 
                 name="title"
                 render={({ field }) => {
                   return (
-                    <Form.Item className="flex flex-row items-center gap-x-1.5 space-y-0 [&>div:last-child]:w-full">
+                    <Form.Item className="flex flex-row items-start gap-x-1.5 space-y-0 [&>div:last-child]:w-full">
                       <Form.Label className="min-w-[60px] px-2 py-1.5">
                         {t('products.fields.options.optionTitle')}
                       </Form.Label>
                       <Form.Control>
-                        <Input
-                          {...field}
-                          disabled={!useForVariations}
-                          placeholder={t('products.fields.options.optionTitlePlaceholder')}
-                          className="w-full bg-ui-bg-base"
-                        />
+                        <div className="flex w-full flex-col gap-y-1.5">
+                          <Input
+                            {...field}
+                            disabled={!useForVariations}
+                            placeholder={t('products.fields.options.optionTitlePlaceholder')}
+                            className="w-full bg-ui-bg-base"
+                          />
+                          <Form.ErrorMessage />
+                        </div>
                       </Form.Control>
-                      <Form.ErrorMessage />
                     </Form.Item>
                   );
                 }}
@@ -94,19 +96,21 @@ export const CreateProductOptionForm = ({ option }: EditProductOptionFormProps) 
                 name="values"
                 render={({ field: { ...field } }) => {
                   return (
-                    <Form.Item className="flex flex-row items-center gap-x-1.5 space-y-0">
+                    <Form.Item className="flex flex-row items-start gap-x-1.5 space-y-0">
                       <Form.Label className="min-w-[60px] px-2 py-1.5">
                         {t('products.fields.options.variations')}
                       </Form.Label>
                       <Form.Control>
-                        <ChipInput
-                          {...field}
-                          disabled={!useForVariations}
-                          placeholder={t('products.fields.options.variantionsPlaceholder')}
-                          className="w-full bg-ui-bg-base"
-                        />
+                        <div className="flex w-full flex-col gap-y-1.5">
+                          <ChipInput
+                            {...field}
+                            disabled={!useForVariations}
+                            placeholder={t('products.fields.options.variantionsPlaceholder')}
+                            className="w-full bg-ui-bg-base"
+                          />
+                          <Form.ErrorMessage />
+                        </div>
                       </Form.Control>
-                      <Form.ErrorMessage />
                     </Form.Item>
                   );
                 }}

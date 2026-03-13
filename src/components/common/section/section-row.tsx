@@ -33,7 +33,7 @@ export const SectionRow = ({ title, value, actions, tooltip, className }: Sectio
         {title}
         {tooltip && (
           <Tooltip content={tooltip}>
-            <InformationCircleSolid />
+            <InformationCircleSolid className="text-ui-fg-muted" />
           </Tooltip>
         )}
       </Text>

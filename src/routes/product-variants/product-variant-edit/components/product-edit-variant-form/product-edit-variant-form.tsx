@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Divider, Heading, Input, toast } from '@medusajs/ui';
+import { CircleInfoSolid } from '@medusajs/icons';
+import { Button, Divider, Heading, Input, toast, Tooltip } from '@medusajs/ui';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
@@ -219,7 +220,15 @@ export const ProductEditVariantForm = ({ variant, product }: ProductEditVariantF
           </div>
           <Divider />
           <div className="flex flex-col gap-y-4">
-            <Heading level="h2">{t('products.attributes')}</Heading>
+            <Heading
+              level="h2"
+              className="flex items-center gap-x-1.5"
+            >
+              {t('products.attributes')}
+              <Tooltip content={t('products.variant.edit.attributes')}>
+                <CircleInfoSolid className="text-ui-fg-muted" />
+              </Tooltip>
+            </Heading>
             <Form.Field
               control={form.control}
               name="height"

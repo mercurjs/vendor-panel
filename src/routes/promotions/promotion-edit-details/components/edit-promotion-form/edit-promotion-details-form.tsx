@@ -1,6 +1,8 @@
+import { useEffect } from 'react';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AdminPromotion } from '@medusajs/types';
-import { Button, Input, RadioGroup, Text } from '@medusajs/ui';
+import { Button, Input, RadioGroup, Text, Textarea } from '@medusajs/ui';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 import * as zod from 'zod';
@@ -9,7 +11,10 @@ import { Form } from '../../../../../components/common/form';
 import { DeprecatedPercentageInput } from '../../../../../components/inputs/percentage-input';
 import { RouteDrawer, useRouteModal } from '../../../../../components/modals';
 import { KeyboundForm } from '../../../../../components/utilities/keybound-form';
-import { useUpdatePromotion } from '../../../../../hooks/api/promotions';
+import {
+  useUpdatePromotion,
+  useUpdatePromotionMetadata
+} from '../../../../../hooks/api/promotions';
 
 type EditPromotionFormProps = {
   promotion: AdminPromotion;
@@ -18,10 +23,14 @@ type EditPromotionFormProps = {
 const EditPromotionSchema = zod.object({
   is_automatic: zod.string().toLowerCase(),
   code: zod.string().min(1),
+  title: zod.string().optional(),
   status: zod.enum(['active', 'inactive', 'draft']),
   value_type: zod.enum(['fixed', 'percentage']),
   value: zod.number(),
-  max_quantity: zod.number().min(1).optional().nullable()
+  max_quantity: zod.number().min(1).optional().nullable(),
+  description: zod.string().optional(),
+  conditions: zod.string().optional(),
+  min_purchase: zod.number().min(0).optional().or(zod.string().optional())
 });
 
 export const EditPromotionDetailsForm = ({ promotion }: EditPromotionFormProps) => {
@@ -32,15 +41,20 @@ export const EditPromotionDetailsForm = ({ promotion }: EditPromotionFormProps) 
     defaultValues: {
       is_automatic: promotion.is_automatic!.toString(),
       code: promotion.code,
+      title: (promotion.metadata?.title as string) || '',
       status: promotion.status,
       value: promotion.application_method!.value,
       value_type: promotion.application_method!.type,
-      max_quantity: promotion.application_method?.max_quantity ?? 1
+      max_quantity: promotion.application_method?.max_quantity ?? 1,
+      description: (promotion.metadata?.description as string) || '',
+      conditions: (promotion.metadata?.conditions as string) || '',
+      min_purchase: (promotion.metadata?.min_purchase as string | number) || ''
     },
     resolver: zodResolver(EditPromotionSchema)
   });
 
   const { mutateAsync, isPending } = useUpdatePromotion(promotion.id);
+  const { mutateAsync: updateMetadata } = useUpdatePromotionMetadata();
 
   const handleSubmit = form.handleSubmit(async data => {
     await mutateAsync(
@@ -54,12 +68,53 @@ export const EditPromotionDetailsForm = ({ promotion }: EditPromotionFormProps) 
         }
       },
       {
-        onSuccess: () => {
+        onSuccess: async () => {
+          if (
+            data.title !== (promotion.metadata?.title || '') ||
+            data.description !== (promotion.metadata?.description || '') ||
+            data.conditions !== (promotion.metadata?.conditions || '') ||
+            data.min_purchase !== (promotion.metadata?.min_purchase || '')
+          ) {
+            try {
+              await updateMetadata({
+                id: promotion.id,
+                metadata: {
+                  title: data.title,
+                  description: data.description,
+                  conditions: data.conditions,
+                  min_purchase: data.min_purchase ? parseFloat(data.min_purchase as string) : null
+                }
+              });
+            } catch (e) {
+              console.error('Failed to update promotion metadata', e);
+              toast.error(
+                'Details updated but failed to save title/description/conditions/min_purchase'
+              );
+            }
+          }
           handleSuccess();
         }
       }
     );
   });
+
+  useEffect(() => {
+    if (promotion) {
+      form.reset({
+        is_automatic: promotion.is_automatic!.toString(),
+        code: promotion.code,
+        title: (promotion.metadata?.title as string) || '',
+        status: promotion.status,
+        value: promotion.application_method!.value,
+        allocation: (promotion.application_method?.allocation as any) || 'each',
+        value_type: promotion.application_method!.type,
+        max_quantity: promotion.application_method?.max_quantity ?? 1,
+        description: (promotion.metadata?.description as string) || '',
+        conditions: (promotion.metadata?.conditions as string) || '',
+        min_purchase: (promotion.metadata?.min_purchase as string | number) || ''
+      });
+    }
+  }, [promotion, form]);
 
   return (
     <RouteDrawer.Form form={form}>
@@ -152,6 +207,82 @@ export const EditPromotionDetailsForm = ({ promotion }: EditPromotionFormProps) 
                       <Form.Control>
                         <Input {...field} />
                       </Form.Control>
+                      <Form.ErrorMessage />
+                    </Form.Item>
+                  );
+                }}
+              />
+
+              <Form.Field
+                control={form.control}
+                name="title"
+                render={({ field }) => {
+                  return (
+                    <Form.Item data-testid="promotion-edit-details-form-title-item">
+                      <Form.Label data-testid="promotion-edit-details-form-title-label">
+                        Coupon Title
+                      </Form.Label>
+                      <Form.Control data-testid="promotion-edit-details-form-title-control">
+                        <Input
+                          {...field}
+                          placeholder="e.g. Welcome Discount"
+                          data-testid="promotion-edit-details-form-title-input"
+                        />
+                      </Form.Control>
+                      <Form.ErrorMessage data-testid="promotion-edit-details-form-title-error" />
+                    </Form.Item>
+                  );
+                }}
+              />
+
+              <Form.Field
+                control={form.control}
+                name="description"
+                render={({ field }) => {
+                  return (
+                    <Form.Item>
+                      <Form.Label>Description</Form.Label>
+                      <Form.Control>
+                        <Textarea {...field} />
+                      </Form.Control>
+                      <Form.ErrorMessage />
+                    </Form.Item>
+                  );
+                }}
+              />
+
+              <Form.Field
+                control={form.control}
+                name="conditions"
+                render={({ field }) => {
+                  return (
+                    <Form.Item>
+                      <Form.Label>Conditions</Form.Label>
+                      <Form.Control>
+                        <Textarea {...field} />
+                      </Form.Control>
+                      <Form.ErrorMessage />
+                    </Form.Item>
+                  );
+                }}
+              />
+
+              <Form.Field
+                control={form.control}
+                name="min_purchase"
+                render={({ field }) => {
+                  return (
+                    <Form.Item>
+                      <Form.Label>Minimum Purchase Amount</Form.Label>
+                      <Form.Control>
+                        <Input
+                          {...field}
+                          type="number"
+                          min={0}
+                          placeholder="0.00"
+                        />
+                      </Form.Control>
+                      <Form.ErrorMessage />
                     </Form.Item>
                   );
                 }}

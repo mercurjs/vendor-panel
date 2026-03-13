@@ -54,12 +54,12 @@ export const usePromotion = (
     queryFn: async () =>
       fetchQuery(`/vendor/promotions/${id}`, {
         method: 'GET',
-        query: { fields: '+status' }
+        query: { fields: '+metadata,+application_method,+campaign,+seller' }
       }),
     ...options
   });
 
-  return { ...data, ...rest };
+  return { ...(data || {}), ...rest };
 };
 
 export const usePromotionRules = (
@@ -382,6 +382,29 @@ export const usePromotionUpdateRules = (
         queryKey: promotionsQueryKeys.all
       });
 
+      options?.onSuccess?.(data, variables, context);
+    },
+    ...options
+  });
+};
+
+export const useUpdatePromotionMetadata = (
+  options?: UseMutationOptions<
+    { success: boolean },
+    FetchError,
+    { id: string; metadata: Record<string, unknown> }
+  >
+) => {
+  return useMutation({
+    mutationFn: ({ id, metadata }) =>
+      fetchQuery(`/vendor/promotions/${id}/metadata`, {
+        method: 'POST',
+        body: { metadata }
+      }),
+    onSuccess: (data, variables, context) => {
+      queryClient.invalidateQueries({
+        queryKey: promotionsQueryKeys.all
+      });
       options?.onSuccess?.(data, variables, context);
     },
     ...options

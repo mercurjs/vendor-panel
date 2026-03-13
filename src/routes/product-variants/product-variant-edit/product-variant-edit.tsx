@@ -8,10 +8,10 @@ import { ProductEditVariantForm } from './components/product-edit-variant-form';
 
 export const ProductVariantEdit = () => {
   const { t } = useTranslation();
-  const { id } = useParams();
+  const { id, variant_id: variantIdParam } = useParams();
 
   const [searchParams] = useSearchParams();
-  const variant_id = searchParams.get('variant_id');
+  const variant_id = searchParams.get('variant_id') || variantIdParam;
 
   const {
     product,

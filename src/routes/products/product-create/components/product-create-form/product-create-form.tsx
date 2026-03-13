@@ -21,6 +21,7 @@ import {
   ProductCreateSchema
 } from '../../constants';
 import { ProductCreateSchemaType } from '../../types';
+import { decorateVariantsWithDefaultValues } from '../../utils';
 import {
   ProductCreateAttributesForm,
   ProductCreateAttributesFormRef
@@ -279,8 +280,21 @@ export const ProductCreateForm = ({
 
   useEffect(() => {
     if (tab === Tab.VARIANTS) {
-      if (form.getValues('options').length === 0) {
-        form.setValue('options', [PRODUCT_CREATE_OPTION_DEFAULTS]);
+      const currentOptions = form.getValues('options');
+      const currentVariants = form.getValues('variants');
+      if (currentOptions.length === 0 && currentVariants.length === 0) {
+        form.setValue(
+          'variants',
+          decorateVariantsWithDefaultValues([
+            {
+              title: 'Default variant',
+              should_create: true,
+              variant_rank: 0,
+              options: {},
+              is_default: true
+            }
+          ])
+        );
       }
     }
   }, [tab]);
@@ -376,6 +390,15 @@ export const ProductCreateForm = ({
       (opt: any) => opt.useForVariants === true
     );
 
+    const adminOptionsForVariants = ((rest as any).options || []).filter(
+      (opt: any) =>
+        opt.useForVariants === true &&
+        opt.metadata?.author === 'admin' &&
+        opt.attributeId &&
+        opt.title &&
+        opt.values?.length > 0
+    );
+
     // Generate options from required multivalue attributes when useForVariants is enabled
     const requiredAttributeOptions: Array<{
       title: string;
@@ -420,7 +443,11 @@ export const ProductCreateForm = ({
     });
 
     // Combine options used for variants only
-    const allOptions = [...vendorOptionsForVariants, ...requiredAttributeOptions];
+    const allOptions = [
+      ...vendorOptionsForVariants,
+      ...requiredAttributeOptions,
+      ...adminOptionsForVariants
+    ];
 
     dynamicAttributeFields.forEach(fieldName => {
       const value = form.getValues(fieldName as any);
@@ -500,6 +527,14 @@ export const ProductCreateForm = ({
           use_for_variations: false
         });
       });
+
+    adminOptionsForVariants.forEach((option: any) => {
+      adminAttributes.push({
+        attribute_id: option.attributeId,
+        values: option.values.map((value: any) => String(value)),
+        use_for_variations: true
+      });
+    });
 
     // Remove dynamic attribute fields from payload
     const { ...payload } = rest;
@@ -663,7 +698,10 @@ export const ProductCreateForm = ({
         options:
           Object.keys(mappedOptions).length > 0
             ? mappedOptions
-            : PRODUCT_CREATE_FORM_DEFAULTS?.variants?.[0]?.options || {},
+            : {
+                [PRODUCT_CREATE_OPTION_DEFAULTS.title as string]:
+                  PRODUCT_CREATE_OPTION_DEFAULTS.values![0]
+              },
         ...(variantImageKey && {
           metadata: {
             variant_image_key: variantImageKey
@@ -853,7 +891,7 @@ export const ProductCreateForm = ({
 
     switch (currentTab) {
       case Tab.DETAILS:
-        fieldsToValidate = ['title'];
+        fieldsToValidate = ['title', 'handle'];
         break;
       case Tab.ORGANIZE:
         fieldsToValidate = ['categories'];
@@ -997,7 +1035,7 @@ export const ProductCreateForm = ({
 
                 switch (tab) {
                   case Tab.DETAILS:
-                    fieldsToValidate = ['title'];
+                    fieldsToValidate = ['title', 'handle'];
                     break;
                   case Tab.ORGANIZE:
                     fieldsToValidate = ['categories'];
@@ -1149,6 +1187,7 @@ export const ProductCreateForm = ({
                   handleSubmit();
                 }}
                 isLoading={isPending}
+                variant="secondary"
                 className="whitespace-nowrap"
               >
                 Draft
@@ -1187,7 +1226,7 @@ const PrimaryButton = ({ tab, next, isLoading, showInventoryTab }: PrimaryButton
         size="small"
         isLoading={isLoading}
       >
-        Create Product
+        {t('actions.publish')}
       </Button>
     );
   }

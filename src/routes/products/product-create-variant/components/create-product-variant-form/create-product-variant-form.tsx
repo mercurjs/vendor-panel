@@ -54,8 +54,6 @@ export const CreateProductVariantForm = ({ product }: CreateProductVariantFormPr
     defaultValues: {
       sku: '',
       title: '',
-      manage_inventory: false,
-      allow_backorder: false,
       inventory_kit: false,
       options: {}
     },
@@ -80,11 +78,6 @@ export const CreateProductVariantForm = ({ product }: CreateProductVariantFormPr
     );
   }, [regions]);
 
-  const isManageInventoryEnabled = useWatch({
-    control: form.control,
-    name: 'manage_inventory'
-  });
-
   const isInventoryKitEnabled = useWatch({
     control: form.control,
     name: 'inventory_kit'
@@ -95,7 +88,7 @@ export const CreateProductVariantForm = ({ product }: CreateProductVariantFormPr
     name: `inventory`
   });
 
-  const inventoryTabEnabled = isManageInventoryEnabled && isInventoryKitEnabled;
+  const inventoryTabEnabled = isInventoryKitEnabled;
 
   const tabOrder = useMemo(() => {
     if (inventoryTabEnabled) {
@@ -205,8 +198,6 @@ export const CreateProductVariantForm = ({ product }: CreateProductVariantFormPr
       {
         title,
         sku: sku || undefined,
-        allow_backorder: data.allow_backorder || false,
-        manage_inventory: data.manage_inventory || false,
         options: data.options,
         prices: Object.entries(data.prices ?? {})
           .map(([currencyOrRegion, value]) => {

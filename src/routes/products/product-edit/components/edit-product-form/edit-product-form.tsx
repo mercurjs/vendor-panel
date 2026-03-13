@@ -20,7 +20,17 @@ const EditProductSchema = zod.object({
   status: zod.string().min(1),
   title: zod.string().min(1, i18next.t('products.create.errors.titleRequired')),
   subtitle: zod.string().optional(),
-  handle: zod.string().optional(),
+  handle: zod
+    .string()
+    .optional()
+    .refine(
+      val => !val || /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(val),
+      i18next.t('products.create.errors.handleInvalidFormat')
+    )
+    .refine(
+      val => !val || /[a-z]/.test(val),
+      i18next.t('products.create.errors.handleMustContainLetter')
+    ),
   description: zod.string().optional(),
   discountable: zod.boolean()
 });

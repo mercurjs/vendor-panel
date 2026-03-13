@@ -190,8 +190,6 @@ export const ProductCreateVariantsForm = ({
           options: variantOptions, // Always use variantOptions to ensure it includes all current variantAttributes
           sku: existingVariant?.sku || '',
           prices: existingVariant?.prices || {},
-          manage_inventory: existingVariant?.manage_inventory ?? true,
-          allow_backorder: existingVariant?.allow_backorder ?? false,
           is_default: i === 0,
           media: existingVariant?.media || [], // Preserve media
           originalIndex: existingVariant ? variants.indexOf(existingVariant) : i
@@ -297,8 +295,6 @@ export const ProductCreateVariantsForm = ({
           options: variantOptions, // Always use variantOptions to ensure it includes all current variantAttributes
           sku: existingVariant?.sku || '',
           prices: existingVariant?.prices || {},
-          manage_inventory: existingVariant?.manage_inventory ?? true,
-          allow_backorder: existingVariant?.allow_backorder ?? false,
           is_default: i === 0,
           media: existingVariant?.media || [], // Preserve media when regenerating variants
           stock_locations: stockLocationsData
@@ -331,8 +327,6 @@ export const ProductCreateVariantsForm = ({
             options: {},
             sku: '',
             prices: {},
-            manage_inventory: true,
-            allow_backorder: false,
             is_default: true,
             media: []
           }
@@ -340,8 +334,23 @@ export const ProductCreateVariantsForm = ({
 
         form.setValue('variants', defaultVariant);
       } else {
-        // If variants exist but no variant attributes, clear them (user unselected all variant attributes)
-        form.setValue('variants', []);
+        const hasOnlyDefaultVariant = currentVariants.length === 1 && currentVariants[0].is_default;
+        if (!hasOnlyDefaultVariant) {
+          const defaultVariant = decorateVariantsWithDefaultValues([
+            {
+              title: 'Default variant',
+              should_create: true,
+              variant_rank: 0,
+              options: {},
+              sku: '',
+              prices: {},
+              is_default: true,
+              media: []
+            }
+          ]);
+
+          form.setValue('variants', defaultVariant);
+        }
       }
     }
   }, [variantStructureKey, form, stock_locations]);
@@ -465,6 +474,7 @@ const useColumns = ({
               .map(attr => rowData.options?.[attr.name] || '')
               .filter(Boolean)
               .join(' / ');
+
             return <DataGrid.ReadonlyCell context={context}>{combinedValue}</DataGrid.ReadonlyCell>;
           },
           disableHiding: true,

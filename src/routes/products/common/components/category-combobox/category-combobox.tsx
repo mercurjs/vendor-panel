@@ -14,7 +14,7 @@ import {
 
 import {
   ArrowUturnLeft,
-  EllipseMiniSolid,
+  CheckMini,
   TriangleRightMini,
   TrianglesMini,
   XMarkMini
@@ -369,7 +369,7 @@ export const CategoryCombobox = forwardRef<HTMLInputElement, CategoryComboboxPro
               'has-[input:focus]:shadow-borders-interactive-with-active',
               'has-[:invalid]:shadow-borders-error has-[[aria-invalid=true]]:shadow-borders-error',
               'has-[:disabled]:cursor-not-allowed has-[:disabled]:bg-ui-bg-disabled has-[:disabled]:text-ui-fg-disabled',
-              '[&+p]:bg-red-100',
+              'hover:bg-ui-bg-field-hover',
               {
                 // Fake the focus state as long as the popover is open,
                 // this prevents the styling from flickering when navigating
@@ -448,7 +448,6 @@ export const CategoryCombobox = forwardRef<HTMLInputElement, CategoryComboboxPro
                 }}
                 className={clx(
                   'txt-compact-small size-full cursor-pointer appearance-none bg-transparent pr-8 outline-none',
-                  'hover:bg-ui-bg-field-hover',
                   'focus:cursor-text',
                   'placeholder:text-ui-fg-muted',
                   {
@@ -561,7 +560,7 @@ export const CategoryCombobox = forwardRef<HTMLInputElement, CategoryComboboxPro
                     tabIndex={-1}
                   >
                     <div className="flex size-5 items-center justify-center">
-                      {isSelected(value, option.value) && <EllipseMiniSolid />}
+                      {isSelected(value, option.value) && <CheckMini />}
                     </div>
                     <Text
                       as="span"

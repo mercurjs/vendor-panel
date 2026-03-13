@@ -426,7 +426,9 @@
         "conversionWarning": "Changes to this attribute may affect existing product variants or details. Review your variants and product details after saving.",
         "required": "This attribute is required by Admin",
         "titleRequired": "Please enter a title",
-        "valuesRequired": "Please enter at least one value"
+        "valuesRequired": "Please enter at least one value",
+        "handleInvalidFormat": "Handle can only contain lowercase letters, numbers, and hyphens",
+        "handleMustContainLetter": "Handle must contain at least one letter"
       },
       "informationalAttributes": {
         "header": "Product Information",
@@ -449,7 +451,9 @@
         "options": "Please create at least one option.",
         "uniqueSku": "SKU must be unique.",
         "titleRequired": "Please enter a title",
-        "primaryCategoryRequired": "Please select primary category"
+        "primaryCategoryRequired": "Please select primary category",
+        "handleInvalidFormat": "Handle can only contain lowercase letters, numbers, and hyphens",
+        "handleMustContainLetter": "Handle must contain at least one letter"
       },
       "inventory": {
         "heading": "Inventory kits",

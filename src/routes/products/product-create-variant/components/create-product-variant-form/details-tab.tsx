@@ -1,4 +1,4 @@
-import { Heading, Input, Switch } from '@medusajs/ui';
+import { Heading, Input } from '@medusajs/ui';
 import { UseFormReturn } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
@@ -81,60 +81,6 @@ function DetailsTab({ form, product }: DetailsTabProps) {
               }}
             />
           ))}
-        </div>
-        <div className="flex flex-col gap-y-4">
-          <Form.Field
-            control={form.control}
-            name="manage_inventory"
-            render={({ field: { value, onChange, ...field } }) => {
-              return (
-                <Form.Item>
-                  <div className="flex gap-x-3 rounded-lg bg-ui-bg-component p-4 shadow-elevation-card-rest">
-                    <Form.Control>
-                      <Switch
-                        checked={value}
-                        onCheckedChange={checked => onChange(!!checked)}
-                        {...field}
-                      />
-                    </Form.Control>
-                    <div className="flex flex-col">
-                      <Form.Label>
-                        {t('products.variant.inventory.manageInventoryLabel')}
-                      </Form.Label>
-                      <Form.Hint>{t('products.variant.inventory.manageInventoryHint')}</Form.Hint>
-                    </div>
-                  </div>
-                  <Form.ErrorMessage />
-                </Form.Item>
-              );
-            }}
-          />
-          <Form.Field
-            control={form.control}
-            name="allow_backorder"
-            render={({ field: { value, onChange, ...field } }) => {
-              return (
-                <Form.Item>
-                  <div className="flex gap-x-3 rounded-lg bg-ui-bg-component p-4 shadow-elevation-card-rest">
-                    <Form.Control>
-                      <Switch
-                        checked={value}
-                        onCheckedChange={checked => onChange(!!checked)}
-                        {...field}
-                      />
-                    </Form.Control>
-                    <div className="flex flex-col">
-                      <Form.Label>
-                        {t('products.variant.inventory.allowBackordersLabel')}
-                      </Form.Label>
-                      <Form.Hint>{t('products.variant.inventory.allowBackordersHint')}</Form.Hint>
-                    </div>
-                  </div>
-                  <Form.ErrorMessage />
-                </Form.Item>
-              );
-            }}
-          />
         </div>
       </div>
     </div>

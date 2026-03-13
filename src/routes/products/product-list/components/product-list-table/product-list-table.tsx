@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { Trash } from '@medusajs/icons';
+import { PencilSquare, Trash } from '@medusajs/icons';
 import { Button, Checkbox, Container, Heading, toast, usePrompt } from '@medusajs/ui';
 import { keepPreviousData } from '@tanstack/react-query';
 import { createColumnHelper, OnChangeFn, RowSelectionState } from '@tanstack/react-table';
@@ -112,7 +112,8 @@ export const ProductListTable = () => {
         count: keys.length
       }),
       confirmText: t('actions.delete'),
-      cancelText: t('actions.cancel')
+      cancelText: t('actions.cancel'),
+      variant: 'danger'
     });
 
     if (!res) {
@@ -258,6 +259,15 @@ const ProductActions = ({ product }: { product: ExtendedAdminProduct }) => {
   return (
     <ActionMenu
       groups={[
+        {
+          actions: [
+            {
+              icon: <PencilSquare />,
+              label: t('actions.edit'),
+              to: `/products/${product.id}/edit`
+            }
+          ]
+        },
         {
           actions: [
             {

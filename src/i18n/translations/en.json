@@ -420,6 +420,8 @@
       "description": "Edit the product details.",
       "successToast": "Product {{title}} was successfully updated.",
       "attributes": {
+        "editHeader": "Edit Attribute",
+        "valuesPlaceholder": "Enter value",
         "addAttribute": "Add attribute",
         "useForVariations": "Use for variations",
         "useForVariationsDescription": "If checked, we will create variants using this attribute. If not, the attribute will be used for informational purposes only.",
@@ -465,7 +467,11 @@
         "description": "Manage attributes and variations for your product, e.g. color, size, etc. Select from attributes defined by the Admin or create your own.",
         "buttonLabel": "attribute",
         "requiredHeading": "Required attributes",
-        "requiredDescription": "These attributes are required by the Admin. Select them before proceeding."
+        "requiredDescription": "These attributes are required by the Admin. Select them before proceeding.",
+        "learnMore": {
+          "label": "Learn more",
+          "content": "Use attributes defined by the Admin so your products can be found via search or filters. Custom attributes you create aren’t searchable or filterable. Contact the Admin to add them to the marketplace base."
+        }
       },
       "variants": {
         "header": "Variants",
@@ -490,7 +496,7 @@
           "hint": "Define the options for the product, e.g. color, size, etc."
         }
       },
-      "successToast": "Product {{title}} was successfully created."
+      "successToast": "Product was successfully published. Only products with stock levels and prices set will be visible."
     },
     "export": {
       "header": "Export Product List",
@@ -549,6 +555,7 @@
     "attributes": "Attributes",
     "editAttributes": "Edit Attributes",
     "editOptions": "Edit Options",
+    "editPrice": "Edit price",
     "editPrices": "Edit prices",
     "media": {
       "label": "Media",
@@ -599,7 +606,7 @@
       },
       "handle": {
         "label": "Handle",
-        "tooltip": "Handle allows the system to precisely identify the product."
+        "tooltip": "The handle is used to reference the product in your storefront. If not specified, the handle will be generated from the product title."
       },
       "description": {
         "label": "Description",
@@ -665,7 +672,7 @@
         },
         "useForVariants": {
           "label": "Use for variations",
-          "description": "When checked, we will create variants with this attribute",
+          "description": "If checked, we will create variants using this attribute. You can define them in the next step. If not, the attribute will be used for informational purposes only.",
           "editDescription": "If checked, you will be able to create variants using this attribute. If not, the attribute will be used for informational purposes only."
         },
         "selectValuePlaceholder": "Select value",
@@ -674,6 +681,7 @@
         "validation": {
           "required": "{{name}} is required",
           "requiredSelect": "This attribute is required by the admin. Please select value.",
+          "requiredSelectVariant": "This attribute is required. Please select value",
           "requiredSelectMultiple": "This attribute is required by the admin. Please select value(s).",
           "requiredEnter": "This attribute is required by the admin. Please enter value."
         },
@@ -725,7 +733,8 @@
     "variant": {
       "edit": {
         "header": "Edit Variant",
-        "success": "Product variant edited sucessfully"
+        "success": "Product variant edited sucessfully",
+        "attributes": "These are default values used to describe the item. They are not defined by Admin."
       },
       "create": {
         "header": "Variant details"
@@ -829,6 +838,12 @@
       "description": "You are about to delete {{count}} products from catalog. This action cannot be undone.",
       "success": "Successfully deleted {{count}} product(s).",
       "error": "Failed to delete products"
+    },
+    "bulkEdit": {
+      "title": "Bulk Edit Products",
+      "description": "Edit multiple products at once.",
+      "success": "Products were successfully updated.",
+      "noChanges": "No changes to save."
     }
   },
   "collections": {

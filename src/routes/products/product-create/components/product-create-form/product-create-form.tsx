@@ -885,11 +885,7 @@ export const ProductCreateForm = ({
     //   }
     // }
 
-    toast.success(
-      t('products.create.successToast', {
-        title: productData.product.title
-      })
-    );
+    toast.success(t('products.create.successToast'));
 
     handleSuccess(`../${productData.product.id}`);
   });

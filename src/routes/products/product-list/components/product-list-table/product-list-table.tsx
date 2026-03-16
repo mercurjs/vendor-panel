@@ -185,7 +185,6 @@ export const ProductListTable = () => {
             label: t('fields.updatedAt')
           }
         ]}
-        defaultOrder="-created_at"
         commands={[
           {
             action: async () => {

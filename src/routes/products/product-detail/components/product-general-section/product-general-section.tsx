@@ -94,11 +94,11 @@ export const ProductGeneralSection = ({ product }: ProductGeneralSectionProps) =
 
       <SectionRow
         title={t('fields.description')}
-        value={product.description}
+        value={product.description || '-'}
       />
       <SectionRow
         title={t('fields.subtitle')}
-        value={product.subtitle}
+        value={product.subtitle || '-'}
       />
       <SectionRow
         title={t('fields.handle')}

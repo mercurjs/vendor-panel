@@ -782,7 +782,7 @@ const DataGridHeader = ({
               // Stop event propagation to prevent DataGrid keyboard handlers from interfering
               e.stopPropagation();
             }}
-            className="w-48"
+            className="h-7 w-48"
           />
         )}
         {errorCount > 0 && (

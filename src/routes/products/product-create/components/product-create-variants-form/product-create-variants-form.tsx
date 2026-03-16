@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { HttpTypes } from '@medusajs/types';
-import { Checkbox } from '@medusajs/ui';
+import { Checkbox, Tooltip } from '@medusajs/ui';
 import { ColumnDef } from '@tanstack/react-table';
 import { UseFormReturn, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -491,10 +491,18 @@ const useColumns = ({
             variantAttributes.length > 0
               ? variantAttributes.map(attr => attr.name).join(' / ')
               : 'Options',
-          header:
-            variantAttributes.length > 0
-              ? variantAttributes.map(attr => attr.name).join(' / ')
-              : 'Options',
+          header: () => {
+            const label =
+              variantAttributes.length > 0
+                ? variantAttributes.map(attr => attr.name).join(' / ')
+                : 'Options';
+
+            return (
+              <Tooltip content={label}>
+                <span className="w-full truncate">{label}</span>
+              </Tooltip>
+            );
+          },
           cell: context => {
             if (variantAttributes.length === 0) {
               return <DataGrid.ReadonlyCell context={context}></DataGrid.ReadonlyCell>;

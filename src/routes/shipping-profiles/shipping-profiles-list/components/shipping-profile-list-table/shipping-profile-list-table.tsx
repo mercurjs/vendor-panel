@@ -4,7 +4,7 @@ import { Link } from "react-router-dom"
 import { keepPreviousData } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { _DataTable } from "../../../../../components/table/data-table"
-import { useShippingProfiles } from "../../../../../hooks/api/shipping-profiles"
+import { useShippingProfiles } from '../../../../../hooks/api'
 import { useDataTable } from "../../../../../hooks/use-data-table"
 import { useShippingProfileTableColumns } from "./use-shipping-profile-table-columns"
 import { useShippingProfileTableFilters } from "./use-shipping-profile-table-filters"
@@ -28,11 +28,11 @@ export const ShippingProfileListTable = () => {
   const filters = useShippingProfileTableFilters()
 
   const { table } = useDataTable({
-    data: (shipping_profiles ?? []).map((profile) => profile.shipping_profile),
+    data: shipping_profiles ?? [],
     columns,
     count,
     enablePagination: true,
-    getRowId: (row) => row.id,
+    getRowId: (row, index) => row?.id ?? `row-${index}`,
     pageSize: PAGE_SIZE,
   })
 

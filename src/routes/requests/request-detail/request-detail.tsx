@@ -16,7 +16,7 @@ export const RequestDetail = () => {
     id!,
     { fields: "*" },
     { initialData }
-  ) as any
+  )
 
   const { getWidgets } = useDashboardExtension()
   if (isLoading || !request) {

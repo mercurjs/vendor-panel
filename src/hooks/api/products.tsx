@@ -14,6 +14,7 @@ import { queryKeysFactory } from '../../lib/query-key-factory';
 import {
   ExtendedAdminProductListResponse,
   ExtendedAdminProductResponse,
+  ExtendedAdminProductVariant,
   ExtendedAdminProductVariantListParams,
   ExtendedAdminProductVariantListResponse,
   ProductAttributesResponse
@@ -237,6 +238,13 @@ export const useProductVariant = (
   });
 
   return { ...data, ...rest };
+};
+
+export type ProductVariantsListResponse = {
+  variants: ExtendedAdminProductVariant[];
+  count: number;
+  offset: number;
+  limit: number;
 };
 
 export const useProductVariants = (

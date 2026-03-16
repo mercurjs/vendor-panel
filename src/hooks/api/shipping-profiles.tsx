@@ -101,9 +101,12 @@ export const useShippingProfiles = (
     ...options,
   })
 
-  const shipping_profiles = data?.shipping_profiles.map((sp) =>
-    convertShippingProfileNames(sp)
-  )
+  const shipping_profiles = data?.shipping_profiles
+    ?.map((sp) => {
+      const profile = (sp as any).shipping_profile || sp
+      return convertShippingProfileNames(profile)
+    })
+    .filter(Boolean)
 
   return { ...data, shipping_profiles, ...rest }
 }

@@ -1,47 +1,53 @@
-import { useLoaderData, useParams } from "react-router-dom"
+import { useLoaderData, useParams } from 'react-router-dom';
 
-import { useCampaign } from "../../../hooks/api/campaigns"
-import { CampaignBudget } from "./components/campaign-budget"
-import { CampaignGeneralSection } from "./components/campaign-general-section"
-import { CampaignPromotionSection } from "./components/campaign-promotion-section"
-import { CampaignSpend } from "./components/campaign-spend"
-import { campaignLoader } from "./loader"
-
-import { TwoColumnPageSkeleton } from "../../../components/common/skeleton"
-import { TwoColumnPage } from "../../../components/layout/pages"
-import { useDashboardExtension } from "../../../extensions"
-import { CampaignConfigurationSection } from "./components/campaign-configuration-section"
-import { CAMPAIGN_DETAIL_FIELDS } from "./constants"
+import { TwoColumnPageSkeleton } from '../../../components/common/skeleton';
+import { TwoColumnPage } from '../../../components/layout/pages';
+import { useDashboardExtension } from '../../../extensions';
+import { useCampaign } from '../../../hooks/api/campaigns';
+import { usePromotionTableQuery } from '../../../hooks/table/query/use-promotion-table-query';
+import { CampaignBudget } from './components/campaign-budget';
+import { CampaignConfigurationSection } from './components/campaign-configuration-section';
+import { CampaignGeneralSection } from './components/campaign-general-section';
+import { CampaignPromotionSection } from './components/campaign-promotion-section';
+import { CampaignSpend } from './components/campaign-spend';
+import { CAMPAIGN_DETAIL_FIELDS } from './constants';
+import { campaignLoader } from './loader';
 
 export const CampaignDetail = () => {
-  const initialData = useLoaderData() as Awaited<
-    ReturnType<typeof campaignLoader>
-  >
+  const initialData = useLoaderData() as Awaited<ReturnType<typeof campaignLoader>>;
 
-  const { id } = useParams()
+  const { id } = useParams();
+  const { searchParams } = usePromotionTableQuery({});
   const { campaign, isLoading, isError, error } = useCampaign(
     id!,
-    { fields: CAMPAIGN_DETAIL_FIELDS },
-    { initialData }
-  )
+    { ...searchParams, fields: CAMPAIGN_DETAIL_FIELDS },
+    { 
+      placeholderData: initialData,
+    }
+  );
 
-  const { getWidgets } = useDashboardExtension()
+  const { getWidgets } = useDashboardExtension();
 
   if (isLoading || !campaign) {
-    return <TwoColumnPageSkeleton mainSections={2} sidebarSections={3} />
+    return (
+      <TwoColumnPageSkeleton
+        mainSections={2}
+        sidebarSections={3}
+      />
+    );
   }
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   return (
     <TwoColumnPage
       widgets={{
-        after: getWidgets("campaign.details.after"),
-        before: getWidgets("campaign.details.before"),
-        sideAfter: getWidgets("campaign.details.side.after"),
-        sideBefore: getWidgets("campaign.details.side.before"),
+        after: getWidgets('campaign.details.after'),
+        before: getWidgets('campaign.details.before'),
+        sideAfter: getWidgets('campaign.details.side.after'),
+        sideBefore: getWidgets('campaign.details.side.before')
       }}
       hasOutlet
       data={campaign}
@@ -56,5 +62,5 @@ export const CampaignDetail = () => {
         <CampaignBudget campaign={campaign} />
       </TwoColumnPage.Sidebar>
     </TwoColumnPage>
-  )
-}
+  );
+};

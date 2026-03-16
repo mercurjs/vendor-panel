@@ -4,14 +4,11 @@ import { useOrderReturnRequests } from "../../../../hooks/api/requests"
 import { useDataTable } from "../../../../hooks/use-data-table"
 
 import { useOrderReturnRequestTableColumns } from "./user-order-return-request-table-columns"
+import { OrderReturnRequest } from "../../../../types/request"
 
 const PAGE_SIZE = 10
 
-export const RequestReturnListTable = ({
-  customColumns,
-}: {
-  customColumns?: any
-}) => {
+export const RequestReturnListTable = () => {
   const [searchParams] = useSearchParams()
   const offset = searchParams.get("offset") || "0"
 
@@ -25,10 +22,10 @@ export const RequestReturnListTable = ({
 
   const { table } = useDataTable({
     data: order_return_request,
-    columns: customColumns || columns,
+    columns:  columns,
     count,
     enablePagination: true,
-    getRowId: (row: any) => row?.id || "",
+    getRowId: (row: OrderReturnRequest) => row?.id || "",
     pageSize: PAGE_SIZE,
   })
 
@@ -40,12 +37,12 @@ export const RequestReturnListTable = ({
     <div>
       <_DataTable
         table={table}
-        columns={customColumns || columns}
+        columns={columns}
         pageSize={PAGE_SIZE}
         count={count}
         isLoading={isPending}
         pagination
-        navigateTo={({ original }: any) => {
+        navigateTo={({ original }) => {
           return `/requests/orders/${original.id}/review`
         }}
         search={false}

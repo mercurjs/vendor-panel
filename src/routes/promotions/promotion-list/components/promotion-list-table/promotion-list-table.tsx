@@ -43,7 +43,7 @@ export const PromotionListTable = () => {
 
   const { table } = useDataTable({
     data: (promotions ?? []) as HttpTypes.AdminPromotion[],
-    columns: columns as any,
+    columns: columns,
     count,
     enablePagination: true,
     pageSize: PAGE_SIZE,

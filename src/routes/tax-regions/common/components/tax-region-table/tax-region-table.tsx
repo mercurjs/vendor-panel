@@ -16,7 +16,7 @@ import { TaxRegionCard } from "../tax-region-card"
 type TaxRegionTableProps = {
   variant?: "country" | "province"
   isPending: boolean
-  queryObject: Record<string, any>
+  queryObject: Record<string, unknown>
   count?: number
   table: Table<HttpTypes.AdminTaxRegion>
   action: { label: string; to: string }

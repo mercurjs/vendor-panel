@@ -400,14 +400,17 @@
             "upper": {
               "type": "string"
             },
-            "8chars": {
+            "12chars": {
               "type": "string"
             },
-            "symbolOrDigit": {
+            "digit": {
+              "type": "string"
+            },
+            "specialChar": {
               "type": "string"
             }
           },
-          "required": ["lower", "upper", "8chars", "symbolOrDigit"],
+          "required": ["lower", "upper", "12chars", "digit", "specialChar"],
           "additionalProperties": false
         }
       },
@@ -8425,9 +8428,12 @@
                 },
                 "editPrices": {
                   "type": "string"
+                },
+                "editPricesDisabled": {
+                  "type": "string"
                 }
               },
-              "required": ["addProducts", "editPrices"],
+              "required": ["addProducts", "editPrices", "editPricesDisabled"],
               "additionalProperties": false
             },
             "delete": {

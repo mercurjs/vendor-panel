@@ -3,10 +3,13 @@ import { HttpTypes } from "@medusajs/types"
 export interface Review {
   id: string
   rating: number
+  reference: "product" | "seller"
+  customer_note: string | null
   customer_id: string
-  customer_note: string
+  seller_note: string | null
   created_at: string
-  reference: string
+  updated_at?: string | null
+  customer?: HttpTypes.AdminCustomer
 }
 
 export interface StoreVendor {

@@ -15,7 +15,7 @@ export const UserMetadata = () => {
   }
 
   const handleUpdate = async (
-    params: { metadata?: Record<string, any> | null },
+    params: { metadata?: Record<string, unknown> | null },
     callbacks: { onSuccess: () => void; onError: (error: FetchError) => void }
   ) => {
     return mutateAsync(

@@ -2,6 +2,7 @@ import { _DataTable } from "../../../../components/table/data-table/data-table"
 import { useRequests } from "../../../../hooks/api/requests"
 import { useDataTable } from "../../../../hooks/use-data-table"
 import { useRequestsTableColumns } from "./use-requests-table-columns"
+import { Request } from "../../../../types/request"
 
 const PAGE_SIZE = 20
 
@@ -29,7 +30,7 @@ export const RequestListTable = ({
     columns: customColumns || columns,
     count,
     enablePagination: true,
-    getRowId: (row: any) => row?.id || "",
+    getRowId: (row: Request) => row?.id || "",
     pageSize: PAGE_SIZE,
   })
 
@@ -46,7 +47,7 @@ export const RequestListTable = ({
         count={count}
         isLoading={isPending}
         pagination
-        navigateTo={({ original }: any) => {
+        navigateTo={({ original }) => {
           const isAccepted = original.status === "accepted"
           return request_type === "review_remove" && !isAccepted
             ? `/reviews/${original.data.review_id}`

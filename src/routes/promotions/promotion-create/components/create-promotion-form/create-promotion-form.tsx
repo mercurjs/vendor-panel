@@ -85,6 +85,11 @@ export const CreatePromotionForm = () => {
 
   const handleSubmit = form.handleSubmit(
     async data => {
+      if (data.campaign_choice === 'existing' && !data.campaign_id) {
+        form.setError('campaign_id', { message: t('promotions.errors.requiredField') });
+        return;
+      }
+
       const {
         campaign_choice: _campaignChoice,
         is_automatic,
@@ -325,6 +330,7 @@ export const CreatePromotionForm = () => {
 
     if (watchCampaignChoice !== 'existing') {
       setValue('campaign_id', undefined);
+      form.clearErrors('campaign_id');
     }
 
     if (watchCampaignChoice !== 'new') {

@@ -4,8 +4,9 @@ import { useTranslation } from "react-i18next"
 import { DateCell } from "../../../../components/table/table-cells/common/date-cell"
 import { StatusCell } from "../../../../components/table/table-cells/request/status-cell"
 import { RequestsActions } from "./requests-actions"
+import { Request } from "../../../../types/request"
 
-const columnHelper = createColumnHelper<any>()
+const columnHelper = createColumnHelper<Request>()
 
 export const useRequestsReviewsTableColumns = () => {
   const { t } = useTranslation()
@@ -20,8 +21,7 @@ export const useRequestsReviewsTableColumns = () => {
         header: "Reason",
         cell: ({ row }) => {
           const reason =
-            row.original?.data.reason?.split("comment: ")[0] ||
-            row.original.data.reason
+            row.original?.data.reason && typeof row.original.data.reason === "string" ? row.original.data.reason.split("comment: ")[0] : ""
 
           return <p className="truncate max-w-[360px]">{reason}</p>
         },

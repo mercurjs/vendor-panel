@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Button, Heading, Select, Textarea, toast } from "@medusajs/ui"
 import { useParams } from "react-router-dom"
 import { useCreateVendorRequest, useUpdateRequest } from "../../../../hooks/api"
+import { Request } from "../../../../types/request"
 
 const reasonList = [
   "The review comment is not true",
@@ -19,14 +20,16 @@ const ReviewReplySchema = z.object({
   comment: z.string().optional(),
 })
 
-export const ReviewReportForm = ({ request }: { request?: any }) => {
+export const ReviewReportForm = ({ request }: { request?: Request }) => {
   const { handleSuccess } = useRouteModal()
   const { id } = useParams()
 
   const isEditing = !!request
 
-  const reviewReason = request?.data?.reason.split(" comment: ")[0] || ""
-  const reviewComment = request?.data?.reason.split(" comment: ")[1] || ""
+  const reviewData = request?.data as { reason?: string }
+
+  const reviewReason = reviewData?.reason?.split(" comment: ")[0] || ""
+  const reviewComment = reviewData?.reason?.split(" comment: ")[1] || ""
 
   const defaultValues = isEditing
     ? {

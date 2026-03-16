@@ -28,6 +28,11 @@ export const RouteMap: RouteObject[] = [
             lazy: () => import('../../routes/home')
           },
           {
+            path: '/mercur-connect',
+            errorElement: <ErrorBoundary />,
+            lazy: () => import('../../routes/mercur-connect')
+          },
+          {
             path: 'stripe-connect',
             handle: {
               breadcrumb: () => 'Stripe Connects'

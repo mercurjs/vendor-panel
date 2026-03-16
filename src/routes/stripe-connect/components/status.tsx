@@ -4,7 +4,7 @@ type StatusCellProps = {
   status: "pending" | "connected" | "not connected"
 }
 
-const getStatusColor: any = (status: string) => {
+const getStatusColor = (status: string) => {
   switch (status) {
     case "pending":
       return "orange"

@@ -3,8 +3,9 @@ import { NotConnected } from "./components/not-connected"
 import { useStripeAccount } from "../../hooks/api"
 import { Status } from "./components/status"
 import { Connected } from "./components/connected"
+import { VendorPayoutAccount } from "../../types/payout"
 
-const getStatus = (payout_account: any) => {
+const getStatus = (payout_account: VendorPayoutAccount | undefined) => {
   if (!payout_account) return "not connected"
 
   if (!payout_account?.onboarding) return "pending"

@@ -105,8 +105,9 @@
     "rules": {
       "lower": "Una lettera minuscola",
       "upper": "Una lettera maiuscola",
-      "8chars": "Almeno 8 caratteri",
-      "symbolOrDigit": "Un numero o un simbolo"
+      "12chars": "Almeno 12 caratteri",
+      "digit": "Almeno una cifra",
+      "specialChar": "Almeno un carattere speciale"
     }
   },
   "actions": {
@@ -2118,7 +2119,8 @@
       "header": "Prodotti",
       "actions": {
         "addProducts": "Aggiungi prodotti",
-        "editPrices": "Modifica prezzi"
+        "editPrices": "Modifica prezzi",
+        "editPricesDisabled": "Aggiungi prodotti prima di modificare i prezzi"
       },
       "delete": {
         "confirmation_one": "Stai per eliminare i prezzi per {{count}} prodotto nella lista prezzi. Questa azione non può essere annullata.",

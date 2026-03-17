@@ -61,23 +61,17 @@ export interface DataGridRootProps<TData, TFieldValues extends FieldValues = Fie
 
 const ROW_HEIGHT = 40;
 
-const getCommonPinningStyles = <TData,>(column: Column<TData>): CSSProperties => {
+const getCommonPinningStyles = <TData,>(column: Column<TData>, isHeader = false): CSSProperties => {
   const isPinned = column.getIsPinned();
 
-  /**
-   * Since our border colors are semi-transparent, we need to set a custom border color
-   * that looks the same as the actual border color, but has 100% opacity.
-   *
-   * We do this by checking if the current theme is dark mode, and then setting the border color
-   * to the corresponding color.
-   */
   const isDarkMode = document.documentElement.classList.contains('dark');
   const BORDER_COLOR = isDarkMode ? 'rgb(50,50,53)' : 'rgb(228,228,231)';
 
   return {
     position: isPinned ? 'sticky' : 'relative',
     width: column.getSize(),
-    zIndex: isPinned ? 1 : 0,
+    zIndex: isPinned ? (isHeader ? 3 : 1) : 0,
+    background: isPinned ? (isHeader ? 'var(--bg-base)' : 'var(--bg-subtle)') : undefined,
     borderBottom: isPinned ? `1px solid ${BORDER_COLOR}` : undefined,
     borderRight: isPinned ? `1px solid ${BORDER_COLOR}` : undefined,
     left: isPinned === 'left' ? `${column.getStart('left')}px` : undefined,
@@ -234,8 +228,11 @@ export const DataGridRoot = <TData, TFieldValues extends FieldValues = FieldValu
         toRender.add(rangeEnd.col);
       }
 
-      // The first column is pinned, so we always render it
-      toRender.add(0);
+      visibleColumns.forEach((col, idx) => {
+        if (col.getIsPinned()) {
+          toRender.add(idx);
+        }
+      });
 
       return Array.from(toRender).sort((a, b) => a - b);
     }
@@ -571,7 +568,7 @@ export const DataGridRoot = <TData, TFieldValues extends FieldValues = FieldValu
             >
               <div
                 role="rowgroup"
-                className="txt-compact-small-plus sticky top-0 z-[1] grid bg-ui-bg-subtle"
+                className="txt-compact-small-plus sticky top-0 z-[2] grid bg-ui-bg-subtle"
               >
                 {grid.getHeaderGroups().map(headerGroup => (
                   <div
@@ -610,7 +607,7 @@ export const DataGridRoot = <TData, TFieldValues extends FieldValues = FieldValu
                           data-column-index={vc.index}
                           style={{
                             width: header.getSize(),
-                            ...getCommonPinningStyles(header.column)
+                            ...getCommonPinningStyles(header.column, true)
                           }}
                           className="txt-compact-small-plus flex items-center truncate border-b border-r bg-ui-bg-base px-4 py-2.5"
                         >

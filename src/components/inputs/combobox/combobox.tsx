@@ -322,7 +322,7 @@ const ComboboxImpl = <T extends Value = string>(
       >
         <div
           ref={badgesContainerRef}
-          className="relative flex h-full min-w-0 flex-1 items-center gap-2 overflow-hidden"
+          className="relative flex h-full min-w-0 flex-1 items-center gap-2 overflow-hidden px-1.5"
         >
           {isArrayValue && Array.isArray(selectedValues) && selectedValues.length > 0 ? (
             <>

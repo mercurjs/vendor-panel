@@ -77,11 +77,14 @@ export const DataTableOrderBy = <TData,>({
     // If no order param exists, set the first available key as default
     if (!sortParam) {
       const defaultKey = defaultOrder ? String(defaultOrder) : String(keys[0].key);
-      setSearchParams(prev => {
-        const newParams = new URLSearchParams(prev);
-        newParams.set(param, defaultKey);
-        return newParams;
-      });
+      setSearchParams(
+        prev => {
+          const newParams = new URLSearchParams(prev);
+          newParams.set(param, defaultKey);
+          return newParams;
+        },
+        { replace: true }
+      );
       setState({
         key: defaultKey,
         dir: SortDirection.ASC

@@ -137,6 +137,14 @@ const NOTIFICATION_TEMPLATES = {
     "Your product request has been accepted",
   seller_product_request_rejected_notification:
     "Your product request has been rejected",
+  seller_fulfillment_delivered_notification: "Your order has been delivered",
+  seller_order_billing_address_updated_notification:
+    "Order billing address has been updated",
+  seller_order_email_updated_notification: "Order email has been updated",
+  seller_order_shipping_address_updated_notification:
+    "Order shipping address has been updated",
+  seller_payment_refunded_notification: "A payment has been refunded",
+  seller_order_transfered_notification: "An order has been transferred",
 }
 
 const Notification = ({

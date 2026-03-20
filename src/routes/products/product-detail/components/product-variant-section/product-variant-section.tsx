@@ -99,6 +99,8 @@ export const ProductVariantSection = ({ product }: ProductVariantSectionProps) =
         isLoading={isLoading}
         queryObject={raw}
         orderBy={[
+          { key: 'title', label: t('fields.title') },
+          { key: 'sku', label: t('fields.sku') },
           { key: 'created_at', label: t('fields.createdAt') },
           { key: 'updated_at', label: t('fields.updatedAt') }
         ]}

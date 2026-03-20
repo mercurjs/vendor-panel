@@ -206,6 +206,7 @@ export function convertArrayToPrimitive(values: any[], type: DataGridColumnType)
     case 'text':
       return values.map(covertToString);
     case 'media':
+    case 'select':
       return values;
     default:
       throw new Error(`Unsupported target type "${type}".`);

@@ -105,7 +105,9 @@ export const ProductCreateAttributesForm = forwardRef<
       });
     });
 
-    return Object.keys(errors).length === 0;
+    const optionsValid = await form.trigger('options');
+
+    return Object.keys(errors).length === 0 && optionsValid;
   };
 
   // Expose validation function and form fields to parent

@@ -22,6 +22,7 @@ type ChipInputProps = {
   variant?: 'base' | 'contrast';
   placeholder?: string;
   className?: string;
+  'aria-invalid'?: boolean;
 };
 
 export const ChipInput = forwardRef<HTMLInputElement, ChipInputProps>(
@@ -36,7 +37,8 @@ export const ChipInput = forwardRef<HTMLInputElement, ChipInputProps>(
       variant = 'base',
       allowDuplicates = false,
       placeholder,
-      className
+      className,
+      'aria-invalid': ariaInvalid
     },
     ref
   ) => {
@@ -129,7 +131,8 @@ export const ChipInput = forwardRef<HTMLInputElement, ChipInputProps>(
           'has-[input:disabled]:cursor-not-allowed has-[input:disabled]:bg-ui-bg-disabled has-[input:disabled]:text-ui-fg-disabled',
           {
             'bg-ui-bg-field-component hover:bg-ui-bg-field-component-hover': variant === 'contrast',
-            'bg-ui-bg-field hover:bg-ui-bg-field-hover': variant === 'base'
+            'bg-ui-bg-field hover:bg-ui-bg-field-hover': variant === 'base',
+            '!shadow-borders-error': ariaInvalid
           },
           className
         )}

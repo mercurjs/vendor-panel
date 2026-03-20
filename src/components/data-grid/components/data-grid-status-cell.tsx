@@ -30,6 +30,7 @@ export const DataGridStatusCell = <TData, TValue = any>({
             <Inner
               field={field}
               inputProps={input}
+              isAnchor={container.isAnchor}
             />
           </DataGridCellContainer>
         );
@@ -40,14 +41,22 @@ export const DataGridStatusCell = <TData, TValue = any>({
 
 const Inner = ({
   field,
-  inputProps
+  inputProps,
+  isAnchor
 }: {
   field: ControllerRenderProps<any, string>;
   inputProps: InputProps;
+  isAnchor: boolean;
 }) => {
   const { t } = useTranslation();
-  const { ref, value, onChange, onBlur, name } = field;
-  const { ref: inputRef, onBlur: onInputBlur, onFocus, ...attributes } = inputProps;
+  const { ref, value, onChange, onBlur } = field;
+  const {
+    ref: inputRef,
+    onBlur: onInputBlur,
+    onFocus,
+    onChange: _onChange,
+    ...attributes
+  } = inputProps;
 
   const combinedRefs = useCombinedRefs(ref, inputRef);
 
@@ -69,6 +78,7 @@ const Inner = ({
           'txt-compact-small h-full w-full rounded-none border-none bg-transparent px-0 py-2.5 shadow-none outline-none',
           'hover:bg-transparent focus:shadow-none data-[state=open]:!shadow-none'
         )}
+        onPointerDown={!isAnchor ? e => e.preventDefault() : undefined}
         onFocus={onFocus}
         onBlur={() => {
           onBlur();

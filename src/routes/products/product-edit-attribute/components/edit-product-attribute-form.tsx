@@ -35,10 +35,7 @@ export const EditProductAttributeForm = ({
   const { t } = useTranslation();
   const { handleSuccess } = useRouteModal();
 
-  const currentValues =
-    attribute.values
-      ?.filter(v => v.is_editable || attribute.attribute_source === 'vendor')
-      .map(v => v.value) ?? [];
+  const currentValues = attribute.values?.map(v => v.value) ?? [];
 
   const form = useForm<z.infer<typeof EditProductAttributeSchema>>({
     defaultValues: {

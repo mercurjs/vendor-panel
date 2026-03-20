@@ -70,7 +70,7 @@ export const UserCreatedOptionsList = ({
                 <Form.Field
                   control={form.control}
                   name={`options.${index}.title`}
-                  render={({ field: { onChange, ...field } }) => {
+                  render={({ field: { onChange, ...field }, fieldState }) => {
                     return (
                       <Form.Item className="flex flex-row items-start gap-x-1.5 space-y-0 [&>div:last-child]:w-full">
                         <Form.Label className="min-w-[60px] px-2 py-1.5">
@@ -81,6 +81,7 @@ export const UserCreatedOptionsList = ({
                             <Combobox
                               {...field}
                               placeholder={t('products.fields.attributes.add.title.placeholder')}
+                              aria-invalid={!!fieldState.error}
                               options={[
                                 ...availableAttributes.map(attribute => ({
                                   label: attribute.name,
@@ -129,7 +130,7 @@ export const UserCreatedOptionsList = ({
                 <Form.Field
                   control={form.control}
                   name={`options.${index}.values`}
-                  render={({ field: { ...field } }) => {
+                  render={({ field: { ...field }, fieldState }) => {
                     const renderInput = () => {
                       if (!selectedAttribute) {
                         return (
@@ -138,6 +139,7 @@ export const UserCreatedOptionsList = ({
                             variant="contrast"
                             placeholder={t('products.fields.attributes.add.values.placeholder')}
                             className="w-full"
+                            aria-invalid={!!fieldState.error}
                           />
                         );
                       }
@@ -150,6 +152,7 @@ export const UserCreatedOptionsList = ({
                             options={possibleValueOptions}
                             multiple={false}
                             showCheck={false}
+                            aria-invalid={!!fieldState.error}
                             className="w-full bg-ui-bg-base hover:bg-ui-bg-base-hover"
                           />
                         );
@@ -162,6 +165,7 @@ export const UserCreatedOptionsList = ({
                             onChange={e => field.onChange([e.target.value])}
                             placeholder={t('products.fields.attributes.add.values.placeholder')}
                             className="w-full"
+                            aria-invalid={!!fieldState.error}
                             data-testid={`option-${index}-value-input`}
                           />
                         );
@@ -174,6 +178,7 @@ export const UserCreatedOptionsList = ({
                             onChange={e => field.onChange([e.target.value])}
                             placeholder={t('products.fields.attributes.add.values.placeholder')}
                             className="w-full"
+                            aria-invalid={!!fieldState.error}
                             data-testid={`option-${index}-value-textarea`}
                           />
                         );
@@ -187,6 +192,7 @@ export const UserCreatedOptionsList = ({
                           >
                             <Select.Trigger
                               className="w-full"
+                              aria-invalid={!!fieldState.error}
                               data-testid={`option-${index}-value-toggle`}
                             >
                               <Select.Value
@@ -209,6 +215,7 @@ export const UserCreatedOptionsList = ({
                             }
                             onChange={val => field.onChange([String(val ?? '')])}
                             placeholder={t('products.fields.attributes.add.values.placeholder')}
+                            aria-invalid={!!fieldState.error}
                             hideControls
                           />
                         );
@@ -225,6 +232,7 @@ export const UserCreatedOptionsList = ({
                                 }
                               : undefined
                           }
+                          aria-invalid={!!fieldState.error}
                           className="w-full bg-ui-bg-base hover:bg-ui-bg-base-hover"
                         />
                       );

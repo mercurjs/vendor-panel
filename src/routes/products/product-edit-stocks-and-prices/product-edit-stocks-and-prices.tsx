@@ -1,87 +1,67 @@
-import { useParams } from "react-router-dom"
-import { RouteFocusModal } from "../../../components/modals"
-import { StocksAndPricesEdit } from "./components/stocks-and-prices-edit"
-import { useProduct } from "../../../hooks/api/products"
-import { useStockLocations } from "../../../hooks/api"
-import { useMemo } from "react"
-import { useMultipleInventoryItemLevels } from "../../../hooks/api/inventory"
+import { useMemo } from 'react';
+
+import { useParams } from 'react-router-dom';
+
+import { RouteFocusModal } from '../../../components/modals';
+import { useStockLocations } from '../../../hooks/api';
+import { useMultipleInventoryItemLevels } from '../../../hooks/api/inventory';
+import { useProduct } from '../../../hooks/api/products';
+import { StocksAndPricesEdit } from './components/stocks-and-prices-edit';
 
 export const ProductEditStocksAndPrices = () => {
-  const { id } = useParams()
+  const { id } = useParams();
 
   if (!id) {
-    return null
+    return null;
   }
 
   const {
     stock_locations,
     isPending: isStockLocationsPending,
-    isRefetching: isStockLocationsRefetching,
     isError: isErrorStockLocations,
-    error: errorStockLocations,
-    refetch: refetchStockLocations,
+    error: errorStockLocations
   } = useStockLocations({
-    limit: 9999,
-  })
+    limit: 9999
+  });
 
   const {
     product,
     isPending: isProductPending,
-    isRefetching: isProductRefetching,
     isError: isProductError,
-    error: productError,
-    refetch: refetchProduct,
+    error: productError
   } = useProduct(id, {
-    fields: "*variants,*variants.inventory_items,*categories",
-  })
+    fields: '*variants,*variants.inventory_items,*categories'
+  });
 
   const inventoryItemIds = useMemo(() => {
-    if (!product || Array.isArray(product) || !product.variants) return []
+    if (!product || Array.isArray(product) || !product.variants) return [];
 
-    const ids: string[] = []
-    product.variants.forEach((variant) => {
-      variant.inventory_items?.forEach((item) => {
-        ids.push(item.inventory_item_id)
-      })
-    })
+    const ids: string[] = [];
+    product.variants.forEach(variant => {
+      variant.inventory_items?.forEach(item => {
+        ids.push(item.inventory_item_id);
+      });
+    });
 
-    return ids
-  }, [product])
+    return ids;
+  }, [product]);
 
   const {
     inventoryItemsWithLevels,
     isPending: isInventoryPending,
-    isRefetching: isInventoryRefetching,
     isError: isInventoryError,
-    error: inventoryError,
-    refetch: refetchInventory,
+    error: inventoryError
   } = useMultipleInventoryItemLevels(inventoryItemIds, {
-    fields: "*stock_locations",
-  })
+    fields: '*stock_locations'
+  });
 
-  const refetchAll = async () => {
-    await Promise.all([
-      refetchProduct(),
-      refetchStockLocations(),
-      refetchInventory(),
-    ])
-  }
-
-  const isError = isProductError || isErrorStockLocations || isInventoryError
-  const error = productError || errorStockLocations || inventoryError
-  const isPending =
-    isProductPending || isStockLocationsPending || isInventoryPending
-  const isRefetching =
-    isProductRefetching || isStockLocationsRefetching || isInventoryRefetching
-  const ready =
-    !isPending &&
-    !!product &&
-    !!inventoryItemsWithLevels &&
-    !!stock_locations &&
-    !isRefetching
+  const isError = isProductError || isErrorStockLocations || isInventoryError;
+  const error = productError || errorStockLocations || inventoryError;
+  const isPending = isProductPending || isStockLocationsPending || isInventoryPending;
+  const ready = !isPending && !!product && !!inventoryItemsWithLevels && !!stock_locations;
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   return (
@@ -92,10 +72,8 @@ export const ProductEditStocksAndPrices = () => {
           inventoryItems={inventoryItemsWithLevels}
           stockLocations={stock_locations}
           productId={id!}
-          isRefreshing={isRefetching}
-          onRefresh={refetchAll}
         />
       )}
     </RouteFocusModal>
-  )
-}
+  );
+};

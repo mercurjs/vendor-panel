@@ -1,6 +1,8 @@
+import { useRef } from 'react';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CircleInfoSolid } from '@medusajs/icons';
-import { Button, InlineTip, Input, Select, Text, Textarea, Tooltip } from '@medusajs/ui';
+import { Button, InlineTip, Input, Select, Text, Textarea, Tooltip, usePrompt } from '@medusajs/ui';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
@@ -34,11 +36,9 @@ export const EditProductAttributeForm = ({
 }: EditProductAttributeFormProps) => {
   const { t } = useTranslation();
   const { handleSuccess } = useRouteModal();
+  const prompt = usePrompt();
 
-  const currentValues =
-    attribute.values
-      ?.filter(v => v.is_editable || attribute.attribute_source === 'vendor')
-      .map(v => v.value) ?? [];
+  const currentValues = attribute.values?.map(v => v.value) ?? [];
 
   const form = useForm<z.infer<typeof EditProductAttributeSchema>>({
     defaultValues: {
@@ -73,6 +73,19 @@ export const EditProductAttributeForm = ({
       label: pv.value
     })) ?? [];
 
+  const isAdminAttribute = attribute.attribute_source === 'admin';
+  const customValueCreatedRef = useRef(false);
+
+  const confirmCustomValue = async () => {
+    return prompt({
+      title: t('products.edit.attributes.editCustomValueTitle', 'Edit Attribute'),
+      description: t(
+        'products.edit.attributes.editCustomValueDescription',
+        'Replacing this attribute with a custom one will affect how your products appear in search and filters. Custom attributes are not searchable or filterable. Do you want to continue?'
+      )
+    });
+  };
+
   return (
     <RouteDrawer.Form form={form}>
       <KeyboundForm
@@ -103,8 +116,20 @@ export const EditProductAttributeForm = ({
                     return (
                       <Combobox
                         value={field.value[0] ?? ''}
-                        onChange={val => field.onChange(val ? [val as string] : [])}
+                        onChange={async val => {
+                          const strVal = val as string;
+                          if (isAdminAttribute && customValueCreatedRef.current) {
+                            customValueCreatedRef.current = false;
+                            const confirmed = await confirmCustomValue();
+
+                            if (!confirmed) return;
+                          }
+                          field.onChange(val ? [strVal] : []);
+                        }}
                         options={possibleValueOptions}
+                        onCreateOption={() => {
+                          customValueCreatedRef.current = true;
+                        }}
                         multiple={false}
                         placeholder={t(
                           'products.edit.attributes.valuesPlaceholder',
@@ -118,8 +143,20 @@ export const EditProductAttributeForm = ({
                     return (
                       <Combobox
                         value={field.value}
-                        onChange={val => field.onChange(val ?? [])}
+                        onChange={async val => {
+                          const arrVal = (val ?? []) as string[];
+                          if (isAdminAttribute && customValueCreatedRef.current) {
+                            customValueCreatedRef.current = false;
+                            const confirmed = await confirmCustomValue();
+
+                            if (!confirmed) return;
+                          }
+                          field.onChange(arrVal);
+                        }}
                         options={possibleValueOptions}
+                        onCreateOption={() => {
+                          customValueCreatedRef.current = true;
+                        }}
                         placeholder={t(
                           'products.edit.attributes.valuesPlaceholder',
                           'Select values'

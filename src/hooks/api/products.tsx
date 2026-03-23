@@ -65,6 +65,7 @@ type AddProductAttributePayload = {
   values: string[];
   use_for_variations: boolean;
   ui_component?: string;
+  attribute_id?: string;
 };
 
 export const useAddProductAttribute = (

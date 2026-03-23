@@ -64,13 +64,16 @@ export const ProductAddAttribute = () => {
     const name = option?.title?.trim();
     const values = (option?.values ?? []).map(v => v.trim()).filter(Boolean);
     const use_for_variations = option?.useForVariants === true;
+    const selectedAttribute = availableAttributes?.find(attr => attr.id === option?.attributeId);
+    const ui_component = selectedAttribute?.ui_component ?? 'multivalue';
 
     await mutateAsync(
       {
         name,
         values,
         use_for_variations,
-        ui_component: 'multivalue'
+        ui_component,
+        attribute_id: option?.attributeId || undefined
       },
       {
         onSuccess: () => {

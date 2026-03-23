@@ -3,6 +3,7 @@ import { BaseProductVariantParams } from '@medusajs/types/dist/http/product/comm
 
 export interface ProductOptionMetadata {
   author?: string;
+  attribute_id?: string;
   [key: string]: unknown;
 }
 

@@ -431,7 +431,9 @@
         "titleRequired": "Please enter a title",
         "valuesRequired": "Please enter at least one value",
         "handleInvalidFormat": "Handle can only contain lowercase letters, numbers, and hyphens",
-        "handleMustContainLetter": "Handle must contain at least one letter"
+        "handleMustContainLetter": "Handle must contain at least one letter",
+        "editCustomValueTitle": "Edit Attribute",
+        "editCustomValueDescription": "Replacing this attribute with a custom one will affect how your products appear in search and filters. Custom attributes are not searchable or filterable. Do you want to continue?"
       },
       "informationalAttributes": {
         "header": "Product Information",

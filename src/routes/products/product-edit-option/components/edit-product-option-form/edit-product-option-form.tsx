@@ -1,20 +1,20 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { HttpTypes } from '@medusajs/types';
-import { Button, InlineTip, Input } from '@medusajs/ui';
+import { Button, InlineTip, Input, usePrompt } from '@medusajs/ui';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
 import { Form } from '../../../../../components/common/form';
 import { SwitchBox } from '../../../../../components/common/switch-box';
-import { ChipInput } from '../../../../../components/inputs/chip-input';
+import { Combobox } from '../../../../../components/inputs/combobox';
 import { RouteDrawer, useRouteModal } from '../../../../../components/modals';
 import { i18n } from '../../../../../components/utilities/i18n';
 import { KeyboundForm } from '../../../../../components/utilities/keybound-form';
-import { useUpdateProductOption } from '../../../../../hooks/api/products';
+import { useProductAttributes, useUpdateProductOption } from '../../../../../hooks/api/products';
+import type { ExtendedAdminProductOption } from '../../../../../types/products';
 
 type EditProductOptionFormProps = {
-  option: HttpTypes.AdminProductOption;
+  option: ExtendedAdminProductOption;
 };
 
 const EditProductOptionSchema = z.object({
@@ -26,6 +26,16 @@ const EditProductOptionSchema = z.object({
 export const CreateProductOptionForm = ({ option }: EditProductOptionFormProps) => {
   const { t } = useTranslation();
   const { handleSuccess } = useRouteModal();
+  const prompt = usePrompt();
+
+  const isAdminOption = option.metadata?.author === 'admin';
+
+  const { attributes } = useProductAttributes(option.product_id!);
+  const attributeDefinition = attributes?.find(
+    a => a.id === option.metadata?.attribute_id || a.name === option.title
+  );
+  const predefinedValueOptions =
+    attributeDefinition?.possible_values?.map(v => ({ value: v.value, label: v.value })) ?? [];
 
   const form = useForm<z.infer<typeof EditProductOptionSchema>>({
     defaultValues: {
@@ -38,24 +48,46 @@ export const CreateProductOptionForm = ({ option }: EditProductOptionFormProps) 
 
   const useForVariations = form.watch('use_for_variations');
 
-  const { mutateAsync, isPending } = useUpdateProductOption(option.product_id!, option.id);
+  const { mutateAsync: updateOption, isPending } = useUpdateProductOption(
+    option.product_id!,
+    option.id
+  );
 
   const handleSubmit = form.handleSubmit(async data => {
+    if (isAdminOption) {
+      if (data.title !== option.title) {
+        const confirmed = await prompt({
+          title: t('products.edit.attributes.editCustomValueTitle', 'Edit Attribute'),
+          description: t(
+            'products.edit.attributes.editCustomValueDescription',
+            'Replacing this attribute with a custom one will affect how your products appear in search and filters. Custom attributes are not searchable or filterable. Do you want to continue?'
+          )
+        });
+
+        if (!confirmed) return;
+      }
+
+      await updateOption(
+        { title: data.title, values: data.values, metadata: { author: 'vendor' } } as any,
+        {
+          onSuccess: () => handleSuccess()
+        }
+      );
+
+      return;
+    }
+
     const { use_for_variations, ...rest } = data;
 
     if (!use_for_variations) {
-      await mutateAsync({ convert_to_attribute: true } as any, {
-        onSuccess: () => {
-          handleSuccess();
-        }
+      await updateOption({ convert_to_attribute: true } as any, {
+        onSuccess: () => handleSuccess()
       });
-    } else {
-      await mutateAsync(rest as any, {
-        onSuccess: () => {
-          handleSuccess();
-        }
-      });
+
+      return;
     }
+
+    await updateOption(rest as any, { onSuccess: () => handleSuccess() });
   });
 
   return (
@@ -94,7 +126,7 @@ export const CreateProductOptionForm = ({ option }: EditProductOptionFormProps) 
               <Form.Field
                 control={form.control}
                 name="values"
-                render={({ field: { ...field } }) => {
+                render={({ field }) => {
                   return (
                     <Form.Item className="flex flex-row items-start gap-x-1.5 space-y-0">
                       <Form.Label className="min-w-[60px] px-2 py-1.5">
@@ -102,8 +134,11 @@ export const CreateProductOptionForm = ({ option }: EditProductOptionFormProps) 
                       </Form.Label>
                       <Form.Control>
                         <div className="flex w-full flex-col gap-y-1.5">
-                          <ChipInput
-                            {...field}
+                          <Combobox
+                            value={field.value}
+                            onChange={val => field.onChange(val ?? [])}
+                            options={predefinedValueOptions}
+                            onCreateOption={() => undefined}
                             disabled={!useForVariations}
                             placeholder={t('products.fields.options.variantionsPlaceholder')}
                             className="w-full bg-ui-bg-base"

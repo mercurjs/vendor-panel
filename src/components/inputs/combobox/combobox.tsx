@@ -401,10 +401,10 @@ const ComboboxImpl = <T extends Value = string>(
             ref={comboboxRef}
             onFocus={() => setOpen(true)}
             className={clx(
-              '!placeholder:text-ui-fg-muted txt-compact-small size-full cursor-pointer bg-transparent !px-2 pe-8 text-ui-fg-base outline-none transition-fg focus:cursor-text',
+              '!placeholder:text-ui-fg-muted !placeholder:px-0 txt-compact-small size-full cursor-pointer bg-transparent pe-8 text-ui-fg-base outline-none transition-fg focus:cursor-text',
               {
                 'opacity-0': hideInput && !isArrayValue,
-                'ps-2': !showTag && !isArrayValue,
+                'ps-0': !showTag && !isArrayValue,
                 'absolute inset-0 opacity-0':
                   isArrayValue && Array.isArray(selectedValues) && selectedValues.length > 0
               }

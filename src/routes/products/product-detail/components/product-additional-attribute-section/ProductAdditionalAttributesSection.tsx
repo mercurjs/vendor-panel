@@ -229,6 +229,11 @@ export const ProductAdditionalAttributesSection = ({ product }: ProductAttribute
                     {value.value}
                   </Badge>
                 ))}
+                tooltip={
+                  option.metadata?.author === 'admin'
+                    ? t('products.edit.attributes.required')
+                    : undefined
+                }
               />
             ))}
           </div>

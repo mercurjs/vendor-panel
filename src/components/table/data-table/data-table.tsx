@@ -1,27 +1,29 @@
-import { clx } from "@medusajs/ui"
-import { memo } from "react"
-import { NoRecords, NoResultsProps } from "../../common/empty-table-content"
-import { TableSkeleton } from "../../common/skeleton"
-import { DataTableQuery, DataTableQueryProps } from "./data-table-query"
-import { DataTableRoot, DataTableRootProps } from "./data-table-root"
+import { memo } from 'react';
+
+import { clx } from '@medusajs/ui';
+
+import { NoRecords, NoResultsProps } from '../../common/empty-table-content';
+import { TableSkeleton } from '../../common/skeleton';
+import { DataTableQuery, DataTableQueryProps } from './data-table-query';
+import { DataTableRoot, DataTableRootProps } from './data-table-root';
 
 interface DataTableProps<TData>
-  extends Omit<DataTableRootProps<TData>, "noResults">,
-    DataTableQueryProps<TData> {
-  isLoading?: boolean
-  pageSize: number
-  queryObject?: Record<string, any>
-  noRecords?: Pick<NoResultsProps, "title" | "message"> & {
+  extends Omit<DataTableRootProps<TData>, 'noResults'>, DataTableQueryProps<TData> {
+  isLoading?: boolean;
+  pageSize: number;
+  queryObject?: Record<string, any>;
+  noRecords?: Pick<NoResultsProps, 'title' | 'message'> & {
     action?: {
-      to: string
-      label: string
-    }
-  }
+      to: string;
+      label: string;
+    };
+  };
+  clearableSearch?: boolean;
 }
 
 // Maybe we should use the memoized version of DataTableRoot
 // const MemoizedDataTableRoot = memo(DataTableRoot) as typeof DataTableRoot
-const MemoizedDataTableQuery = memo(DataTableQuery) as typeof DataTableQuery
+const MemoizedDataTableQuery = memo(DataTableQuery) as typeof DataTableQuery;
 
 /**
  * @deprecated Use the DataTable component from "/components/data-table" instead
@@ -35,14 +37,16 @@ export const _DataTable = <TData,>({
   count = 0,
   search = false,
   orderBy,
+  defaultOrder,
   filters,
   prefix,
   queryObject = {},
   pageSize,
   isLoading = false,
   noHeader = false,
-  layout = "fit",
+  layout = 'fit',
   noRecords: noRecordsProps = {},
+  clearableSearch = false
 }: DataTableProps<TData>) => {
   if (isLoading) {
     return (
@@ -54,29 +58,29 @@ export const _DataTable = <TData,>({
         orderBy={!!orderBy?.length}
         pagination={!!pagination}
       />
-    )
+    );
   }
 
   const noQuery =
-    Object.values(queryObject).filter((v) => Boolean(v)).length === 0
-  const noResults = !isLoading && count === 0 && !noQuery
-  const noRecords = !isLoading && count === 0 && noQuery
+    Object.values(queryObject).filter(v => Boolean(v) && v !== defaultOrder).length === 0;
+  const noResults = !isLoading && count === 0 && !noQuery;
+  const noRecords = !isLoading && count === 0 && noQuery;
 
   if (noRecords) {
     return (
       <NoRecords
         className={clx({
-          "flex h-full flex-col overflow-hidden": layout === "fill",
+          'flex h-full flex-col overflow-hidden': layout === 'fill'
         })}
         {...noRecordsProps}
       />
-    )
+    );
   }
 
   return (
     <div
-      className={clx("divide-y", {
-        "flex h-full flex-col overflow-hidden": layout === "fill",
+      className={clx('divide-y', {
+        'flex h-full flex-col overflow-hidden': layout === 'fill'
       })}
     >
       <MemoizedDataTableQuery
@@ -84,6 +88,8 @@ export const _DataTable = <TData,>({
         orderBy={orderBy}
         filters={filters}
         prefix={prefix}
+        clearableSearch={clearableSearch}
+        defaultOrder={defaultOrder}
       />
       <DataTableRoot
         table={table}
@@ -97,5 +103,5 @@ export const _DataTable = <TData,>({
         layout={layout}
       />
     </div>
-  )
-}
+  );
+};

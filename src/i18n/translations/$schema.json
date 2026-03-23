@@ -172,6 +172,36 @@
         },
         "noMoreData": {
           "type": "string"
+        },
+        "searchOptions": {
+          "type": "string"
+        },
+        "noOptionsFound": {
+          "type": "string"
+        },
+        "noOptionsAvailable": {
+          "type": "string"
+        },
+        "yes": {
+          "type": "string"
+        },
+        "no": {
+          "type": "string"
+        },
+        "true": {
+          "type": "string"
+        },
+        "false": {
+          "type": "string"
+        },
+        "selectValues": {
+          "type": "string"
+        },
+        "increment": {
+          "type": "string"
+        },
+        "decrement": {
+          "type": "string"
         }
       },
       "required": [
@@ -229,7 +259,17 @@
         "unsavedChangesDescription",
         "includesTaxTooltip",
         "excludesTaxTooltip",
-        "noMoreData"
+        "noMoreData",
+        "searchOptions",
+        "noOptionsFound",
+        "noOptionsAvailable",
+        "yes",
+        "no",
+        "true",
+        "false",
+        "selectValues",
+        "increment",
+        "decrement"
       ],
       "additionalProperties": false
     },
@@ -262,12 +302,7 @@
           "additionalProperties": false
         }
       },
-      "required": [
-        "header",
-        "numberOfKeys_one",
-        "numberOfKeys_other",
-        "drawer"
-      ],
+      "required": ["header", "numberOfKeys_one", "numberOfKeys_other", "drawer"],
       "additionalProperties": false
     },
     "metadata": {
@@ -340,14 +375,7 @@
               "additionalProperties": false
             }
           },
-          "required": [
-            "header",
-            "description",
-            "successToast",
-            "actions",
-            "labels",
-            "complexRow"
-          ],
+          "required": ["header", "description", "successToast", "actions", "labels", "complexRow"],
           "additionalProperties": false
         }
       },
@@ -927,13 +955,7 @@
                   "additionalProperties": false
                 }
               },
-              "required": [
-                "documentation",
-                "changelog",
-                "shortcuts",
-                "profileSettings",
-                "theme"
-              ],
+              "required": ["documentation", "changelog", "shortcuts", "profileSettings", "theme"],
               "additionalProperties": false
             },
             "store": {
@@ -1274,12 +1296,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "alphabeticallyAsc",
-            "alphabeticallyDesc",
-            "dateAsc",
-            "dateDesc"
-          ],
+          "required": ["alphabeticallyAsc", "alphabeticallyDesc", "dateAsc", "dateDesc"],
           "additionalProperties": false
         },
         "radio": {
@@ -1406,13 +1423,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "header",
-            "editHeader",
-            "editLabel",
-            "label",
-            "sameAsShipping"
-          ],
+          "required": ["header", "editHeader", "editLabel", "label", "sameAsShipping"],
           "additionalProperties": false
         },
         "contactHeading": {
@@ -1422,12 +1433,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "shippingAddress",
-        "billingAddress",
-        "contactHeading",
-        "locationHeading"
-      ],
+      "required": ["shippingAddress", "billingAddress", "contactHeading", "locationHeading"],
       "additionalProperties": false
     },
     "email": {
@@ -1508,14 +1514,7 @@
           "additionalProperties": false
         }
       },
-      "required": [
-        "header",
-        "label",
-        "details",
-        "currentOwner",
-        "newOwner",
-        "validation"
-      ],
+      "required": ["header", "label", "details", "currentOwner", "newOwner", "validation"],
       "additionalProperties": false
     },
     "sales_channels": {
@@ -1589,9 +1588,12 @@
                 },
                 "inventory": {
                   "type": "string"
+                },
+                "attributes": {
+                  "type": "string"
                 }
               },
-              "required": ["details", "organize", "variants", "inventory"],
+              "required": ["details", "organize", "variants", "inventory", "attributes"],
               "additionalProperties": false
             },
             "errors": {
@@ -1605,9 +1607,21 @@
                 },
                 "uniqueSku": {
                   "type": "string"
+                },
+                "titleRequired": {
+                  "type": "string"
+                },
+                "primaryCategoryRequired": {
+                  "type": "string"
                 }
               },
-              "required": ["variants", "options", "uniqueSku"],
+              "required": [
+                "variants",
+                "options",
+                "uniqueSku",
+                "titleRequired",
+                "primaryCategoryRequired"
+              ],
               "additionalProperties": false
             },
             "inventory": {
@@ -1626,12 +1640,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "heading",
-                "label",
-                "itemPlaceholder",
-                "quantityPlaceholder"
-              ],
+              "required": ["heading", "label", "itemPlaceholder", "quantityPlaceholder"],
               "additionalProperties": false
             },
             "variants": {
@@ -1680,9 +1689,15 @@
                     },
                     "tip": {
                       "type": "string"
+                    },
+                    "media": {
+                      "type": "string"
+                    },
+                    "searchPlaceholder": {
+                      "type": "string"
                     }
                   },
-                  "required": ["label", "hint", "alert", "tip"],
+                  "required": ["label", "hint", "alert", "tip", "media", "searchPlaceholder"],
                   "additionalProperties": false
                 },
                 "productOptions": {
@@ -1710,6 +1725,25 @@
               ],
               "additionalProperties": false
             },
+            "attributes": {
+              "type": "object",
+              "properties": {
+                "description": {
+                  "type": "string"
+                },
+                "buttonLabel": {
+                  "type": "string"
+                },
+                "requiredHeading": {
+                  "type": "string"
+                },
+                "requiredDescription": {
+                  "type": "string"
+                }
+              },
+              "required": ["description", "buttonLabel", "requiredHeading", "requiredDescription"],
+              "additionalProperties": false
+            },
             "successToast": {
               "type": "string"
             }
@@ -1722,6 +1756,7 @@
             "errors",
             "inventory",
             "variants",
+            "attributes",
             "successToast"
           ],
           "additionalProperties": false
@@ -1775,13 +1810,7 @@
               "additionalProperties": false
             }
           },
-          "required": [
-            "header",
-            "description",
-            "success",
-            "filters",
-            "columns"
-          ],
+          "required": ["header", "description", "success", "filters", "columns"],
           "additionalProperties": false
         },
         "import": {
@@ -1977,6 +2006,9 @@
             "galleryLabel": {
               "type": "string"
             },
+            "editLabel": {
+              "type": "string"
+            },
             "downloadImageLabel": {
               "type": "string"
             },
@@ -2018,6 +2050,7 @@
             "deleteWarningWithThumbnail_other",
             "thumbnailTooltip",
             "galleryLabel",
+            "editLabel",
             "downloadImageLabel",
             "deleteImageLabel",
             "emptyState",
@@ -2158,6 +2191,26 @@
               "additionalProperties": false
             },
             "categories": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                }
+              },
+              "required": ["label"],
+              "additionalProperties": false
+            },
+            "primaryCategory": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                }
+              },
+              "required": ["label"],
+              "additionalProperties": false
+            },
+            "secondaryCategories": {
               "type": "object",
               "properties": {
                 "label": {
@@ -2318,6 +2371,133 @@
               },
               "required": ["label"],
               "additionalProperties": false
+            },
+            "attributes": {
+              "type": "object",
+              "properties": {
+                "size": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "tooltip": {
+                      "type": "string"
+                    },
+                    "placeholder": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["label", "tooltip", "placeholder"],
+                  "additionalProperties": false
+                },
+                "brand": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "tooltip": {
+                      "type": "string"
+                    },
+                    "placeholder": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["label", "tooltip", "placeholder"],
+                  "additionalProperties": false
+                },
+                "articleNumber": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "tooltip": {
+                      "type": "string"
+                    },
+                    "placeholder": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["label", "tooltip", "placeholder"],
+                  "additionalProperties": false
+                },
+                "color": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "tooltip": {
+                      "type": "string"
+                    },
+                    "placeholder": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["label", "tooltip", "placeholder"],
+                  "additionalProperties": false
+                },
+                "useForVariants": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["label", "description"],
+                  "additionalProperties": false
+                },
+                "selectValuePlaceholder": {
+                  "type": "string"
+                },
+                "enterValuePlaceholder": {
+                  "type": "string"
+                },
+                "requiredTooltip": {
+                  "type": "string"
+                },
+                "validation": {
+                  "type": "object",
+                  "properties": {
+                    "required": {
+                      "type": "string"
+                    },
+                    "requiredSelect": {
+                      "type": "string"
+                    },
+                    "requiredSelectMultiple": {
+                      "type": "string"
+                    },
+                    "requiredEnter": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "required",
+                    "requiredSelect",
+                    "requiredSelectMultiple",
+                    "requiredEnter"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "size",
+                "brand",
+                "articleNumber",
+                "color",
+                "useForVariants",
+                "selectValuePlaceholder",
+                "enterValuePlaceholder",
+                "requiredTooltip",
+                "validation"
+              ],
+              "additionalProperties": false
             }
           },
           "required": [
@@ -2330,6 +2510,8 @@
             "type",
             "collection",
             "categories",
+            "primaryCategory",
+            "secondaryCategories",
             "tags",
             "sales_channels",
             "countryOrigin",
@@ -2341,7 +2523,8 @@
             "options",
             "variants",
             "mid_code",
-            "hs_code"
+            "hs_code",
+            "attributes"
           ],
           "additionalProperties": false
         },
@@ -2470,12 +2653,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "levelsBatch",
-                    "update",
-                    "updateLevel",
-                    "itemsManageSuccess"
-                  ],
+                  "required": ["levelsBatch", "update", "updateLevel", "itemsManageSuccess"],
                   "additionalProperties": false
                 }
               },
@@ -2924,11 +3102,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "disabledTooltip",
-                "successToast_one",
-                "successToast_other"
-              ],
+              "required": ["disabledTooltip", "successToast_one", "successToast_other"],
               "additionalProperties": false
             },
             "remove": {
@@ -3704,12 +3878,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "title_one",
-                "title_other",
-                "description_one",
-                "description_other"
-              ],
+              "required": ["title_one", "title_other", "description_one", "description_other"],
               "additionalProperties": false
             },
             "list": {
@@ -3727,15 +3896,7 @@
           "additionalProperties": false
         }
       },
-      "required": [
-        "domain",
-        "subtitle",
-        "list",
-        "create",
-        "edit",
-        "delete",
-        "customers"
-      ],
+      "required": ["domain", "subtitle", "list", "create", "edit", "delete", "customers"],
       "additionalProperties": false
     },
     "orders": {
@@ -4330,10 +4491,7 @@
                   "additionalProperties": false
                 }
               },
-              "required": [
-                "noReturnShippingOptions",
-                "outboundShippingOptions"
-              ],
+              "required": ["noReturnShippingOptions", "outboundShippingOptions"],
               "additionalProperties": false
             },
             "receive": {
@@ -5136,12 +5294,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "label",
-                "placeholder",
-                "addButtonText",
-                "deleteButtonText"
-              ],
+              "required": ["label", "placeholder", "addButtonText", "deleteButtonText"],
               "additionalProperties": false
             },
             "from": {
@@ -5259,13 +5412,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "created",
-                    "canceled",
-                    "received",
-                    "items_one",
-                    "items_other"
-                  ],
+                  "required": ["created", "canceled", "received", "items_one", "items_other"],
                   "additionalProperties": false
                 },
                 "note": {
@@ -5297,12 +5444,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "created",
-                    "canceled",
-                    "itemsInbound",
-                    "itemsOutbound"
-                  ],
+                  "required": ["created", "canceled", "itemsInbound", "itemsOutbound"],
                   "additionalProperties": false
                 },
                 "exchange": {
@@ -5321,12 +5463,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "created",
-                    "canceled",
-                    "itemsInbound",
-                    "itemsOutbound"
-                  ],
+                  "required": ["created", "canceled", "itemsInbound", "itemsOutbound"],
                   "additionalProperties": false
                 },
                 "edit": {
@@ -5598,11 +5735,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "requiredEmailOrCustomer",
-            "requiredItems",
-            "invalidEmail"
-          ],
+          "required": ["requiredEmailOrCustomer", "requiredItems", "invalidEmail"],
           "additionalProperties": false
         }
       },
@@ -6205,14 +6338,7 @@
               "additionalProperties": false
             }
           },
-          "required": [
-            "create",
-            "delete",
-            "edit",
-            "pricing",
-            "conditionalPrices",
-            "fields"
-          ],
+          "required": ["create", "delete", "edit", "pricing", "conditionalPrices", "fields"],
           "additionalProperties": false
         },
         "serviceZones": {
@@ -6234,12 +6360,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "headerPickup",
-                "headerShipping",
-                "action",
-                "successToast"
-              ],
+              "required": ["headerPickup", "headerShipping", "action", "successToast"],
               "additionalProperties": false
             },
             "edit": {
@@ -7941,13 +8062,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "title",
-            "description",
-            "hint",
-            "header",
-            "successToast"
-          ],
+          "required": ["title", "description", "hint", "header", "successToast"],
           "additionalProperties": false
         },
         "fields": {
@@ -8257,13 +8372,7 @@
               "additionalProperties": false
             }
           },
-          "required": [
-            "header",
-            "subheader",
-            "tabs",
-            "successToast",
-            "products"
-          ],
+          "required": ["header", "subheader", "tabs", "successToast", "products"],
           "additionalProperties": false
         },
         "edit": {
@@ -8511,13 +8620,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "header",
-                "label",
-                "hint",
-                "placeholder",
-                "attribute"
-              ],
+              "required": ["header", "label", "hint", "placeholder", "attribute"],
               "additionalProperties": false
             }
           },
@@ -8582,12 +8685,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "header",
-            "languageHint",
-            "languagePlaceholder",
-            "usageInsightsHint"
-          ],
+          "required": ["header", "languageHint", "languagePlaceholder", "usageInsightsHint"],
           "additionalProperties": false
         },
         "toast": {
@@ -8601,13 +8699,7 @@
           "additionalProperties": false
         }
       },
-      "required": [
-        "domain",
-        "manageYourProfileDetails",
-        "fields",
-        "edit",
-        "toast"
-      ],
+      "required": ["domain", "manageYourProfileDetails", "fields", "edit", "toast"],
       "additionalProperties": false
     },
     "users": {
@@ -9751,12 +9843,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "lastUsedAtLabel",
-            "revokedByLabel",
-            "revokedAtLabel",
-            "createdByLabel"
-          ],
+          "required": ["lastUsedAtLabel", "revokedByLabel", "revokedAtLabel", "createdByLabel"],
           "additionalProperties": false
         }
       },
@@ -10209,14 +10296,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "done",
-            "failed",
-            "reverted",
-            "invoking",
-            "compensating",
-            "notStarted"
-          ],
+          "required": ["done", "failed", "reverted", "invoking", "compensating", "notStarted"],
           "additionalProperties": false
         },
         "transaction": {
@@ -10480,15 +10560,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "scheduled",
-        "expired",
-        "active",
-        "inactive",
-        "draft",
-        "enabled",
-        "disabled"
-      ],
+      "required": ["scheduled", "expired", "active", "inactive", "draft", "enabled", "disabled"],
       "additionalProperties": false
     },
     "labels": {

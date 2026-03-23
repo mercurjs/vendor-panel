@@ -280,6 +280,10 @@ export const RouteMap: RouteObject[] = [
                         lazy: () => import('../../routes/products/product-attributes')
                       },
                       {
+                        path: 'attributes/add',
+                        lazy: () => import('../../routes/products/product-add-attribute')
+                      },
+                      {
                         path: 'organization',
                         lazy: () => import('../../routes/products/product-organization')
                       },
@@ -294,6 +298,10 @@ export const RouteMap: RouteObject[] = [
                       {
                         path: 'prices',
                         lazy: () => import('../../routes/products/product-prices')
+                      },
+                      {
+                        path: 'informational-attributes/:attribute_id/edit',
+                        lazy: () => import('../../routes/products/product-edit-attribute')
                       },
                       {
                         path: 'options/create',
@@ -355,6 +363,10 @@ export const RouteMap: RouteObject[] = [
                       {
                         path: 'metadata/edit',
                         lazy: () => import('../../routes/product-variants/product-variant-metadata')
+                      },
+                      {
+                        path: 'media',
+                        lazy: () => import('../../routes/product-variants/product-variant-media')
                       }
                     ]
                   }

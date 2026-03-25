@@ -769,6 +769,18 @@
       "new": {
         "label": "Нова"
       }
+    },
+    "searchPlaceholder": "Search by category name",
+    "list": {
+      "requestButton": "Request"
+    },
+    "empty": {
+      "title": "No categories yet",
+      "message": "Categories will appear here once they have been approved. Request a category to get started.",
+      "requestCta": "Request"
+    },
+    "request": {
+      "successToast": "Category was successfully requested. Once approved by the admin, they will appear on the storefront."
     }
   },
   "inventory": {
@@ -2517,7 +2529,10 @@
         "placeholder": "неправильний_розмір",
         "tooltip": "Значення має бути унікальним ідентифікатором для причини повернення."
       },
-      "label": { "label": "Мітка", "placeholder": "Неправильний розмір" },
+      "label": {
+        "label": "Мітка",
+        "placeholder": "Неправильний розмір"
+      },
       "description": {
         "label": "Опис",
         "placeholder": "Клієнт отримав неправильний розмір"

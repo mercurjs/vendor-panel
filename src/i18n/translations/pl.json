@@ -709,6 +709,18 @@
   "categories": {
     "domain": "Kategorie",
     "subtitle": "Organizuj produkty w kategorie i zarządzaj ich rankingiem oraz hierarchią.",
+    "searchPlaceholder": "Szukaj po nazwie kategorii",
+    "list": {
+      "requestButton": "Zażądaj"
+    },
+    "empty": {
+      "title": "Brak kategorii",
+      "message": "Kategorie pojawią się tutaj po zatwierdzeniu. Zażądaj kategorii, aby rozpocząć.",
+      "requestCta": "Zażądaj"
+    },
+    "request": {
+      "successToast": "Kategoria została pomyślnie zażądana. Po zatwierdzeniu przez administratora pojawi się w sklepie."
+    },
     "create": {
       "header": "Utwórz kategorię",
       "hint": "Utwórz nową kategorię, aby uporządkować swoje produkty.",

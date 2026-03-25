@@ -5,6 +5,7 @@ import { DataTableSearch } from "../data-table-search"
 
 export interface DataTableQueryProps<TData> {
   search?: boolean | "autofocus"
+  searchPlaceholder?: string
   orderBy?: DataTableOrderByKey<TData>[]
   filters?: Filter[]
   prefix?: string
@@ -15,6 +16,7 @@ export const DataTableQuery = <TData,>({
   orderBy,
   filters,
   prefix,
+  searchPlaceholder,
 }: DataTableQueryProps<TData>) => {
   return (
     (search || orderBy || filters || prefix) && (
@@ -29,6 +31,7 @@ export const DataTableQuery = <TData,>({
             <DataTableSearch
               prefix={prefix}
               autofocus={search === "autofocus"}
+              placeholder={searchPlaceholder}
             />
           )}
           {orderBy && <DataTableOrderBy keys={orderBy} prefix={prefix} />}

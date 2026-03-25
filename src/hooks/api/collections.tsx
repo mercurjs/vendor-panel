@@ -141,6 +141,9 @@ export const useCreateCollection = (
             data: {
               title: payload.title,
               handle: payload.handle,
+              ...((payload as { details?: object }).details
+                ? { details: (payload as { details?: object }).details }
+                : {}),
             },
           },
         },

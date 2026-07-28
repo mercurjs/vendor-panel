@@ -36,13 +36,29 @@ type DataGridHelperColumnsProps<TData, TFieldValues extends FieldValues> = {
    * @default false
    */
   disableHiding?: boolean
+  /**
+   * The initial size of the column in pixels.
+   */
+  size?: number
+  /**
+   * The minimum size of the column in pixels.
+   */
+  minSize?: number
+  /**
+   * The maximum size of the column in pixels.
+   */
+  maxSize?: number
+  /**
+   * Pin this column to left, right, or don't pin (false).
+   */
+  pin?: 'left' | 'right' | false
 } & (
-  | {
+    | {
       field: FieldFunction<TData, TFieldValues>
       type: DataGridColumnType
     }
-  | { field?: null | undefined; type?: never }
-)
+    | { field?: null | undefined; type?: never }
+  )
 
 export function createDataGridHelper<
   TData,
@@ -59,16 +75,25 @@ export function createDataGridHelper<
       disableHiding = false,
       field,
       type,
+      size = 200,
+      minSize,
+      maxSize = 400,
+      pin,
     }: DataGridHelperColumnsProps<TData, TFieldValues>) =>
       columnHelper.display({
         id,
         header,
         cell,
         enableHiding: !disableHiding,
+        enablePinning: pin !== false,
+        size,
+        minSize,
+        maxSize,
         meta: {
           name,
           field,
           type,
+          pin,
         },
       }),
   }

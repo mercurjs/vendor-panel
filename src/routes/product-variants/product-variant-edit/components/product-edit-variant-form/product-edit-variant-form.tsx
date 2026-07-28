@@ -1,26 +1,27 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Button, Divider, Heading, Input, toast } from "@medusajs/ui"
-import { useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { z } from "zod"
+import { zodResolver } from '@hookform/resolvers/zod';
+import { CircleInfoSolid } from '@medusajs/icons';
+import { Button, Divider, Heading, Input, toast, Tooltip } from '@medusajs/ui';
+import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { z } from 'zod';
 
-import { Form } from "../../../../../components/common/form"
-import { Combobox } from "../../../../../components/inputs/combobox"
-import { CountrySelect } from "../../../../../components/inputs/country-select"
-import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
-import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import { useUpdateProductVariant } from "../../../../../hooks/api/products"
+import { Form } from '../../../../../components/common/form';
+import { Combobox } from '../../../../../components/inputs/combobox';
+import { CountrySelect } from '../../../../../components/inputs/country-select';
+import { RouteDrawer, useRouteModal } from '../../../../../components/modals';
+import { KeyboundForm } from '../../../../../components/utilities/keybound-form';
+import { useUpdateProductVariant } from '../../../../../hooks/api/products';
 import {
   transformNullableFormData,
-  transformNullableFormNumber,
-} from "../../../../../lib/form-helpers"
-import { optionalInt } from "../../../../../lib/validation"
-import { ExtendedAdminProduct, ExtendedAdminProductVariant } from "../../../../../types/products"
+  transformNullableFormNumber
+} from '../../../../../lib/form-helpers';
+import { optionalInt } from '../../../../../lib/validation';
+import { ExtendedAdminProduct, ExtendedAdminProductVariant } from '../../../../../types/products';
 
 type ProductEditVariantFormProps = {
-  product: ExtendedAdminProduct
-  variant?: ExtendedAdminProductVariant
-}
+  product: ExtendedAdminProduct;
+  variant?: ExtendedAdminProductVariant;
+};
 
 const ProductEditVariantSchema = z.object({
   title: z.string().min(1),
@@ -29,8 +30,6 @@ const ProductEditVariantSchema = z.object({
   ean: z.string().optional(),
   upc: z.string().optional(),
   barcode: z.string().optional(),
-  manage_inventory: z.boolean(),
-  allow_backorder: z.boolean(),
   weight: optionalInt,
   height: optionalInt,
   width: optionalInt,
@@ -38,63 +37,45 @@ const ProductEditVariantSchema = z.object({
   mid_code: z.string().optional(),
   hs_code: z.string().optional(),
   origin_country: z.string().optional(),
-  options: z.record(z.string()),
-})
+  options: z.record(z.string())
+});
 
 // TODO: Either pass option ID or make the backend handle options constraints differently to handle the lack of IDs
-export const ProductEditVariantForm = ({
-  variant,
-  product,
-}: ProductEditVariantFormProps) => {
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
+export const ProductEditVariantForm = ({ variant, product }: ProductEditVariantFormProps) => {
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
   const defaultOptions = product.options?.reduce((acc: any, option: any) => {
-    const varOpt = variant?.options?.find((o: any) => o.option_id === option.id)
-    acc[option.title] = varOpt?.value
-    return acc
-  }, {})
+    const varOpt = variant?.options?.find((o: any) => o.option_id === option.id);
+    acc[option.title] = varOpt?.value;
+    return acc;
+  }, {});
 
   const form = useForm<z.infer<typeof ProductEditVariantSchema>>({
     defaultValues: {
-      title: variant?.title || "",
-      material: variant?.material || "",
+      title: variant?.title || '',
+      material: variant?.material || '',
       sku: variant?.sku || undefined,
-      ean: variant?.ean || "",
-      upc: variant?.upc || "",
-      barcode: variant?.barcode || "",
-      manage_inventory: true,
-      allow_backorder: true,
-      weight: variant?.weight || "",
-      height: variant?.height || "",
-      width: variant?.width || "",
-      length: variant?.length || "",
-      mid_code: variant?.mid_code || "",
-      hs_code: variant?.hs_code || "",
-      origin_country: variant?.origin_country || "",
-      options: defaultOptions,
+      ean: variant?.ean || '',
+      upc: variant?.upc || '',
+      barcode: variant?.barcode || '',
+      weight: variant?.weight || '',
+      height: variant?.height || '',
+      width: variant?.width || '',
+      length: variant?.length || '',
+      mid_code: variant?.mid_code || '',
+      hs_code: variant?.hs_code || '',
+      origin_country: variant?.origin_country || '',
+      options: defaultOptions
     },
-    resolver: zodResolver(ProductEditVariantSchema),
-  })
+    resolver: zodResolver(ProductEditVariantSchema)
+  });
 
-  const { mutateAsync, isPending } = useUpdateProductVariant(
-    variant?.product_id!,
-    variant?.id!
-  )
+  const { mutateAsync, isPending } = useUpdateProductVariant(variant?.product_id!, variant?.id!);
 
-  const handleSubmit = form.handleSubmit(async (data) => {
-    const {
-      title,
-      weight,
-      height,
-      width,
-      length,
-      allow_backorder,
-      manage_inventory,
-      options,
-      ...optional
-    } = data
+  const handleSubmit = form.handleSubmit(async data => {
+    const { title, weight, height, width, length, options, ...optional } = data;
 
-    const nullableData = transformNullableFormData(optional)
+    const nullableData = transformNullableFormData(optional);
 
     await mutateAsync(
       {
@@ -103,22 +84,20 @@ export const ProductEditVariantForm = ({
         width: transformNullableFormNumber(width),
         length: transformNullableFormNumber(length),
         title,
-        allow_backorder,
-        manage_inventory,
         options,
-        ...nullableData,
+        ...nullableData
       },
       {
         onSuccess: () => {
-          handleSuccess("../")
-          toast.success(t("products.variant.edit.success"))
+          handleSuccess('../');
+          toast.success(t('products.variant.edit.success'));
         },
-        onError: (error) => {
-          toast.error(error.message)
-        },
+        onError: error => {
+          toast.error(error.message);
+        }
       }
-    )
-  })
+    );
+  });
 
   return (
     <RouteDrawer.Form form={form}>
@@ -134,28 +113,13 @@ export const ProductEditVariantForm = ({
               render={({ field }) => {
                 return (
                   <Form.Item>
-                    <Form.Label>{t("fields.title")}</Form.Label>
+                    <Form.Label>{t('fields.title')}</Form.Label>
                     <Form.Control>
                       <Input {...field} />
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
-              }}
-            />
-            <Form.Field
-              control={form.control}
-              name="material"
-              render={({ field }) => {
-                return (
-                  <Form.Item>
-                    <Form.Label optional>{t("fields.material")}</Form.Label>
-                    <Form.Control>
-                      <Input {...field} />
-                    </Form.Control>
-                    <Form.ErrorMessage />
-                  </Form.Item>
-                )
+                );
               }}
             />
             {product.options?.map((option: any) => {
@@ -171,42 +135,40 @@ export const ProductEditVariantForm = ({
                         <Form.Control>
                           <Combobox
                             value={value}
-                            onChange={(v) => {
-                              onChange(v)
+                            onChange={v => {
+                              onChange(v);
                             }}
                             {...field}
                             options={option.values.map((v: any) => ({
                               label: v.value,
-                              value: v.value,
+                              value: v.value
                             }))}
                           />
                         </Form.Control>
                       </Form.Item>
-                    )
+                    );
                   }}
                 />
-              )
+              );
             })}
           </div>
           <Divider />
           <div className="flex flex-col gap-y-8">
             <div className="flex flex-col gap-y-4">
-              <Heading level="h2">
-                {t("products.variant.inventory.header")}
-              </Heading>
+              <Heading level="h2">{t('products.variant.inventory.header')}</Heading>
               <Form.Field
                 control={form.control}
                 name="sku"
                 render={({ field }) => {
                   return (
                     <Form.Item>
-                      <Form.Label optional>{t("fields.sku")}</Form.Label>
+                      <Form.Label optional>{t('fields.sku')}</Form.Label>
                       <Form.Control>
                         <Input {...field} />
                       </Form.Control>
                       <Form.ErrorMessage />
                     </Form.Item>
-                  )
+                  );
                 }}
               />
               <Form.Field
@@ -215,13 +177,13 @@ export const ProductEditVariantForm = ({
                 render={({ field }) => {
                   return (
                     <Form.Item>
-                      <Form.Label optional>{t("fields.ean")}</Form.Label>
+                      <Form.Label optional>{t('fields.ean')}</Form.Label>
                       <Form.Control>
                         <Input {...field} />
                       </Form.Control>
                       <Form.ErrorMessage />
                     </Form.Item>
-                  )
+                  );
                 }}
               />
               <Form.Field
@@ -230,13 +192,13 @@ export const ProductEditVariantForm = ({
                 render={({ field }) => {
                   return (
                     <Form.Item>
-                      <Form.Label optional>{t("fields.upc")}</Form.Label>
+                      <Form.Label optional>{t('fields.upc')}</Form.Label>
                       <Form.Control>
                         <Input {...field} />
                       </Form.Control>
                       <Form.ErrorMessage />
                     </Form.Item>
-                  )
+                  );
                 }}
               />
               <Form.Field
@@ -245,33 +207,44 @@ export const ProductEditVariantForm = ({
                 render={({ field }) => {
                   return (
                     <Form.Item>
-                      <Form.Label optional>{t("fields.barcode")}</Form.Label>
+                      <Form.Label optional>{t('fields.barcode')}</Form.Label>
                       <Form.Control>
                         <Input {...field} />
                       </Form.Control>
                       <Form.ErrorMessage />
                     </Form.Item>
-                  )
+                  );
                 }}
               />
             </div>
           </div>
           <Divider />
           <div className="flex flex-col gap-y-4">
-            <Heading level="h2">{t("products.attributes")}</Heading>
+            <Heading
+              level="h2"
+              className="flex items-center gap-x-1.5"
+            >
+              {t('products.attributes')}
+              <Tooltip content={t('products.variant.edit.attributes')}>
+                <CircleInfoSolid className="text-ui-fg-muted" />
+              </Tooltip>
+            </Heading>
             <Form.Field
               control={form.control}
-              name="weight"
+              name="height"
               render={({ field }) => {
                 return (
                   <Form.Item>
-                    <Form.Label optional>{t("fields.weight")}</Form.Label>
+                    <Form.Label optional>{t('fields.height')}</Form.Label>
                     <Form.Control>
-                      <Input type="number" {...field} />
+                      <Input
+                        type="number"
+                        {...field}
+                      />
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
             <Form.Field
@@ -280,13 +253,16 @@ export const ProductEditVariantForm = ({
               render={({ field }) => {
                 return (
                   <Form.Item>
-                    <Form.Label optional>{t("fields.width")}</Form.Label>
+                    <Form.Label optional>{t('fields.width')}</Form.Label>
                     <Form.Control>
-                      <Input type="number" {...field} />
+                      <Input
+                        type="number"
+                        {...field}
+                      />
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
             <Form.Field
@@ -295,28 +271,34 @@ export const ProductEditVariantForm = ({
               render={({ field }) => {
                 return (
                   <Form.Item>
-                    <Form.Label optional>{t("fields.length")}</Form.Label>
+                    <Form.Label optional>{t('fields.length')}</Form.Label>
                     <Form.Control>
-                      <Input type="number" {...field} />
+                      <Input
+                        type="number"
+                        {...field}
+                      />
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
             <Form.Field
               control={form.control}
-              name="height"
+              name="weight"
               render={({ field }) => {
                 return (
                   <Form.Item>
-                    <Form.Label optional>{t("fields.height")}</Form.Label>
+                    <Form.Label optional>{t('fields.weight')}</Form.Label>
                     <Form.Control>
-                      <Input type="number" {...field} />
+                      <Input
+                        type="number"
+                        {...field}
+                      />
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
             <Form.Field
@@ -325,13 +307,13 @@ export const ProductEditVariantForm = ({
               render={({ field }) => {
                 return (
                   <Form.Item>
-                    <Form.Label optional>{t("fields.midCode")}</Form.Label>
+                    <Form.Label optional>{t('fields.midCode')}</Form.Label>
                     <Form.Control>
                       <Input {...field} />
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
             <Form.Field
@@ -340,13 +322,28 @@ export const ProductEditVariantForm = ({
               render={({ field }) => {
                 return (
                   <Form.Item>
-                    <Form.Label optional>{t("fields.hsCode")}</Form.Label>
+                    <Form.Label optional>{t('fields.hsCode')}</Form.Label>
                     <Form.Control>
                       <Input {...field} />
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
+              }}
+            />
+            <Form.Field
+              control={form.control}
+              name="material"
+              render={({ field }) => {
+                return (
+                  <Form.Item>
+                    <Form.Label optional>{t('fields.material')}</Form.Label>
+                    <Form.Control>
+                      <Input {...field} />
+                    </Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                );
               }}
             />
             <Form.Field
@@ -355,15 +352,13 @@ export const ProductEditVariantForm = ({
               render={({ field }) => {
                 return (
                   <Form.Item>
-                    <Form.Label optional>
-                      {t("fields.countryOfOrigin")}
-                    </Form.Label>
+                    <Form.Label optional>{t('fields.countryOfOrigin')}</Form.Label>
                     <Form.Control>
                       <CountrySelect {...field} />
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
           </div>
@@ -371,16 +366,23 @@ export const ProductEditVariantForm = ({
         <RouteDrawer.Footer>
           <div className="flex items-center justify-end gap-x-2">
             <RouteDrawer.Close asChild>
-              <Button variant="secondary" size="small">
-                {t("actions.cancel")}
+              <Button
+                variant="secondary"
+                size="small"
+              >
+                {t('actions.cancel')}
               </Button>
             </RouteDrawer.Close>
-            <Button type="submit" size="small" isLoading={isPending}>
-              {t("actions.save")}
+            <Button
+              type="submit"
+              size="small"
+              isLoading={isPending}
+            >
+              {t('actions.save')}
             </Button>
           </div>
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  )
-}
+  );
+};

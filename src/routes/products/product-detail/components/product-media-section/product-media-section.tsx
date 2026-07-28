@@ -16,7 +16,13 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { ActionMenu } from '../../../../../components/common/action-menu';
-import { useUpdateProduct } from '../../../../../hooks/api/products';
+import {
+  productsQueryKeys,
+  useUpdateProduct,
+  variantsQueryKeys
+} from '../../../../../hooks/api/products';
+import { fetchQuery } from '../../../../../lib/client';
+import { queryClient } from '../../../../../lib/query-client';
 import { ExtendedAdminProduct } from '../../../../../types/products';
 
 type ProductMedisaSectionProps = {
@@ -64,19 +70,40 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
       return;
     }
 
+    const removedImageUrls = (product.images ?? []).filter(i => ids.includes(i.id)).map(i => i.url);
+
     const mediaToKeep = product.images?.filter(i => !ids.includes(i.id)).map(i => ({ url: i.url }));
 
-    await mutateAsync(
-      {
-        images: mediaToKeep,
-        thumbnail: includingThumbnail ? '' : undefined
-      },
-      {
-        onSuccess: () => {
-          setSelection({});
-        }
-      }
+    await mutateAsync({
+      images: mediaToKeep,
+      thumbnail: includingThumbnail ? '' : undefined
+    });
+
+    const freshVariants = await fetchQuery(`/vendor/products/${product.id}/variants`, {
+      method: 'GET'
+    }).catch(() => null);
+
+    const variantsToClean: { id: string; thumbnail?: string | null }[] =
+      freshVariants?.variants ?? [];
+
+    await Promise.all(
+      variantsToClean
+        .filter(v => v.thumbnail && removedImageUrls.includes(v.thumbnail))
+        .map(v =>
+          fetchQuery(`/vendor/products/${product.id}/variants/${v.id}`, {
+            method: 'POST',
+            body: { thumbnail: null }
+          })
+        )
     );
+
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: productsQueryKeys.detail(product.id) }),
+      queryClient.invalidateQueries({ queryKey: variantsQueryKeys.lists() }),
+      queryClient.invalidateQueries({ queryKey: variantsQueryKeys.details() })
+    ]);
+
+    setSelection({});
   };
 
   return (

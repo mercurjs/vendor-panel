@@ -11,6 +11,9 @@
     "apply": "Apply",
     "range": "Range",
     "search": "Search",
+    "searchOptions": "Search options",
+    "noOptionsFound": "No options found.",
+    "noOptionsAvailable": "No options available.",
     "of": "of",
     "results": "results",
     "pages": "pages",
@@ -23,7 +26,14 @@
     "tip": "Tip",
     "error": "Error",
     "select": "Select",
+    "yes": "Yes",
+    "no": "No",
+    "true": "True",
+    "false": "False",
+    "selectValues": "Select value(s)",
     "selected": "Selected",
+    "increment": "Increment",
+    "decrement": "Decrement",
     "enabled": "Enabled",
     "disabled": "Disabled",
     "expired": "Expired",
@@ -409,7 +419,26 @@
     "edit": {
       "header": "Edit Product",
       "description": "Edit the product details.",
-      "successToast": "Product {{title}} was successfully updated."
+      "successToast": "Product {{title}} was successfully updated.",
+      "attributes": {
+        "editHeader": "Edit Attribute",
+        "valuesPlaceholder": "Enter value",
+        "addAttribute": "Add attribute",
+        "useForVariations": "Use for variations",
+        "useForVariationsDescription": "If checked, we will create variants using this attribute. If not, the attribute will be used for informational purposes only.",
+        "conversionWarning": "Changes to this attribute may affect existing product variants or details. Review your variants and product details after saving.",
+        "required": "This attribute is required by Admin",
+        "titleRequired": "Please enter a title",
+        "valuesRequired": "Please enter at least one value",
+        "handleInvalidFormat": "Handle can only contain lowercase letters, numbers, and hyphens",
+        "handleMustContainLetter": "Handle must contain at least one letter",
+        "editCustomValueTitle": "Edit Attribute",
+        "editCustomValueDescription": "Replacing this attribute with a custom one will affect how your products appear in search and filters. Custom attributes are not searchable or filterable. Do you want to continue?"
+      },
+      "informationalAttributes": {
+        "header": "Product Information",
+        "description": "Attributes used for informational purposes"
+      }
     },
     "create": {
       "title": "Create Product",
@@ -419,18 +448,33 @@
         "details": "Details",
         "organize": "Organize",
         "variants": "Variants",
-        "inventory": "Inventory kits"
+        "inventory": "Inventory kits",
+        "attributes": "Attributes"
       },
       "errors": {
         "variants": "Please select at least one variant.",
         "options": "Please create at least one option.",
-        "uniqueSku": "SKU must be unique."
+        "uniqueSku": "SKU must be unique.",
+        "titleRequired": "Please enter a title",
+        "primaryCategoryRequired": "Please select primary category",
+        "handleInvalidFormat": "Handle can only contain lowercase letters, numbers, and hyphens",
+        "handleMustContainLetter": "Handle must contain at least one letter"
       },
       "inventory": {
         "heading": "Inventory kits",
         "label": "Add inventory items to the variant's inventory kit.",
         "itemPlaceholder": "Select inventory item",
         "quantityPlaceholder": "How many of these are needed for the kit?"
+      },
+      "attributes": {
+        "description": "Manage attributes and variations for your product, e.g. color, size, etc. Select from attributes defined by the Admin or create your own.",
+        "buttonLabel": "attribute",
+        "requiredHeading": "Required attributes",
+        "requiredDescription": "These attributes are required by the Admin. Select them before proceeding.",
+        "learnMore": {
+          "label": "Learn more",
+          "content": "Use attributes defined by the Admin so your products can be found via search or filters. Custom attributes you create aren’t searchable or filterable. Contact the Admin to add them to the marketplace base."
+        }
       },
       "variants": {
         "header": "Variants",
@@ -446,14 +490,16 @@
           "label": "Product variants",
           "hint": "This ranking will affect the variants' order in your storefront.",
           "alert": "Add options to create variants.",
-          "tip": "Variants left unchecked won't be created. You can always create and edit variants afterwards but this list fits the variations in your product options."
+          "tip": "Add images and SKUs to your variants. If you don't need certain variants, leave them unchecked and they won't be created.",
+          "media": "Media",
+          "searchPlaceholder": "Search table"
         },
         "productOptions": {
           "label": "Product options",
           "hint": "Define the options for the product, e.g. color, size, etc."
         }
       },
-      "successToast": "Product {{title}} was successfully created."
+      "successToast": "Product was successfully published. Only products with stock levels and prices set will be visible."
     },
     "export": {
       "header": "Export Product List",
@@ -512,6 +558,7 @@
     "attributes": "Attributes",
     "editAttributes": "Edit Attributes",
     "editOptions": "Edit Options",
+    "editPrice": "Edit price",
     "editPrices": "Edit prices",
     "media": {
       "label": "Media",
@@ -528,13 +575,17 @@
       "deleteWarningWithThumbnail_other": "You are about to delete {{count}} images including the thumbnail. This action cannot be undone.",
       "thumbnailTooltip": "Thumbnail",
       "galleryLabel": "Gallery",
+      "editLabel": "Edit",
       "downloadImageLabel": "Download current image",
       "deleteImageLabel": "Delete current image",
       "emptyState": {
         "header": "No media yet",
         "description": "Add media to the product to showcase it in your storefront.",
+        "variantDescription": "Add media to showcase it in your storefront.",
         "action": "Add media"
       },
+      "selectImages": "Select images",
+      "selectImagesHint": "Add product images to the variant. To add new images, add them to the product first.",
       "successToast": "Media was successfully updated."
     },
     "discountableHint": "When unchecked, discounts will not be applied to this product.",
@@ -581,6 +632,13 @@
       "categories": {
         "label": "Categories"
       },
+      "primaryCategory": {
+        "label": "Primary category",
+        "tooltip": "Primary category could define attributes that apply to this product."
+      },
+      "secondaryCategories": {
+        "label": "Secondary categories"
+      },
       "tags": {
         "label": "Tags"
       },
@@ -593,6 +651,55 @@
       },
       "material": {
         "label": "Material"
+      },
+      "attributes": {
+        "size": {
+          "label": "Size",
+          "tooltip": "Select the available sizes for this product",
+          "placeholder": "Select value(s)"
+        },
+        "brand": {
+          "label": "Brand",
+          "tooltip": "Select the brand for this product",
+          "placeholder": "Select value"
+        },
+        "articleNumber": {
+          "label": "Article number",
+          "tooltip": "Enter the article number for this product",
+          "placeholder": "Enter value"
+        },
+        "color": {
+          "label": "Color (Optional)",
+          "tooltip": "Select the available colors for this product",
+          "placeholder": "Select value(s)"
+        },
+        "useForVariants": {
+          "label": "Use for variations",
+          "description": "If checked, we will create variants using this attribute. You can define them in the next step. If not, the attribute will be used for informational purposes only.",
+          "editDescription": "If checked, you will be able to create variants using this attribute. If not, the attribute will be used for informational purposes only."
+        },
+        "selectValuePlaceholder": "Select value",
+        "enterValuePlaceholder": "Enter value",
+        "requiredTooltip": "This attribute is required by the admin. You must add value(s) for it.",
+        "validation": {
+          "required": "{{name}} is required",
+          "requiredSelect": "This attribute is required by the admin. Please select value.",
+          "requiredSelectVariant": "This attribute is required. Please select value",
+          "requiredSelectMultiple": "This attribute is required by the admin. Please select value(s).",
+          "requiredEnter": "This attribute is required by the admin. Please enter value."
+        },
+        "add": {
+          "title": {
+            "label": "Title",
+            "placeholder": "Color",
+            "required": "Please enter a title"
+          },
+          "values": {
+            "label": "Values",
+            "placeholder": "Red, Blue, Green",
+            "required": "Please enter at least one value"
+          }
+        }
       },
       "width": {
         "label": "Width"
@@ -610,9 +717,9 @@
         "label": "Product options",
         "hint": "Options are used to define the color, size, etc. of the product",
         "add": "Add option",
-        "optionTitle": "Option title",
+        "optionTitle": "Title",
         "optionTitlePlaceholder": "Color",
-        "variations": "Variations (comma-separated)",
+        "variations": "Values",
         "variantionsPlaceholder": "Red, Blue, Green"
       },
       "variants": {
@@ -629,7 +736,8 @@
     "variant": {
       "edit": {
         "header": "Edit Variant",
-        "success": "Product variant edited sucessfully"
+        "success": "Product variant edited sucessfully",
+        "attributes": "These are default values used to describe the item. They are not defined by Admin."
       },
       "create": {
         "header": "Variant details"
@@ -672,14 +780,18 @@
     "options": {
       "header": "Options",
       "edit": {
-        "header": "Edit Option",
-        "successToast": "Option {{title}} was successfully updated."
+        "header": "Edit Attribute",
+        "successToast": "Attribute {{title}} was successfully updated."
       },
       "create": {
         "header": "Create Option",
         "successToast": "Option {{title}} was successfully created."
       },
-      "deleteWarning": "You are about to delete the product option: {{title}}. This action cannot be undone."
+      "deleteWarning": "You are about to delete the product option: {{title}}. This action cannot be undone.",
+      "variations": {
+        "label": "Variations",
+        "description": "Attributes used for variations"
+      }
     },
     "organization": {
       "header": "Organize",
@@ -729,6 +841,12 @@
       "description": "You are about to delete {{count}} products from catalog. This action cannot be undone.",
       "success": "Successfully deleted {{count}} product(s).",
       "error": "Failed to delete products"
+    },
+    "bulkEdit": {
+      "title": "Bulk Edit Products",
+      "description": "Edit multiple products at once.",
+      "success": "Products were successfully updated.",
+      "noChanges": "No changes to save."
     }
   },
   "collections": {

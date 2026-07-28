@@ -1,36 +1,35 @@
-import { HttpTypes } from "@medusajs/types"
-import { useQueryParams } from "../../use-query-params"
+import { HttpTypes } from '@medusajs/types';
+
+import { applyDateFilter } from '../../../utils/apply-date-filter';
+import { useQueryParams } from '../../use-query-params';
 
 type UseProductTableQueryProps = {
-  prefix?: string
-  pageSize?: number
-}
+  prefix?: string;
+  pageSize?: number;
+};
 
 const DEFAULT_FIELDS =
-  "id,title,handle,status,*collection,*sales_channels,variants.id,thumbnail"
+  'id,title,handle,status,discountable,*collection,*sales_channels,variants.id,thumbnail,*categories';
 
-export const useProductTableQuery = ({
-  prefix,
-  pageSize = 20,
-}: UseProductTableQueryProps) => {
+export const useProductTableQuery = ({ prefix, pageSize = 20 }: UseProductTableQueryProps) => {
   const queryObject = useQueryParams(
     [
-      "offset",
-      "order",
-      "q",
-      "created_at",
-      "updated_at",
-      "sales_channel_id",
-      "category_id",
-      "collection_id",
-      "is_giftcard",
-      "tag_id",
-      "type_id",
-      "status",
-      "id",
+      'offset',
+      'order',
+      'q',
+      'created_at',
+      'updated_at',
+      'sales_channel_id',
+      'category_id',
+      'collection_id',
+      'is_giftcard',
+      'tag_id',
+      'type_id',
+      'status',
+      'id'
     ],
     prefix
-  )
+  );
 
   const {
     offset,
@@ -44,34 +43,37 @@ export const useProductTableQuery = ({
     is_giftcard,
     status,
     order,
-    q,
-  } = queryObject
+    q
+  } = queryObject;
 
   const searchParams: HttpTypes.AdminProductListParams & {
-    tag_id?: string | string[]
-    categoryId?: string | string[]
-    collectionId?: string | string[]
-    typeId?: string | string[]
-    status?: string | string[]
+    tag_id?: string | string[];
+    categoryId?: string | string[];
+    collectionId?: string | string[];
+    typeId?: string | string[];
+    status?: string | string[];
   } = {
     limit: pageSize,
     offset: offset ? Number(offset) : 0,
-    sales_channel_id: sales_channel_id?.split(","),
-    created_at: created_at ? JSON.parse(created_at) : undefined,
-    updated_at: updated_at ? JSON.parse(updated_at) : undefined,
-    category_id: category_id?.split(","),
-    collection_id: collection_id?.split(","),
-    is_giftcard: is_giftcard ? is_giftcard === "true" : undefined,
+    sales_channel_id: sales_channel_id?.split(','),
+    created_at: undefined,
+    updated_at: undefined,
+    category_id: category_id?.split(','),
+    collection_id: collection_id?.split(','),
+    is_giftcard: is_giftcard ? is_giftcard === 'true' : undefined,
     order: order,
-    tag_id: tag_id ? tag_id.split(",") : undefined,
-    type_id: type_id?.split(","),
-    status: status?.split(",") as HttpTypes.AdminProductStatus[],
+    tag_id: tag_id ? tag_id.split(',') : undefined,
+    type_id: type_id?.split(','),
+    status: status?.split(',') as HttpTypes.AdminProductStatus[],
     q,
-    fields: DEFAULT_FIELDS,
-  }
+    fields: DEFAULT_FIELDS
+  };
+
+  applyDateFilter<HttpTypes.AdminProductListParams>('created_at', created_at, searchParams);
+  applyDateFilter<HttpTypes.AdminProductListParams>('updated_at', updated_at, searchParams);
 
   return {
     searchParams,
-    raw: queryObject,
-  }
-}
+    raw: queryObject
+  };
+};

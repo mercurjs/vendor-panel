@@ -66,10 +66,10 @@ const OuterComponent = ({
   const { value } = field
   const { onChange } = inputProps
 
-  const [localValue, setLocalValue] = useState(value)
+  const [localValue, setLocalValue] = useState(value || { checked: false, disabledToggle: false, quantity: "" })
 
   useEffect(() => {
-    setLocalValue(value)
+    setLocalValue(value || { checked: false, disabledToggle: false, quantity: "" })
   }, [value])
 
   const handleCheckedChange = (update: boolean) => {
@@ -139,10 +139,10 @@ const Inner = ({
     ...attributes
   } = inputProps
 
-  const [localValue, setLocalValue] = useState(value)
+  const [localValue, setLocalValue] = useState(value || { checked: false, disabledToggle: false, quantity: "" })
 
   useEffect(() => {
-    setLocalValue(value)
+    setLocalValue(value || { checked: false, disabledToggle: false, quantity: "" })
   }, [value])
 
   const combinedRefs = useCombinedRefs(inputRef, ref)

@@ -1,44 +1,44 @@
-import { z } from "zod"
-import * as zod from "zod"
-import { optionalInt } from "../../../../../lib/validation"
+import i18next from 'i18next';
+import { z } from 'zod';
+import * as zod from 'zod';
+
+import { optionalInt } from '../../../../../lib/validation';
 
 export const CreateProductVariantSchema = z.object({
-  title: z.string().min(1),
+  title: z.string().min(1, i18next.t('products.fields.attributes.add.title.required')),
   sku: z.string().optional(),
-  manage_inventory: z.boolean().optional(),
-  allow_backorder: z.boolean().optional(),
   inventory_kit: z.boolean().optional(),
-  options: z.record(z.string()),
-  prices: zod
-    .record(zod.string(), zod.string().or(zod.number()).optional())
-    .optional(),
+  options: z.record(
+    z.string({
+      required_error: i18next.t('products.fields.attributes.validation.requiredSelectVariant')
+    })
+  ),
+  prices: zod.record(zod.string(), zod.string().or(zod.number()).optional()).optional(),
   inventory: z
     .array(
       z.object({
         inventory_item_id: z.string(),
-        required_quantity: optionalInt,
+        required_quantity: optionalInt
       })
     )
-    .optional(),
-})
+    .optional()
+});
 
 export const CreateVariantDetailsSchema = CreateProductVariantSchema.pick({
   title: true,
   sku: true,
-  manage_inventory: true,
-  allow_backorder: true,
   inventory_kit: true,
-  options: true,
-})
+  options: true
+});
 
 export const CreateVariantDetailsFields = Object.keys(
   CreateVariantDetailsSchema.shape
-) as (keyof typeof CreateVariantDetailsSchema.shape)[]
+) as (keyof typeof CreateVariantDetailsSchema.shape)[];
 
 export const CreateVariantPriceSchema = CreateProductVariantSchema.pick({
-  prices: true,
-})
+  prices: true
+});
 
 export const CreateVariantPriceFields = Object.keys(
   CreateVariantPriceSchema.shape
-) as (keyof typeof CreateVariantPriceSchema.shape)[]
+) as (keyof typeof CreateVariantPriceSchema.shape)[];

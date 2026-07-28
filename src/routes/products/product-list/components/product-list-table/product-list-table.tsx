@@ -1,66 +1,67 @@
-import { Trash } from "@medusajs/icons"
-import {
-  Button,
-  Container,
-  Heading,
-  toast,
-  usePrompt,
-  Checkbox,
-} from "@medusajs/ui"
-import { keepPreviousData } from "@tanstack/react-query"
-import {
-  createColumnHelper,
-  OnChangeFn,
-  RowSelectionState,
-} from "@tanstack/react-table"
-import { useMemo, useState } from "react"
-import { useTranslation } from "react-i18next"
-import { Link, Outlet } from "react-router-dom"
+import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { ExtendedAdminProduct } from "../../../../../types/products"
-import { ActionMenu } from "../../../../../components/common/action-menu"
-import { _DataTable } from "../../../../../components/table/data-table"
+import { PencilSquare, Trash } from '@medusajs/icons';
+import { Button, Checkbox, Container, Heading, toast, usePrompt } from '@medusajs/ui';
+import { keepPreviousData } from '@tanstack/react-query';
+import { createColumnHelper, OnChangeFn, RowSelectionState } from '@tanstack/react-table';
+import { useTranslation } from 'react-i18next';
+import { Link, Outlet, useLocation } from 'react-router-dom';
+
+import { ActionMenu } from '../../../../../components/common/action-menu';
+import { _DataTable } from '../../../../../components/table/data-table';
 import {
-  useDeleteProduct,
   useBulkDeleteProducts,
-  useProducts,
-} from "../../../../../hooks/api/products"
-import { useProductTableColumns } from "../../../../../hooks/table/columns/use-product-table-columns"
-import { useProductTableFilters } from "../../../../../hooks/table/filters/use-product-table-filters"
-import { useProductTableQuery } from "../../../../../hooks/table/query/use-product-table-query"
-import { useDataTable } from "../../../../../hooks/use-data-table"
+  useDeleteProduct,
+  useProducts
+} from '../../../../../hooks/api/products';
+import { useProductTableColumns } from '../../../../../hooks/table/columns/use-product-table-columns';
+import { useProductTableFilters } from '../../../../../hooks/table/filters/use-product-table-filters';
+import { useProductTableQuery } from '../../../../../hooks/table/query/use-product-table-query';
+import { useDataTable } from '../../../../../hooks/use-data-table';
+import { ExtendedAdminProduct } from '../../../../../types/products';
+import { ProductBulkEditDrawer } from '../../../product-bulk-edit/product-bulk-edit-drawer';
 
-export const PAGE_SIZE = 10
+export const PAGE_SIZE = 10;
 
 export const ProductListTable = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
+  const location = useLocation();
 
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [bulkEditOpen, setBulkEditOpen] = useState(false);
+  const [bulkEditProducts, setBulkEditProducts] = useState<ExtendedAdminProduct[]>([]);
 
-  const updater: OnChangeFn<RowSelectionState> = (newSelection) => {
-    const update =
-      typeof newSelection === "function"
-        ? newSelection(rowSelection)
-        : newSelection
+  // Track selected products data across pages
+  const selectedProductsMap = useRef<Map<string, ExtendedAdminProduct>>(new Map());
 
-    setRowSelection(update)
-  }
+  const updater: OnChangeFn<RowSelectionState> = newSelection => {
+    const update = typeof newSelection === 'function' ? newSelection(rowSelection) : newSelection;
+
+    setRowSelection(update);
+  };
 
   const { searchParams, raw } = useProductTableQuery({
-    pageSize: PAGE_SIZE,
-  })
+    pageSize: PAGE_SIZE
+  });
 
   const options = {
-    placeholderData: keepPreviousData,
-  }
+    placeholderData: keepPreviousData
+  };
 
-  const { products, count, isLoading, isError, error } = useProducts(
-    searchParams,
-    options
-  )
+  const {
+    products = [],
+    count: apiCount = 0,
+    isLoading,
+    isError,
+    error
+  } = useProducts(searchParams, options);
 
-  const filters = useProductTableFilters()
-  const columns = useColumns()
+  // When a query/filter yields no rows but the API still returns a count,
+  // force the table to treat it as empty so the "no results" state appears.
+  const count = products.length === 0 ? 0 : apiCount;
+
+  const filters = useProductTableFilters(['sales_channel_id']);
+  const columns = useColumns();
 
   const { table } = useDataTable({
     data: products,
@@ -69,70 +70,95 @@ export const ProductListTable = () => {
     enablePagination: true,
     enableRowSelection: true,
     pageSize: PAGE_SIZE,
-    getRowId: (row) => row?.id || "",
+    getRowId: row => row?.id || '',
     rowSelection: {
       state: rowSelection,
-      updater,
-    },
-  })
+      updater
+    }
+  });
 
-  const { mutateAsync } = useBulkDeleteProducts()
-  const prompt = usePrompt()
+  // Sync selected products data across pages
+  useEffect(() => {
+    const selectedIds = new Set(Object.keys(rowSelection));
+
+    // Add newly selected products from current page
+    products.forEach(product => {
+      if (selectedIds.has(product.id)) {
+        selectedProductsMap.current.set(product.id, product);
+      }
+    });
+
+    // Remove deselected products
+    selectedProductsMap.current.forEach((_, id) => {
+      if (!selectedIds.has(id)) {
+        selectedProductsMap.current.delete(id);
+      }
+    });
+  }, [rowSelection, products]);
+
+  const { mutateAsync } = useBulkDeleteProducts();
+  const prompt = usePrompt();
 
   const handleDelete = async () => {
-    const keys = Object.keys(rowSelection)
+    const keys = Object.keys(rowSelection);
 
     if (keys.length === 0) {
-      return
+      return;
     }
 
     const res = await prompt({
-      title: t("products.bulkDelete.title"),
-      description: t("products.bulkDelete.description", {
-        count: keys.length,
+      title: t('products.bulkDelete.title'),
+      description: t('products.bulkDelete.description', {
+        count: keys.length
       }),
-      confirmText: t("actions.delete"),
-      cancelText: t("actions.cancel"),
-    })
+      confirmText: t('actions.delete'),
+      cancelText: t('actions.cancel'),
+      variant: 'danger'
+    });
 
     if (!res) {
-      return
+      return;
     }
 
     await mutateAsync(keys, {
       onSuccess: () => {
-        setRowSelection({})
+        setRowSelection({});
         toast.success(
-          t("products.bulkDelete.success", {
-            count: keys.length,
+          t('products.bulkDelete.success', {
+            count: keys.length
           })
-        )
+        );
       },
-      onError: (error) => {
-        toast.error(t("products.bulkDelete.error"), {
-          description: error.message,
-        })
-      },
-    })
-  }
-  
+      onError: error => {
+        toast.error(t('products.bulkDelete.error'), {
+          description: error.message
+        });
+      }
+    });
+  };
+
   if (isError) {
-    throw error
+    throw error;
   }
 
   return (
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
-        <Heading level="h2">{t("products.domain")}</Heading>
+        <Heading level="h2">{t('products.domain')}</Heading>
         <div className="flex items-center justify-center gap-x-2">
-          <Button size="small" variant="secondary" asChild>
-            <Link to={`export${location.search}`}>{t("actions.export")}</Link>
+          <Button
+            size="small"
+            variant="secondary"
+            asChild
+          >
+            <Link to={`export${location.search}`}>{t('actions.export')}</Link>
           </Button>
-          <Button size="small" variant="secondary" asChild>
-            <Link to="import">{t("actions.import")}</Link>
-          </Button>
-          <Button size="small" variant="primary" asChild>
-            <Link to="create">{t("actions.create")}</Link>
+          <Button
+            size="small"
+            variant="secondary"
+            asChild
+          >
+            <Link to="create">{t('actions.create')}</Link>
           </Button>
         </div>
       </div>
@@ -143,76 +169,91 @@ export const ProductListTable = () => {
         pageSize={PAGE_SIZE}
         filters={filters}
         search
+        clearableSearch
         pagination
         isLoading={isLoading}
         queryObject={raw}
-        navigateTo={(row) => `${row.original.id}`}
+        navigateTo={row => `${row.original.id}`}
         orderBy={[
-          { key: "title", label: t("fields.title") },
+          { key: 'title', label: t('fields.title') },
           {
-            key: "created_at",
-            label: t("fields.createdAt"),
+            key: 'created_at',
+            label: t('fields.createdAt')
           },
           {
-            key: "updated_at",
-            label: t("fields.updatedAt"),
-          },
+            key: 'updated_at',
+            label: t('fields.updatedAt')
+          }
         ]}
         commands={[
           {
-            action: handleDelete,
-            label: t("actions.delete"),
-            shortcut: "d",
+            action: async () => {
+              const selectedProducts = Array.from(selectedProductsMap.current.values());
+              setBulkEditProducts(selectedProducts);
+              setBulkEditOpen(true);
+            },
+            label: t('actions.edit'),
+            shortcut: 'e'
           },
+          {
+            action: handleDelete,
+            label: t('actions.delete'),
+            shortcut: 'd'
+          }
         ]}
         noRecords={{
-          title: t("products.list.noRecordsTitle"),
-          message: t("products.list.noRecordsMessage"),
+          title: t('products.list.noRecordsTitle'),
+          message: t('products.list.noRecordsMessage'),
           action: {
-            to: "/products/create",
-            label: t("actions.add"),
-          },
+            to: '/products/create',
+            label: t('actions.create')
+          }
         }}
       />
       <Outlet />
+      <ProductBulkEditDrawer
+        open={bulkEditOpen}
+        onOpenChange={setBulkEditOpen}
+        products={bulkEditProducts}
+      />
     </Container>
-  )
-}
+  );
+};
 
 const ProductActions = ({ product }: { product: ExtendedAdminProduct }) => {
-  const { t } = useTranslation()
-  const prompt = usePrompt()
-  const { mutateAsync } = useDeleteProduct(product.id)
+  const { t } = useTranslation();
+  const prompt = usePrompt();
+  const { mutateAsync } = useDeleteProduct(product.id);
 
   const handleDelete = async () => {
     const res = await prompt({
-      title: t("general.areYouSure"),
-      description: t("products.deleteWarning", {
-        title: product.title,
+      title: t('general.areYouSure'),
+      description: t('products.deleteWarning', {
+        title: product.title
       }),
-      confirmText: t("actions.delete"),
-      cancelText: t("actions.cancel"),
-    })
+      confirmText: t('actions.delete'),
+      cancelText: t('actions.cancel')
+    });
 
     if (!res) {
-      return
+      return;
     }
 
     await mutateAsync(undefined, {
       onSuccess: () => {
-        toast.success(t("products.toasts.delete.success.header"), {
-          description: t("products.toasts.delete.success.description", {
-            title: product.title,
-          }),
-        })
+        toast.success(t('products.toasts.delete.success.header'), {
+          description: t('products.toasts.delete.success.description', {
+            title: product.title
+          })
+        });
       },
-      onError: (e) => {
-        toast.error(t("products.toasts.delete.error.header"), {
-          description: e.message,
-        })
-      },
-    })
-  }
+      onError: e => {
+        toast.error(t('products.toasts.delete.error.header'), {
+          description: e.message
+        });
+      }
+    });
+  };
 
   return (
     <ActionMenu
@@ -220,63 +261,70 @@ const ProductActions = ({ product }: { product: ExtendedAdminProduct }) => {
         {
           actions: [
             {
-              icon: <Trash />,
-              label: t("actions.delete"),
-              onClick: handleDelete,
-            },
-          ],
+              icon: <PencilSquare />,
+              label: t('actions.edit'),
+              to: `/products/${product.id}/edit`
+            }
+          ]
         },
+        {
+          actions: [
+            {
+              icon: <Trash />,
+              label: t('actions.delete'),
+              onClick: handleDelete
+            }
+          ]
+        }
       ]}
     />
-  )
-}
+  );
+};
 
-const columnHelper = createColumnHelper<ExtendedAdminProduct>()
+const columnHelper = createColumnHelper<ExtendedAdminProduct>();
 
 const useColumns = () => {
-  const { t } = useTranslation()
-  const base = useProductTableColumns()
+  const { t } = useTranslation();
+  const base = useProductTableColumns();
 
   const columns = useMemo(
     () => [
       columnHelper.display({
-        id: "select",
+        id: 'select',
         header: ({ table }) => {
           return (
             <Checkbox
               checked={
                 table.getIsSomePageRowsSelected()
-                  ? "indeterminate"
+                  ? 'indeterminate'
                   : table.getIsAllPageRowsSelected()
               }
-              onCheckedChange={(value) =>
-                table.toggleAllPageRowsSelected(!!value)
-              }
+              onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
             />
-          )
+          );
         },
         cell: ({ row }) => {
           return (
             <Checkbox
               checked={row.getIsSelected()}
-              onCheckedChange={(value) => row.toggleSelected(!!value)}
-              onClick={(e) => {
-                e.stopPropagation()
+              onCheckedChange={value => row.toggleSelected(!!value)}
+              onClick={e => {
+                e.stopPropagation();
               }}
             />
-          )
-        },
+          );
+        }
       }),
       ...base,
       columnHelper.display({
-        id: "actions",
+        id: 'actions',
         cell: ({ row }) => {
-          return <ProductActions product={row.original} />
-        },
-      }),
+          return <ProductActions product={row.original} />;
+        }
+      })
     ],
     [base, t]
-  )
+  );
 
-  return columns
-}
+  return columns;
+};

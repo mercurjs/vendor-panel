@@ -1,66 +1,100 @@
-import { useParams } from "react-router-dom"
+import { useMemo } from 'react';
 
-import { useProduct } from "../../../hooks/api/products"
+import { useParams } from 'react-router-dom';
 
-import { TwoColumnPageSkeleton } from "../../../components/common/skeleton"
-import { TwoColumnPage } from "../../../components/layout/pages"
-import { useDashboardExtension } from "../../../extensions"
-import { VariantGeneralSection } from "./components/variant-general-section"
+import { TwoColumnPageSkeleton } from '../../../components/common/skeleton';
+import { TwoColumnPage } from '../../../components/layout/pages';
+import { useDashboardExtension } from '../../../extensions';
+import { useProduct, useProductVariants } from '../../../hooks/api/products';
+import { getExplicitVariantImages } from '../../../utils/get-explicit-variant-images';
+import { VariantGeneralSection } from './components/variant-general-section';
 import {
   InventorySectionPlaceholder,
-  VariantInventorySection,
-} from "./components/variant-inventory-section"
-import { VariantPricesSection } from "./components/variant-prices-section"
+  VariantInventorySection
+} from './components/variant-inventory-section';
+import { VariantMediaSection } from './components/variant-media-section';
+import { VariantPricesSection } from './components/variant-prices-section';
 
 export const ProductVariantDetail = () => {
-  const { id, variant_id } = useParams()
-  const { product, isLoading, isError, error } = useProduct(id!, {
-    fields: "*variants.inventory_items",
-  })
+  const { id, variant_id } = useParams();
+  const {
+    product,
+    isLoading: isProductLoading,
+    isError,
+    error
+  } = useProduct(id!, {
+    fields: '*variants.inventory_items,*images'
+  });
 
-  const variant = product?.variants?.find((item) => item.id === variant_id)
+  const { variants, isLoading: isVariantsLoading } = useProductVariants(id!, {
+    fields: '*images'
+  } as any);
 
-  const { getWidgets } = useDashboardExtension()
+  const productVariant = product?.variants?.find(item => item.id === variant_id);
+  const variantsDataVariant = variants?.find(v => v.id === variant_id);
 
-  if (isLoading || !variant) {
-    return <TwoColumnPageSkeleton mainSections={2} sidebarSections={1} />
+  const variantImages = useMemo(() => {
+    if (!variantsDataVariant?.images) {
+      return [];
+    }
+
+    return getExplicitVariantImages(variantsDataVariant.images, variant_id!);
+  }, [variantsDataVariant?.images, variant_id]);
+
+  const { getWidgets } = useDashboardExtension();
+
+  const isLoading = isProductLoading || isVariantsLoading;
+
+  if (isLoading || !productVariant) {
+    return (
+      <TwoColumnPageSkeleton
+        mainSections={2}
+        sidebarSections={1}
+      />
+    );
   }
 
   if (isError) {
-    throw error
+    throw error;
   }
+
   return (
     <TwoColumnPage
-      data={variant}
+      data={productVariant}
       hasOutlet
       widgets={{
-        after: getWidgets("product_variant.details.after"),
-        before: getWidgets("product_variant.details.before"),
-        sideAfter: getWidgets("product_variant.details.side.after"),
-        sideBefore: getWidgets("product_variant.details.side.before"),
+        after: getWidgets('product_variant.details.after'),
+        before: getWidgets('product_variant.details.before'),
+        sideAfter: getWidgets('product_variant.details.side.after'),
+        sideBefore: getWidgets('product_variant.details.side.before')
       }}
     >
       <TwoColumnPage.Main>
-        <VariantGeneralSection variant={variant} />
-        {!variant.manage_inventory ? (
+        <VariantGeneralSection variant={productVariant} />
+        <VariantMediaSection
+          variant={productVariant}
+          variantImages={variantImages}
+          productId={id!}
+        />
+        {!productVariant.manage_inventory ? (
           <InventorySectionPlaceholder />
         ) : (
-          variant.inventory_items && (
+          productVariant.inventory_items && (
             <VariantInventorySection
-              inventoryItems={variant.inventory_items.map((i) => {
+              inventoryItems={productVariant.inventory_items.map(i => {
                 return {
                   id: i.inventory_item_id,
                   required_quantity: i.required_quantity,
-                  variant,
-                }
+                  variant: productVariant
+                };
               })}
             />
           )
         )}
       </TwoColumnPage.Main>
       <TwoColumnPage.Sidebar>
-        <VariantPricesSection variant={variant} />
+        <VariantPricesSection variant={productVariant} />
       </TwoColumnPage.Sidebar>
     </TwoColumnPage>
-  )
-}
+  );
+};

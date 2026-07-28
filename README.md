@@ -1,3 +1,5 @@
+> ⚠️  **Deprecated** — this repository is no longer maintained. The Vendor panel is now part of the [Mercur](https://github.com/mercurjs/mercur) monorepo. Use [mercurjs/mercur](https://github.com/mercurjs/mercur) instead.
+
 ![B2C Storefront Cover](https://cdn.prod.website-files.com/6790aeffc4b432ccaf1b56e5/683051d0fd663550f5233ecb_ca2d007b9ac4c0d8c2f6afef398711bf_Readme-Vendor-Panel.png)
 
 <div align="center">

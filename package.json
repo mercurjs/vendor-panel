@@ -102,7 +102,7 @@
     "typescript": "5.2.2",
     "vite": "^5.4.14",
     "vite-plugin-inspect": "^0.8.7",
-    "vitest": "^3.0.5"
+    "vitest": "^3.2.6"
   },
   "packageManager": "yarn@1.22.22"
 }
